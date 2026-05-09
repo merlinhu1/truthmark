@@ -66,7 +66,17 @@ Das ist das Kernversprechen: Agentenkontext wird zu festgeschriebenem Repository
 
 ## Erste Schritte
 
-Wenn du Truthmark zunächst gegen ein anderes lokales Repository ausprobieren willst, bevor das Paket anderswo veröffentlicht ist:
+Installiere Truthmark in dem Repository, das du initialisieren möchtest:
+
+```bash
+cd /path/to/your-repo
+npm install -D truthmark
+npx truthmark config
+npx truthmark init
+npx truthmark check
+```
+
+Wenn du stattdessen unveröffentlichte Änderungen aus einem Source-Checkout ausprobieren möchtest:
 
 ```bash
 cd /path/to/truthmark
@@ -193,8 +203,6 @@ V1 bietet derzeit:
 - generierte Skill-Flächen für Truth Structure, Truth Sync, Truth Realize und Truth Check für konfigurierte Agenten-Hosts
 - Branch-Scope-Metadaten
 - Diagnostik für Konfiguration, Autorität, Routing, Entscheidungsstruktur, Frontmatter, Links und polyglotte Abdeckung
-
-Es wird nicht angenommen, dass das ungescopte Paket `truthmark` bereits veröffentlicht ist.
 
 ## Dokumentation
 

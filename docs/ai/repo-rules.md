@@ -97,6 +97,7 @@ Current product boundaries:
 7. **Docs change with behavior**
    - If a behavior, contract, workflow, or completion rule changes, update the nearest canonical doc in the same working change.
    - For major product, onboarding, install, command, positioning, or workflow changes, review the root [README.md](../../README.md) in the same working change and update stale user-facing claims, examples, or command sequences.
+   - When the root README changes materially, update the localized README variants in the same working change or explicitly confirm why they remain intentionally different.
 
 8. **Keep onboarding honest**
    - The root README is not the canonical behavior spec, but it is the human entry point. It must not lag behind major product changes that affect how people understand, install, or use Truthmark.

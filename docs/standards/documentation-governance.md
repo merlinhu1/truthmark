@@ -78,6 +78,7 @@ Do not create separate timestamped ADR folders, planning tickets, or historical 
 
 - Behavior changes and truth-doc updates should land in the same working change when possible.
 - Major product, onboarding, install, command, positioning, or workflow changes should include a root README review in the same working change. Update the README when its human-facing claims, examples, or command sequences are stale.
+- When the root README has localized variants, keep them aligned with the English README for materially changed install, command, positioning, and workflow guidance in the same working change, or explicitly document why a variant intentionally differs.
 - When routing changes, update `docs/truthmark/areas.md` and any affected canonical docs together.
 - When routing is broad, overloaded, or catch-all, run Truth Structure before adding more generic feature docs.
 - When a document stops being canonical, supersede or demote it explicitly.

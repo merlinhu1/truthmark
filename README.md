@@ -72,7 +72,17 @@ This is the core promise: agent context becomes committed repository state inste
 
 ## Get started
 
-To try Truthmark from a source checkout instead of the published npm package:
+Install Truthmark in the repository you want to initialize:
+
+```bash
+cd /path/to/your-repo
+npm install -D truthmark
+npx truthmark config
+npx truthmark init
+npx truthmark check
+```
+
+If you want to try unreleased changes from a source checkout instead:
 
 ```bash
 cd /path/to/truthmark

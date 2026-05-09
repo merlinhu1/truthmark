@@ -26,6 +26,22 @@ type PackFile = {
   mode: number;
 };
 
+const parsePackOutput = (
+  stdout: string,
+): Array<{
+  files: PackFile[];
+}> => {
+  const jsonStartIndex = stdout.search(/^\s*\[\s*\{\s*$/m);
+
+  if (jsonStartIndex === -1) {
+    throw new SyntaxError("npm pack output did not include a JSON array");
+  }
+
+  return JSON.parse(stdout.slice(jsonStartIndex)) as Array<{
+    files: PackFile[];
+  }>;
+};
+
 const readPackageJson = async (): Promise<{
   scripts?: Record<string, string>;
 }> => {
@@ -46,10 +62,7 @@ const readPackFiles = async (): Promise<PackFile[]> => {
       cwd: repoRoot,
     },
   );
-  const jsonStartIndex = stdout.indexOf("[");
-  const packOutput = JSON.parse(stdout.slice(jsonStartIndex)) as Array<{
-    files: PackFile[];
-  }>;
+  const packOutput = parsePackOutput(stdout);
 
   return packOutput[0]?.files ?? [];
 };
@@ -95,5 +108,16 @@ describe("package and release integrity", () => {
       "package:check": expect.any(String),
       "release:check": expect.any(String),
     });
+  });
+
+  it("parses npm pack JSON after bracketed build output", () => {
+    const packOutput = parsePackOutput(`build [1/2]
+[
+  {
+    "files": []
+  }
+]`);
+
+    expect(packOutput).toEqual([{ files: [] }]);
   });
 });

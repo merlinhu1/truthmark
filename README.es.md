@@ -66,7 +66,17 @@ Esta es la promesa central: el contexto del agente pasa a ser estado confirmado 
 
 ## Primeros pasos
 
-Para probar Truthmark contra otro repositorio local antes de que el paquete se publique en otro lugar:
+Instala Truthmark en el repositorio que quieras inicializar:
+
+```bash
+cd /path/to/your-repo
+npm install -D truthmark
+npx truthmark config
+npx truthmark init
+npx truthmark check
+```
+
+Si quieres probar cambios aún no publicados desde un checkout del código fuente:
 
 ```bash
 cd /path/to/truthmark
@@ -193,8 +203,6 @@ V1 actualmente ofrece:
 - superficies de skill generadas para Truth Structure, Truth Sync, Truth Realize y Truth Check en los anfitriones de agentes configurados
 - metadatos de alcance de rama
 - diagnósticos de configuración, autoridad, enrutamiento, estructura de decisiones, frontmatter, enlaces y cobertura políglota
-
-No se debe asumir que el paquete sin scope `truthmark` ya está publicado.
 
 ## Documentación
 

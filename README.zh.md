@@ -66,7 +66,17 @@ Truthmark 把仓库事实变成代理可见的显式工作流载体：
 
 ## 快速开始
 
-如果想在包发布到其他地方之前，先在另一个本地仓库试用 Truthmark：
+在你想初始化的仓库中安装 Truthmark：
+
+```bash
+cd /path/to/your-repo
+npm install -D truthmark
+npx truthmark config
+npx truthmark init
+npx truthmark check
+```
+
+如果你想从源码检出中试用尚未发布的变更：
 
 ```bash
 cd /path/to/truthmark
@@ -193,8 +203,6 @@ V1 目前提供：
 - 为已配置代理宿主生成的 Truth Structure、Truth Sync、Truth Realize 和 Truth Check 技能载体
 - 分支范围元数据
 - 配置、权限边界、路由、决策结构、frontmatter、链接和多语言覆盖率诊断
-
-不要假定未带 scope 的 `truthmark` 包已经发布。
 
 ## 文档
 
