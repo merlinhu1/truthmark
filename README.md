@@ -72,7 +72,7 @@ This is the core promise: agent context becomes committed repository state inste
 
 ## Get started
 
-To try Truthmark against another local repository before the package is published elsewhere:
+To try Truthmark from a source checkout instead of the published npm package:
 
 ```bash
 cd /path/to/truthmark
@@ -214,8 +214,6 @@ V1 currently provides:
 - generated Truth Structure, Truth Sync, Truth Realize, and Truth Check skill surfaces for configured agent hosts
 - branch-scope metadata
 - config, authority, routing, decision-structure, frontmatter, link, and polyglot coverage diagnostics
-
-The unscoped `truthmark` package is not assumed to be published yet.
 
 ## Documentation
 

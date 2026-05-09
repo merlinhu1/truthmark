@@ -4,6 +4,22 @@
   "description": "Git-native, branch-scoped truth workflow installer for local AI coding agents.",
   "license": "MIT",
   "type": "module",
+  "keywords": [
+    "ai",
+    "agent",
+    "cli",
+    "documentation",
+    "git",
+    "truth"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/merlinhu1/truthmark.git"
+  },
+  "homepage": "https://github.com/merlinhu1/truthmark#readme",
+  "bugs": {
+    "url": "https://github.com/merlinhu1/truthmark/issues"
+  },
   "bin": {
     "truthmark": "dist/main.js"
   },
