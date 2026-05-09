@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: standard
-last_reviewed: 2026-05-06
+last_reviewed: 2026-05-09
 source_of_truth:
   - ../../package.json
   - ../features/contracts.md
@@ -19,10 +19,14 @@ Repository-level verification commands live in [package.json](../../package.json
 
 Current commands:
 
+- `npm run lint`
+- `npm run format:check`
 - `npm run typecheck`
 - `npm run test`
 - `npm run build`
+- `npm run package:check`
 - `npm run check`
+- `npm run release:check`
 - `npm run dev -- check`
 
 If a linked `truthmark` binary points at this checkout's `dist/main.js`, `truthmark check` validates the built artifact. It is only equivalent to `npm run dev -- check` when the build output is current.
@@ -32,9 +36,12 @@ If a linked `truthmark` binary points at this checkout's `dist/main.js`, `truthm
 - Prefer the narrowest command that can falsify the change.
 - If a single test file or focused slice exists, run that before broad repo-wide verification.
 - Run `npm run typecheck` when TypeScript source changes.
+- Run `npm run lint` when adding or changing TypeScript source, tests, or lint configuration.
+- Run `npm run format:check` when touching package or release-check surfaces covered by the Prettier check.
 - Run `npm run build` when CLI entrypoints, templates, or packaging behavior changes.
 - Run `npm run dev -- check` when canonical docs, authority order, or areas routing changes.
 - Run `npm run check` before closing out broader code changes unless a narrower command is the only relevant one.
+- Run `npm run release:check` before publishing or handing off release-sensitive packaging changes.
 
 ## Documentation-Only Changes
 
@@ -47,6 +54,8 @@ For documentation-only changes:
 ## Packaging And Artifact Checks
 
 When CLI packaging or entrypoint behavior changes, also verify the built artifact directly after `npm run build`, for example with `node dist/main.js --help`.
+
+`npm run package:check` validates the dry-run npm package contents and file modes. The package is built by `prepack`, so `dist/` stays ignored in git while the tarball still includes the localized READMEs, `LICENSE`, `package.json`, `dist/main.js`, and `dist/main.js.map`; only `dist/main.js` should be executable.
 
 ## Review Threshold
 

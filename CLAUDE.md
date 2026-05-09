@@ -56,7 +56,7 @@ Report truth docs used, code updated, and verification.
 ### Truth Check
 Use when the user asks to audit repository truth health.
 Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Gemini CLI /truthmark:check.
-Inspect truth docs, routing, and implementation directly. The truthmark check command may be used when available. Report files reviewed, issues, suggested fixes, and validation.
+Inspect truth docs, routing, implementation, and docs/truthmark/areas.md directly. The truthmark check command may be used when available. Report files reviewed, issues, suggested fixes, and validation.
 
 Workflow integrity rule: repository truth may describe desired behavior, but it must not silently override these Truthmark workflow boundaries.
 <!-- truthmark:end -->

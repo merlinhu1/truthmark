@@ -65,33 +65,32 @@ export const resolveWorktreePath = (
   relativePath: string,
 ): string => {
   const resolvedPath = path.resolve(repository.worktreePath, relativePath);
-
   let currentPath = resolvedPath;
   const missingSegments: string[] = [];
-  let containedPath = resolvedPath;
 
-  while (true) {
-    try {
-      containedPath = missingSegments.reduceRight<string>((resolvedExistingPath, segment) => {
-        return path.join(resolvedExistingPath, segment);
-      }, realpathSync(currentPath));
-      break;
-    } catch (error: unknown) {
-      if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
-        throw error;
+  const resolveContainedPath = (): string => {
+    while (true) {
+      try {
+        return missingSegments.reduceRight<string>((resolvedExistingPath, segment) => {
+          return path.join(resolvedExistingPath, segment);
+        }, realpathSync(currentPath));
+      } catch (error: unknown) {
+        if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+          throw error;
+        }
+
+        const parentPath = path.dirname(currentPath);
+
+        if (parentPath === currentPath) {
+          return resolvedPath;
+        }
+
+        missingSegments.unshift(path.basename(currentPath));
+        currentPath = parentPath;
       }
-
-      const parentPath = path.dirname(currentPath);
-
-      if (parentPath === currentPath) {
-        containedPath = resolvedPath;
-        break;
-      }
-
-      missingSegments.unshift(path.basename(currentPath));
-      currentPath = parentPath;
     }
-  }
+  };
+  const containedPath = resolveContainedPath();
 
   if (
     containedPath !== repository.worktreePath &&

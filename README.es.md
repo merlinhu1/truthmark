@@ -1,6 +1,8 @@
-**Truthmark es la capa de verdad para el desarrollo de software con IA.**
+# Truthmark es la capa de verdad para el desarrollo de software con IA.
 English | [Deutsch](README.de.md) | [中文](README.zh.md) | Español | [Русский](README.ru.md)
 Los agentes de programación con IA ya escriben código bastante bien. Lo que todavía hacen mal es reconstruir de forma fiable la intención del producto, los límites de arquitectura y la responsabilidad sobre cada parte del repositorio a partir de documentación obsoleta, conversaciones dispersas y memoria temporal de herramientas.
+## Qué resuelve Truthmark
+
 Truthmark lo resuelve convirtiendo la verdad local de cada rama en una superficie de ejecución de primera clase para los agentes. Instala una capa de verdad nativa de Git, acotada a la rama, directamente dentro del repositorio; da a los agentes rutas y límites de flujo de trabajo explícitos; y hace que esa verdad viaje con el código que realmente se entrega.
 Esto no es mejor ingeniería de prompts. Es una forma más gobernable de usar IA en una base de código real: menos decisiones repetidas, menos documentación obsoleta, traspasos más limpios y sesiones de programación con IA que dejan registros de ingeniería revisables en lugar de desaparecer en el historial de prompts o en estados opacos de herramientas.
 Está pensado para equipos que ya saben que los agentes pueden generar código y ahora necesitan que el repositorio siga siendo legible, revisable y gobernable.
@@ -15,6 +17,8 @@ Truthmark cambia el modelo de trabajo:
 - Los flujos de trabajo locales evitan depender de un demonio, una base de datos, un servicio remoto o MCP.
 - El modelo funciona en bases de código JavaScript, TypeScript, Go, Python, C# y Java.
 Para responsables técnicos, el valor es gobernanza sin teatro: las pruebas, la revisión de código y la propiedad siguen haciendo el trabajo real; Truthmark vuelve el contexto del agente duradero, inspeccionable y acotado a la rama.
+## Dónde encaja Truthmark
+
 Truthmark no intenta reemplazar todas las demás herramientas de flujo de trabajo con IA. Ocupa una capa concreta de la pila:
 | Si necesitas | Mejor opción |
 | --- | --- |
@@ -42,6 +46,8 @@ Truthmark convierte la verdad del repositorio en una superficie explícita de fl
 - `truthmark check` valida los artefactos de verdad resultantes.
 - Todo el modelo se mantiene local-first y nativo de Git.
 Esta es la promesa central: el contexto del agente pasa a ser estado confirmado del repositorio, no un artefacto privado de una sesión.
+## Primeros pasos
+
 Para probar Truthmark contra otro repositorio local antes de que el paquete se publique en otro lugar:
 ```bash
 cd /path/to/truthmark
@@ -70,6 +76,8 @@ skills/truthmark-check/SKILL.md
 ```
 Si habilitas plataformas adicionales en `.truthmark/config.yml`, Truthmark actualizará las superficies administradas correspondientes en el siguiente `init`.
 La estructura generada por defecto usa los `README.md` de funciones como índices y empieza la verdad sobre el comportamiento actual en documentos hoja acotados, como `docs/features/repository/overview.md`.
+## Cómo se ejecuta
+
 Truthmark no especifica qué subagente debe ejecutar Truth Sync. El agente que actúa y el entorno anfitrión deciden si delegan o ejecutan el flujo en línea.
 La mayoría de los usuarios no debería invocar Truth Sync directamente. El flujo normal es:
 ```text
@@ -92,6 +100,8 @@ se confirma o se entrega el trabajo
 ```
 Truth Realize es manual y doc-first: los documentos de verdad lideran, el código sigue, y el agente no debe editar los documentos de verdad que está realizando.
 Los usuarios de Codex pueden invocarlo con `/truthmark-realize` o `$truthmark-realize`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-realize`.
+## Qué instala
+
 Truthmark mantiene pequeña la superficie duradera de flujo de trabajo:
 - `.truthmark/config.yml` para configuración legible por máquina
 - `TRUTHMARK.md` para el contrato de flujo de trabajo local a la rama
@@ -106,6 +116,8 @@ Las superficies de flujo de trabajo instaladas son el entorno de ejecución:
 - Truth Check audita la salud de la verdad del repositorio.
 Los `README.md` de funciones son índices. Se espera que Truth Sync lea y actualice documentos hoja acotados para el comportamiento actual.
 Las superficies generadas son administradas por Truthmark, incluyen un marcador de versión y pueden refrescarse con `truthmark init`.
+## Comandos
+
 Truthmark V1 mantiene la CLI pequeña a propósito. En repositorios derivados, `truthmark config` crea el contrato de jerarquía confirmado en Git, `truthmark init` instala y refresca superficies de flujo de trabajo a partir de esa configuración revisada, y `truthmark check` valida los artefactos de verdad para auditorías manuales, CI o depuración.
 ```bash
 truthmark config
@@ -118,6 +130,8 @@ truthmark check --json
 `init` requiere `.truthmark/config.yml` y luego instala o refresca los archivos locales de flujo de trabajo.
 `check` valida configuración, autoridad, enrutamiento, documentos que contienen decisiones, frontmatter, enlaces internos, alcance de rama y diagnósticos de cobertura.
 Truth Structure, Truth Sync, Truth Realize y Truth Check son flujos de trabajo instalados para agentes, no comandos CLI principales de uso diario.
+## Por qué existe
+
 La mayoría de los flujos de programación con IA optimizan la siguiente respuesta. Truthmark optimiza el siguiente traspaso.
 Asume que los equipos serios necesitan:
 - verdad de producto específica de cada rama
@@ -128,6 +142,8 @@ Asume que los equipos serios necesitan:
 - Markdown legible que el equipo pueda inspeccionar sin herramientas especiales
 - verdad que viaje con la rama en lugar de vivir en estado oculto de sesión
 - flujos que sigan funcionando aunque el paquete no esté instalado globalmente
+## Estado del proyecto
+
 Truthmark no es un servidor de memoria ni un servidor MCP. Es una práctica de repositorio empaquetada como un pequeño instalador CLI más superficies de flujo de trabajo nativas para agentes.
 V1 actualmente ofrece:
 - `truthmark config`
@@ -138,6 +154,8 @@ V1 actualmente ofrece:
 - metadatos de alcance de rama
 - diagnósticos de configuración, autoridad, enrutamiento, estructura de decisiones, frontmatter, enlaces y cobertura políglota
 No se debe asumir que el paquete sin scope `truthmark` ya está publicado.
+## Documentación
+
 El README raíz es para personas que evalúan y prueban el paquete. Las especificaciones funcionales y de negocio detalladas viven en `docs/`:
 - [Índice de documentación](docs/README.md)
 - [Resumen de arquitectura](docs/architecture/overview.md)
@@ -147,6 +165,8 @@ El README raíz es para personas que evalúan y prueban el paquete. Las especifi
 - [Flujos de trabajo instalados](docs/features/installed-workflows.md)
 - [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
 El comportamiento actual pertenece al árbol canónico de documentación anterior.
+## No objetivos
+
 Truthmark V1 no es:
 - un servicio alojado
 - un servidor MCP
@@ -156,4 +176,6 @@ Truthmark V1 no es:
 - un sustituto de pruebas, revisión de código o liderazgo técnico
 - un motor autónomo de reescritura de código
 Es una forma ligera de hacer que los agentes locales de programación con IA respeten la verdad que tu equipo guarda en Git.
+## Licencia
+
 MIT. Consulta [LICENSE](LICENSE).

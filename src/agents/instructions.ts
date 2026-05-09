@@ -23,7 +23,7 @@ export const renderTruthCheckInstructions = (
   return `### Truth Check
 Use when the user asks to audit repository truth health.
 Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
-Inspect truth docs, routing, and implementation directly. The truthmark check command may be used when available. Report files reviewed, issues, suggested fixes, and validation.`;
+Inspect truth docs, routing, implementation, and ${config.docs.routing.rootIndex} directly. The truthmark check command may be used when available. Report files reviewed, issues, suggested fixes, and validation.`;
 };
 
 export const renderTruthSyncInstructions = (

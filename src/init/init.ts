@@ -4,7 +4,6 @@ import { loadConfig } from "../config/load.js";
 import type { TruthmarkConfig, TruthmarkPlatform } from "../config/schema.js";
 import type { CommandResult, DiagnosticCategory } from "../output/diagnostic.js";
 import { getGitRepository } from "../git/repository.js";
-import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
 import { ensureRepoFile, resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
 import { detectHierarchyMigrationDiagnostics, scaffoldHierarchy } from "./hierarchy.js";
 import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
@@ -43,16 +42,6 @@ import { renderTruthmarkTemplate } from "../templates/init-files.js";
 
 const escapeRegExp = (value: string): string => {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-};
-
-const deriveTitleFromPath = (documentPath: string): string => {
-  const filename = documentPath.split("/").pop() ?? documentPath;
-
-  return filename
-    .replace(/\.md$/u, "")
-    .split("-")
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(" ");
 };
 
 const MANAGED_WORKFLOW_HEADING = "## Truthmark Workflow";
@@ -196,14 +185,6 @@ const writeManagedAgentsFile = async (
   }
 
   return writeRepoFile(rootDir, path, upsertManagedBlock(existingContent, block));
-};
-
-const toDiscoveredDocument = (documentPath: string): DiscoveredMarkdownDocument => {
-  return {
-    path: documentPath,
-    title: deriveTitleFromPath(documentPath),
-    hasFrontmatter: true,
-  };
 };
 
 const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {

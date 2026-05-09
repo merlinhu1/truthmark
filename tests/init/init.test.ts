@@ -434,7 +434,7 @@ realization:
         `${await repo.readFile("docs/truthmark/areas.md")}\n## Local Area Notes\nKeep this routing note.\n`,
       );
 
-      const result = await runInit(repo.rootDir);
+      await runInit(repo.rootDir);
 
       expect(await repo.readFile(".truthmark/config.yml")).toContain("custom: true");
       expect(await repo.readFile("TRUTHMARK.md")).toContain("Keep this text.");

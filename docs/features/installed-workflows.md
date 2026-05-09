@@ -148,7 +148,7 @@ Completion reports include:
 
 Truth Check is an agent-led audit of repository truth health.
 
-The agent should inspect config, routing, canonical docs, and relevant implementation directly. It may optionally run `truthmark check` when local tooling is available, but installed workflows must not depend on the binary being present.
+The agent should inspect config, the configured root route index, relevant child route files, canonical docs, and relevant implementation directly. It may optionally run `truthmark check` when local tooling is available, but installed workflows must not depend on the binary being present.
 
 Completed reports include:
 
