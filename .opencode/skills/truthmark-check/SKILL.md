@@ -3,7 +3,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health. Inspects truth docs, routing, and implementation directly; may optionally run truthmark check when available.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.2.0
+truthmark-version: 1.2.1
 ---
 
 # Truthmark Check

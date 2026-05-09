@@ -11,15 +11,10 @@ export const TRUTHMARK_STRUCTURE_SKILL_PATH =
 export const TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH =
   ".codex/skills/truthmark-structure/agents/openai.yaml";
 
-export const TRUTHMARK_STRUCTURE_LOCAL_SKILL_PATH =
-  "skills/truthmark-structure/SKILL.md";
-
 export const TRUTHMARK_SYNC_SKILL_PATH = ".codex/skills/truthmark-sync/SKILL.md";
 
 export const TRUTHMARK_SYNC_SKILL_METADATA_PATH =
   ".codex/skills/truthmark-sync/agents/openai.yaml";
-
-export const TRUTHMARK_SYNC_LOCAL_SKILL_PATH = "skills/truthmark-sync/SKILL.md";
 
 export const TRUTHMARK_REALIZE_SKILL_PATH =
   ".codex/skills/truthmark-realize/SKILL.md";
@@ -27,15 +22,10 @@ export const TRUTHMARK_REALIZE_SKILL_PATH =
 export const TRUTHMARK_REALIZE_SKILL_METADATA_PATH =
   ".codex/skills/truthmark-realize/agents/openai.yaml";
 
-export const TRUTHMARK_REALIZE_LOCAL_SKILL_PATH =
-  "skills/truthmark-realize/SKILL.md";
-
 export const TRUTHMARK_CHECK_SKILL_PATH = ".codex/skills/truthmark-check/SKILL.md";
 
 export const TRUTHMARK_CHECK_SKILL_METADATA_PATH =
   ".codex/skills/truthmark-check/agents/openai.yaml";
-
-export const TRUTHMARK_CHECK_LOCAL_SKILL_PATH = "skills/truthmark-check/SKILL.md";
 
 export const TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH =
   ".gemini/commands/truthmark/structure.toml";

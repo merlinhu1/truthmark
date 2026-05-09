@@ -10,7 +10,15 @@ export const renderConfigTemplate = (): string => {
 };
 
 export const renderTruthmarkTemplate = (): string => {
-  return `# Truthmark
+  return `---
+status: active
+doc_type: workflow-contract
+last_reviewed: 2026-05-09
+source_of_truth:
+  - .truthmark/config.yml
+---
+
+# Truthmark
 
 Markdown in the current checkout is authoritative for this branch.
 
@@ -73,6 +81,14 @@ export const renderHierarchicalAreasIndexTemplate = (config: TruthmarkConfig): s
   const title = titleCase(defaultArea);
 
   return [
+    "---",
+    "status: active",
+    "doc_type: route-index",
+    "last_reviewed: 2026-05-09",
+    "source_of_truth:",
+    "  - ../../.truthmark/config.yml",
+    "---",
+    "",
     "# Truthmark Areas",
     "",
     `## ${title}`,
@@ -97,6 +113,14 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   const leafTruthDoc = `${featureRoot}/${defaultArea}/overview.md`;
 
   return [
+    "---",
+    "status: active",
+    "doc_type: area-route",
+    "last_reviewed: 2026-05-09",
+    "source_of_truth:",
+    "  - ../../../.truthmark/config.yml",
+    "---",
+    "",
     `# ${title} Areas`,
     "",
     `## ${title}`,

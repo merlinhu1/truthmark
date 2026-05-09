@@ -206,23 +206,11 @@ const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
     return "truth-sync";
   }
 
-  if (filePath.startsWith("skills/truthmark-structure/")) {
-    return "truth-sync";
-  }
-
   if (filePath.startsWith(".codex/skills/truthmark-sync/")) {
     return "truth-sync";
   }
 
-  if (filePath.startsWith("skills/truthmark-sync/")) {
-    return "truth-sync";
-  }
-
   if (filePath.startsWith(".codex/skills/truthmark-realize/")) {
-    return "realization";
-  }
-
-  if (filePath.startsWith("skills/truthmark-realize/")) {
     return "realization";
   }
 
@@ -235,10 +223,6 @@ const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
   }
 
   if (filePath.startsWith(".codex/skills/truthmark-check/")) {
-    return "truth-sync";
-  }
-
-  if (filePath.startsWith("skills/truthmark-check/")) {
     return "truth-sync";
   }
 
@@ -345,12 +329,9 @@ const filesForPlatform = (
     case "codex":
       return codexFiles(config);
     case "opencode":
-      return [
-        ...workflowSkillFiles("skills", config),
-        ...workflowSkillFiles(".opencode/skills", config),
-      ];
+      return workflowSkillFiles(".opencode/skills", config);
     case "claude-code":
-      return instructionBlockFiles([...config.instructionTargets, "CLAUDE.md"], block);
+      return instructionBlockFiles(["CLAUDE.md"], block);
     case "cursor":
       return instructionBlockFiles([".cursor/rules/truthmark.mdc"], block);
     case "github-copilot":
@@ -447,9 +428,10 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
   results.push(...(await scaffoldHierarchy(rootDir, config)));
   const migrationDiagnostics = await detectHierarchyMigrationDiagnostics(rootDir, config);
   const block = renderAgentsBlock(config);
-  const platformFiles = config.platforms.flatMap((platform) =>
-    filesForPlatform(platform, config, block),
-  );
+  const platformFiles = [
+    ...instructionBlockFiles(config.instructionTargets, block),
+    ...config.platforms.flatMap((platform) => filesForPlatform(platform, config, block)),
+  ];
   const uniquePlatformFiles = Array.from(
     new Map(platformFiles.map((file) => [file.path, file])).values(),
   ).sort((left, right) => left.path.localeCompare(right.path));

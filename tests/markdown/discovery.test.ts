@@ -3,9 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
 import { discoverMarkdownDocuments } from "../../src/markdown/discovery.js";
-import { renderConfigTemplate, renderTruthmarkTemplate, renderAreasTemplate } from "../../src/templates/init-files.js";
+import {
+  renderConfigTemplate,
+  renderTruthmarkTemplate,
+  renderAreasTemplate,
+} from "../../src/templates/init-files.js";
 import { renderDefaultStandards } from "../../src/templates/default-standards.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
+import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("discoverMarkdownDocuments", () => {
   it("finds repository markdown docs and ignores common derived directories", async () => {
@@ -16,27 +21,48 @@ describe("discoverMarkdownDocuments", () => {
         "docs/architecture/system.md",
         "---\nstatus: active\n---\n# System Architecture\n",
       );
-      await repo.writeFile("docs/features/authentication.md", "# Authentication\n");
+      await repo.writeFile(
+        "docs/features/authentication.md",
+        "# Authentication\n",
+      );
       await repo.writeFile("README.md", "# Truthmark\n");
       await repo.writeFile("node_modules/example/ignored.md", "# Ignore me\n");
       await repo.writeFile("dist/generated.md", "# Ignore me\n");
       await repo.writeFile("vendor/copied.md", "# Ignore me\n");
       await repo.writeFile("build/output.md", "# Ignore me\n");
-      await repo.writeFile(".codex/skills/truthmark-sync/SKILL.md", "# Ignore me\n");
-      await repo.writeFile(".codex/skills/truthmark-structure/SKILL.md", "# Ignore me\n");
-      await repo.writeFile(".codex/skills/truthmark-realize/SKILL.md", "# Ignore me\n");
-      await repo.writeFile(".codex/skills/truthmark-check/SKILL.md", "# Ignore me\n");
-      await repo.writeFile(".opencode/skills/truthmark-sync/SKILL.md", "# Ignore me\n");
+      await repo.writeFile(
+        ".codex/skills/truthmark-sync/SKILL.md",
+        "# Ignore me\n",
+      );
+      await repo.writeFile(
+        ".codex/skills/truthmark-structure/SKILL.md",
+        "# Ignore me\n",
+      );
+      await repo.writeFile(
+        ".codex/skills/truthmark-realize/SKILL.md",
+        "# Ignore me\n",
+      );
+      await repo.writeFile(
+        ".codex/skills/truthmark-check/SKILL.md",
+        "# Ignore me\n",
+      );
+      await repo.writeFile(
+        ".opencode/skills/truthmark-sync/SKILL.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile(".cursor/rules/truthmark.mdc", "# Ignore me\n");
       await repo.writeFile(".github/copilot-instructions.md", "# Ignore me\n");
       await repo.writeFile("CLAUDE.md", "# Ignore me\n");
       await repo.writeFile("GEMINI.md", "# Ignore me\n");
       await repo.writeFile(
         ".gemini/commands/truthmark/sync.toml",
-        "description = \"Ignore me\"\n",
+        'description = "Ignore me"\n',
       );
       await repo.writeFile("skills/truthmark-sync/SKILL.md", "# Ignore me\n");
-      await repo.writeFile("skills/truthmark-structure/SKILL.md", "# Ignore me\n");
+      await repo.writeFile(
+        "skills/truthmark-structure/SKILL.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile("skills/truthmark-check/SKILL.md", "# Ignore me\n");
       await repo.writeFile("commands/truthmark-realize.md", "# Ignore me\n");
       await repo.runGit(["add", "README.md", "docs"]);
@@ -91,13 +117,19 @@ describe("init templates", () => {
   it("renders TRUTHMARK.md with branch-local truth, automatic sync, and manual realize guidance", () => {
     const truthmark = renderTruthmarkTemplate();
 
-    expect(truthmark).toContain("Markdown in the current checkout is authoritative for this branch.");
-    expect(truthmark).toContain("Truthmark 1.2.0 version marker");
+    expect(truthmark).toContain(
+      "Markdown in the current checkout is authoritative for this branch.",
+    );
+    expect(truthmark).toContain(
+      `Truthmark ${TRUTHMARK_VERSION} version marker`,
+    );
     expect(truthmark).toContain("rerun `truthmark init`");
     expect(truthmark).toContain(
       "Truth Sync runs automatically before finishing when functional code changes exist",
     );
-    expect(truthmark).toContain("Truth Realize is manual and updates code to match truth docs.");
+    expect(truthmark).toContain(
+      "Truth Realize is manual and updates code to match truth docs.",
+    );
   });
 
   it("seeds docs/truthmark/areas.md from discovered docs without moving them", () => {

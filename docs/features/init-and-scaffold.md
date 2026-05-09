@@ -27,7 +27,7 @@ This document describes the current behavior of `truthmark config` and `truthmar
 3. creates default standards only when they are missing or empty
 4. creates missing configured docs and routing structure such as [TRUTHMARK.md](../../TRUTHMARK.md), the configured root route index, the configured default child route file, the configured feature-root README, a default area index README, and a default bounded leaf truth doc
 5. loads the configured `platforms` list
-6. writes or refreshes only the configured platform surfaces
+6. writes or refreshes configured instruction targets and configured platform surfaces
 7. rewrites managed Truthmark instruction blocks while preserving manual content outside those blocks
 8. writes generated skill surfaces for configured skill-based platforms
 9. reports migration risks instead of moving existing truth docs when hierarchy changes imply manual migration
@@ -50,20 +50,16 @@ Current scaffold targets:
 - [CLAUDE.md](../../CLAUDE.md)
 - `.codex/skills/truthmark-structure/SKILL.md`
 - `.codex/skills/truthmark-structure/agents/openai.yaml`
-- `skills/truthmark-structure/SKILL.md`
 - `.codex/skills/truthmark-sync/SKILL.md`
 - `.codex/skills/truthmark-sync/agents/openai.yaml`
-- `skills/truthmark-sync/SKILL.md`
 - `.codex/skills/truthmark-realize/SKILL.md`
 - `.codex/skills/truthmark-realize/agents/openai.yaml`
-- `skills/truthmark-realize/SKILL.md`
 - `.codex/skills/truthmark-check/SKILL.md`
 - `.codex/skills/truthmark-check/agents/openai.yaml`
 - `.opencode/skills/truthmark-structure/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
-- `skills/truthmark-check/SKILL.md`
 - `.cursor/rules/truthmark.mdc`
 - `.github/copilot-instructions.md`
 - `GEMINI.md`
@@ -72,11 +68,12 @@ Current scaffold targets:
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 
-`platforms` controls which platform surfaces are written or refreshed. Defaults are `codex`, `opencode`, and `claude-code`. Teams may add `cursor`, `github-copilot`, or `gemini-cli` and rerun `truthmark init` to add those files. Gemini installs both `GEMINI.md` and project-scoped TOML commands under `.gemini/commands/truthmark/`, which surface as `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` in Gemini CLI. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
+`instruction_targets` controls shared managed-instruction files such as `AGENTS.md`. These targets are written or refreshed whenever `truthmark init` runs with a valid config, independent of the configured platform list.
+`platforms` controls which platform-specific surfaces are written or refreshed. Defaults are `codex`, `opencode`, and `claude-code`. Teams may add `cursor`, `github-copilot`, or `gemini-cli` and rerun `truthmark init` to add those files. Gemini installs both `GEMINI.md` and project-scoped TOML commands under `.gemini/commands/truthmark/`, which surface as `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` in Gemini CLI. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
 
 `ensureRepoFile` is intentionally conservative: existing non-empty files are left alone. The AGENTS managed block is the exception because Truthmark owns that block and may refresh it to match current template behavior.
 
-The generated Truth Structure, Truth Sync, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, and repo-local skills keep matching the installed workflow contract. Generated skills and Codex metadata include the Truthmark package version that rendered them; after upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+The generated Truth Structure, Truth Sync, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, and OpenCode skills keep matching the installed workflow contract. Generated skills, Codex metadata, managed instruction blocks, and `TRUTHMARK.md` include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
 ## AGENTS Management Rules
 
@@ -91,7 +88,7 @@ The current managed-instruction update behavior is:
 
 Repository-specific instructions should therefore live outside the managed block.
 
-Truthmark does not create `OPENCODE.md` in V1. OpenCode-compatible behavior is installed through shared `AGENTS.md` guidance and repo-local skill files under `skills/` and `.opencode/skills/`.
+Truthmark does not create `OPENCODE.md` in V1. OpenCode-compatible behavior is installed through shared `AGENTS.md` guidance and project skill files under `.opencode/skills/`.
 
 ## Hierarchy Behavior
 
@@ -115,6 +112,7 @@ Important current defaults:
 - default code surface in the scaffolded root and child route files starts as `src/**`
 - default feature scaffolding creates an index at `<feature-root>/README.md`, an index at `<feature-root>/<default-area>/README.md`, and a bounded leaf truth doc at `<feature-root>/<default-area>/overview.md`
 - default platforms are `codex`, `opencode`, and `claude-code`
+- shared instruction targets are refreshed independently of platform-specific surfaces
 - explicit Truth Structure, Truth Sync, Truth Realize, and Truth Check surfaces are installed only for configured platforms
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
 - generated workflow surfaces leave Truth Sync subagent selection to the acting agent and host environment
@@ -145,7 +143,7 @@ Current init JSON reporting uses:
 - `truthmark config` owns the committed layout contract and must happen before `truthmark init`.
 - Hierarchical routing is the only scaffold model, and route ownership stays in Markdown route files rather than config.
 - Init reports migration risk instead of rewriting existing truth doc placement on the user's behalf.
-- V1 uses shared `AGENTS.md` plus generated skill or command surfaces for host compatibility instead of creating host-specific top-level instruction files for every adapter.
+- V1 uses configured shared instruction targets such as `AGENTS.md` plus generated skill or command surfaces for host compatibility instead of creating host-specific top-level instruction files for every adapter.
 
 ## Rationale
 

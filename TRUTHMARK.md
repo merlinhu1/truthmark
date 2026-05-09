@@ -12,7 +12,7 @@ source_of_truth:
 
 Markdown in the current checkout is authoritative for this branch.
 
-Installed workflow surfaces include a Truthmark 1.2.0 version marker. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+Installed workflow surfaces include a Truthmark 1.2.1 version marker. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
 Truth Sync runs automatically before finishing when functional code changes exist, and updates truth docs.
 

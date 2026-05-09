@@ -111,6 +111,7 @@ When `--stdout` is used, `data` also includes:
 The command emits `action` diagnostics describing whether each scaffolded file was created, updated, or unchanged. Generated realization skill files use the `realization` diagnostic category.
 
 `truthmark init` requires an existing valid `.truthmark/config.yml`. It does not create config; `truthmark config` is the required first step in a new repository.
+Configured `instruction_targets` are generated or refreshed independently of platform-specific surfaces, so `AGENTS.md` remains managed even when `claude-code` is not in `platforms`.
 
 Generated Truth Structure, Truth Sync, and Truth Check surfaces and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
 
@@ -118,20 +119,16 @@ Current agent-native scaffold targets include:
 
 - `.codex/skills/truthmark-structure/SKILL.md`
 - `.codex/skills/truthmark-structure/agents/openai.yaml`
-- `skills/truthmark-structure/SKILL.md`
 - `.codex/skills/truthmark-sync/SKILL.md`
 - `.codex/skills/truthmark-sync/agents/openai.yaml`
-- `skills/truthmark-sync/SKILL.md`
 - `.codex/skills/truthmark-realize/SKILL.md`
 - `.codex/skills/truthmark-realize/agents/openai.yaml`
-- `skills/truthmark-realize/SKILL.md`
 - `.codex/skills/truthmark-check/SKILL.md`
 - `.codex/skills/truthmark-check/agents/openai.yaml`
 - `.opencode/skills/truthmark-structure/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
-- `skills/truthmark-check/SKILL.md`
 - `AGENTS.md`
 - `CLAUDE.md`
 - `.cursor/rules/truthmark.mdc`
@@ -142,7 +139,7 @@ Current agent-native scaffold targets include:
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 
-Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style skill indexers can parse every generated workflow surface. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style skill indexers can parse every generated workflow surface. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks and `TRUTHMARK.md` also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
 
 ## Check Result Data
 

@@ -102,6 +102,7 @@ describe("classifyPath", () => {
     expect(classifyPath(".truthmark/sync/report.md", [])).toBe("derived");
     expect(classifyPath(".codex/skills/truthmark-sync/SKILL.md", [])).toBe("derived");
     expect(classifyPath(".opencode/skills/truthmark-sync/SKILL.md", [])).toBe("derived");
+    expect(classifyPath("skills/truthmark-sync/SKILL.md", [])).toBe("markdown");
     expect(classifyPath(".cursor/rules/truthmark.mdc", [])).toBe("derived");
     expect(classifyPath(".github/copilot-instructions.md", [])).toBe("derived");
     expect(classifyPath("CLAUDE.md", [])).toBe("derived");

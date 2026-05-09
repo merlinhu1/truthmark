@@ -171,8 +171,7 @@ export const classifyPath = (
     normalizedPath === "AGENTS.md" ||
     normalizedPath === "CLAUDE.md" ||
     normalizedPath === "GEMINI.md" ||
-    normalizedPath.startsWith(".gemini/commands/truthmark/") ||
-    normalizedPath.startsWith("skills/truthmark-")
+    normalizedPath.startsWith(".gemini/commands/truthmark/")
   ) {
     return "derived";
   }

@@ -14,6 +14,6 @@ Use this source-checkout flow when changing Truthmark's own code, templates, or 
 
 ## What To Verify
 
-- If you edit `src/templates/**`, `src/agents/**`, or generated workflow renderers, rerun `npm run dev -- init` and review the diffs in `AGENTS.md`, `.codex/skills/`, and `skills/`.
+- If you edit `src/templates/**`, `src/agents/**`, or generated workflow renderers, rerun `npm run dev -- init` and review the diffs in `AGENTS.md`, `.codex/skills/`, and `.opencode/skills/`.
 - If you change behavior in `src/checks/**`, `src/init/**`, `src/sync/**`, or `src/realize/**`, run the relevant tests and `npm run dev -- check`.
 - Keep the public [README.md](README.md) user-facing; put contributor setup here.

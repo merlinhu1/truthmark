@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
 import { runConfig } from "../../src/config/command.js";
+import { TRUTHMARK_VERSION } from "../../src/version.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const initializeRepo = async (rootDir: string): Promise<void> => {
@@ -23,7 +24,11 @@ describe("runCheck", () => {
       const result = await runCheck(repo.rootDir);
 
       expect(result.command).toBe("check");
-      expect(result.diagnostics.filter((diagnostic) => diagnostic.severity === "error")).toEqual([]);
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) => diagnostic.severity === "error",
+        ),
+      ).toEqual([]);
     } finally {
       await repo.cleanup();
     }
@@ -35,11 +40,18 @@ describe("runCheck", () => {
     try {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
 
       const result = await runCheck(path.join(repo.rootDir, "src"));
 
-      expect(result.diagnostics.some((diagnostic) => diagnostic.category === "config")).toBe(false);
+      expect(
+        result.diagnostics.some(
+          (diagnostic) => diagnostic.category === "config",
+        ),
+      ).toBe(false);
     } finally {
       await repo.cleanup();
     }
@@ -59,7 +71,9 @@ describe("runCheck", () => {
       const result = await runCheck(repo.rootDir);
 
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.category === "links"),
+        result.diagnostics.some(
+          (diagnostic) => diagnostic.category === "links",
+        ),
       ).toBe(true);
     } finally {
       await repo.cleanup();
@@ -87,13 +101,17 @@ describe("runCheck", () => {
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "links" && diagnostic.file === "TRUTHMARK.md",
+            diagnostic.category === "links" &&
+            diagnostic.file === "TRUTHMARK.md",
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-outside-link.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-outside-link.md"),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -124,13 +142,17 @@ describe("runCheck", () => {
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "links" && diagnostic.file === "TRUTHMARK.md",
+            diagnostic.category === "links" &&
+            diagnostic.file === "TRUTHMARK.md",
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-symlink-link-target.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-symlink-link-target.md"),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -147,7 +169,9 @@ describe("runCheck", () => {
 
       expect(
         result.diagnostics.some(
-          (diagnostic) => diagnostic.category === "authority" && diagnostic.severity === "error",
+          (diagnostic) =>
+            diagnostic.category === "authority" &&
+            diagnostic.severity === "error",
         ),
       ).toBe(true);
     } finally {
@@ -201,9 +225,12 @@ realization:
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-outside-authority.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-outside-authority.md"),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -214,13 +241,23 @@ realization:
     try {
       await initializeRepo(repo.rootDir);
       await fs.writeFile(
-        path.resolve(repo.rootDir, "..", "truthmark-symlink-authority-target.md"),
+        path.resolve(
+          repo.rootDir,
+          "..",
+          "truthmark-symlink-authority-target.md",
+        ),
         "# Outside Authority\n",
         "utf8",
       );
-      await fs.mkdir(path.resolve(repo.rootDir, "docs", "custom"), { recursive: true });
+      await fs.mkdir(path.resolve(repo.rootDir, "docs", "custom"), {
+        recursive: true,
+      });
       await fs.symlink(
-        path.resolve(repo.rootDir, "..", "truthmark-symlink-authority-target.md"),
+        path.resolve(
+          repo.rootDir,
+          "..",
+          "truthmark-symlink-authority-target.md",
+        ),
         path.resolve(repo.rootDir, "docs", "custom", "outside-authority.md"),
       );
       await repo.writeFile(
@@ -251,9 +288,16 @@ realization:
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-symlink-authority-target.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(
+          repo.rootDir,
+          "..",
+          "truthmark-symlink-authority-target.md",
+        ),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -300,7 +344,10 @@ realization:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
       await repo.writeFile(
         "docs/features/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
@@ -319,7 +366,9 @@ Truth documents:
       const malformedResult = await runCheck(repo.rootDir);
 
       expect(
-        malformedResult.diagnostics.some((diagnostic) => diagnostic.category === "area-index"),
+        malformedResult.diagnostics.some(
+          (diagnostic) => diagnostic.category === "area-index",
+        ),
       ).toBe(true);
 
       await repo.writeFile(
@@ -342,7 +391,9 @@ Update truth when:
       const weakResult = await runCheck(repo.rootDir);
 
       expect(
-        weakResult.diagnostics.some((diagnostic) => diagnostic.category === "coverage"),
+        weakResult.diagnostics.some(
+          (diagnostic) => diagnostic.category === "coverage",
+        ),
       ).toBe(true);
     } finally {
       await repo.cleanup();
@@ -358,7 +409,10 @@ Update truth when:
         "docs/features/platform.md",
         "---\nstatus: active\n---\n\n# Platform\n",
       );
-      await repo.writeFile("cmd/server/main.go", "package main\n\nfunc main() {}\n");
+      await repo.writeFile(
+        "cmd/server/main.go",
+        "package main\n\nfunc main() {}\n",
+      );
       await repo.writeFile("scripts/task.py", "print('task')\n");
       await repo.writeFile(
         "src/App/Program.cs",
@@ -412,15 +466,39 @@ Update truth when:
         "docs/features/platform.md",
         "---\nstatus: active\n---\n\n# Platform\n",
       );
-      await repo.writeFile("infra/main.tf", 'resource "null_resource" "example" {}\n');
-      await repo.writeFile("k8s/deployment.yaml", "apiVersion: apps/v1\nkind: Deployment\n");
-      await repo.writeFile("api/openapi.yaml", "openapi: 3.1.0\ninfo:\n  title: API\n");
+      await repo.writeFile(
+        "infra/main.tf",
+        'resource "null_resource" "example" {}\n',
+      );
+      await repo.writeFile(
+        "k8s/deployment.yaml",
+        "apiVersion: apps/v1\nkind: Deployment\n",
+      );
+      await repo.writeFile(
+        "api/openapi.yaml",
+        "openapi: 3.1.0\ninfo:\n  title: API\n",
+      );
       await repo.writeFile("schema/user.graphql", "type User { id: ID! }\n");
-      await repo.writeFile("proto/user.proto", 'syntax = "proto3";\nmessage User {}\n');
-      await repo.writeFile("frontend/components/Login.tsx", "export const Login = () => null;\n");
-      await repo.writeFile(".github/workflows/ci.yml", "name: CI\non: [push]\n");
-      await repo.writeFile("apps/web/src/App.tsx", "export const App = () => null;\n");
-      await repo.writeFile("packages/auth/src/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "proto/user.proto",
+        'syntax = "proto3";\nmessage User {}\n',
+      );
+      await repo.writeFile(
+        "frontend/components/Login.tsx",
+        "export const Login = () => null;\n",
+      );
+      await repo.writeFile(
+        ".github/workflows/ci.yml",
+        "name: CI\non: [push]\n",
+      );
+      await repo.writeFile(
+        "apps/web/src/App.tsx",
+        "export const App = () => null;\n",
+      );
+      await repo.writeFile(
+        "packages/auth/src/session.ts",
+        "export const session = true;\n",
+      );
       await repo.writeFile(
         "docs/truthmark/areas.md",
         `# Truthmark Areas
@@ -519,8 +597,14 @@ Update truth when:
 - checkout behavior changes
 `,
       );
-      await repo.writeFile("docs/features/payments/checkout.md", "# Checkout\n");
-      await repo.writeFile("services/payments/checkout/handler.ts", "export const handler = () => 'ok';\n");
+      await repo.writeFile(
+        "docs/features/payments/checkout.md",
+        "# Checkout\n",
+      );
+      await repo.writeFile(
+        "services/payments/checkout/handler.ts",
+        "export const handler = () => 'ok';\n",
+      );
 
       const result = await runCheck(repo.rootDir);
 
@@ -544,8 +628,10 @@ Update truth when:
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         ".codex/skills/truthmark-sync/SKILL.md",
-        `${(await repo.readFile(".codex/skills/truthmark-sync/SKILL.md")).replace(
-          "truthmark-version: 1.2.0",
+        `${(
+          await repo.readFile(".codex/skills/truthmark-sync/SKILL.md")
+        ).replace(
+          `truthmark-version: ${TRUTHMARK_VERSION}`,
           "truthmark-version: 0.9.0",
         )}\n`,
       );
@@ -587,7 +673,8 @@ Update truth when:
       expect(
         result.diagnostics.filter(
           (diagnostic) =>
-            diagnostic.category === "generated-surface" && diagnostic.file === "AGENTS.md",
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === "AGENTS.md",
         ),
       ).toEqual([]);
     } finally {
@@ -647,7 +734,10 @@ realization:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("apps/web/src/unmapped.ts", "export const unmapped = true;\n");
+      await repo.writeFile(
+        "apps/web/src/unmapped.ts",
+        "export const unmapped = true;\n",
+      );
       const result = await runCheck(repo.rootDir);
 
       expect(result.data?.truthVisibility).toEqual(
@@ -673,7 +763,6 @@ realization:
       await repo.cleanup();
     }
   });
-
 
   it("returns area-index diagnostics for missing truth documents referenced by areas", async () => {
     const repo = await createTempRepo();
@@ -738,7 +827,8 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "area-index" && diagnostic.file === "src/typo/**",
+            diagnostic.category === "area-index" &&
+            diagnostic.file === "src/typo/**",
         ),
       ).toBe(true);
     } finally {
@@ -751,7 +841,10 @@ Update truth when:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
       await repo.writeFile(
         "docs/features/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
@@ -779,13 +872,15 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "area-index" && diagnostic.file === "src/stale/**",
+            diagnostic.category === "area-index" &&
+            diagnostic.file === "src/stale/**",
         ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "coverage" && diagnostic.file === "src/auth/session.ts",
+            diagnostic.category === "coverage" &&
+            diagnostic.file === "src/auth/session.ts",
         ),
       ).toBe(false);
     } finally {
@@ -798,14 +893,18 @@ Update truth when:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("docs/features/authentication.md", "# Authentication\n");
+      await repo.writeFile(
+        "docs/features/authentication.md",
+        "# Authentication\n",
+      );
 
       const recommendedResult = await runCheck(repo.rootDir);
 
       expect(
         recommendedResult.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "frontmatter" && diagnostic.severity === "review",
+            diagnostic.category === "frontmatter" &&
+            diagnostic.severity === "review",
         ),
       ).toBe(true);
 
@@ -833,7 +932,8 @@ realization:
       expect(
         requiredResult.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "frontmatter" && diagnostic.severity === "error",
+            diagnostic.category === "frontmatter" &&
+            diagnostic.severity === "error",
         ),
       ).toBe(true);
     } finally {
@@ -963,7 +1063,9 @@ Update truth when:
       const result = await runCheck(repo.rootDir);
 
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.category === "area-index"),
+        result.diagnostics.some(
+          (diagnostic) => diagnostic.category === "area-index",
+        ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
@@ -1011,7 +1113,8 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "area-index" && diagnostic.file === "../outside.md",
+            diagnostic.category === "area-index" &&
+            diagnostic.file === "../outside.md",
         ),
       ).toBe(true);
     } finally {
@@ -1029,7 +1132,9 @@ Update truth when:
         "---\nstatus: active\n---\n\n# Outside Area Doc\n",
         "utf8",
       );
-      await fs.mkdir(path.resolve(repo.rootDir, "docs", "custom"), { recursive: true });
+      await fs.mkdir(path.resolve(repo.rootDir, "docs", "custom"), {
+        recursive: true,
+      });
       await fs.symlink(
         path.resolve(repo.rootDir, "..", "truthmark-symlink-area-target.md"),
         path.resolve(repo.rootDir, "docs", "custom", "outside-area-doc.md"),
@@ -1061,9 +1166,12 @@ Update truth when:
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-symlink-area-target.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-symlink-area-target.md"),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -1105,9 +1213,12 @@ Update truth when:
         ),
       ).toBe(true);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-outside-shared.md"), {
-        force: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-outside-shared.md"),
+        {
+          force: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -1135,7 +1246,9 @@ Truth documents:
       const result = await runCheck(repo.rootDir);
 
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.category === "area-index"),
+        result.diagnostics.some(
+          (diagnostic) => diagnostic.category === "area-index",
+        ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
@@ -1161,7 +1274,10 @@ Truth documents:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
       await repo.writeFile(
         "docs/truthmark/areas.md",
         `# Truthmark Areas
@@ -1184,7 +1300,8 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "coverage" && diagnostic.file === "src/auth/session.ts",
+            diagnostic.category === "coverage" &&
+            diagnostic.file === "src/auth/session.ts",
         ),
       ).toBe(true);
     } finally {
@@ -1197,7 +1314,10 @@ Update truth when:
 
     try {
       await initializeRepo(repo.rootDir);
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
       await repo.writeFile(
         "docs/features/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
@@ -1235,7 +1355,8 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "coverage" && diagnostic.file === "src/auth/session.ts",
+            diagnostic.category === "coverage" &&
+            diagnostic.file === "src/auth/session.ts",
         ),
       ).toBe(false);
     } finally {
@@ -1252,8 +1373,14 @@ Update truth when:
         "docs/features/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
-      await repo.writeFile("src/generated/out.ts", "export const generated = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
+      await repo.writeFile(
+        "src/generated/out.ts",
+        "export const generated = true;\n",
+      );
       await repo.writeFile(
         ".truthmark/config.yml",
         `version: 1
@@ -1273,9 +1400,9 @@ realization:
   enabled: true
 `,
       );
-    await repo.writeFile(
-      "docs/truthmark/areas.md",
-      `# Truthmark Areas
+      await repo.writeFile(
+        "docs/truthmark/areas.md",
+        `# Truthmark Areas
 
   ## Authentication
 
@@ -1288,14 +1415,15 @@ realization:
   Update truth when:
   - authentication behavior changes
   `,
-    );
+      );
 
       const result = await runCheck(repo.rootDir);
 
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "coverage" && diagnostic.file === "src/generated/out.ts",
+            diagnostic.category === "coverage" &&
+            diagnostic.file === "src/generated/out.ts",
         ),
       ).toBe(false);
     } finally {
@@ -1307,7 +1435,11 @@ realization:
     const repo = await createTempRepo();
 
     try {
-      const outsideDir = path.resolve(repo.rootDir, "..", "truthmark-coverage-outside-dir");
+      const outsideDir = path.resolve(
+        repo.rootDir,
+        "..",
+        "truthmark-coverage-outside-dir",
+      );
 
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
@@ -1315,7 +1447,11 @@ realization:
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await fs.mkdir(outsideDir, { recursive: true });
-      await fs.writeFile(path.join(outsideDir, "outside.ts"), "export const outside = true;\n", "utf8");
+      await fs.writeFile(
+        path.join(outsideDir, "outside.ts"),
+        "export const outside = true;\n",
+        "utf8",
+      );
       await fs.mkdir(path.join(repo.rootDir, "src"), { recursive: true });
       await fs.symlink(outsideDir, path.join(repo.rootDir, "src", "external"));
       await repo.writeFile(
@@ -1340,20 +1476,25 @@ Update truth when:
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "area-index" && diagnostic.file === "src/external/**",
+            diagnostic.category === "area-index" &&
+            diagnostic.file === "src/external/**",
         ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
           (diagnostic) =>
-            diagnostic.category === "coverage" && diagnostic.file === "src/external/outside.ts",
+            diagnostic.category === "coverage" &&
+            diagnostic.file === "src/external/outside.ts",
         ),
       ).toBe(false);
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-coverage-outside-dir"), {
-        force: true,
-        recursive: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-coverage-outside-dir"),
+        {
+          force: true,
+          recursive: true,
+        },
+      );
       await repo.cleanup();
     }
   });

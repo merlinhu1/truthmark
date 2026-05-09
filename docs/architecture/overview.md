@@ -36,7 +36,7 @@ The durable surfaces are ordinary repository files:
 - canonical docs under `docs/`
 - the managed Truthmark block inside [AGENTS.md](../../AGENTS.md)
 - the generated Codex Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.codex/skills/`
-- the generated OpenCode Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `skills/` and `.opencode/skills/`
+- the generated OpenCode Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.opencode/skills/`
 - configured platform instruction files such as [AGENTS.md](../../AGENTS.md), `CLAUDE.md`, `.cursor/rules/truthmark.mdc`, `.github/copilot-instructions.md`, and `GEMINI.md`
 - Gemini custom command surfaces under `.gemini/commands/truthmark/*.toml`
 
@@ -74,7 +74,7 @@ Key implementation surfaces:
 Truthmark also contains support primitives for the installed Truth Structure, Truth Sync, Truth Realize, and Truth Check workflows:
 
 - `src/agents/*` renders the installed instruction text used in the managed AGENTS block
-- `src/templates/codex-skills.ts` renders the generated Codex skills and repo-local skills for explicit workflow invocation
+- `src/templates/codex-skills.ts` renders the generated Codex and OpenCode skills for explicit workflow invocation
 - `src/sync/*` classifies functional-code paths and renders Truth Sync reports
 - `src/realize/report.ts` renders the Truth Realize completion report shape
 

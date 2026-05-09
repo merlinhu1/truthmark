@@ -100,14 +100,20 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-skills/truthmark-structure/SKILL.md
-skills/truthmark-sync/SKILL.md
-skills/truthmark-realize/SKILL.md
-skills/truthmark-check/SKILL.md
+.codex/skills/truthmark-structure/SKILL.md
+.codex/skills/truthmark-sync/SKILL.md
+.codex/skills/truthmark-realize/SKILL.md
+.codex/skills/truthmark-check/SKILL.md
+.opencode/skills/truthmark-structure/SKILL.md
+.opencode/skills/truthmark-sync/SKILL.md
+.opencode/skills/truthmark-realize/SKILL.md
+.opencode/skills/truthmark-check/SKILL.md
 ```
 
 如果你在 `.truthmark/config.yml` 中启用更多平台，Truthmark 会在下一次 `init` 时刷新对应的受管载体。
 默认脚手架把功能 `README.md` 作为索引，并把当前行为事实放在有边界的叶子文档中，例如 `docs/features/repository/overview.md`。
+
+现有仓库通常需要在 `init` 之后做一次清理：当生成的 `repository` 路由过宽、所有权跨越多个产品或服务，或路由文件仍指向占位文档时，运行已安装的 Truth Structure 工作流。Truth Structure 会拆分过宽的路由，创建或修复初始的规范事实文档，并在功能代码工作开始前为 Truth Sync 提供精确目标。Codex 用户可以用 `/truthmark-structure` 或 `$truthmark-structure` 调用它；OpenCode 风格的宿主可以用 `/skill truthmark-structure` 调用它。
 
 ## 它如何运行
 

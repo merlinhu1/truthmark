@@ -30,7 +30,7 @@ Treat [AGENTS.md](../../AGENTS.md) as two surfaces:
 
 Do not hand-edit the managed block for one-off wording changes. Change the template source instead, then refresh the block through the normal workflow.
 
-Generated Truthmark skill files under `.codex/skills/` and `skills/` follow the same rule. Edit the renderers in `src/agents/` and `src/templates/`, then refresh through `truthmark init`.
+Generated Truthmark skill files under `.codex/skills/` and `.opencode/skills/` follow the same rule. Edit the renderers in `src/agents/` and `src/templates/`, then refresh through `truthmark init`.
 
 ## Maintaining docs/truthmark/areas.md
 

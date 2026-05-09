@@ -100,14 +100,20 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-skills/truthmark-structure/SKILL.md
-skills/truthmark-sync/SKILL.md
-skills/truthmark-realize/SKILL.md
-skills/truthmark-check/SKILL.md
+.codex/skills/truthmark-structure/SKILL.md
+.codex/skills/truthmark-sync/SKILL.md
+.codex/skills/truthmark-realize/SKILL.md
+.codex/skills/truthmark-check/SKILL.md
+.opencode/skills/truthmark-structure/SKILL.md
+.opencode/skills/truthmark-sync/SKILL.md
+.opencode/skills/truthmark-realize/SKILL.md
+.opencode/skills/truthmark-check/SKILL.md
 ```
 
 Wenn du zusätzliche Plattformen in `.truthmark/config.yml` aktivierst, aktualisiert Truthmark die entsprechenden verwalteten Flächen beim nächsten `init`.
 Die standardmäßig erzeugte Struktur verwendet `README.md`-Dateien von Features als Indizes und beginnt die Wahrheit über aktuelles Verhalten in begrenzten Blattdokumenten wie `docs/features/repository/overview.md`.
+
+Bestehende Repositories brauchen nach `init` meist einen Aufräumschritt: Führe den installierten Truth-Structure-Workflow aus, wenn die erzeugte `repository`-Route zu breit ist, Ownership mehrere Produkte oder Services umfasst oder Routendateien noch auf Platzhalterdokumente zeigen. Truth Structure teilt breite Routings auf, erstellt oder repariert erste kanonische Wahrheitsdokumente und gibt Truth Sync präzise Ziele, bevor funktionale Codearbeit beginnt. Codex-Nutzer können ihn mit `/truthmark-structure` oder `$truthmark-structure` aufrufen; Hosts im OpenCode-Stil können `/skill truthmark-structure` verwenden.
 
 ## Wie es läuft
 

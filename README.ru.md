@@ -100,14 +100,20 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-skills/truthmark-structure/SKILL.md
-skills/truthmark-sync/SKILL.md
-skills/truthmark-realize/SKILL.md
-skills/truthmark-check/SKILL.md
+.codex/skills/truthmark-structure/SKILL.md
+.codex/skills/truthmark-sync/SKILL.md
+.codex/skills/truthmark-realize/SKILL.md
+.codex/skills/truthmark-check/SKILL.md
+.opencode/skills/truthmark-structure/SKILL.md
+.opencode/skills/truthmark-sync/SKILL.md
+.opencode/skills/truthmark-realize/SKILL.md
+.opencode/skills/truthmark-check/SKILL.md
 ```
 
 Если вы включите дополнительные платформы в `.truthmark/config.yml`, Truthmark обновит соответствующие управляемые поверхности при следующем `init`.
 Стандартная шаблонная структура использует `README.md` функциональных разделов как индексы и начинает описывать истину текущего поведения в ограниченных листовых документах, например `docs/features/repository/overview.md`.
+
+Существующим репозиториям обычно нужен один этап очистки после `init`: запустите установленный рабочий процесс Truth Structure, если созданный маршрут `repository` слишком широкий, владение охватывает несколько продуктов или сервисов, либо файлы маршрутов все еще указывают на документы-заглушки. Truth Structure разделяет широкие маршруты, создает или исправляет начальные канонические документы истины и дает Truth Sync точные цели до начала работы с функциональным кодом. Пользователи Codex могут вызвать его через `/truthmark-structure` или `$truthmark-structure`; хосты в стиле OpenCode могут использовать `/skill truthmark-structure`.
 
 ## Как он работает
 
@@ -147,7 +153,7 @@ Truthmark намеренно держит постоянную рабочую п
 - `docs/truthmark/areas.md` для корневого индекса маршрутов
 - `docs/truthmark/areas/**/*.md` для делегированных дочерних файлов маршрутов
 - управляемые блоки инструкций для настроенных платформ, таких как `AGENTS.md`, `CLAUDE.md`, правила Cursor, инструкции Copilot и `GEMINI.md`
-- Codex- и repo-local skills для Truth Structure, Truth Sync, Truth Realize и Truth Check
+- Codex- и OpenCode skills для Truth Structure, Truth Sync, Truth Realize и Truth Check
 
 Установленные рабочие поверхности и есть среда выполнения:
 

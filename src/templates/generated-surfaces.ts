@@ -127,12 +127,9 @@ const filesForPlatform = (
     case "codex":
       return codexFiles(config);
     case "opencode":
-      return [
-        ...workflowSkillFiles("skills", config),
-        ...workflowSkillFiles(".opencode/skills", config),
-      ];
+      return workflowSkillFiles(".opencode/skills", config);
     case "claude-code":
-      return instructionBlockFiles([...config.instructionTargets, "CLAUDE.md"], block);
+      return instructionBlockFiles(["CLAUDE.md"], block);
     case "cursor":
       return instructionBlockFiles([".cursor/rules/truthmark.mdc"], block);
     case "github-copilot":
@@ -168,7 +165,10 @@ export const renderGeneratedSurfaces = (
   config: TruthmarkConfig,
   block = renderAgentsBlock(config),
 ): GeneratedSurface[] => {
-  const files = config.platforms.flatMap((platform) => filesForPlatform(platform, config, block));
+  const files = [
+    ...instructionBlockFiles(config.instructionTargets, block),
+    ...config.platforms.flatMap((platform) => filesForPlatform(platform, config, block)),
+  ];
 
   return Array.from(new Map(files.map((file) => [file.path, file])).values()).sort((left, right) =>
     left.path.localeCompare(right.path),

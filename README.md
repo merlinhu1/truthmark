@@ -36,12 +36,12 @@ For tech leads, the value is governance without theater: tests, code review, and
 
 Truthmark is not trying to replace every other AI workflow tool. It sits in a specific layer of the stack:
 
-| If you need | Best fit |
-| --- | --- |
-| Better results from a single coding session | Better prompts and tighter task framing |
-| Convenience across sessions for one agent or one operator | Memory tools |
-| Spec-first planning for new features | Spec tools such as Spec Kit |
-| Branch-scoped, reviewable repository truth that travels with the code | Truthmark |
+| If you need                                                           | Best fit                                |
+| --------------------------------------------------------------------- | --------------------------------------- |
+| Better results from a single coding session                           | Better prompts and tighter task framing |
+| Convenience across sessions for one agent or one operator             | Memory tools                            |
+| Spec-first planning for new features                                  | Spec tools such as Spec Kit             |
+| Branch-scoped, reviewable repository truth that travels with the code | Truthmark                               |
 
 The point is not that prompts, memory, or specs are useless. The point is that none of them, by themselves, turn repository truth into a committed, inspectable asset that survives handoffs, review, and branch divergence.
 
@@ -109,19 +109,25 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-skills/truthmark-structure/SKILL.md
-skills/truthmark-sync/SKILL.md
-skills/truthmark-realize/SKILL.md
-skills/truthmark-check/SKILL.md
+.codex/skills/truthmark-structure/SKILL.md
+.codex/skills/truthmark-sync/SKILL.md
+.codex/skills/truthmark-realize/SKILL.md
+.codex/skills/truthmark-check/SKILL.md
+.opencode/skills/truthmark-structure/SKILL.md
+.opencode/skills/truthmark-sync/SKILL.md
+.opencode/skills/truthmark-realize/SKILL.md
+.opencode/skills/truthmark-check/SKILL.md
 ```
 
 If you enable additional platforms in `.truthmark/config.yml`, Truthmark refreshes the corresponding managed surfaces on the next `init`.
 
 The default scaffold keeps feature `README.md` files as indexes and starts current behavior truth in bounded leaf docs such as `docs/features/repository/overview.md`.
 
-Truthmark does not specify which subagent should run Truth Sync. The acting agent and host environment decide whether to delegate or run the workflow inline.
+Existing repositories usually need one cleanup pass after `init`: run the installed Truth Structure workflow when the generated `repository` route is too broad, ownership spans multiple products or services, or route files still point at placeholder docs. Truth Structure splits broad routing, creates or repairs starter canonical truth docs, and gives Truth Sync precise destinations before functional-code work begins. Codex users can invoke it with `/truthmark-structure` or `$truthmark-structure`; OpenCode-style hosts can invoke `/skill truthmark-structure`.
 
 ## How it runs
+
+Truthmark does not specify which subagent should run Truth Sync. The acting agent and host environment decide whether to delegate or run the workflow inline.
 
 ### Normal code changes
 
@@ -165,7 +171,7 @@ Truthmark keeps the durable workflow surface small:
 - `docs/truthmark/areas.md` for the root route index
 - `docs/truthmark/areas/**/*.md` for delegated child route files
 - managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Cursor rules, Copilot instructions, and `GEMINI.md`
-- Codex and repo-local skills for Truth Structure, Truth Sync, Truth Realize, and Truth Check
+- Codex and OpenCode skills for Truth Structure, Truth Sync, Truth Realize, and Truth Check
 
 The installed workflow surfaces are the runtime:
 

@@ -3,7 +3,7 @@ name: truthmark-sync
 description: Use automatically before finishing when functional code changed since the last successful Truth Sync, and when the user explicitly invokes /truthmark-sync, $truthmark-sync, or /truthmark:sync. Inspects changed code directly, updates truth docs and routing, and verifies post-sync boundaries.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.2.0
+truthmark-version: 1.2.1
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.

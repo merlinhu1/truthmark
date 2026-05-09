@@ -100,14 +100,20 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-skills/truthmark-structure/SKILL.md
-skills/truthmark-sync/SKILL.md
-skills/truthmark-realize/SKILL.md
-skills/truthmark-check/SKILL.md
+.codex/skills/truthmark-structure/SKILL.md
+.codex/skills/truthmark-sync/SKILL.md
+.codex/skills/truthmark-realize/SKILL.md
+.codex/skills/truthmark-check/SKILL.md
+.opencode/skills/truthmark-structure/SKILL.md
+.opencode/skills/truthmark-sync/SKILL.md
+.opencode/skills/truthmark-realize/SKILL.md
+.opencode/skills/truthmark-check/SKILL.md
 ```
 
 Si habilitas plataformas adicionales en `.truthmark/config.yml`, Truthmark actualizará las superficies administradas correspondientes en el siguiente `init`.
 La estructura generada por defecto usa los `README.md` de funciones como índices y empieza la verdad sobre el comportamiento actual en documentos hoja acotados, como `docs/features/repository/overview.md`.
+
+Los repositorios existentes suelen necesitar una pasada de limpieza después de `init`: ejecuta el flujo instalado Truth Structure cuando la ruta `repository` generada sea demasiado amplia, la propiedad abarque varios productos o servicios, o los archivos de rutas sigan apuntando a documentos de marcador de posición. Truth Structure divide rutas amplias, crea o repara documentos de verdad canónica iniciales y da a Truth Sync destinos precisos antes de que empiece el trabajo de código funcional. Los usuarios de Codex pueden invocarlo con `/truthmark-structure` o `$truthmark-structure`; los hosts de estilo OpenCode pueden usar `/skill truthmark-structure`.
 
 ## Cómo se ejecuta
 

@@ -3,7 +3,7 @@ name: truthmark-structure
 description: Use when the user asks to design, repair, or refresh Truthmark area routing. Inspects the repository directly, updates docs/truthmark/areas.md, and may create starter canonical truth docs.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 1.2.0
+truthmark-version: 1.2.1
 ---
 
 Use this skill to design or repair Truthmark area structure.
@@ -15,6 +15,8 @@ Truth Structure is agent-native:
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair docs/truthmark/areas.md
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
+- Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
+- Starter truth docs must include ## Product Decisions and ## Rationale sections.
 - use docs/features/**, docs/architecture/**, or docs/standards/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs
 - keep active Product Decisions and Rationale in the canonical doc that owns the behavior
@@ -46,6 +48,8 @@ Repair rules:
 - keep API endpoint details in the nearest contract truth doc when such a doc exists
 - update routing so future Truth Sync can target small docs
 - preserve existing authored docs; move or rewrite only when needed to remove ambiguity
+- Do not finish topology repair with routed canonical current-truth docs missing Product Decisions or Rationale sections.
+- If an existing canonical doc lacks either section, add the missing heading beside Current Behavior with a concise current-state placeholder or active decision.
 Portable fallback:
 - If this skill surface is unavailable, perform the same workflow directly from committed repository files.
 - Do not require the truthmark CLI.
