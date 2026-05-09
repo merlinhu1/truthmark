@@ -1,0 +1,41 @@
+version: 1
+platforms:
+  - codex
+  - opencode
+  - claude-code
+docs:
+  layout: hierarchical
+  roots:
+    ai: docs/ai
+    standards: docs/standards
+    architecture: docs/architecture
+    features: docs/features
+  routing:
+    root_index: docs/truthmark/areas.md
+    area_files_root: docs/truthmark/areas
+    default_area: repository
+    max_delegation_depth: 1
+authority:
+  - TRUTHMARK.md
+  - docs/truthmark/areas.md
+  - docs/truthmark/areas/**/*.md
+  - docs/ai/**/*.md
+  - docs/standards/**/*.md
+  - docs/architecture/**/*.md
+  - docs/features/**/*.md
+instruction_targets:
+  - AGENTS.md
+frontmatter:
+  required: []
+  recommended:
+    - status
+    - doc_type
+    - last_reviewed
+    - source_of_truth
+ignore:
+  - node_modules/**
+  - vendor/**
+  - dist/**
+  - build/**
+realization:
+  enabled: true

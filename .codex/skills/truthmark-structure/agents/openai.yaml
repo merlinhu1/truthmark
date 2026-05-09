@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Structure"
+  short_description: "Design or repair Truthmark area routing"
+  default_prompt: "Use $truthmark-structure to design or repair Truthmark area routing."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "1.2.0"
+  refresh_command: "truthmark init"

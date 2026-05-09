@@ -1,0 +1,44 @@
+{
+  "name": "truthmark",
+  "version": "1.2.0",
+  "description": "Git-native, branch-scoped truth workflow installer for local AI coding agents.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "truthmark": "dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "commander": "^14.0.1",
+    "execa": "^9.6.0",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
+    "micromatch": "^4.0.8",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^24.9.1",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
+}

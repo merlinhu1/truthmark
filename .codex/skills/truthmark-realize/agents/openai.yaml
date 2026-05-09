@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Realize"
+  short_description: "Realize truth docs into code"
+  default_prompt: "Use $truthmark-realize to realize the updated truth docs into code."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "1.2.0"
+  refresh_command: "truthmark init"

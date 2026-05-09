@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Check"
+  short_description: "Audit repository truth health"
+  default_prompt: "Use $truthmark-check to audit repository truth health."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "1.2.0"
+  refresh_command: "truthmark init"
