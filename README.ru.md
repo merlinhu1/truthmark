@@ -70,10 +70,10 @@ Truthmark превращает истину репозитория в явную
 
 ```bash
 cd /path/to/your-repo
-npm install -D truthmark
-npx truthmark config
-npx truthmark init
-npx truthmark check
+npm install -g truthmark
+truthmark config
+truthmark init
+truthmark check
 ```
 
 Если вы хотите попробовать еще не выпущенные изменения из исходного checkout:

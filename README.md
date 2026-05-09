@@ -4,6 +4,8 @@
 
 English | [Deutsch](README.de.md) | [中文](README.zh.md) | [Español](README.es.md) | [Русский](README.ru.md)
 
+![Truthmark overview](docs/assets/truthmark-overview.png)
+
 AI coding agents are already good at writing code. They are still bad at reliably reconstructing product intent, architecture boundaries, and repository ownership from stale docs, scattered chats, and ephemeral tool memory.
 
 Truthmark fixes that by turning branch-local repository truth into a first-class runtime surface for agents. It installs a Git-native, branch-scoped truth layer directly inside the repo, gives agents explicit routing and workflow boundaries, and makes that truth move with the code that actually ships.
@@ -76,10 +78,10 @@ Install Truthmark in the repository you want to initialize:
 
 ```bash
 cd /path/to/your-repo
-npm install -D truthmark
-npx truthmark config
-npx truthmark init
-npx truthmark check
+npm install -g truthmark
+truthmark config
+truthmark init
+truthmark check
 ```
 
 If you want to try unreleased changes from a source checkout instead:

@@ -70,10 +70,10 @@ Installiere Truthmark in dem Repository, das du initialisieren möchtest:
 
 ```bash
 cd /path/to/your-repo
-npm install -D truthmark
-npx truthmark config
-npx truthmark init
-npx truthmark check
+npm install -g truthmark
+truthmark config
+truthmark init
+truthmark check
 ```
 
 Wenn du stattdessen unveröffentlichte Änderungen aus einem Source-Checkout ausprobieren möchtest:
