@@ -7,7 +7,7 @@ truthmark-version: 1.2.1
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
-Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Gemini CLI /truthmark:sync.
+Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
 Explicit invocation runs immediately. Later functional-code changes reopen the finish-time requirement, and an earlier explicit run satisfies the finish gate only if no later functional-code changes occur.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.

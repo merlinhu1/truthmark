@@ -24,7 +24,7 @@ realization:
       expect(result.diagnostics).toEqual([]);
       expect(result.config).toMatchObject({
         version: 1,
-        platforms: ["codex", "opencode", "claude-code"],
+        platforms: ["codex", "opencode", "claude-code", "github-copilot", "gemini-cli"],
         authority: ["TRUTHMARK.md"],
         docs: {
           layout: "hierarchical",
@@ -64,7 +64,7 @@ instruction_targets:
   - AGENTS.md
 platforms:
   - codex
-  - cursor
+  - github-copilot
 frontmatter:
   required: []
   recommended:
@@ -79,7 +79,7 @@ realization:
       const result = await loadConfig(repo.rootDir);
 
       expect(result.diagnostics).toEqual([]);
-      expect(result.config?.platforms).toEqual(["codex", "cursor"]);
+      expect(result.config?.platforms).toEqual(["codex", "github-copilot"]);
       expect(result.config?.instructionTargets).toEqual(["AGENTS.md"]);
       expect(result.config?.frontmatter.recommended).toEqual(["status"]);
       expect(result.config?.ignore).toEqual(["dist/**"]);

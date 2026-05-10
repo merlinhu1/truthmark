@@ -12,7 +12,7 @@ const renderMarkdownExample = (content: string): string => {
 };
 
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Gemini CLI /truthmark:check.";
+  "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.";
 
 export const renderTruthCheckReportExample = (): string => {
   return `Truth Check: completed

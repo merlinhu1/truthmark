@@ -13,7 +13,7 @@ export const renderTruthmarkTemplate = (): string => {
   return `---
 status: active
 doc_type: workflow-contract
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-10
 source_of_truth:
   - .truthmark/config.yml
 ---
@@ -24,19 +24,9 @@ Markdown in the current checkout is authoritative for this branch.
 
 Installed workflow surfaces include a Truthmark ${TRUTHMARK_VERSION} version marker. After upgrading Truthmark, rerun \`truthmark init\` and review generated workflow diffs.
 
-Truth Sync runs automatically before finishing when functional code changes exist, and updates truth docs.
+Workflow runtime lives in installed skills and managed instruction blocks. Agents inspect the checkout directly; \`truthmark check\` is optional validation.
 
-Truth Sync can also be invoked explicitly through installed truthmark-sync skill surfaces.
-
-Truth Structure designs or repairs docs/truthmark/areas.md through installed truthmark-structure skill surfaces.
-
-Truth Realize is manual and updates code to match truth docs.
-
-Truth Check audits repository truth health through installed truthmark-check skill surfaces.
-
-Truth Sync may create or extend mapped truth docs when implementation would otherwise remain undocumented.
-
-Truth Realize never edits truth docs.
+Truth Sync follows code; Truth Realize follows docs. Truth Sync may update mapped truth docs; Truth Realize never edits truth docs or routing.
 `;
 };
 

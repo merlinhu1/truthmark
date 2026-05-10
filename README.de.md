@@ -100,20 +100,12 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-.codex/skills/truthmark-structure/SKILL.md
-.codex/skills/truthmark-sync/SKILL.md
-.codex/skills/truthmark-realize/SKILL.md
-.codex/skills/truthmark-check/SKILL.md
-.opencode/skills/truthmark-structure/SKILL.md
-.opencode/skills/truthmark-sync/SKILL.md
-.opencode/skills/truthmark-realize/SKILL.md
-.opencode/skills/truthmark-check/SKILL.md
 ```
 
-Wenn du zusätzliche Plattformen in `.truthmark/config.yml` aktivierst, aktualisiert Truthmark die entsprechenden verwalteten Flächen beim nächsten `init`.
+Unterstützte Plattformen sind `codex`, `opencode`, `claude-code`, `github-copilot` und `gemini-cli`. Die Standardkonfiguration enthält alle davon; entferne Plattformen, die du nicht nutzt, aus `.truthmark/config.yml`, bevor du `truthmark init` erneut ausführst.
 Die standardmäßig erzeugte Struktur verwendet `README.md`-Dateien von Features als Indizes und beginnt die Wahrheit über aktuelles Verhalten in begrenzten Blattdokumenten wie `docs/features/repository/overview.md`.
 
-Bestehende Repositories brauchen nach `init` meist einen Aufräumschritt: Führe den installierten Truth-Structure-Workflow aus, wenn die erzeugte `repository`-Route zu breit ist, Ownership mehrere Produkte oder Services umfasst oder Routendateien noch auf Platzhalterdokumente zeigen. Truth Structure teilt breite Routings auf, erstellt oder repariert erste kanonische Wahrheitsdokumente und gibt Truth Sync präzise Ziele, bevor funktionale Codearbeit beginnt. Codex-Nutzer können ihn mit `/truthmark-structure` oder `$truthmark-structure` aufrufen; Hosts im OpenCode-Stil können `/skill truthmark-structure` verwenden.
+Bestehende Repositories brauchen nach `init` meist einen Aufräumschritt: Führe den installierten Truth-Structure-Workflow aus, wenn die erzeugte `repository`-Route zu breit ist, Ownership mehrere Produkte oder Services umfasst oder Routendateien noch auf Platzhalterdokumente zeigen. Truth Structure teilt breite Routings auf, erstellt oder repariert erste kanonische Wahrheitsdokumente und gibt Truth Sync präzise Ziele, bevor funktionale Codearbeit beginnt. Codex, Claude Code und unterstützte Copilot-IDEs können ihn mit `/truthmark-structure` aufrufen; Hosts im OpenCode-Stil können `/skill truthmark-structure` verwenden.
 
 ## Wie es läuft
 
@@ -129,7 +121,7 @@ Arbeit committen oder übergeben
 ```
 
 Truth Sync ist code-first: Code führt, Wahrheitsdokumente folgen, und Truth Sync darf funktionalen Code nicht umschreiben. Seine Hauptaufgabe ist eine automatische Abschlusskontrolle, wenn funktionaler Code geändert wurde. Direkte Aufrufe sind vor allem für Fehlersuche, frühe Synchronisierung vor einer Übergabe oder bewusstes Ausführen des Workflows gedacht.
-Codex-Nutzer können es mit `/truthmark-sync` oder `$truthmark-sync` aufrufen. Hosts im OpenCode-Stil können `/skill truthmark-sync` verwenden.
+Codex, Claude Code und unterstützte Copilot-IDEs können es mit `/truthmark-sync` aufrufen. Hosts im OpenCode-Stil können `/skill truthmark-sync` verwenden.
 Nutze diesen Ablauf, wenn eine Produkt- oder Architekturentscheidung in der Dokumentation beginnt:
 
 ```text
@@ -142,7 +134,7 @@ Arbeit committen oder übergeben
 ```
 
 Truth Realize ist manuell und doc-first: Wahrheitsdokumente führen, Code folgt, und der Agent darf die Wahrheitsdokumente, die er realisiert, nicht bearbeiten.
-Codex-Nutzer können es mit `/truthmark-realize` oder `$truthmark-realize` aufrufen. Hosts im OpenCode-Stil können `/skill truthmark-realize` verwenden.
+Codex, Claude Code und unterstützte Copilot-IDEs können es mit `/truthmark-realize` aufrufen. Hosts im OpenCode-Stil können `/skill truthmark-realize` verwenden.
 
 ## Was es installiert
 
@@ -152,8 +144,8 @@ Truthmark hält die dauerhafte Workflow-Fläche klein:
 - `TRUTHMARK.md` für den branch-lokalen Workflow-Vertrag
 - `docs/truthmark/areas.md` für den Root-Routenindex
 - `docs/truthmark/areas/**/*.md` für delegierte untergeordnete Routendateien
-- verwaltete Instruktionsblöcke für konfigurierte Plattformen wie `AGENTS.md`, `CLAUDE.md`, Cursor-Regeln, Copilot-Anweisungen und `GEMINI.md`
-- Codex- und repo-lokale Skills für Truth Structure, Truth Sync, Truth Realize und Truth Check
+- verwaltete Instruktionsblöcke für konfigurierte Plattformen wie `AGENTS.md`, `CLAUDE.md`, Copilot-Anweisungen und `GEMINI.md`
+- host-native Skills, Prompts oder Commands für Truth Structure, Truth Sync, Truth Realize und Truth Check
 
 Die installierten Workflow-Flächen sind die Runtime:
 

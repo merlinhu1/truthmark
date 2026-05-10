@@ -100,20 +100,12 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-.codex/skills/truthmark-structure/SKILL.md
-.codex/skills/truthmark-sync/SKILL.md
-.codex/skills/truthmark-realize/SKILL.md
-.codex/skills/truthmark-check/SKILL.md
-.opencode/skills/truthmark-structure/SKILL.md
-.opencode/skills/truthmark-sync/SKILL.md
-.opencode/skills/truthmark-realize/SKILL.md
-.opencode/skills/truthmark-check/SKILL.md
 ```
 
-Si habilitas plataformas adicionales en `.truthmark/config.yml`, Truthmark actualizará las superficies administradas correspondientes en el siguiente `init`.
+Las plataformas compatibles son `codex`, `opencode`, `claude-code`, `github-copilot` y `gemini-cli`. La configuración predeterminada las incluye todas; elimina de `.truthmark/config.yml` las plataformas que no uses antes de volver a ejecutar `truthmark init`.
 La estructura generada por defecto usa los `README.md` de funciones como índices y empieza la verdad sobre el comportamiento actual en documentos hoja acotados, como `docs/features/repository/overview.md`.
 
-Los repositorios existentes suelen necesitar una pasada de limpieza después de `init`: ejecuta el flujo instalado Truth Structure cuando la ruta `repository` generada sea demasiado amplia, la propiedad abarque varios productos o servicios, o los archivos de rutas sigan apuntando a documentos de marcador de posición. Truth Structure divide rutas amplias, crea o repara documentos de verdad canónica iniciales y da a Truth Sync destinos precisos antes de que empiece el trabajo de código funcional. Los usuarios de Codex pueden invocarlo con `/truthmark-structure` o `$truthmark-structure`; los hosts de estilo OpenCode pueden usar `/skill truthmark-structure`.
+Los repositorios existentes suelen necesitar una pasada de limpieza después de `init`: ejecuta el flujo instalado Truth Structure cuando la ruta `repository` generada sea demasiado amplia, la propiedad abarque varios productos o servicios, o los archivos de rutas sigan apuntando a documentos de marcador de posición. Truth Structure divide rutas amplias, crea o repara documentos de verdad canónica iniciales y da a Truth Sync destinos precisos antes de que empiece el trabajo de código funcional. Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-structure`; los hosts de estilo OpenCode pueden usar `/skill truthmark-structure`.
 
 ## Cómo se ejecuta
 
@@ -129,7 +121,7 @@ se confirma o se entrega el trabajo
 ```
 
 Truth Sync es code-first: el código lidera, los documentos de verdad siguen, y Truth Sync no debe reescribir código funcional. Su tarea principal es actuar como salvaguarda automática al cierre cuando cambió código funcional. La invocación directa se usa sobre todo para depurar, forzar una sincronización temprana antes de entregar el trabajo o ejecutar el flujo de forma intencional.
-Los usuarios de Codex pueden invocarlo con `/truthmark-sync` o `$truthmark-sync`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-sync`.
+Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-sync`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-sync`.
 Usa este flujo cuando una decisión de producto o arquitectura empieza en la documentación:
 
 ```text
@@ -142,7 +134,7 @@ se confirma o se entrega el trabajo
 ```
 
 Truth Realize es manual y doc-first: los documentos de verdad lideran, el código sigue, y el agente no debe editar los documentos de verdad que está realizando.
-Los usuarios de Codex pueden invocarlo con `/truthmark-realize` o `$truthmark-realize`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-realize`.
+Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-realize`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-realize`.
 
 ## Qué instala
 
@@ -152,8 +144,8 @@ Truthmark mantiene pequeña la superficie duradera de flujo de trabajo:
 - `TRUTHMARK.md` para el contrato de flujo de trabajo local a la rama
 - `docs/truthmark/areas.md` para el índice raíz de rutas
 - `docs/truthmark/areas/**/*.md` para archivos de rutas secundarias delegadas
-- bloques de instrucciones administrados para plataformas configuradas como `AGENTS.md`, `CLAUDE.md`, reglas de Cursor, instrucciones de Copilot y `GEMINI.md`
-- skills locales del repositorio y de Codex para Truth Structure, Truth Sync, Truth Realize y Truth Check
+- bloques de instrucciones administrados para plataformas configuradas como `AGENTS.md`, `CLAUDE.md`, instrucciones de Copilot y `GEMINI.md`
+- skills, prompts o comandos nativos del host para Truth Structure, Truth Sync, Truth Realize y Truth Check
 
 Las superficies de flujo de trabajo instaladas son el entorno de ejecución:
 

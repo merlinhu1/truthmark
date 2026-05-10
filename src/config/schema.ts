@@ -4,14 +4,19 @@ export const SUPPORTED_PLATFORMS = [
   "codex",
   "opencode",
   "claude-code",
-  "cursor",
   "github-copilot",
   "gemini-cli",
 ] as const;
 
 export type TruthmarkPlatform = (typeof SUPPORTED_PLATFORMS)[number];
 
-export const DEFAULT_PLATFORMS = ["codex", "opencode", "claude-code"] as const satisfies
+export const DEFAULT_PLATFORMS = [
+  "codex",
+  "opencode",
+  "claude-code",
+  "github-copilot",
+  "gemini-cli",
+] as const satisfies
   readonly TruthmarkPlatform[];
 
 export type RawDocsHierarchyConfig = {

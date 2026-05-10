@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: feature
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-10
 source_of_truth:
   - ../../src/config/schema.ts
   - ../../src/checks/check.ts
@@ -24,7 +24,7 @@ Truthmark loads `.truthmark/config.yml` and validates it against the current sch
 Current fields:
 
 - `version`: must be `1`
-- `platforms`: optional list of agent harnesses to initialize; defaults to `codex`, `opencode`, and `claude-code`
+- `platforms`: optional list of agent harnesses to initialize; defaults to all supported platforms
 - `docs.layout`: currently `hierarchical`
 - `docs.roots`: named canonical doc roots
 - `docs.routing.root_index`: root area index path
@@ -53,7 +53,6 @@ Supported `platforms` values are:
 - `codex`
 - `opencode`
 - `claude-code`
-- `cursor`
 - `github-copilot`
 - `gemini-cli`
 
@@ -125,21 +124,28 @@ Current agent-native scaffold targets include:
 - `.codex/skills/truthmark-realize/agents/openai.yaml`
 - `.codex/skills/truthmark-check/SKILL.md`
 - `.codex/skills/truthmark-check/agents/openai.yaml`
+- `.claude/skills/truthmark-structure/SKILL.md`
+- `.claude/skills/truthmark-sync/SKILL.md`
+- `.claude/skills/truthmark-realize/SKILL.md`
+- `.claude/skills/truthmark-check/SKILL.md`
 - `.opencode/skills/truthmark-structure/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
 - `AGENTS.md`
 - `CLAUDE.md`
-- `.cursor/rules/truthmark.mdc`
 - `.github/copilot-instructions.md`
+- `.github/prompts/truthmark-structure.prompt.md`
+- `.github/prompts/truthmark-sync.prompt.md`
+- `.github/prompts/truthmark-realize.prompt.md`
+- `.github/prompts/truthmark-check.prompt.md`
 - `GEMINI.md`
 - `.gemini/commands/truthmark/structure.toml`
 - `.gemini/commands/truthmark/sync.toml`
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 
-Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style skill indexers can parse every generated workflow surface. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks and `TRUTHMARK.md` also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, and OpenCode-style skill indexers can parse every generated workflow surface. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks and `TRUTHMARK.md` also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. `TRUTHMARK.md` stays a compact branch-local contract rather than a duplicate workflow procedure surface. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
 
 ## Check Result Data
 

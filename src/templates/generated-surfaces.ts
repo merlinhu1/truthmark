@@ -1,6 +1,10 @@
 import type { TruthmarkConfig, TruthmarkPlatform } from "../config/schema.js";
 import { renderAgentsBlock } from "./agents-block.js";
 import {
+  renderTruthmarkCopilotCheckPrompt,
+  renderTruthmarkCopilotRealizePrompt,
+  renderTruthmarkCopilotStructurePrompt,
+  renderTruthmarkCopilotSyncPrompt,
   renderTruthmarkCheckLocalSkill,
   renderTruthmarkGeminiCheckCommand,
   renderTruthmarkGeminiRealizeCommand,
@@ -19,6 +23,10 @@ import {
   renderTruthmarkSyncSkillMetadata,
   TRUTHMARK_CHECK_SKILL_METADATA_PATH,
   TRUTHMARK_CHECK_SKILL_PATH,
+  TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
+  TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
+  TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
+  TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
   TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
@@ -110,6 +118,33 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   return files;
 };
 
+const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[] => {
+  const files: GeneratedSurface[] = [
+    ...instructionBlockFiles([".github/copilot-instructions.md"], block),
+    {
+      path: TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
+      content: renderTruthmarkCopilotStructurePrompt(config),
+    },
+    {
+      path: TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
+      content: renderTruthmarkCopilotSyncPrompt(config),
+    },
+    {
+      path: TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
+      content: renderTruthmarkCopilotCheckPrompt(config),
+    },
+  ];
+
+  if (config.realization.enabled) {
+    files.push({
+      path: TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
+      content: renderTruthmarkCopilotRealizePrompt(),
+    });
+  }
+
+  return files;
+};
+
 const instructionBlockFiles = (paths: string[], block: string): GeneratedSurface[] => {
   return paths.map((path) => ({
     path,
@@ -129,11 +164,12 @@ const filesForPlatform = (
     case "opencode":
       return workflowSkillFiles(".opencode/skills", config);
     case "claude-code":
-      return instructionBlockFiles(["CLAUDE.md"], block);
-    case "cursor":
-      return instructionBlockFiles([".cursor/rules/truthmark.mdc"], block);
+      return [
+        ...instructionBlockFiles(["CLAUDE.md"], block),
+        ...workflowSkillFiles(".claude/skills", config),
+      ];
     case "github-copilot":
-      return instructionBlockFiles([".github/copilot-instructions.md"], block);
+      return copilotFiles(config, block);
     case "gemini-cli":
       return [
         ...instructionBlockFiles(["GEMINI.md"], block),

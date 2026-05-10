@@ -37,7 +37,7 @@ The durable surfaces are ordinary repository files:
 - the managed Truthmark block inside [AGENTS.md](../../AGENTS.md)
 - the generated Codex Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.codex/skills/`
 - the generated OpenCode Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.opencode/skills/`
-- configured platform instruction files such as [AGENTS.md](../../AGENTS.md), `CLAUDE.md`, `.cursor/rules/truthmark.mdc`, `.github/copilot-instructions.md`, and `GEMINI.md`
+- configured platform instruction files such as [AGENTS.md](../../AGENTS.md), `CLAUDE.md`, `.github/copilot-instructions.md`, and `GEMINI.md`
 - Gemini custom command surfaces under `.gemini/commands/truthmark/*.toml`
 
 Generated workflow surfaces are committed repository files with Truthmark version markers. The V1 upgrade path is to upgrade the package, rerun `truthmark init`, and review the generated diffs.

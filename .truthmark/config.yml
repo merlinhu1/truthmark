@@ -3,6 +3,8 @@ platforms:
   - codex
   - opencode
   - claude-code
+  - github-copilot
+  - gemini-cli
 docs:
   layout: hierarchical
   roots:

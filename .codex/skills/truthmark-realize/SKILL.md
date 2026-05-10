@@ -10,7 +10,7 @@ truthmark-version: 1.2.1
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Gemini CLI /truthmark:realize.
+Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 
 Truth Realize is doc-first:
 

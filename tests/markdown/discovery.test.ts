@@ -50,8 +50,15 @@ describe("discoverMarkdownDocuments", () => {
         ".opencode/skills/truthmark-sync/SKILL.md",
         "# Ignore me\n",
       );
-      await repo.writeFile(".cursor/rules/truthmark.mdc", "# Ignore me\n");
+      await repo.writeFile(
+        ".claude/skills/truthmark-sync/SKILL.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile(".github/copilot-instructions.md", "# Ignore me\n");
+      await repo.writeFile(
+        ".github/prompts/truthmark-sync.prompt.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile("CLAUDE.md", "# Ignore me\n");
       await repo.writeFile("GEMINI.md", "# Ignore me\n");
       await repo.writeFile(
@@ -100,7 +107,13 @@ describe("init templates", () => {
 
     expect(config).toMatchObject({
       version: 1,
-      platforms: ["codex", "opencode", "claude-code"],
+      platforms: [
+        "codex",
+        "opencode",
+        "claude-code",
+        "github-copilot",
+        "gemini-cli",
+      ],
       authority: expect.any(Array),
       instruction_targets: expect.any(Array),
       frontmatter: expect.any(Object),
@@ -114,7 +127,7 @@ describe("init templates", () => {
     expect(config.docs.roots).not.toHaveProperty("specs_draft");
   });
 
-  it("renders TRUTHMARK.md with branch-local truth, automatic sync, and manual realize guidance", () => {
+  it("renders TRUTHMARK.md as a compact branch-local truth contract", () => {
     const truthmark = renderTruthmarkTemplate();
 
     expect(truthmark).toContain(
@@ -125,11 +138,14 @@ describe("init templates", () => {
     );
     expect(truthmark).toContain("rerun `truthmark init`");
     expect(truthmark).toContain(
-      "Truth Sync runs automatically before finishing when functional code changes exist",
+      "Workflow runtime lives in installed skills and managed instruction blocks.",
     );
     expect(truthmark).toContain(
-      "Truth Realize is manual and updates code to match truth docs.",
+      "Truth Sync follows code; Truth Realize follows docs.",
     );
+    expect(truthmark.split("\n").length).toBeLessThanOrEqual(18);
+    expect(truthmark).not.toContain("Truth Structure");
+    expect(truthmark).not.toContain("Truth Check");
   });
 
   it("seeds docs/truthmark/areas.md from discovered docs without moving them", () => {
@@ -158,11 +174,19 @@ describe("init templates", () => {
 
     expect(agentsBlock).toContain("<!-- truthmark:start -->");
     expect(agentsBlock).toContain("<!-- truthmark:end -->");
-    expect(agentsBlock).toContain("### Manual Truth Realize");
-    expect(agentsBlock).toContain("May write truth docs");
+    expect(agentsBlock.split("\n").length).toBeLessThanOrEqual(25);
+    expect(agentsBlock).not.toContain("### Manual Truth Realize");
+    expect(agentsBlock).not.toContain("### Truth Structure");
+    expect(agentsBlock).not.toContain("### Truth Check");
+    expect(agentsBlock).toContain(
+      "Explicit workflows: Truth Structure, Truth Realize, Truth Check",
+    );
+    expect(agentsBlock).toContain(
+      "may write truth docs and docs/truthmark/areas.md only",
+    );
     expect(agentsBlock).toContain("must not rewrite functional code");
-    expect(agentsBlock).toContain("write functional code only");
-    expect(agentsBlock).toContain("do not edit truth docs or truth routing");
+    expect(agentsBlock).not.toContain("write functional code only");
+    expect(agentsBlock).not.toContain("do not edit truth docs or truth routing");
   });
 
   it("renders default standards only when comparable standards are missing", () => {

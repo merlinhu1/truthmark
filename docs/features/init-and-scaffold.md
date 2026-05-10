@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: feature
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-10
 source_of_truth:
   - ../../src/init/init.ts
   - ../../src/templates/init-files.ts
@@ -60,8 +60,15 @@ Current scaffold targets:
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
-- `.cursor/rules/truthmark.mdc`
+- `.claude/skills/truthmark-structure/SKILL.md`
+- `.claude/skills/truthmark-sync/SKILL.md`
+- `.claude/skills/truthmark-realize/SKILL.md`
+- `.claude/skills/truthmark-check/SKILL.md`
 - `.github/copilot-instructions.md`
+- `.github/prompts/truthmark-structure.prompt.md`
+- `.github/prompts/truthmark-sync.prompt.md`
+- `.github/prompts/truthmark-realize.prompt.md`
+- `.github/prompts/truthmark-check.prompt.md`
 - `GEMINI.md`
 - `.gemini/commands/truthmark/structure.toml`
 - `.gemini/commands/truthmark/sync.toml`
@@ -69,11 +76,11 @@ Current scaffold targets:
 - `.gemini/commands/truthmark/check.toml`
 
 `instruction_targets` controls shared managed-instruction files such as `AGENTS.md`. These targets are written or refreshed whenever `truthmark init` runs with a valid config, independent of the configured platform list.
-`platforms` controls which platform-specific surfaces are written or refreshed. Defaults are `codex`, `opencode`, and `claude-code`. Teams may add `cursor`, `github-copilot`, or `gemini-cli` and rerun `truthmark init` to add those files. Gemini installs both `GEMINI.md` and project-scoped TOML commands under `.gemini/commands/truthmark/`, which surface as `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` in Gemini CLI. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
+`platforms` controls which platform-specific surfaces are written or refreshed. Defaults include all supported platforms: `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`. Claude Code installs both `CLAUDE.md` and project skills under `.claude/skills/`, which surface as `/truthmark-structure`, `/truthmark-sync`, `/truthmark-realize`, and `/truthmark-check`. GitHub Copilot installs both `.github/copilot-instructions.md` and prompt files under `.github/prompts/`, which surface as `/truthmark-structure`, `/truthmark-sync`, `/truthmark-realize`, and `/truthmark-check` in supported Copilot IDEs. Gemini installs both `GEMINI.md` and project-scoped TOML commands under `.gemini/commands/truthmark/`, which surface as `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` in Gemini CLI. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
 
 `ensureRepoFile` is intentionally conservative: existing non-empty files are left alone. The AGENTS managed block is the exception because Truthmark owns that block and may refresh it to match current template behavior.
 
-The generated Truth Structure, Truth Sync, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, and OpenCode skills keep matching the installed workflow contract. Generated skills, Codex metadata, managed instruction blocks, and `TRUTHMARK.md` include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+The generated Truth Structure, Truth Sync, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, Claude Code project skills, GitHub Copilot prompt files, and OpenCode skills keep matching the installed workflow contract. Generated skills, Codex metadata, Copilot prompt files, managed instruction blocks, and `TRUTHMARK.md` include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
 ## AGENTS Management Rules
 
@@ -83,7 +90,7 @@ The current managed-instruction update behavior is:
 - remove older managed-looking chunks when possible
 - preserve manual text outside the managed block
 - append the managed block when no block exists
-- keep the generated workflow block compact and front-loaded so it does not consume unnecessary model context in long legacy instruction files
+- keep the generated workflow block as a compact automatic-Sync trigger and boundary index so it does not consume unnecessary model context in long legacy instruction files
 - keep detailed report examples and long workflow procedure in explicit generated skill files instead of host instruction blocks
 
 Repository-specific instructions should therefore live outside the managed block.
@@ -111,12 +118,13 @@ Important current defaults:
 - default authority includes the canonical doc classes under `docs/`
 - default code surface in the scaffolded root and child route files starts as `src/**`
 - default feature scaffolding creates an index at `<feature-root>/README.md`, an index at `<feature-root>/<default-area>/README.md`, and a bounded leaf truth doc at `<feature-root>/<default-area>/overview.md`
-- default platforms are `codex`, `opencode`, and `claude-code`
+- default platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`
 - shared instruction targets are refreshed independently of platform-specific surfaces
 - explicit Truth Structure, Truth Sync, Truth Realize, and Truth Check surfaces are installed only for configured platforms
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
 - generated workflow surfaces leave Truth Sync subagent selection to the acting agent and host environment
-- generated workflow surfaces include a configured hierarchy summary and decision-truth guidance
+- managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skills carry the detailed workflow bodies
+- `TRUTHMARK.md` is a compact branch-local truth contract and version marker, not a duplicate workflow procedure surface
 - scaffolded default standards include AI-native topology repair guidance so new repositories do not rely on human feature-folder discipline
 - Truth Sync is the only generated skill with implicit invocation enabled because it is the automatic finish-time workflow
 - `truthmark check` is optional validation for agent workflows, not a required workflow preflight
@@ -144,12 +152,14 @@ Current init JSON reporting uses:
 - Hierarchical routing is the only scaffold model, and route ownership stays in Markdown route files rather than config.
 - Init reports migration risk instead of rewriting existing truth doc placement on the user's behalf.
 - V1 uses configured shared instruction targets such as `AGENTS.md` plus generated skill or command surfaces for host compatibility instead of creating host-specific top-level instruction files for every adapter.
+- Managed instruction blocks are compact automatic-Sync indexes; generated skills and command files own explicit workflow procedure.
+- `TRUTHMARK.md` stays as a small branch-local contract so authority and branch-scope validation have a stable top-level anchor without duplicating `AGENTS.md`.
 
 ## Rationale
 
 This split makes the hierarchy reviewable before generated workflow behavior lands in the repo. Keeping route ownership in Markdown preserves local editing ergonomics. Refusing silent migrations avoids accidental truth loss when a repository reshapes its canonical docs tree.
 
-Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract.
+Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract. Keeping managed blocks and `TRUTHMARK.md` terse protects ordinary agent context while preserving the automatic Sync gate, workflow boundaries, and branch-local authority.
 
 ## Primary Code Files
 

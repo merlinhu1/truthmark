@@ -12,7 +12,7 @@ import {
 import { TRUTHMARK_VERSION } from "../version.js";
 
 export const TRUTH_SYNC_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Gemini CLI /truthmark:sync.";
+  "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.";
 
 const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");

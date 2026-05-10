@@ -3,14 +3,14 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health. Inspects truth docs, routing, and implementation directly; may optionally run truthmark check when available.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.2.1
+truthmark-version: 1.2.2
 ---
 
 # Truthmark Check
 
 Use this skill to audit repository truth health.
 
-Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Gemini CLI /truthmark:check.
+Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
 
 Truth Check is agent-led:
 

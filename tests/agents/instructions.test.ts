@@ -14,7 +14,7 @@ describe("renderTruthSyncInstructions", () => {
     expect(instructions).toContain("Automatic finish-time trigger");
     expect(instructions).toContain("use the truthmark-sync skill before finishing");
     expect(instructions).toContain(
-      "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Gemini CLI /truthmark:sync",
+      "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync",
     );
     expect(instructions).toContain("staged, unstaged, and untracked functional code files");
     expect(instructions).toContain("Run relevant tests before finishing");
