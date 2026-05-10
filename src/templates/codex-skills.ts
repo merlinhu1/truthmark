@@ -39,11 +39,33 @@ export const TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH =
 export const TRUTHMARK_GEMINI_CHECK_COMMAND_PATH =
   ".gemini/commands/truthmark/check.toml";
 
+export const TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH =
+  ".github/prompts/truthmark-structure.prompt.md";
+
+export const TRUTHMARK_COPILOT_SYNC_PROMPT_PATH =
+  ".github/prompts/truthmark-sync.prompt.md";
+
+export const TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH =
+  ".github/prompts/truthmark-realize.prompt.md";
+
+export const TRUTHMARK_COPILOT_CHECK_PROMPT_PATH =
+  ".github/prompts/truthmark-check.prompt.md";
+
 const renderGeminiCommand = (description: string, prompt: string): string => {
   return `description = "${description}"
 prompt = '''
 ${prompt}
 '''
+`;
+};
+
+const renderCopilotPromptFile = (description: string, prompt: string): string => {
+  return `---
+agent: 'agent'
+description: '${description}'
+---
+
+${prompt}
 `;
 };
 
@@ -114,7 +136,7 @@ truthmark-version: ${TRUTHMARK_VERSION}
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Gemini CLI /truthmark:realize.
+Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 
 Truth Realize is doc-first:
 
@@ -234,6 +256,40 @@ export const renderTruthmarkGeminiCheckCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderGeminiCommand(
+    "Audit repository truth health.",
+    renderTruthCheckSkillBody(config),
+  );
+};
+
+export const renderTruthmarkCopilotStructurePrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderCopilotPromptFile(
+    "Design or repair Truthmark area routing.",
+    renderTruthStructureSkillBody(config),
+  );
+};
+
+export const renderTruthmarkCopilotSyncPrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderCopilotPromptFile(
+    "Sync repository truth docs from changed code.",
+    renderTruthSyncSkillBody(config),
+  );
+};
+
+export const renderTruthmarkCopilotRealizePrompt = (): string => {
+  return renderCopilotPromptFile(
+    "Realize repository truth docs into code.",
+    renderTruthmarkRealizeSkillBody(),
+  );
+};
+
+export const renderTruthmarkCopilotCheckPrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderCopilotPromptFile(
     "Audit repository truth health.",
     renderTruthCheckSkillBody(config),
   );

@@ -100,11 +100,16 @@ describe("classifyPath", () => {
     expect(classifyPath("vendor/lib/index.rb", ["vendor/**"])).toBe("ignored");
     expect(classifyPath(".truthmark/cache/state.json", [])).toBe("derived");
     expect(classifyPath(".truthmark/sync/report.md", [])).toBe("derived");
+    expect(classifyPath(".claude/skills/truthmark-sync/SKILL.md", [])).toBe(
+      "derived",
+    );
     expect(classifyPath(".codex/skills/truthmark-sync/SKILL.md", [])).toBe("derived");
     expect(classifyPath(".opencode/skills/truthmark-sync/SKILL.md", [])).toBe("derived");
     expect(classifyPath("skills/truthmark-sync/SKILL.md", [])).toBe("markdown");
-    expect(classifyPath(".cursor/rules/truthmark.mdc", [])).toBe("derived");
     expect(classifyPath(".github/copilot-instructions.md", [])).toBe("derived");
+    expect(classifyPath(".github/prompts/truthmark-sync.prompt.md", [])).toBe(
+      "derived",
+    );
     expect(classifyPath("CLAUDE.md", [])).toBe("derived");
     expect(classifyPath("GEMINI.md", [])).toBe("derived");
     expect(classifyPath(".gemini/commands/truthmark/sync.toml", [])).toBe("derived");

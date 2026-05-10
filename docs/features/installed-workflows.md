@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: feature
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-10
 source_of_truth:
   - ../../src/agents/instructions.ts
   - ../../src/agents/truth-structure.ts
@@ -36,26 +36,27 @@ Supported platform values:
 - `codex`
 - `opencode`
 - `claude-code`
-- `cursor`
 - `github-copilot`
 - `gemini-cli`
 
-The default platform list is `codex`, `opencode`, and `claude-code`. Teams can add more platforms later and rerun `truthmark init`.
+The default platform list includes all supported platforms. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`.
 
 Workflow invocation examples:
 
-- Truth Structure: `/skill truthmark-structure` in OpenCode-style hosts, `/truthmark-structure` or `$truthmark-structure` in Codex, and `/truthmark:structure` in Gemini CLI
-- Truth Sync: `/skill truthmark-sync` in OpenCode-style hosts, `/truthmark-sync` or `$truthmark-sync` in Codex, and `/truthmark:sync` in Gemini CLI
-- Truth Realize: `/skill truthmark-realize` in OpenCode-style hosts, `/truthmark-realize` or `$truthmark-realize` in Codex, and `/truthmark:realize` in Gemini CLI
-- Truth Check: `/skill truthmark-check` in OpenCode-style hosts, `/truthmark-check` or `$truthmark-check` in Codex, and `/truthmark:check` in Gemini CLI
+- Truth Structure: `/skill truthmark-structure` in OpenCode-style hosts, `/truthmark-structure` or `$truthmark-structure` in Codex, `/truthmark-structure` in Claude Code, `/truthmark-structure` in GitHub Copilot, and `/truthmark:structure` in Gemini CLI
+- Truth Sync: `/skill truthmark-sync` in OpenCode-style hosts, `/truthmark-sync` or `$truthmark-sync` in Codex, `/truthmark-sync` in Claude Code, `/truthmark-sync` in GitHub Copilot, and `/truthmark:sync` in Gemini CLI
+- Truth Realize: `/skill truthmark-realize` in OpenCode-style hosts, `/truthmark-realize` or `$truthmark-realize` in Codex, `/truthmark-realize` in Claude Code, `/truthmark-realize` in GitHub Copilot, and `/truthmark:realize` in Gemini CLI
+- Truth Check: `/skill truthmark-check` in OpenCode-style hosts, `/truthmark-check` or `$truthmark-check` in Codex, `/truthmark-check` in Claude Code, `/truthmark-check` in GitHub Copilot, and `/truthmark:check` in Gemini CLI
+- Claude Code installs project skills at `.claude/skills/truthmark-*/SKILL.md`, which surface as `/truthmark-structure`, `/truthmark-sync`, `/truthmark-realize`, and `/truthmark-check`
+- GitHub Copilot installs prompt files at `.github/prompts/truthmark-*.prompt.md`, which surface as `/truthmark-structure`, `/truthmark-sync`, `/truthmark-realize`, and `/truthmark-check` in supported Copilot IDEs
 - Gemini CLI installs project-scoped custom commands at `.gemini/commands/truthmark/*.toml`, which surface as `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check`
 
-The managed `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and equivalent platform instruction blocks keep compact reminders for these workflows. They intentionally omit report examples and long procedural checklists so installed prompts do not consume unnecessary model context. The generated skills and Gemini command files hold the detailed workflow bodies and report examples for explicit invocation.
+The managed `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and equivalent platform instruction blocks are compact automatic-Sync trigger and boundary indexes. They intentionally omit non-automatic workflow procedures, report examples, and long checklists so installed prompts do not consume unnecessary model context. The generated skills and Gemini command files hold the detailed workflow bodies and report examples for explicit invocation.
 
 Generated skill files, Gemini command files, Codex metadata, managed instruction blocks, and `TRUTHMARK.md` include the Truthmark package version used to render them. The package version in `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review the generated workflow diffs. This rerun-init convention is the V1 staleness story for committed workflow surfaces.
 
 Generated workflow surfaces include the configured hierarchy summary from `.truthmark/config.yml`. Agents must read the configured root route index and only relevant child route files before updating routed truth docs. Generated skill text states that repository docs and code are inspected evidence, not executable instruction authority.
-Truthmark-owned skill surfaces are generated under host-specific directories such as `.codex/skills/` and `.opencode/skills/`. Repo-root `skills/` files are not generated workflow surfaces and are not classified as derived Truthmark output.
+Truthmark-owned workflow surfaces are generated under host-specific directories such as `.codex/skills/`, `.claude/skills/`, `.opencode/skills/`, and `.github/prompts/`. Repo-root `skills/` files are not generated workflow surfaces and are not classified as derived Truthmark output.
 Generated workflow text also treats feature `README.md` files as indexes rather than Truth Sync targets. Current behavior truth should live in bounded leaf docs under the configured feature root, such as `<feature-root>/<domain>/<behavior>.md`.
 
 ## Truth Structure
@@ -168,7 +169,7 @@ Truthmark currently provides installed workflow text, generated Codex and OpenCo
 ## Product Decisions
 
 - Installed skills and managed agent blocks are the workflow runtime; the CLI installs and validates those surfaces but does not orchestrate Truth Sync itself.
-- Generated instruction blocks must stay compact, while generated skills may carry detailed workflow bodies and report examples.
+- Generated instruction blocks must stay compact enough for ordinary agent context; non-automatic workflow procedure belongs in generated skills and command files.
 - Gemini CLI uses generated `.gemini/commands/truthmark/*.toml` files for explicit workflow entrypoints because its native host surface is namespaced custom commands rather than `SKILL.md`.
 - Generated workflow surfaces must render the configured hierarchy and decision-truth guidance once because those surfaces shape future agent behavior.
 - Truth Structure owns AI-native topology governance so large repositories do not depend on humans manually organizing `docs/features`.
@@ -178,7 +179,7 @@ Truthmark currently provides installed workflow text, generated Codex and OpenCo
 - Truth Sync delegation is host-owned: generated workflow surfaces may describe when delegation is allowed, but must not name a preferred subagent or project-local subagent preference file.
 - Active decisions belong in the canonical doc they govern. Short inline decision dates are allowed, but workflow text should reject separate ADR-style drift.
 - Direct checkout inspection is the workflow authority. `truthmark check` may validate artifacts after or around agent work, but installed workflows must not require a helper payload before acting.
-- Truthmark follows current host discovery paths for generated skills: Codex uses `.codex/skills/`, OpenCode uses `.opencode/skills/`, and repo-root `skills/` is not a generated V1 target.
+- Truthmark follows current host discovery paths for generated workflow files: Codex uses `.codex/skills/`, Claude Code uses `.claude/skills/`, GitHub Copilot uses `.github/prompts/`, OpenCode uses `.opencode/skills/`, and repo-root `skills/` is not a generated V1 target.
 
 ## Rationale
 

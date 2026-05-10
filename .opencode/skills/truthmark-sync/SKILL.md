@@ -3,11 +3,11 @@ name: truthmark-sync
 description: Use automatically before finishing when functional code changed since the last successful Truth Sync, and when the user explicitly invokes /truthmark-sync, $truthmark-sync, or /truthmark:sync. Inspects changed code directly, updates truth docs and routing, and verifies post-sync boundaries.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.2.1
+truthmark-version: 1.2.2
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
-Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Gemini CLI /truthmark:sync.
+Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
 Explicit invocation runs immediately. Later functional-code changes reopen the finish-time requirement, and an earlier explicit run satisfies the finish gate only if no later functional-code changes occur.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.

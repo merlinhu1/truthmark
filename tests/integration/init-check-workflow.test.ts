@@ -39,6 +39,9 @@ describe("init and check workflow acceptance", () => {
       await expect(
         fs.stat(`${repo.rootDir}/.codex/skills/truthmark-check/SKILL.md`),
       ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(`${repo.rootDir}/.claude/skills/truthmark-sync/SKILL.md`),
+      ).resolves.toBeTruthy();
 
       const checkResult = await runCli(["check", "--json"], { cwd: repo.rootDir });
 

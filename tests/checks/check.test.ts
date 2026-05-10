@@ -658,6 +658,76 @@ Update truth when:
     }
   });
 
+  it("reports stale Claude Code generated skill surfaces", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".claude/skills/truthmark-sync/SKILL.md",
+        `${await repo.readFile(".claude/skills/truthmark-sync/SKILL.md")}\nmanual drift\n`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "generated-surface",
+            severity: "review",
+            file: ".claude/skills/truthmark-sync/SKILL.md",
+            message: expect.stringContaining("stale"),
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports stale GitHub Copilot generated prompt surfaces", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        `version: 1
+platforms:
+  - github-copilot
+authority:
+  - TRUTHMARK.md
+  - docs/truthmark/areas.md
+frontmatter:
+  required: []
+  recommended: []
+ignore: []
+realization:
+  enabled: true
+`,
+      );
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".github/prompts/truthmark-sync.prompt.md",
+        `${await repo.readFile(".github/prompts/truthmark-sync.prompt.md")}\nmanual drift\n`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "generated-surface",
+            severity: "review",
+            file: ".github/prompts/truthmark-sync.prompt.md",
+            message: expect.stringContaining("stale"),
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("ignores manual version notes outside managed instruction blocks", async () => {
     const repo = await createTempRepo();
 

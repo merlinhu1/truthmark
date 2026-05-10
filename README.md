@@ -109,21 +109,13 @@ docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
-.codex/skills/truthmark-structure/SKILL.md
-.codex/skills/truthmark-sync/SKILL.md
-.codex/skills/truthmark-realize/SKILL.md
-.codex/skills/truthmark-check/SKILL.md
-.opencode/skills/truthmark-structure/SKILL.md
-.opencode/skills/truthmark-sync/SKILL.md
-.opencode/skills/truthmark-realize/SKILL.md
-.opencode/skills/truthmark-check/SKILL.md
 ```
 
-If you enable additional platforms in `.truthmark/config.yml`, Truthmark refreshes the corresponding managed surfaces on the next `init`.
+Supported platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`. The default config includes all of them; remove platforms you do not use from `.truthmark/config.yml` before rerunning `truthmark init`.
 
 The default scaffold keeps feature `README.md` files as indexes and starts current behavior truth in bounded leaf docs such as `docs/features/repository/overview.md`.
 
-Existing repositories usually need one cleanup pass after `init`: run the installed Truth Structure workflow when the generated `repository` route is too broad, ownership spans multiple products or services, or route files still point at placeholder docs. Truth Structure splits broad routing, creates or repairs starter canonical truth docs, and gives Truth Sync precise destinations before functional-code work begins. Codex users can invoke it with `/truthmark-structure` or `$truthmark-structure`; OpenCode-style hosts can invoke `/skill truthmark-structure`.
+Existing repositories usually need one cleanup pass after `init`: run the installed Truth Structure workflow when the generated `repository` route is too broad, ownership spans multiple products or services, or route files still point at placeholder docs. Truth Structure splits broad routing, creates or repairs starter canonical truth docs, and gives Truth Sync precise destinations before functional-code work begins. Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-structure`; OpenCode-style hosts can invoke `/skill truthmark-structure`.
 
 ## How it runs
 
@@ -143,7 +135,7 @@ commit or hand off the work
 
 Truth Sync is code-first: code leads, truth docs follow, and Truth Sync must not rewrite functional code. Its main job is to act as an automatic finish-time safeguard when functional code changed. Direct invocation is mainly for troubleshooting, forcing an early sync before handoff, or running the workflow intentionally.
 
-Codex users can invoke it with `/truthmark-sync` or `$truthmark-sync`. OpenCode-style hosts can invoke `/skill truthmark-sync`.
+Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-sync`. OpenCode-style hosts can invoke `/skill truthmark-sync`.
 
 ### Doc-first changes
 
@@ -160,7 +152,7 @@ commit or hand off the work
 
 Truth Realize is manual and doc-first: truth docs lead, code follows, and the agent must not edit the truth docs it is realizing.
 
-Codex users can invoke it with `/truthmark-realize` or `$truthmark-realize`. OpenCode-style hosts can invoke `/skill truthmark-realize`.
+Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-realize`. OpenCode-style hosts can invoke `/skill truthmark-realize`.
 
 ## What it installs
 
@@ -170,8 +162,8 @@ Truthmark keeps the durable workflow surface small:
 - `TRUTHMARK.md` for the branch-local workflow contract
 - `docs/truthmark/areas.md` for the root route index
 - `docs/truthmark/areas/**/*.md` for delegated child route files
-- managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Cursor rules, Copilot instructions, and `GEMINI.md`
-- Codex and OpenCode skills for Truth Structure, Truth Sync, Truth Realize, and Truth Check
+- managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Copilot instructions, and `GEMINI.md`
+- host-native skills, prompts, or commands for Truth Structure, Truth Sync, Truth Realize, and Truth Check
 
 The installed workflow surfaces are the runtime:
 
@@ -203,6 +195,8 @@ truthmark check --json
 `check` validates configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, and coverage diagnostics.
 
 Truth Structure, Truth Sync, Truth Realize, and Truth Check are installed agent workflows, not top-level daily CLI commands.
+
+They run through the configured agent host surfaces, for example Codex/Claude/Copilot `/truthmark-*`, OpenCode `/skill truthmark-*`, or Gemini `/truthmark:*`.
 
 ## Why it exists
 

@@ -18,6 +18,8 @@ describe("runConfig", () => {
         "area_files_root: docs/truthmark/areas",
       );
       const config = await repo.readFile(".truthmark/config.yml");
+      expect(config).toContain("  - github-copilot");
+      expect(config).toContain("  - gemini-cli");
       expect(config).toContain("features: docs/features");
       expect(config).toContain("docs/features/**/*.md");
       expect(config).not.toContain("features_current");

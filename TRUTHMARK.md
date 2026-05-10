@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: truthmark
-last_reviewed: 2026-05-08
+last_reviewed: 2026-05-10
 source_of_truth:
   - README.md
   - docs/ai/repo-rules.md
@@ -12,20 +12,8 @@ source_of_truth:
 
 Markdown in the current checkout is authoritative for this branch.
 
-Installed workflow surfaces include a Truthmark 1.2.1 version marker. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+Installed workflow surfaces include a Truthmark 1.2.2 version marker. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
-Truth Sync runs automatically before finishing when functional code changes exist, and updates truth docs.
+Workflow runtime lives in installed skills and managed instruction blocks. Agents inspect the checkout directly; `truthmark check` is optional validation.
 
-Truth Sync can also be invoked explicitly through installed truthmark-sync skill surfaces.
-
-Truth Structure is manual and updates area routing plus starter truth docs.
-
-Truth Check is manual and audits repository truth health.
-
-Installed skills and the managed AGENTS block are the workflow runtime. Agents inspect the checkout directly and may use `truthmark check` only as optional validation.
-
-Truth Realize is manual and updates code to match truth docs.
-
-Truth Sync may create or extend mapped truth docs when implementation would otherwise remain undocumented.
-
-Truth Realize never edits truth docs.
+Truth Sync follows code; Truth Realize follows docs. Truth Sync may update mapped truth docs; Truth Realize never edits truth docs or routing.

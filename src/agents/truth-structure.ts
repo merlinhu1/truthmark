@@ -12,7 +12,7 @@ const renderMarkdownExample = (content: string): string => {
 };
 
 export const TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Gemini CLI /truthmark:structure.";
+  "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.";
 
 export const renderTruthStructureReportExample = (): string => {
   return `Truth Structure: completed
