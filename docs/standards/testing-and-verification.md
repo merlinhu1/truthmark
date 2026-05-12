@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: standard
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-13
 source_of_truth:
   - ../../package.json
   - ../features/contracts.md
@@ -35,6 +35,8 @@ If a linked `truthmark` binary points at this checkout's `dist/main.js`, `truthm
 
 - Prefer the narrowest command that can falsify the change.
 - If a single test file or focused slice exists, run that before broad repo-wide verification.
+- Tests should prove current supported behavior or contracts.
+- Do not use the absence of a removed string or removed file as the primary proof of a change unless that absence is itself the boundary under test.
 - Run `npm run typecheck` when TypeScript source changes.
 - Run `npm run lint` when adding or changing TypeScript source, tests, or lint configuration.
 - Run `npm run format:check` when touching package or release-check surfaces covered by the Prettier check.

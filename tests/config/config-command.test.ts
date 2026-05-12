@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
+import { parse } from "yaml";
 
 import { runConfig } from "../../src/config/command.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -13,21 +14,32 @@ describe("runConfig", () => {
       const result = await runConfig(repo.rootDir, {});
 
       expect(result.command).toBe("config");
-      expect(await repo.readFile(".truthmark/config.yml")).toContain("layout: hierarchical");
-      expect(await repo.readFile(".truthmark/config.yml")).toContain(
-        "area_files_root: docs/truthmark/areas",
+      const configText = await repo.readFile(".truthmark/config.yml");
+      const config = parse(configText) as {
+        platforms: string[];
+        docs: {
+          layout: string;
+          roots: Record<string, string>;
+          routing: {
+            area_files_root: string;
+          };
+        };
+        authority: string[];
+      };
+
+      expect(config.docs.layout).toBe("hierarchical");
+      expect(config.docs.routing.area_files_root).toBe("docs/truthmark/areas");
+      expect(config.platforms).toEqual(
+        expect.arrayContaining(["github-copilot", "gemini-cli"]),
       );
-      const config = await repo.readFile(".truthmark/config.yml");
-      expect(config).toContain("  - github-copilot");
-      expect(config).toContain("  - gemini-cli");
-      expect(config).toContain("features: docs/features");
-      expect(config).toContain("docs/features/**/*.md");
-      expect(config).not.toContain("features_current");
-      expect(config).not.toContain("docs/features/current");
-      expect(config).not.toContain("api: docs/api");
-      expect(config).not.toContain("guides: docs/guides");
+      expect(config.docs.roots).toEqual({
+        ai: "docs/ai",
+        standards: "docs/standards",
+        architecture: "docs/architecture",
+        features: "docs/features",
+      });
+      expect(config.authority).toContain("docs/features/**/*.md");
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
-      await expect(fs.stat(`${repo.rootDir}/TRUTHMARK.md`)).rejects.toThrow();
       await expect(fs.stat(`${repo.rootDir}/docs/truthmark/areas.md`)).rejects.toThrow();
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([

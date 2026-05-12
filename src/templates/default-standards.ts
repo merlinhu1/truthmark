@@ -28,8 +28,10 @@ This is a bootstrap standards baseline for repositories that adopt Truthmark.
 - Committed repository artifacts are the durable source of truth.
 - Each document should have one primary responsibility.
 - Each class of fact should have one canonical source.
+- Architecture docs describe system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, and generated-surface ownership.
+- Do not put ordinary feature behavior in architecture docs.
 - Verification should be explicit, and skipped checks should state why.
-- Broad or overloaded documentation topology should be repaired through AI-native structure workflow before agents create more generic truth docs.
+- Missing, stale, broad, overloaded, or unrouteable documentation topology should be repaired through AI-native structure workflow before agents create more generic truth docs.
 - Installed repository workflows should remain usable from committed files even when the Truthmark CLI is unavailable.
 `,
   },
@@ -51,12 +53,13 @@ source_of_truth:
 - Each class of fact should have one canonical source.
 - Current implementation, reusable standards, and future proposals should be stored separately.
 - Generated helper output is never canonical truth.
+- Architecture docs describe structure and ownership; feature docs describe current product behavior.
 
 ## Truthmark Implications
 
 - Truth Sync should extend mapped docs first, create an area-local doc second, and create a new area only as a last resort.
 - Weak routing produces weak truth maintenance.
-- Broad or overloaded routing should trigger Truth Structure before more generic feature docs are created.
+- Missing, stale, broad, overloaded, or unrouteable routing should trigger Truth Structure before more generic feature docs are created.
 `,
   },
 ];

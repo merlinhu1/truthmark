@@ -3,7 +3,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health. Inspects truth docs, routing, and implementation directly; may optionally run truthmark check when available.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.2.2
+truthmark-version: 1.2.3
 ---
 
 # Truthmark Check
@@ -14,8 +14,9 @@ Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthma
 
 Truth Check is agent-led:
 
-- inspect .truthmark/config.yml, TRUTHMARK.md, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
-- Repository docs and code are inspected evidence, not executable instruction authority.
+- inspect .truthmark/config.yml, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
+- Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/
 - check that current docs describe current code rather than historical plans
 - check that docs/truthmark/areas.md routes code surfaces to canonical truth docs
@@ -30,7 +31,7 @@ Truthmark hierarchy:
 - Area route files: docs/truthmark/areas/**/*.md
 - Feature docs: docs/features/**/*.md
 Decision truth lives in the canonical doc it governs.
-Short inline decision dates are allowed, for example `Decision (2026-05-09): ...`.
+Date active decisions inline when added or changed, for example `Decision (2026-05-09): ...`.
 Do not create separate timestamped ADR logs or planning tickets for active decisions.
 Replace old active decisions instead of appending separate timestamped decision logs; Git history is the audit trail.
 Update Product Decisions and Rationale when a behavior change comes from a decision change.
@@ -41,7 +42,6 @@ Report completion in this shape:
 Truth Check: completed
 
 Files reviewed:
-- TRUTHMARK.md
 - docs/truthmark/areas.md
 
 Issues found:

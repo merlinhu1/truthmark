@@ -9,16 +9,21 @@ import { detectHierarchyMigrationDiagnostics, scaffoldHierarchy } from "./hierar
 import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
 import {
   renderTruthmarkCopilotCheckPrompt,
+  renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotStructurePrompt,
   renderTruthmarkCopilotSyncPrompt,
   renderTruthmarkCheckLocalSkill,
   renderTruthmarkGeminiCheckCommand,
+  renderTruthmarkGeminiDocumentCommand,
   renderTruthmarkGeminiRealizeCommand,
   renderTruthmarkGeminiStructureCommand,
   renderTruthmarkGeminiSyncCommand,
   renderTruthmarkCheckSkill,
   renderTruthmarkCheckSkillMetadata,
+  renderTruthmarkDocumentLocalSkill,
+  renderTruthmarkDocumentSkill,
+  renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkStructureLocalSkill,
   renderTruthmarkStructureSkill,
   renderTruthmarkStructureSkillMetadata,
@@ -28,9 +33,12 @@ import {
   TRUTHMARK_CHECK_SKILL_METADATA_PATH,
   TRUTHMARK_CHECK_SKILL_PATH,
   TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
+  TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
   TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
+  TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
+  TRUTHMARK_DOCUMENT_SKILL_PATH,
   TRUTHMARK_SYNC_SKILL_METADATA_PATH,
   TRUTHMARK_SYNC_SKILL_PATH,
   TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH,
@@ -39,6 +47,7 @@ import {
   renderTruthmarkRealizeSkill,
   renderTruthmarkRealizeSkillMetadata,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
+  TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
   TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
   TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
@@ -46,7 +55,6 @@ import {
   TRUTHMARK_REALIZE_SKILL_PATH,
 } from "../templates/codex-skills.js";
 import { renderDefaultStandards } from "../templates/default-standards.js";
-import { renderTruthmarkTemplate } from "../templates/init-files.js";
 
 const escapeRegExp = (value: string): string => {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -106,30 +114,40 @@ const removeTrailingManagedChunk = (preservedLines: string[]): void => {
   }
 };
 
+const normalizeLegacyInstructionPreamble = (content: string): string => {
+  return content
+    .replaceAll(
+      "Use that file as the primary repository instruction source for Codex.",
+      "Use that file as the primary repository instruction source for this agent.",
+    )
+    .replaceAll("Codex-specific:", "Agent-specific:");
+};
+
 const upsertManagedBlock = (existingContent: string | null, block: string): string => {
   if (!existingContent || existingContent.trim().length === 0) {
     return block;
   }
 
+  const normalizedExistingContent = normalizeLegacyInstructionPreamble(existingContent);
   const startMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_START), "g");
   const endMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_END), "g");
   const managedBlockPattern = new RegExp(
     `${escapeRegExp(TRUTHMARK_BLOCK_START)}[\\s\\S]*?${escapeRegExp(TRUTHMARK_BLOCK_END)}`,
     "g",
   );
-  const completeBlocks = existingContent.match(managedBlockPattern) ?? [];
-  const startCount = existingContent.match(startMarkerPattern)?.length ?? 0;
-  const endCount = existingContent.match(endMarkerPattern)?.length ?? 0;
+  const completeBlocks = normalizedExistingContent.match(managedBlockPattern) ?? [];
+  const startCount = normalizedExistingContent.match(startMarkerPattern)?.length ?? 0;
+  const endCount = normalizedExistingContent.match(endMarkerPattern)?.length ?? 0;
 
   if (startCount === 1 && endCount === 1 && completeBlocks.length === 1) {
-    return existingContent.replace(managedBlockPattern, block);
+    return normalizedExistingContent.replace(managedBlockPattern, block);
   }
 
   const preservedLines: string[] = [];
   let insideManagedBlock = false;
   let managedLines: string[] = [];
 
-  for (const line of existingContent.split("\n")) {
+  for (const line of normalizedExistingContent.split("\n")) {
     const trimmedLine = line.trim();
 
     if (trimmedLine === TRUTHMARK_BLOCK_START) {
@@ -215,6 +233,10 @@ const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
     return "truth-sync";
   }
 
+  if (filePath.startsWith(".codex/skills/truthmark-document/")) {
+    return "truth-sync";
+  }
+
   if (filePath.startsWith(".codex/skills/truthmark-sync/")) {
     return "truth-sync";
   }
@@ -235,7 +257,7 @@ const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
     return "truth-sync";
   }
 
-  if (filePath === "TRUTHMARK.md" || filePath === "docs/truthmark/areas.md") {
+  if (filePath === "docs/truthmark/areas.md") {
     return "authority";
   }
 
@@ -256,6 +278,10 @@ const workflowSkillFiles = (
     {
       path: `${basePath}/truthmark-structure/SKILL.md`,
       content: renderTruthmarkStructureLocalSkill(config),
+    },
+    {
+      path: `${basePath}/truthmark-document/SKILL.md`,
+      content: renderTruthmarkDocumentLocalSkill(config),
     },
     {
       path: `${basePath}/truthmark-sync/SKILL.md`,
@@ -286,6 +312,14 @@ const codexFiles = (config: TruthmarkConfig): PlatformFile[] => {
     {
       path: TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH,
       content: renderTruthmarkStructureSkillMetadata(),
+    },
+    {
+      path: TRUTHMARK_DOCUMENT_SKILL_PATH,
+      content: renderTruthmarkDocumentSkill(config),
+    },
+    {
+      path: TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
+      content: renderTruthmarkDocumentSkillMetadata(),
     },
     {
       path: TRUTHMARK_SYNC_SKILL_PATH,
@@ -327,6 +361,10 @@ const copilotFiles = (config: TruthmarkConfig, block: string): PlatformFile[] =>
     {
       path: TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
       content: renderTruthmarkCopilotStructurePrompt(config),
+    },
+    {
+      path: TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
+      content: renderTruthmarkCopilotDocumentPrompt(config),
     },
     {
       path: TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
@@ -379,6 +417,10 @@ const filesForPlatform = (
         {
           path: TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
           content: renderTruthmarkGeminiStructureCommand(config),
+        },
+        {
+          path: TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
+          content: renderTruthmarkGeminiDocumentCommand(config),
         },
         {
           path: TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
@@ -460,7 +502,6 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
     results.push(await ensureRepoFile(rootDir, template.path, template.content));
   }
 
-  results.push(await ensureRepoFile(rootDir, "TRUTHMARK.md", renderTruthmarkTemplate()));
   const config = loadedConfig.config;
   results.push(...(await scaffoldHierarchy(rootDir, config)));
   const migrationDiagnostics = await detectHierarchyMigrationDiagnostics(rootDir, config);

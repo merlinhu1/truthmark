@@ -44,7 +44,7 @@ Small repositories are in scope. A project does not need a large documentation p
 Truthmark's minimal canonical surface is:
 
 - `docs/ai/repo-rules.md` as the repository-wide agent policy source
-- `TRUTHMARK.md` as the human and agent-readable truth-workflow entrypoint
+- `.truthmark/config.yml` as the committed hierarchy contract
 - `docs/truthmark/areas.md` as the primary routing surface
 - the project's canonical truth docs under directories such as `docs/standards/`, `docs/architecture/`, and `docs/features/`
 
@@ -62,6 +62,10 @@ Use a small number of stable document classes:
 
 Projects do not need every class on day one. They do need a clear separation between current truth and future proposals.
 
+Architecture docs describe system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, and generated-surface ownership.
+
+Architecture docs should not carry ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes unless those changes alter architecture boundaries. Keep product behavior in feature or contract docs.
+
 ## Decision-Bearing Truth Docs
 
 Active decisions are part of current truth. They live in the canonical doc for the feature, contract, architecture surface, or standard they govern.
@@ -70,7 +74,7 @@ Use `Product Decisions` and `Rationale` sections for decisions that explain non-
 
 When a decision changes, replace the old active decision in the same canonical doc. Git history is the historical decision log.
 
-Short inline dates are allowed on active decisions, for example `Decision (2026-05-09): keep routing agent-native`. The date is context on the active decision, not a separate historical log.
+Date active decisions inline when added or changed, for example `Decision (2026-05-09): keep routing agent-native`. The date is context on the active decision, not a separate historical log.
 
 Do not create separate timestamped ADR folders, planning tickets, or historical design notes as the current decision source. Historical notes may remain supplementary only after the active decision is promoted into the canonical doc.
 
@@ -80,7 +84,9 @@ Do not create separate timestamped ADR folders, planning tickets, or historical 
 - Major product, onboarding, install, command, positioning, or workflow changes should include a root README review in the same working change. Update the README when its human-facing claims, examples, or command sequences are stale.
 - When the root README has localized variants, keep them aligned with the English README for materially changed install, command, positioning, and workflow guidance in the same working change, or explicitly document why a variant intentionally differs.
 - When routing changes, update `docs/truthmark/areas.md` and any affected canonical docs together.
-- When routing is broad, overloaded, or catch-all, run Truth Structure before adding more generic feature docs.
+- When routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before adding more generic feature docs.
+- When a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership, update the owning architecture doc in the same change.
+- Do not update architecture docs for ordinary feature behavior unless that behavior changes an architecture boundary.
 - When a document stops being canonical, supersede or demote it explicitly.
 - If Truth Sync is skipped, the skip reason should be stated clearly.
 - If Truth Sync creates missing truth, it should avoid duplicating facts that are already canonical elsewhere.

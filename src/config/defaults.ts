@@ -17,7 +17,6 @@ export const DEFAULT_DOCS_HIERARCHY = {
 } as const;
 
 export const DEFAULT_AUTHORITY = [
-  "TRUTHMARK.md",
   DEFAULT_DOCS_HIERARCHY.routing.root_index,
   `${DEFAULT_DOCS_HIERARCHY.routing.area_files_root}/**/*.md`,
   `${DEFAULT_DOCS_HIERARCHY.roots.ai}/**/*.md`,

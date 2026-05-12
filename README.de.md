@@ -1,31 +1,68 @@
-# Truthmark ist die Wahrheitsschicht für KI-Softwareentwicklung.
+# Truthmark
+
+**Truthmark automatisiert die Pflege von Repository-Wahrheit für KI-Softwareentwicklung.**
 
 [English](README.md) | Deutsch | [中文](README.zh.md) | [Español](README.es.md) | [Русский](README.ru.md)
 
-KI-Coding-Agenten können bereits gut Code schreiben. Womit sie weiterhin Schwierigkeiten haben: Produktabsicht, Architekturgrenzen und Zuständigkeiten im Repository zuverlässig aus veralteter Dokumentation, verstreuten Chats und flüchtigem Tool-Gedächtnis zu rekonstruieren.
-Truthmark löst das, indem es branch-lokale Repository-Wahrheit zu einer erstklassigen Laufzeitfläche für Agenten macht. Es installiert eine Git-native, branch-gebundene Wahrheitsschicht direkt im Repository, gibt Agenten explizite Routing- und Workflow-Grenzen und sorgt dafür, dass diese Wahrheit mit dem Code mitwandert, der tatsächlich ausgeliefert wird.
-Das ist kein besseres Prompt-Engineering. Es ist eine besser steuerbare Art, KI in einer echten Codebasis einzusetzen: weniger wiederholte Entscheidungen, weniger veraltete Dokumentation, sauberere Übergaben und KI-Coding-Sitzungen, die prüfbare Engineering-Aufzeichnungen hinterlassen, statt im Prompt-Verlauf oder in undurchsichtigen Tool-Zuständen zu verschwinden.
-Für Teams, die bereits wissen, dass Agenten Code erzeugen können, und jetzt wollen, dass das Repository selbst lesbar, prüfbar und steuerbar bleibt.
+<img src="docs/assets/truthmark-banner.png" alt="Truthmark-Banner" width="100%" />
 
-## Was Truthmark löst
+KI-Coding-Agenten schreiben bereits schnell Code. Der teure Teil ist, die Repository-Wahrheit mit den tatsächlichen Änderungen im Gleichschritt zu halten.
 
-KI-Coding ist heute leicht zu starten, aber teuer zu beherrschen. Sobald Agenten schnell Code schreiben können, wird Repository-Wahrheit zur Steuerfläche.
-Dieses Fehlermuster zeigt sich vorhersehbar: Anforderungen bleiben im Chat, Architekturentscheidungen werden wiederholt, Agenten bearbeiten die falschen Bereiche, und Branches erben Kontext, den Reviewer nicht zuverlässig prüfen können. Der Code kommt vielleicht schnell voran, aber dem Repository wird schwerer zu vertrauen.
-Truthmark verändert das Arbeitsmodell:
+Truthmark fügt diesem Ablauf eine automatische Abschlusskontrolle hinzu. Der normale Pfad ist einfach:
 
-- Branch-lokale Wahrheit wandert mit dem Branch, statt in einem privaten Tool-Speicher zu liegen.
-- Git macht diese Wahrheit prüfbar, diffbar und im Team teilbar.
-- Dokumentation folgt dem Code, statt still in Fiktion abzudriften.
-- Routing bleibt in `docs/truthmark/areas.md` und delegierten untergeordneten Routendateien explizit, damit Agenten wissen, welche Dokumentation welchen Code verantwortet.
-- Aktive Produkt- und Architekturentscheidungen stehen in den kanonischen Dokumenten, die sie betreffen, nicht in zeitgestempelten Planungsprotokollen.
-- Local-first-Workflows vermeiden die Abhängigkeit von Daemon, Datenbank, Remote-Dienst oder MCP.
+- Agent ändert funktionalen Code
+- relevante Tests laufen
+- Truth Sync aktualisiert zugeordnete Wahrheitsdokumente, bevor der Agent fertig ist
+- Truth-Doc-Diff prüfen, wenn einer erzeugt wurde
+
+Die meisten Tools bitten Teams darum, sich eine Gewohnheit anzueignen. Truthmark automatisiert die Gewohnheit.
+
+Truthmark macht aus einem KI-Workflow Repository-Infrastruktur statt persönlichem Tooling. Es installiert eine Git-native, branch-gebundene Wahrheitsschicht im Repository, gibt Agenten explizites Routing und begrenzte Workflow-Flächen und hält diese Wahrheit in Git prüfbar, statt sie über Prompt-Verlauf, veraltete Dokumentation oder privaten Tool-Zustand zu verstreuen.
+
+Das ist wichtig, weil der Workflow mit dem Branch lebt. Sobald ein Repository initialisiert ist, reisen Regeln, Routing und installierte Workflow-Flächen im Repository mit, sodass Zusammenarbeit und Übergaben weniger von der Rechnerkonfiguration einer einzelnen Person abhängen.
+
+Für Teams, die bereits wissen, dass Agenten Code erzeugen können, beantwortet Truthmark das nächste Problem: wie das Repository selbst lesbar, prüfbar und steuerbar bleibt, wenn KI-gestützte Arbeit skaliert.
+
+## Visueller Überblick
+
+<table>
+	<tr>
+		<td align="center" width="50%">
+			<img src="docs/assets/truthmark-features.png" alt="Truthmark-Funktionen" width="100%" />
+			<br><strong>Funktionen</strong><br>
+			Was Truthmark installiert und wie sich die Workflow-Fläche aufteilt.
+		</td>
+		<td align="center" width="50%">
+			<img src="docs/assets/truthmark-position.png" alt="Truthmark-Positionierung" width="100%" />
+			<br><strong>Positionierung</strong><br>
+			Wo Truthmark im Verhältnis zu Prompts, Memory und Spec-Workflows steht.
+		</td>
+	</tr>
+	<tr>
+		<td align="center" colspan="2">
+			<img src="docs/assets/truthmark-syncflow.png" alt="Truthmark-Sync-Ablauf" width="100%" />
+			<br><strong>Sync-Ablauf</strong><br>
+			Wie Truth Sync normale Codeänderungen vor einer Übergabe abschließt.
+		</td>
+	</tr>
+</table>
+
+## Warum Teams es nutzen
+
+Truthmark versucht nicht, Agenten klüger wirken zu lassen. Es soll KI-gestützte Repository-Änderungen vertrauenswürdiger machen.
+
+- Automatisierte Truth-Sync-Läufe nach Codeänderungen machen Dokumentationspflege zu einer Workflow-Schutzschicht statt zu einer Teamgewohnheit.
+- Branch-gebundene Wahrheit bewegt sich mit dem Code, sodass Reviewer aktuelle Wahrheit in normalen Git-Diffs prüfen können.
+- Repository-native Workflow-Flächen machen Rollout leichter und Übergaben robuster als reine Pro-User-Konfiguration.
+- Explizites Routing in `docs/truthmark/areas.md` und delegierten untergeordneten Routendateien gibt Agenten Zuständigkeitsgrenzen und sicherere Schreibpfade.
+- Local-first-Betrieb vermeidet einen Daemon, eine Datenbank, einen Remote-Dienst oder eine MCP-Abhängigkeit.
 - Das Modell funktioniert in Codebasen mit JavaScript, TypeScript, Go, Python, C# und Java.
 
-Für Tech Leads liegt der Wert in Governance ohne Theater: Tests, Code Review und Ownership leisten weiterhin die eigentliche Arbeit; Truthmark macht den Kontext des Agenten dauerhaft, prüfbar und branch-gebunden.
+Für Tech Leads liegt der Wert in Governance ohne Zusatzinfrastruktur: Tests, Code Review und Ownership leisten weiterhin die eigentliche Arbeit; Truthmark macht den Kontext des Agenten dauerhaft, prüfbar und branch-gebunden.
 
 ## Wo Truthmark hineinpasst
 
-Truthmark versucht nicht, jedes andere KI-Workflow-Tool zu ersetzen. Es sitzt in einer bestimmten Schicht des Stacks:
+Truthmark ist keine allgemeine KI-Produktivitätssuite. Es besetzt eine bestimmte Schicht im Stack: branch-gebundene, prüfbare Repository-Wahrheit, die mit der Implementierung synchron bleibt.
 
 | Wenn du brauchst                                                            | Beste Wahl                                  |
 | --------------------------------------------------------------------------- | ------------------------------------------- |
@@ -38,9 +75,9 @@ Der Punkt ist nicht, dass Prompts, Memory oder Specs nutzlos wären. Der Punkt i
 
 ## Inhalt
 
+- [Warum Teams es nutzen](#warum-teams-es-nutzen)
 - [Was Truthmark löst](#was-truthmark-löst)
 - [Wo Truthmark hineinpasst](#wo-truthmark-hineinpasst)
-- [Workflow-Fläche](#workflow-fläche)
 - [Erste Schritte](#erste-schritte)
 - [Wie es läuft](#wie-es-läuft)
 - [Was es installiert](#was-es-installiert)
@@ -51,12 +88,13 @@ Der Punkt ist nicht, dass Prompts, Memory oder Specs nutzlos wären. Der Punkt i
 - [Nicht-Ziele](#nicht-ziele)
 - [Lizenz](#lizenz)
 
-## Workflow-Fläche
+## Was Truthmark löst
 
 Truthmark macht Repository-Wahrheit zu einer expliziten Workflow-Fläche für Agenten:
 
-- `TRUTHMARK.md` definiert den branch-lokalen Workflow-Vertrag.
+- `.truthmark/config.yml` definiert den festgeschriebenen Hierarchievertrag.
 - `docs/truthmark/areas.md` und delegierte untergeordnete Routendateien ordnen Codebereiche den Dokumenten zu, die sie verantworten.
+- Truth Document erstellt oder repariert kanonische Wahrheitsdokumente für bereits implementiertes Verhalten, wenn keine Codeänderung nötig ist.
 - Truth Sync hält zugeordnete Wahrheitsdokumente bei funktionalen Änderungen synchron.
 - Truth Realize gibt doc-first Änderungen einen begrenzten Pfad für Code-Updates.
 - `truthmark check` validiert die daraus entstehenden Wahrheitsartefakte.
@@ -92,14 +130,15 @@ Prüfe `.truthmark/config.yml` vor `init`; es ist der in Git festgeschriebene Hi
 
 ```text
 .truthmark/config.yml
-TRUTHMARK.md
 docs/truthmark/areas.md
 docs/truthmark/areas/repository.md
+docs/templates/feature-doc.md
 docs/features/README.md
 docs/features/repository/README.md
 docs/features/repository/overview.md
 AGENTS.md
 CLAUDE.md
+GEMINI.md
 ```
 
 Unterstützte Plattformen sind `codex`, `opencode`, `claude-code`, `github-copilot` und `gemini-cli`. Die Standardkonfiguration enthält alle davon; entferne Plattformen, die du nicht nutzt, aus `.truthmark/config.yml`, bevor du `truthmark init` erneut ausführst.
@@ -109,8 +148,11 @@ Bestehende Repositories brauchen nach `init` meist einen Aufräumschritt: Führe
 
 ## Wie es läuft
 
-Truthmark legt nicht fest, welcher Subagent Truth Sync ausführen soll. Der handelnde Agent und die Host-Umgebung entscheiden, ob delegiert oder der Workflow inline ausgeführt wird.
-Die meisten Nutzer sollten Truth Sync nicht direkt aufrufen müssen. Der normale Ablauf ist:
+Truthmark ist am stärksten auf dem Standardpfad, nicht als Sammlung manueller Befehle. Der handelnde Agent und die Host-Umgebung entscheiden, ob delegiert oder der installierte Workflow inline ausgeführt wird.
+
+Nutze Truth Document, wenn implementiertes Verhalten bereits existiert, aber die kanonischen Wahrheitsdokumente fehlen oder schwach sind. Der Agent liest Implementierung, Tests, Routing und vorhandene Dokumente, schreibt nur Wahrheitsdokumente und Routing und darf funktionalen Code nicht ändern. Codex, Claude Code und unterstützte Copilot-IDEs können es mit `/truthmark-document` aufrufen; Hosts im OpenCode-Stil können `/skill truthmark-document` verwenden.
+
+Die meisten Nutzer sollten Truth Sync nicht direkt aufrufen müssen. Entscheidend ist, dass Truth Sync als automatische Abschlusskontrolle wirkt, wenn funktionaler Code geändert wurde. Der normale Ablauf ist:
 
 ```text
 Agent ändert funktionalen Code
@@ -138,29 +180,31 @@ Codex, Claude Code und unterstützte Copilot-IDEs können es mit `/truthmark-rea
 
 ## Was es installiert
 
-Truthmark hält die dauerhafte Workflow-Fläche klein:
+Truthmark hält die dauerhafte Workflow-Fläche klein und repository-nativ. Nach `truthmark init` trägt das Repository selbst Routing, Regeln und installierte Workflow-Flächen, sodass Teams nicht nur auf die lokale Konfiguration einer einzelnen Person angewiesen sind.
 
 - `.truthmark/config.yml` für maschinenlesbare Konfiguration
-- `TRUTHMARK.md` für den branch-lokalen Workflow-Vertrag
+- `.truthmark/config.yml` für den festgeschriebenen Hierarchievertrag
 - `docs/truthmark/areas.md` für den Root-Routenindex
 - `docs/truthmark/areas/**/*.md` für delegierte untergeordnete Routendateien
+- `docs/templates/feature-doc.md` für den editierbaren Feature-Dokument-Standard der generierten Workflows
 - verwaltete Instruktionsblöcke für konfigurierte Plattformen wie `AGENTS.md`, `CLAUDE.md`, Copilot-Anweisungen und `GEMINI.md`
-- host-native Skills, Prompts oder Commands für Truth Structure, Truth Sync, Truth Realize und Truth Check
+- host-native Skills, Prompts oder Commands für Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check
 
 Die installierten Workflow-Flächen sind die Runtime:
 
 - Truth Structure erstellt oder repariert Area-Routing und erste Wahrheitsdokumente.
+- Truth Document erstellt oder repariert Wahrheitsdokumente für bereits implementiertes Verhalten.
 - Truth Sync hält zugeordnete Wahrheitsdokumente bei funktionalen Änderungen synchron.
 - Truth Realize aktualisiert Code so, dass er zu den Wahrheitsdokumenten passt.
 - Truth Check auditiert die Gesundheit der Repository-Wahrheit.
 
-`README.md`-Dateien von Features sind Indizes. Truth Sync soll begrenzte Blattdokumente für aktuelles Verhalten lesen und aktualisieren.
+`README.md`-Dateien von Features sind Indizes. Truth Sync soll begrenzte Blattdokumente für aktuelles Verhalten lesen und aktualisieren. Generierte Workflow-Flächen bewahren die Autorität der Repository-Regeln, während sie Implementierungscode und kanonische Wahrheitsdokumente als Belege für aktuelles Verhalten behandeln.
 
 Generierte Flächen werden von Truthmark verwaltet, enthalten einen Versionsmarker und können mit `truthmark init` aktualisiert werden.
 
 ## Befehle
 
-Truthmark V1 hält die CLI absichtlich klein. In nachgelagerten Repositories erzeugt `truthmark config` den in Git festgeschriebenen Hierarchievertrag, `truthmark init` installiert und aktualisiert Workflow-Flächen aus dieser geprüften Konfiguration, und `truthmark check` validiert Wahrheitsartefakte für manuelle Audits, CI oder Fehlersuche.
+Truthmark V1 hält die CLI absichtlich klein, weil der laufende Workflow in den installierten Agenten-Flächen leben soll und nicht in einer langen Liste täglicher manueller Befehle. In nachgelagerten Repositories erzeugt `truthmark config` den in Git festgeschriebenen Hierarchievertrag, `truthmark init` installiert und aktualisiert Workflow-Flächen aus dieser geprüften Konfiguration, und `truthmark check` validiert Wahrheitsartefakte für manuelle Audits, CI oder Fehlersuche.
 
 ```bash
 truthmark config
@@ -173,7 +217,7 @@ truthmark check --json
 `config` schreibt nur `.truthmark/config.yml`, außer `--stdout` wird verwendet.
 `init` benötigt `.truthmark/config.yml` und installiert oder aktualisiert anschließend die lokalen Workflow-Dateien.
 `check` validiert Konfiguration, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope und Coverage-Diagnostik.
-Truth Structure, Truth Sync, Truth Realize und Truth Check sind installierte Agenten-Workflows, keine täglichen Top-Level-CLI-Befehle.
+Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check sind installierte Agenten-Workflows, keine täglichen Top-Level-CLI-Befehle.
 
 ## Warum es existiert
 
@@ -191,14 +235,14 @@ Es geht davon aus, dass ernsthafte Teams Folgendes brauchen:
 
 ## Projektstatus
 
-Truthmark ist kein Memory-Server und kein MCP-Server. Es ist eine Repository-Praxis, verpackt als kleiner CLI-Installer plus agent-native Workflow-Flächen.
+Truthmark ist kein Memory-Server und kein MCP-Server. Es ist eine Repository-Praxis, verpackt als kleiner CLI-Installer plus agent-native Workflow-Flächen, die KI-Workflow-Regeln in Repository-Infrastruktur verwandeln.
 V1 bietet derzeit:
 
 - `truthmark config`
 - `truthmark init`
 - `truthmark check`
 - verwaltete `AGENTS.md`-Workflow-Anweisungen
-- generierte Skill-Flächen für Truth Structure, Truth Sync, Truth Realize und Truth Check für konfigurierte Agenten-Hosts
+- generierte Skill-Flächen für Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check für konfigurierte Agenten-Hosts
 - Branch-Scope-Metadaten
 - Diagnostik für Konfiguration, Autorität, Routing, Entscheidungsstruktur, Frontmatter, Links und polyglotte Abdeckung
 

@@ -40,7 +40,6 @@ Current fields:
 
 The default scaffolded authority list includes:
 
-- `TRUTHMARK.md`
 - `docs/truthmark/areas.md`
 - `docs/truthmark/areas/**/*.md`
 - `docs/ai/**/*.md`
@@ -112,12 +111,14 @@ The command emits `action` diagnostics describing whether each scaffolded file w
 `truthmark init` requires an existing valid `.truthmark/config.yml`. It does not create config; `truthmark config` is the required first step in a new repository.
 Configured `instruction_targets` are generated or refreshed independently of platform-specific surfaces, so `AGENTS.md` remains managed even when `claude-code` is not in `platforms`.
 
-Generated Truth Structure, Truth Sync, and Truth Check surfaces and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
+Generated Truth Structure, Truth Document, Truth Sync, and Truth Check surfaces and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
 
 Current agent-native scaffold targets include:
 
 - `.codex/skills/truthmark-structure/SKILL.md`
 - `.codex/skills/truthmark-structure/agents/openai.yaml`
+- `.codex/skills/truthmark-document/SKILL.md`
+- `.codex/skills/truthmark-document/agents/openai.yaml`
 - `.codex/skills/truthmark-sync/SKILL.md`
 - `.codex/skills/truthmark-sync/agents/openai.yaml`
 - `.codex/skills/truthmark-realize/SKILL.md`
@@ -125,10 +126,12 @@ Current agent-native scaffold targets include:
 - `.codex/skills/truthmark-check/SKILL.md`
 - `.codex/skills/truthmark-check/agents/openai.yaml`
 - `.claude/skills/truthmark-structure/SKILL.md`
+- `.claude/skills/truthmark-document/SKILL.md`
 - `.claude/skills/truthmark-sync/SKILL.md`
 - `.claude/skills/truthmark-realize/SKILL.md`
 - `.claude/skills/truthmark-check/SKILL.md`
 - `.opencode/skills/truthmark-structure/SKILL.md`
+- `.opencode/skills/truthmark-document/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
@@ -136,16 +139,18 @@ Current agent-native scaffold targets include:
 - `CLAUDE.md`
 - `.github/copilot-instructions.md`
 - `.github/prompts/truthmark-structure.prompt.md`
+- `.github/prompts/truthmark-document.prompt.md`
 - `.github/prompts/truthmark-sync.prompt.md`
 - `.github/prompts/truthmark-realize.prompt.md`
 - `.github/prompts/truthmark-check.prompt.md`
 - `GEMINI.md`
 - `.gemini/commands/truthmark/structure.toml`
+- `.gemini/commands/truthmark/document.toml`
 - `.gemini/commands/truthmark/sync.toml`
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 
-Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, and OpenCode-style skill indexers can parse every generated workflow surface. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks and `TRUTHMARK.md` also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. `TRUTHMARK.md` stays a compact branch-local contract rather than a duplicate workflow procedure surface. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, and OpenCode-style skill indexers can parse every generated workflow surface. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
 
 ## Check Result Data
 
@@ -168,7 +173,6 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 `relevantFileHashes` currently tracks hashes for:
 
 - `.truthmark/config.yml`
-- `TRUTHMARK.md`
 - the configured root route index
 - configured child route files under the configured area-files root
 
@@ -195,7 +199,7 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 
 - The committed config file owns the documentation hierarchy contract, while route files own domain-to-doc mappings.
 - `truthmark config` and `truthmark init` are separate contracts so repositories can review hierarchy before workflow installation.
-- Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Short inline decision dates are allowed on the active decision itself.
+- Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Date active decisions inline when added or changed.
 - The V1 user-facing CLI surface is limited to `config`, `init`, and `check`; workflow verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, `build`, and `context` are not top-level commands.
 - `gemini-cli` installs both hierarchical `GEMINI.md` context and project-scoped `.gemini/commands/truthmark/*.toml` custom commands so Gemini users get the same explicit workflow entrypoints without adding top-level CLI verbs.
 

@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Document"
+  short_description: "Document existing implemented behavior"
+  default_prompt: "Use $truthmark-document to document existing implemented behavior."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "1.2.3"
+  refresh_command: "truthmark init"

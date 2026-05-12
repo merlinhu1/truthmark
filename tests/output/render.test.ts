@@ -78,7 +78,7 @@ describe("output rendering", () => {
         },
       ],
       data: {
-        files: [".truthmark/config.yml", "TRUTHMARK.md"],
+        files: [".truthmark/config.yml", "docs/truthmark/areas.md"],
       },
     };
 

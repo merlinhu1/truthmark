@@ -1,10 +1,10 @@
 ---
 status: active
 doc_type: index
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-12
 source_of_truth:
   - docs/ai/repo-rules.md
-  - ../TRUTHMARK.md
+  - ../.truthmark/config.yml
 ---
 
 # Truthmark Docs Index
@@ -13,14 +13,14 @@ source_of_truth:
 
 `docs/` is Truthmark's canonical repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, and current feature behavior separate from onboarding copy and historical planning notes.
 
-`AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. [TRUTHMARK.md](../TRUTHMARK.md) remains the top-level branch-local workflow contract.
+`AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. `.truthmark/config.yml` defines the committed hierarchy contract.
 
 ## Authority Order
 
 When documents conflict, authority descends in this order:
 
 1. [docs/ai/repo-rules.md](ai/repo-rules.md) for repository-wide agent rules and completion policy
-2. [TRUTHMARK.md](../TRUTHMARK.md) for the top-level truth-workflow contract
+2. [.truthmark/config.yml](../.truthmark/config.yml) for the committed hierarchy contract
 3. [docs/truthmark/areas.md](truthmark/areas.md) and `docs/truthmark/areas/**/*.md` for code-to-doc routing metadata
 4. `docs/standards/**/*.md` for reusable repository standards
 5. `docs/architecture/**/*.md` for current structure and module boundaries
@@ -37,6 +37,7 @@ When documents conflict, authority descends in this order:
 - `docs/standards/` for reusable constraints and completion rules
 - `docs/architecture/` for current system structure
 - `docs/features/` for current behavior and invariants
+- `docs/templates/` for editable scaffold templates used to create new docs
 - `docs/features/contracts.md` for stable contracts the CLI exposes
 
 ### Human-centric docs
@@ -52,6 +53,7 @@ When documents conflict, authority descends in this order:
 | `docs/standards/` | standard | agent | Reusable constraints, verification rules, completion gates |
 | `docs/architecture/` | architecture | agent | Current structure and module boundaries |
 | `docs/features/` | feature | agent | Current behavior for init, check, contracts, and installed workflows |
+| `docs/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
 
 ## Frontmatter Policy
 
@@ -82,7 +84,7 @@ New repositories should run `truthmark config` before `truthmark init` so teams 
 ### For humans
 
 1. [README.md](../README.md)
-2. [TRUTHMARK.md](../TRUTHMARK.md)
+2. [.truthmark/config.yml](../.truthmark/config.yml)
 3. [docs/ai/repo-rules.md](ai/repo-rules.md)
 4. [docs/architecture/overview.md](architecture/overview.md)
 5. the relevant feature or standard doc for the area being changed

@@ -5,12 +5,10 @@ import { createTempRepo } from "../helpers/temp-repo.js";
 import { discoverMarkdownDocuments } from "../../src/markdown/discovery.js";
 import {
   renderConfigTemplate,
-  renderTruthmarkTemplate,
   renderAreasTemplate,
 } from "../../src/templates/init-files.js";
 import { renderDefaultStandards } from "../../src/templates/default-standards.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("discoverMarkdownDocuments", () => {
   it("finds repository markdown docs and ignores common derived directories", async () => {
@@ -124,28 +122,12 @@ describe("init templates", () => {
       required: [],
       recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
     });
-    expect(config.docs.roots).not.toHaveProperty("specs_draft");
-  });
-
-  it("renders TRUTHMARK.md as a compact branch-local truth contract", () => {
-    const truthmark = renderTruthmarkTemplate();
-
-    expect(truthmark).toContain(
-      "Markdown in the current checkout is authoritative for this branch.",
-    );
-    expect(truthmark).toContain(
-      `Truthmark ${TRUTHMARK_VERSION} version marker`,
-    );
-    expect(truthmark).toContain("rerun `truthmark init`");
-    expect(truthmark).toContain(
-      "Workflow runtime lives in installed skills and managed instruction blocks.",
-    );
-    expect(truthmark).toContain(
-      "Truth Sync follows code; Truth Realize follows docs.",
-    );
-    expect(truthmark.split("\n").length).toBeLessThanOrEqual(18);
-    expect(truthmark).not.toContain("Truth Structure");
-    expect(truthmark).not.toContain("Truth Check");
+    expect(config.docs.roots).toEqual({
+      ai: "docs/ai",
+      standards: "docs/standards",
+      architecture: "docs/architecture",
+      features: "docs/features",
+    });
   });
 
   it("seeds docs/truthmark/areas.md from discovered docs without moving them", () => {
@@ -179,12 +161,18 @@ describe("init templates", () => {
     expect(agentsBlock).not.toContain("### Truth Structure");
     expect(agentsBlock).not.toContain("### Truth Check");
     expect(agentsBlock).toContain(
-      "Explicit workflows: Truth Structure, Truth Realize, Truth Check",
+      "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
     );
     expect(agentsBlock).toContain(
       "may write truth docs and docs/truthmark/areas.md only",
     );
     expect(agentsBlock).toContain("must not rewrite functional code");
+    expect(agentsBlock).toContain(
+      "if routing is missing/stale/broad/overloaded/catch-all or cannot map changed code to a bounded truth owner",
+    );
+    expect(agentsBlock).toContain(
+      "otherwise block and recommend Truth Structure",
+    );
     expect(agentsBlock).not.toContain("write functional code only");
     expect(agentsBlock).not.toContain("do not edit truth docs or truth routing");
   });
@@ -196,6 +184,12 @@ describe("init templates", () => {
       "docs/standards/default-principles.md",
       "docs/standards/documentation-governance.md",
     ]);
+    expect(missingStandards.map((template) => template.content).join("\n")).toContain(
+      "Architecture docs describe system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, and generated-surface ownership.",
+    );
+    expect(missingStandards.map((template) => template.content).join("\n")).toContain(
+      "Do not put ordinary feature behavior in architecture docs.",
+    );
 
     const existingStandards = renderDefaultStandards([
       {

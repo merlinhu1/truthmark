@@ -89,7 +89,6 @@ describe("getUncommittedChanges", () => {
 describe("classifyPath", () => {
   it("treats markdown docs and config files as non-functional", () => {
     expect(classifyPath("docs/guides/authentication.md", [])).toBe("markdown");
-    expect(classifyPath("TRUTHMARK.md", [])).toBe("markdown");
     expect(classifyPath(".truthmark/config.yml", [])).toBe("config");
     expect(classifyPath("package.json", [])).toBe("config");
     expect(classifyPath("src/auth/session.ts", [])).toBe("functional-code");

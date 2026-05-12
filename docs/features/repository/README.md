@@ -1,9 +1,9 @@
 ---
 status: active
 doc_type: index
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-13
 source_of_truth:
-  - ../../truthmark/areas/repository.md
+  - ../../truthmark/areas/init-and-scaffold.md
 ---
 
 # Repository Feature Docs
