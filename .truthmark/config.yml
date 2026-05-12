@@ -18,7 +18,6 @@ docs:
     default_area: repository
     max_delegation_depth: 1
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
   - docs/truthmark/areas/**/*.md
   - docs/ai/**/*.md

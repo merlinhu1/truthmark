@@ -1,6 +1,7 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import { EVIDENCE_AUTHORITY_INSTRUCTIONS, defaultAgentConfig } from "../agents/shared.js";
 import { renderTruthCheckSkillBody } from "../agents/truth-check.js";
+import { renderTruthDocumentSkillBody } from "../agents/truth-document.js";
 import { renderTruthStructureSkillBody } from "../agents/truth-structure.js";
 import { renderTruthSyncSkillBody } from "../agents/truth-sync.js";
 import { TRUTHMARK_VERSION } from "../version.js";
@@ -10,6 +11,12 @@ export const TRUTHMARK_STRUCTURE_SKILL_PATH =
 
 export const TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH =
   ".codex/skills/truthmark-structure/agents/openai.yaml";
+
+export const TRUTHMARK_DOCUMENT_SKILL_PATH =
+  ".codex/skills/truthmark-document/SKILL.md";
+
+export const TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH =
+  ".codex/skills/truthmark-document/agents/openai.yaml";
 
 export const TRUTHMARK_SYNC_SKILL_PATH = ".codex/skills/truthmark-sync/SKILL.md";
 
@@ -30,6 +37,9 @@ export const TRUTHMARK_CHECK_SKILL_METADATA_PATH =
 export const TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH =
   ".gemini/commands/truthmark/structure.toml";
 
+export const TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH =
+  ".gemini/commands/truthmark/document.toml";
+
 export const TRUTHMARK_GEMINI_SYNC_COMMAND_PATH =
   ".gemini/commands/truthmark/sync.toml";
 
@@ -41,6 +51,9 @@ export const TRUTHMARK_GEMINI_CHECK_COMMAND_PATH =
 
 export const TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH =
   ".github/prompts/truthmark-structure.prompt.md";
+
+export const TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH =
+  ".github/prompts/truthmark-document.prompt.md";
 
 export const TRUTHMARK_COPILOT_SYNC_PROMPT_PATH =
   ".github/prompts/truthmark-sync.prompt.md";
@@ -96,6 +109,33 @@ truthmark:
 `;
 };
 
+export const renderTruthmarkDocumentSkill = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderTruthDocumentSkillBody(config);
+};
+
+export const renderTruthmarkDocumentLocalSkill = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderTruthDocumentSkillBody(config);
+};
+
+export const renderTruthmarkDocumentSkillMetadata = (): string => {
+  return `interface:
+  display_name: "Truthmark Document"
+  short_description: "Document existing implemented behavior"
+  default_prompt: "Use $truthmark-document to document existing implemented behavior."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "${TRUTHMARK_VERSION}"
+  refresh_command: "truthmark init"
+`;
+};
+
 export const renderTruthmarkSyncSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
@@ -111,8 +151,8 @@ export const renderTruthmarkSyncLocalSkill = (
 export const renderTruthmarkSyncSkillMetadata = (): string => {
   return `interface:
   display_name: "Truthmark Sync"
-  short_description: "Sync truth docs from changed code"
-  default_prompt: "Use $truthmark-sync to sync truth docs from changed code."
+  short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"
+  default_prompt: "Use $truthmark-sync after functional code changes; skip docs-only/no-code changes."
 
 policy:
   allow_implicit_invocation: true
@@ -147,7 +187,7 @@ Truth Realize is doc-first:
 Workflow:
 
 1. Read the updated truth docs named by the user, or infer the relevant docs from docs/truthmark/areas.md.
-2. Read .truthmark/config.yml, TRUTHMARK.md, docs/truthmark/areas.md, and the relevant functional code.
+2. Read .truthmark/config.yml, docs/truthmark/areas.md, and the relevant functional code.
 3. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 4. Update functional code only so implementation matches the truth docs.
 5. Do not edit truth docs or truth routing while realizing those docs.
@@ -236,11 +276,20 @@ export const renderTruthmarkGeminiStructureCommand = (
   );
 };
 
+export const renderTruthmarkGeminiDocumentCommand = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderGeminiCommand(
+    "Document existing implemented behavior.",
+    renderTruthDocumentSkillBody(config),
+  );
+};
+
 export const renderTruthmarkGeminiSyncCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderGeminiCommand(
-    "Sync repository truth docs from changed code.",
+    "Sync repository truth docs from functional code changes; skip docs-only/no-code changes.",
     renderTruthSyncSkillBody(config),
   );
 };
@@ -270,11 +319,20 @@ export const renderTruthmarkCopilotStructurePrompt = (
   );
 };
 
+export const renderTruthmarkCopilotDocumentPrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderCopilotPromptFile(
+    "Document existing implemented behavior.",
+    renderTruthDocumentSkillBody(config),
+  );
+};
+
 export const renderTruthmarkCopilotSyncPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderCopilotPromptFile(
-    "Sync repository truth docs from changed code.",
+    "Sync repository truth docs from functional code changes; skip docs-only/no-code changes.",
     renderTruthSyncSkillBody(config),
   );
 };

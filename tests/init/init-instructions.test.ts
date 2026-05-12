@@ -27,7 +27,7 @@ describe("runInit instruction integration", () => {
       expect(agents).toContain("code changed -> tests -> Sync -> report");
       expect(agents).toContain("Delegation is host-owned");
       expect(agents).toContain(
-        "Explicit workflows: Truth Structure, Truth Realize, Truth Check",
+        "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
       );
       expect(agents).toContain("load the installed skill for details");
       expect(agents).not.toContain("/skill truthmark-structure");
@@ -59,7 +59,6 @@ describe("runInit instruction integration", () => {
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
   - docs/truthmark/areas/**/*.md
 instruction_targets:

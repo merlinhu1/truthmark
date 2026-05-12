@@ -25,7 +25,6 @@ export const TRUTH_SYNC_BOUNDARIES = {
     "changed functional code files",
     "nearby implementation context when needed to understand the changed surface",
     ".truthmark/config.yml",
-    "TRUTHMARK.md",
     "docs/truthmark/areas.md",
     "mapped truth docs",
   ],

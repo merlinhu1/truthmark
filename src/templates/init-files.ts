@@ -3,31 +3,9 @@ import { stringify } from "yaml";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
 import { createDefaultRawConfig } from "../config/defaults.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 
 export const renderConfigTemplate = (): string => {
   return stringify(createDefaultRawConfig());
-};
-
-export const renderTruthmarkTemplate = (): string => {
-  return `---
-status: active
-doc_type: workflow-contract
-last_reviewed: 2026-05-10
-source_of_truth:
-  - .truthmark/config.yml
----
-
-# Truthmark
-
-Markdown in the current checkout is authoritative for this branch.
-
-Installed workflow surfaces include a Truthmark ${TRUTHMARK_VERSION} version marker. After upgrading Truthmark, rerun \`truthmark init\` and review generated workflow diffs.
-
-Workflow runtime lives in installed skills and managed instruction blocks. Agents inspect the checkout directly; \`truthmark check\` is optional validation.
-
-Truth Sync follows code; Truth Realize follows docs. Truth Sync may update mapped truth docs; Truth Realize never edits truth docs or routing.
-`;
 };
 
 export const renderAreasTemplate = (
@@ -172,36 +150,129 @@ export const renderFeatureDomainReadmeTemplate = (config: TruthmarkConfig): stri
   ].join("\n");
 };
 
-export const renderFeatureLeafDocTemplate = (config: TruthmarkConfig): string => {
-  const defaultArea = config.docs.routing.defaultArea;
-  const title = titleCase(defaultArea);
+export const FEATURE_DOC_TEMPLATE_PATH = "docs/templates/feature-doc.md";
 
+export const renderFeatureDocTemplateFile = (): string => {
   return [
     "---",
     "status: active",
     "doc_type: feature",
-    "last_reviewed: 2026-05-09",
+    "last_reviewed: 2026-05-12",
     "source_of_truth:",
-    `  - ../../truthmark/areas/${defaultArea}.md`,
+    "  - {{source_of_truth}}",
     "---",
     "",
-    `# ${title} Overview`,
+    "# {{title}}",
+    "",
+    "## Purpose",
+    "",
+    "<!-- State why this feature exists, the user or system outcome it protects, and the problem it solves. Keep roadmap or implementation plans out of this section. -->",
+    "",
+    "{{purpose}}",
     "",
     "## Scope",
     "",
-    `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
+    "{{scope}}",
+    "",
+    "<!--",
+    "This doc must own one coherent behavior surface.",
+    "Split into another leaf doc when content introduces:",
+    "- a distinct user or system outcome",
+    "- a separate lifecycle or state machine",
+    "- an unrelated rule family",
+    "- a different external contract",
+    "- code that should route through a different owner",
+    "Keep README.md files as indexes only.",
+    "-->",
+    "",
+    "This doc was created from the editable feature-doc template at {{template_path}}.",
     "",
     "## Current Behavior",
     "",
-    "- Document current behavior here when implementation changes make repository truth incomplete.",
+    "<!-- Describe implemented behavior in present tense. Do not include desired future behavior. -->",
+    "",
+    "{{current_behavior}}",
+    "",
+    "## Core Rules",
+    "",
+    "<!-- Capture stable business rules, invariants, precedence rules, validation rules, and must-never constraints. Omit incidental implementation details. -->",
+    "",
+    "{{core_rules}}",
+    "",
+    "## Flows And States",
+    "",
+    "<!-- Use for route switches, state transitions, lifecycle stages, retries, fallbacks, and important error paths. Write 'None beyond current behavior.' when no distinct flow or state model exists. -->",
+    "",
+    "{{flows_and_states}}",
+    "",
+    "## Contracts",
+    "",
+    "<!-- Capture user-visible or integration contracts: CLI/API shape, inputs, outputs, diagnostics, files, events, permissions, or links to canonical contract docs. Avoid duplicating a separate canonical contract doc. -->",
+    "",
+    "{{contracts}}",
     "",
     "## Product Decisions",
     "",
-    "- Decision (2026-05-09): Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+    "<!-- Keep active decisions only. Replace stale decisions instead of appending historical logs. -->",
+    "",
+    "{{decision}}",
     "",
     "## Rationale",
     "",
-    "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
+    "<!-- Explain why the current behavior and active decisions are this way, including tradeoffs. -->",
+    "",
+    "{{rationale}}",
+    "",
+    "## Non-Goals",
+    "",
+    "<!-- Name adjacent behavior this doc intentionally does not own, especially tempting future expansions. -->",
+    "",
+    "{{non_goals}}",
+    "",
+    "## Maintenance Notes",
+    "",
+    "<!-- List related tests, routing cautions, migration notes, and common drift risks for future agents. Keep this operational, not historical. -->",
+    "",
+    "{{maintenance_notes}}",
     "",
   ].join("\n");
+};
+
+const renderTemplate = (template: string, values: Record<string, string>): string => {
+  return Object.entries(values).reduce((rendered, [key, value]) => {
+    return rendered.split(`{{${key}}}`).join(value);
+  }, template);
+};
+
+export const renderFeatureLeafDocTemplate = (
+  config: TruthmarkConfig,
+  template = renderFeatureDocTemplateFile(),
+): string => {
+  const defaultArea = config.docs.routing.defaultArea;
+  const title = titleCase(defaultArea);
+
+  return renderTemplate(template, {
+    area: defaultArea,
+    contracts:
+      "- External contracts should link to the nearest canonical contract doc when one exists.",
+    core_rules:
+      "- Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+    current_behavior:
+      "- Document current behavior here when implementation changes make repository truth incomplete.",
+    decision:
+      "- Decision (2026-05-09): Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+    flows_and_states: "- None beyond current behavior.",
+    maintenance_notes:
+      "- Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.",
+    non_goals:
+      "- This doc is not a catch-all for unrelated repository behavior.",
+    purpose:
+      `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
+    rationale:
+      "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
+    scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
+    source_of_truth: `../../truthmark/areas/${defaultArea}.md`,
+    template_path: FEATURE_DOC_TEMPLATE_PATH,
+    title: `${title} Overview`,
+  });
 };

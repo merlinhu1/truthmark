@@ -64,8 +64,8 @@ describe("runCheck", () => {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "TRUTHMARK.md",
-        `${await repo.readFile("TRUTHMARK.md")}\nSee [Missing](docs/missing.md).\n`,
+        "docs/features/repository/overview.md",
+        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Missing](docs/missing.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -92,8 +92,8 @@ describe("runCheck", () => {
         "utf8",
       );
       await repo.writeFile(
-        "TRUTHMARK.md",
-        `${await repo.readFile("TRUTHMARK.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
+        "docs/features/repository/overview.md",
+        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -102,7 +102,7 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "TRUTHMARK.md",
+            diagnostic.file === "docs/features/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -133,8 +133,8 @@ describe("runCheck", () => {
         path.resolve(repo.rootDir, "docs", "linked-outside.md"),
       );
       await repo.writeFile(
-        "TRUTHMARK.md",
-        `${await repo.readFile("TRUTHMARK.md")}\nSee [Outside](docs/linked-outside.md).\n`,
+        "docs/features/repository/overview.md",
+        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Outside](docs/linked-outside.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -143,7 +143,7 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "TRUTHMARK.md",
+            diagnostic.file === "docs/features/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -163,7 +163,7 @@ describe("runCheck", () => {
     try {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
-      await fs.rm(`${repo.rootDir}/TRUTHMARK.md`);
+      await fs.rm(`${repo.rootDir}/docs/truthmark/areas.md`);
 
       const result = await runCheck(repo.rootDir);
 
@@ -193,7 +193,6 @@ describe("runCheck", () => {
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
   - ../truthmark-outside-authority.md
   - ../truthmark-outside-*.md
 instruction_targets:
@@ -264,7 +263,6 @@ realization:
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
   - docs/custom/outside-authority.md
 instruction_targets:
   - AGENTS.md
@@ -556,7 +554,6 @@ docs:
     default_area: repository
     max_delegation_depth: 1
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
   - docs/truthmark/areas/**/*.md
   - docs/features/**/*.md
@@ -564,7 +561,6 @@ realization:
   enabled: true
 `,
       );
-      await repo.writeFile("TRUTHMARK.md", "# Truthmark\n");
       await repo.writeFile(
         "docs/truthmark/areas.md",
         `# Truthmark Areas
@@ -695,7 +691,6 @@ Update truth when:
 platforms:
   - github-copilot
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
 frontmatter:
   required: []
@@ -762,7 +757,6 @@ realization:
 platforms:
   - gemini-cli
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
 instruction_targets:
   - AGENTS.md
@@ -774,7 +768,6 @@ realization:
   enabled: true
 `,
       );
-      await repo.writeFile("TRUTHMARK.md", "# Truthmark\n");
       await repo.writeFile("docs/truthmark/areas.md", "# Truthmark Areas\n");
       await runInit(repo.rootDir);
       await repo.writeFile(
@@ -982,7 +975,6 @@ Update truth when:
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
   - docs/features/**/*.md
 instruction_targets:
@@ -1455,7 +1447,6 @@ Update truth when:
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
   - docs/truthmark/areas.md
   - docs/features/**/*.md
 instruction_targets:

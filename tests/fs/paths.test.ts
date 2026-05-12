@@ -48,4 +48,22 @@ describe("repo path writes", () => {
       await repo.cleanup();
     }
   });
+
+  it("rejects ensureRepoFile when the target is a broken symlink outside the repo", async () => {
+    const repo = await createTempRepo();
+    const outsidePath = path.resolve(repo.rootDir, "..", "truthmark-paths-broken-link.md");
+
+    try {
+      await repo.writeFile("docs/templates/.keep", "");
+      await fs.symlink(outsidePath, path.join(repo.rootDir, "docs", "templates", "feature-doc.md"));
+
+      await expect(
+        ensureRepoFile(repo.rootDir, "docs/templates/feature-doc.md", "# Template\n"),
+      ).rejects.toThrow("must stay inside the repository root");
+      await expect(fs.stat(outsidePath)).rejects.toThrow();
+    } finally {
+      await fs.rm(outsidePath, { force: true });
+      await repo.cleanup();
+    }
+  });
 });

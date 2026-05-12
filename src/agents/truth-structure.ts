@@ -1,7 +1,9 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
+  ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS,
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
+  FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   defaultAgentConfig,
   renderHierarchySummary,
 } from "./shared.js";
@@ -37,7 +39,7 @@ export const renderTruthStructureSkillBody = (
 ): string => {
   return `---
 name: truthmark-structure
-description: Use when the user asks to design, repair, or refresh Truthmark area routing. Inspects the repository directly, updates docs/truthmark/areas.md, and may create starter canonical truth docs.
+description: Use when the user asks to design, repair, or refresh missing, stale, broad, overloaded, catch-all, or unrouteable Truthmark area routing. Inspects the repository directly, updates docs/truthmark/areas.md, and may create starter canonical truth docs.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -46,7 +48,7 @@ truthmark-version: ${TRUTHMARK_VERSION}
 Use this skill to design or repair Truthmark area structure.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
-- inspect repository layout, current docs, .truthmark/config.yml, TRUTHMARK.md, docs/truthmark/areas.md, and relevant code directly
+- inspect repository layout, current docs, .truthmark/config.yml, docs/truthmark/areas.md, and relevant code directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
 - define areas by product or behavior ownership, not by mechanical directory mirroring
@@ -54,6 +56,7 @@ Truth Structure is agent-native:
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
+${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 - use docs/features/**, docs/architecture/**, or docs/standards/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs
 - keep active Product Decisions and Rationale in the canonical doc that owns the behavior
@@ -76,7 +79,7 @@ Use these review thresholds as guidance:
 - more than 8 truth docs mapped to one area
 - more than 5 controllers mapped through one catch-all area
 Repair rules:
-- split broad catch-all areas into behavior-owned child route files
+- split broad, overloaded, or catch-all areas into behavior-owned child route files
 - create route files under ${config.docs.routing.areaFilesRoot}/ when a product/domain boundary is clear
 - create feature docs under the configured feature root only when behavior lacks a current doc
 - README.md files are indexes, not Truth Sync targets
@@ -85,12 +88,13 @@ Repair rules:
 - keep API endpoint details in the nearest contract truth doc when such a doc exists
 - update routing so future Truth Sync can target small docs
 - preserve existing authored docs; move or rewrite only when needed to remove ambiguity
+${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 - Do not finish topology repair with routed canonical current-truth docs missing Product Decisions or Rationale sections.
 - If an existing canonical doc lacks either section, add the missing heading beside Current Behavior with a concise current-state placeholder or active decision.
 Portable fallback:
 - If this skill surface is unavailable, perform the same workflow directly from committed repository files.
 - Do not require the truthmark CLI.
-- Read .truthmark/config.yml, TRUTHMARK.md, ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, canonical docs, and representative implementation code.
+- Read .truthmark/config.yml, ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, canonical docs, and representative implementation code.
 - Use a subagent only when the host supports that pattern; otherwise perform the topology repair inline.
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

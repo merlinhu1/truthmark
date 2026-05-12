@@ -29,7 +29,6 @@ const DISCOVERY_IGNORES = [
   "AGENTS.md",
   "CLAUDE.md",
   "GEMINI.md",
-  "TRUTHMARK.md",
   ".github/copilot-instructions.md",
   "docs/truthmark/**",
 ];

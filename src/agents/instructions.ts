@@ -9,7 +9,7 @@ export const renderTruthStructureInstructions = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return `### Truth Structure
-Use when area routing is missing, stale, broad, or explicitly requested.
+Use when area routing is missing, stale, broad, overloaded, catch-all, unrouteable, or explicitly requested.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Inspect repository layout, ${config.docs.routing.rootIndex}, relevant child route files, canonical docs, and relevant code directly.
 Create or repair routing and starter canonical truth docs only when useful. Use only canonical current-truth destinations for starter truth docs.
@@ -41,7 +41,7 @@ Truthmark is agent-native: installed skills and this managed block are the workf
 Code first: code leads; truth docs follow; Truth Sync never rewrites code for alignment.
 May write truth docs and docs/truthmark/areas.md only; must not rewrite functional code.
 Read ${config.docs.routing.rootIndex} and only relevant child route files under ${config.docs.routing.areaFilesRoot}/ when routing resolution requires them.
-If routing is broad, overloaded, or catch-all, run or recommend Truth Structure before syncing; do not create another generic feature doc.
+If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when repair is safe and in scope; otherwise block and recommend Truth Structure.
 If mapped truth is missing, extend mapped truth docs first, create an area-local truth doc second, and create a new area only as a last resort.
 Skip only for: ${TRUTH_SYNC_SKIP_REASONS.join("; ")}.`;
 };

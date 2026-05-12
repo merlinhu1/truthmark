@@ -1,12 +1,13 @@
 ---
 status: active
 doc_type: architecture
-last_reviewed: 2026-05-09
+last_reviewed: 2026-05-13
 source_of_truth:
-  - ../../TRUTHMARK.md
+  - ../../.truthmark/config.yml
   - ../features/contracts.md
   - ../features/init-and-scaffold.md
   - ../features/check-diagnostics.md
+  - ../features/installed-workflows.md
 ---
 
 # Architecture Overview
@@ -31,14 +32,12 @@ Truthmark does not currently include:
 The durable surfaces are ordinary repository files:
 
 - `.truthmark/config.yml`
-- [TRUTHMARK.md](../../TRUTHMARK.md)
 - [docs/truthmark/areas.md](../truthmark/areas.md)
 - canonical docs under `docs/`
 - the managed Truthmark block inside [AGENTS.md](../../AGENTS.md)
-- the generated Codex Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.codex/skills/`
-- the generated OpenCode Truth Structure, Truth Sync, Truth Realize, and Truth Check skills under `.opencode/skills/`
+- generated Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check surfaces under `.codex/skills/`, `.opencode/skills/`, `.claude/skills/`, `.github/prompts/`, and `.gemini/commands/truthmark/`
+- Codex workflow metadata under `.codex/skills/truthmark-*/agents/openai.yaml`
 - configured platform instruction files such as [AGENTS.md](../../AGENTS.md), `CLAUDE.md`, `.github/copilot-instructions.md`, and `GEMINI.md`
-- Gemini custom command surfaces under `.gemini/commands/truthmark/*.toml`
 
 Generated workflow surfaces are committed repository files with Truthmark version markers. The V1 upgrade path is to upgrade the package, rerun `truthmark init`, and review the generated diffs.
 
@@ -59,33 +58,40 @@ Key implementation surfaces:
 
 ### Check pipeline
 
-`truthmark check` resolves branch-scope metadata, loads config, then validates authority entries, area mappings, frontmatter, and internal links before returning diagnostics plus branch-scope data.
+`truthmark check` resolves branch-scope metadata, loads config, then validates authority entries, area mappings, frontmatter, internal links, decision structure, generated surfaces, and unmapped coverage before returning diagnostics plus branch-scope data.
 
 Key implementation surfaces:
 
 - `src/checks/*` for individual validation passes
 - `src/config/*` for config loading and schema validation
-- `src/routing/areas.ts` for `docs/truthmark/areas.md` parsing
+- `src/routing/*` for `docs/truthmark/areas.md` parsing and area resolution
 - `src/markdown/*` for document parsing and hashing
 - `src/output/*` for result rendering
 
 ### Installed workflow support
 
-Truthmark also contains support primitives for the installed Truth Structure, Truth Sync, Truth Realize, and Truth Check workflows:
+Truthmark also contains support primitives for the installed Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check workflows:
 
-- `src/agents/*` renders the installed instruction text used in the managed AGENTS block
-- `src/templates/codex-skills.ts` renders the generated Codex and OpenCode skills for explicit workflow invocation
+- `src/templates/agents-block.ts` renders compact managed instruction blocks
+- `src/agents/*` renders detailed workflow and skill text for explicit workflow invocation
+- `src/templates/codex-skills.ts` renders generated skill, prompt, command, and metadata content for configured platforms
+- `src/templates/generated-surfaces.ts` assembles configured platform surfaces from the renderers
 - `src/sync/*` classifies functional-code paths and renders Truth Sync reports
 - `src/realize/report.ts` renders the Truth Realize completion report shape
 
-These modules support the installed workflow contract even though V1 does not expose dedicated CLI entrypoints for structure, sync, realization, or check workflows.
+These modules support the installed workflow contract even though V1 does not expose dedicated CLI entrypoints for the installed Truth Structure, Truth Document, Truth Sync, Truth Realize, or Truth Check workflows.
+
+## Architecture Doc Boundary
+
+Truthmark should maintain architecture docs when a change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
+
+Ordinary feature behavior, endpoint details, UI copy, validation rules, and bug fixes belong in feature or contract docs unless they change those architecture boundaries. Architecture docs should describe structure and ownership rather than becoming a second home for feature truth.
 
 ## Branch Scope
 
 Branch scope is computed from the active Git worktree, current branch or detached HEAD, and hashes of the core Truthmark control files:
 
 - `.truthmark/config.yml`
-- [TRUTHMARK.md](../../TRUTHMARK.md)
 - the configured root route index plus configured child route files
 
 This keeps routing and diagnostics tied to the active checkout rather than to external memory.
@@ -96,7 +102,7 @@ Normal branch checkouts are identified by branch name plus HEAD SHA. Detached ch
 
 Truth Sync path classification is multi-language and path-based. `truthmark check` coverage diagnostics reuse the same functional-code classifier across common code roots so V1 can support Go, Python, C#, and Java repositories at a minimum, in addition to JavaScript and TypeScript projects.
 
-Current automatic coverage discovery scans common roots such as `src/`, `cmd/`, `internal/`, `pkg/`, `scripts/`, `server/`, `services/`, `app/`, `lib/`, and `bin/`. Area mappings remain the authority for which truth docs own each code surface.
+Current automatic coverage discovery scans common roots such as `src/`, `api/`, `app/`, `apps/`, `cmd/`, `frontend/`, `infra/`, `internal/`, `k8s/`, `lib/`, `packages/`, `proto/`, `schema/`, `scripts/`, `server/`, `services/`, `terraform/`, `web/`, and `.github/workflows/`. Area mappings remain the authority for which truth docs own each code surface.
 
 ## Primary Code Files
 
@@ -108,6 +114,8 @@ Current automatic coverage discovery scans common roots such as `src/`, `cmd/`, 
 - `src/sync/surfaces.ts`
 - `src/agents/instructions.ts`
 - `src/templates/codex-skills.ts`
+- `src/templates/generated-surfaces.ts`
+- `src/templates/agents-block.ts`
 
 ## Product Decisions
 
@@ -115,6 +123,7 @@ Current automatic coverage discovery scans common roots such as `src/`, `cmd/`, 
 - Hierarchical routing is the only scaffold model in V1, with one child delegation level from the root route index.
 - Default feature scaffolding uses index `README.md` files plus bounded leaf truth docs so Truth Sync has a small current-behavior target from the first init.
 - Current architecture and feature docs carry their own active decisions and rationale instead of delegating that truth to historical ADR-style logs.
+- Architecture docs are maintained for structure and ownership changes, not for ordinary feature behavior.
 - The current checkout is the truth boundary; Truthmark does not create off-repo memory, packet files, or cache files that compete with branch-local Markdown.
 - Branch identity is diagnostic metadata, not an external authority source. It helps agents and humans see which checkout was validated without moving truth outside Git.
 

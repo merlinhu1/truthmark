@@ -12,7 +12,7 @@ describe("loadConfig", () => {
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 realization:
   enabled: true
 `,
@@ -25,7 +25,7 @@ realization:
       expect(result.config).toMatchObject({
         version: 1,
         platforms: ["codex", "opencode", "claude-code", "github-copilot", "gemini-cli"],
-        authority: ["TRUTHMARK.md"],
+        authority: ["docs/truthmark/areas.md"],
         docs: {
           layout: "hierarchical",
           roots: {
@@ -59,7 +59,7 @@ realization:
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 instruction_targets:
   - AGENTS.md
 platforms:
@@ -105,7 +105,7 @@ docs:
     default_area: core
     max_delegation_depth: 1
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 realization:
   enabled: true
 `,
@@ -148,7 +148,7 @@ docs:
     default_area: repository
     max_delegation_depth: 2
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 realization:
   enabled: true
 `,
@@ -182,7 +182,7 @@ platforms:
   - codex
   - unknown-agent
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 realization:
   enabled: true
 `,
@@ -240,7 +240,7 @@ realization:
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - TRUTHMARK.md
+  - docs/truthmark/areas.md
 alignment:
   mode: packet
 outputs:

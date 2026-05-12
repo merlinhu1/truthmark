@@ -23,8 +23,11 @@ describe("renderTruthSyncInstructions", () => {
     expect(instructions).toContain("Later functional-code changes reopen the finish-time requirement");
     expect(instructions).toContain("must not rewrite functional code");
     expect(instructions).toContain("host supports subagent dispatch");
-    expect(instructions).toContain("If routing is broad, overloaded, or catch-all");
-    expect(instructions).toContain("run or recommend Truth Structure before syncing");
+    expect(instructions).toContain(
+      "If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner",
+    );
+    expect(instructions).toContain("run Truth Structure before syncing");
+    expect(instructions).toContain("otherwise block and recommend Truth Structure");
     expect(instructions).not.toContain(".truthmark/local.yml");
     expect(instructions).not.toContain("truth_sync.sync_agent");
     expect(instructions).not.toContain("Truth Sync: completed");
@@ -46,6 +49,7 @@ describe("agent-native workflow instructions", () => {
   it("renders Truth Structure and Truth Check summaries", () => {
     expect(renderTruthStructureInstructions()).toContain("truthmark-structure");
     expect(renderTruthStructureInstructions()).toContain("docs/truthmark/areas.md");
+    expect(renderTruthStructureInstructions()).toContain("missing, stale, broad, overloaded, catch-all, unrouteable");
     expect(renderTruthStructureInstructions()).toContain("canonical current-truth destinations");
     expect(renderTruthStructureInstructions()).toContain("topology pressure");
     expect(renderTruthStructureInstructions()).toContain("If the skill is unavailable");

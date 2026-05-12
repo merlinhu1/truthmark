@@ -13,6 +13,16 @@ const isPathInsideRoot = (rootDir: string, targetPath: string): boolean => {
   return targetPath === rootDir || targetPath.startsWith(`${rootDir}${path.sep}`);
 };
 
+const isNodeErrorWithCode = (error: unknown, code: string): boolean => {
+  return error instanceof Error && "code" in error && error.code === code;
+};
+
+const joinMissingSegments = (resolvedPath: string, missingSegments: string[]): string => {
+  return missingSegments.reduce<string>((currentResolvedPath, segment) => {
+    return path.join(currentResolvedPath, segment);
+  }, resolvedPath);
+};
+
 const resolveThroughExistingAncestor = async (targetPath: string): Promise<string> => {
   let currentPath = path.resolve(targetPath);
   const missingSegments: string[] = [];
@@ -21,12 +31,25 @@ const resolveThroughExistingAncestor = async (targetPath: string): Promise<strin
     try {
       const resolvedExistingPath = await fs.realpath(currentPath);
 
-      return missingSegments.reduce<string>((resolvedPath, segment) => {
-        return path.join(resolvedPath, segment);
-      }, resolvedExistingPath);
+      return joinMissingSegments(resolvedExistingPath, missingSegments);
     } catch (error: unknown) {
-      if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+      if (!isNodeErrorWithCode(error, "ENOENT")) {
         throw error;
+      }
+
+      try {
+        const currentStat = await fs.lstat(currentPath);
+
+        if (currentStat.isSymbolicLink()) {
+          const linkTarget = await fs.readlink(currentPath);
+          const resolvedLinkTarget = path.resolve(path.dirname(currentPath), linkTarget);
+
+          return joinMissingSegments(resolvedLinkTarget, missingSegments);
+        }
+      } catch (lstatError: unknown) {
+        if (!isNodeErrorWithCode(lstatError, "ENOENT")) {
+          throw lstatError;
+        }
       }
 
       const parentPath = path.dirname(currentPath);

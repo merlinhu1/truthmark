@@ -1,11 +1,11 @@
 interface:
   display_name: "Truthmark Sync"
-  short_description: "Sync truth docs from changed code"
-  default_prompt: "Use $truthmark-sync to sync truth docs from changed code."
+  short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"
+  default_prompt: "Use $truthmark-sync after functional code changes; skip docs-only/no-code changes."
 
 policy:
   allow_implicit_invocation: true
 
 truthmark:
-  version: "1.2.1"
+  version: "1.2.3"
   refresh_command: "truthmark init"

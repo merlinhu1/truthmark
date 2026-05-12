@@ -26,7 +26,7 @@ export class BranchScopeFileError extends Error {
   }
 }
 
-const RELEVANT_BRANCH_SCOPE_FILES = [".truthmark/config.yml", "TRUTHMARK.md"] as const;
+const RELEVANT_BRANCH_SCOPE_FILES = [".truthmark/config.yml"] as const;
 
 const toBranchIdentity = (branchName: string | null, headSha: string | null): string => {
   if (branchName && headSha) {

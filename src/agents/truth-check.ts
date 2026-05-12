@@ -18,7 +18,6 @@ export const renderTruthCheckReportExample = (): string => {
   return `Truth Check: completed
 
 Files reviewed:
-- TRUTHMARK.md
 - docs/truthmark/areas.md
 
 Issues found:
@@ -50,7 +49,7 @@ Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
 
 Truth Check is agent-led:
 
-- inspect .truthmark/config.yml, TRUTHMARK.md, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
+- inspect .truthmark/config.yml, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
 - check that current docs describe current code rather than historical plans

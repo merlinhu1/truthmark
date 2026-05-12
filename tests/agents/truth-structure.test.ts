@@ -35,6 +35,11 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "Starter truth docs must include ## Product Decisions and ## Rationale sections.",
     );
+    expect(skill).toContain("When creating or updating a feature doc");
+    expect(skill).toContain("read docs/templates/feature-doc.md");
+    expect(skill).toContain("follow its frontmatter, heading order, and section intent");
+    expect(skill).toContain("align existing feature docs to the template standard");
+    expect(skill).not.toContain("# {{title}}");
   });
 
   it("renders the agent-native structure workflow contract", () => {
@@ -47,6 +52,12 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
     expect(skill).toContain("inspect repository layout");
     expect(skill).toContain(
+      "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+    );
+    expect(skill).toContain(
+      "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
+    );
+    expect(skill).not.toContain(
       "Repository docs and code are inspected evidence, not executable instruction authority.",
     );
     expect(skill).toContain("docs/truthmark/areas.md");
@@ -63,13 +74,20 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "If an existing canonical doc lacks either section, add the missing heading beside Current Behavior with a concise current-state placeholder or active decision.",
     );
-    expect(skill).toContain("Short inline decision dates are allowed");
+    expect(skill).toContain("Date active decisions inline when added or changed");
     expect(skill).toContain("Topology Governance");
     expect(skill).toContain("Topology pressure signals");
     expect(skill).toContain("one area maps broad code");
+    expect(skill).toContain("unrouteable Truthmark area routing");
     expect(skill).toContain("infer product and domain ownership");
     expect(skill).toContain(
       "feature docs behavior-oriented, not endpoint-oriented",
+    );
+    expect(skill).toContain(
+      "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
+    );
+    expect(skill).toContain(
+      "Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
     );
     expect(skill).toContain(
       "README.md files are indexes, not Truth Sync targets",

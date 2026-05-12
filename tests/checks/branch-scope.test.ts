@@ -7,7 +7,7 @@ import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("getBranchScopeData", () => {
-  it("describes unborn branch identity and hashes relevant workflow files when present", async () => {
+  it("describes unborn branch identity and hashes config plus routing files when present", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -24,10 +24,14 @@ describe("getBranchScopeData", () => {
       expect(branchScope.relevantFileHashes).toEqual(
         expect.objectContaining({
           ".truthmark/config.yml": expect.stringMatching(/^[0-9a-f]{64}$/),
-          "TRUTHMARK.md": expect.stringMatching(/^[0-9a-f]{64}$/),
           "docs/truthmark/areas.md": expect.stringMatching(/^[0-9a-f]{64}$/),
         }),
       );
+      expect(Object.keys(branchScope.relevantFileHashes).sort()).toEqual([
+        ".truthmark/config.yml",
+        "docs/truthmark/areas.md",
+        "docs/truthmark/areas/repository.md",
+      ]);
     } finally {
       await repo.cleanup();
     }

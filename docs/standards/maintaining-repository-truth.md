@@ -59,7 +59,7 @@ When hierarchy changes:
 
 When a product or architecture decision changes, edit the `Product Decisions` and `Rationale` sections in the owning canonical doc in the same change as code and routing updates.
 
-Short inline dates on active decisions are allowed when they help readers understand recency, for example `Decision (2026-05-09): ...`.
+Date active decisions inline when added or changed, for example `Decision (2026-05-09): ...`.
 
 Do not preserve the old active decision in a parallel file. Git history preserves it.
 

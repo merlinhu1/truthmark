@@ -6,8 +6,10 @@ source_of_truth:
   - ../../src/checks/check.ts
   - ../../src/checks/authority.ts
   - ../../src/checks/areas.ts
+  - ../../src/checks/branch-scope.ts
   - ../../src/checks/frontmatter.ts
   - ../../src/checks/links.ts
+  - ../../src/markdown/discovery.ts
 ---
 
 # Check Diagnostics
@@ -158,6 +160,7 @@ Branch scope identifies the active checkout:
 - normal branches use branch name plus HEAD SHA
 - detached checkouts use the commit SHA
 - worktree path is reported separately for parallel worktrees
+- relevant file hashes track `.truthmark/config.yml`, the configured root route index, and configured child route files
 
 ## Practical Meaning
 
@@ -171,6 +174,7 @@ Branch scope identifies the active checkout:
 - Decision-bearing canonical docs are part of truth health because missing rationale weakens future reconstruction.
 - Topology pressure is handled by Truth Structure rather than by asking teams to manually maintain feature-folder shape.
 - Branch-scope data is advisory metadata for the current checkout; it is not a cache, packet, or off-repo memory layer.
+- Decision (2026-05-13): Branch-scope hashes follow the committed config and route files rather than a separate root workflow note.
 
 ## Rationale
 

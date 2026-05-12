@@ -2,11 +2,16 @@ import type { TruthmarkConfig, TruthmarkPlatform } from "../config/schema.js";
 import { renderAgentsBlock } from "./agents-block.js";
 import {
   renderTruthmarkCopilotCheckPrompt,
+  renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotStructurePrompt,
   renderTruthmarkCopilotSyncPrompt,
   renderTruthmarkCheckLocalSkill,
+  renderTruthmarkDocumentLocalSkill,
+  renderTruthmarkDocumentSkill,
+  renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkGeminiCheckCommand,
+  renderTruthmarkGeminiDocumentCommand,
   renderTruthmarkGeminiRealizeCommand,
   renderTruthmarkGeminiStructureCommand,
   renderTruthmarkGeminiSyncCommand,
@@ -24,10 +29,14 @@ import {
   TRUTHMARK_CHECK_SKILL_METADATA_PATH,
   TRUTHMARK_CHECK_SKILL_PATH,
   TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
+  TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
   TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
+  TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
+  TRUTHMARK_DOCUMENT_SKILL_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
+  TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
   TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
   TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
@@ -53,6 +62,10 @@ const workflowSkillFiles = (
     {
       path: `${basePath}/truthmark-structure/SKILL.md`,
       content: renderTruthmarkStructureLocalSkill(config),
+    },
+    {
+      path: `${basePath}/truthmark-document/SKILL.md`,
+      content: renderTruthmarkDocumentLocalSkill(config),
     },
     {
       path: `${basePath}/truthmark-sync/SKILL.md`,
@@ -83,6 +96,14 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     {
       path: TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH,
       content: renderTruthmarkStructureSkillMetadata(),
+    },
+    {
+      path: TRUTHMARK_DOCUMENT_SKILL_PATH,
+      content: renderTruthmarkDocumentSkill(config),
+    },
+    {
+      path: TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
+      content: renderTruthmarkDocumentSkillMetadata(),
     },
     {
       path: TRUTHMARK_SYNC_SKILL_PATH,
@@ -124,6 +145,10 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
     {
       path: TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
       content: renderTruthmarkCopilotStructurePrompt(config),
+    },
+    {
+      path: TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
+      content: renderTruthmarkCopilotDocumentPrompt(config),
     },
     {
       path: TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
@@ -176,6 +201,10 @@ const filesForPlatform = (
         {
           path: TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
           content: renderTruthmarkGeminiStructureCommand(config),
+        },
+        {
+          path: TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
+          content: renderTruthmarkGeminiDocumentCommand(config),
         },
         {
           path: TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,

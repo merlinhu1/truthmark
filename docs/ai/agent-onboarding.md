@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: agent-guide
-last_reviewed: 2026-05-06
+last_reviewed: 2026-05-13
 source_of_truth:
   - repo-rules.md
   - ../README.md
@@ -44,9 +44,10 @@ Read:
 
 Read:
 
-1. [TRUTHMARK.md](../../TRUTHMARK.md)
+1. [.truthmark/config.yml](../../.truthmark/config.yml)
 2. [docs/features/installed-workflows.md](../features/installed-workflows.md)
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
+4. [docs/ai/agent-skills-workflow-review.md](agent-skills-workflow-review.md)
 
 ### Documentation structure or policy changes
 

@@ -24,7 +24,6 @@ describe("init and check workflow acceptance", () => {
       expect(initPayload.command).toBe("init");
 
       await expect(fs.stat(`${repo.rootDir}/.truthmark/config.yml`)).resolves.toBeTruthy();
-      await expect(fs.stat(`${repo.rootDir}/TRUTHMARK.md`)).resolves.toBeTruthy();
       await expect(fs.stat(`${repo.rootDir}/docs/truthmark/areas.md`)).resolves.toBeTruthy();
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeTruthy();
       await expect(

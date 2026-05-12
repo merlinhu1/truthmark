@@ -26,7 +26,7 @@ This is the quick module-level map for the current Truthmark codebase.
 | `src/fs/` | Repository-safe path resolution and file writes shared by init and diagnostics |
 | `src/git/` | Git repository and worktree resolution plus change listing |
 | `src/sync/` | Truth Sync policy and completed, skipped, or blocked report rendering |
-| `src/agents/` | Installed Truth Structure, Truth Sync, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
+| `src/agents/` | Installed Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
 | `src/realize/` | Truth Realize report rendering |
 | `src/output/` | Diagnostic types plus human and JSON rendering shared by CLI and check flows |
 | `src/types/` | Local type shims |

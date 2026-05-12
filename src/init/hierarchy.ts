@@ -1,11 +1,14 @@
+import fs from "node:fs/promises";
 import fg from "fast-glob";
 import { DEFAULT_DOCS_HIERARCHY } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { FileWriteResult } from "../fs/paths.js";
-import { ensureRepoFile } from "../fs/paths.js";
+import { ensureRepoFile, resolveRepoPath } from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import {
+  FEATURE_DOC_TEMPLATE_PATH,
   renderChildAreaTemplate,
+  renderFeatureDocTemplateFile,
   renderFeatureDomainReadmeTemplate,
   renderFeatureLeafDocTemplate,
   renderFeatureRootReadmeTemplate,
@@ -28,6 +31,17 @@ const hasMarkdownFiles = async (rootDir: string, root: string): Promise<boolean>
     followSymbolicLinks: false,
   });
   return matches.length > 0;
+};
+
+const readFeatureDocTemplate = async (rootDir: string): Promise<string> => {
+  try {
+    return await fs.readFile(resolveRepoPath(rootDir, FEATURE_DOC_TEMPLATE_PATH), "utf8");
+  } catch (error: unknown) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return renderFeatureDocTemplateFile();
+    }
+    throw error;
+  }
 };
 
 export const scaffoldHierarchy = async (
@@ -62,10 +76,14 @@ export const scaffoldHierarchy = async (
     ),
   );
   results.push(
+    await ensureRepoFile(rootDir, FEATURE_DOC_TEMPLATE_PATH, renderFeatureDocTemplateFile()),
+  );
+  const featureDocTemplate = await readFeatureDocTemplate(rootDir);
+  results.push(
     await ensureRepoFile(
       rootDir,
       `${featureDomainRoot}/overview.md`,
-      renderFeatureLeafDocTemplate(config),
+      renderFeatureLeafDocTemplate(config, featureDocTemplate),
     ),
   );
   return results;

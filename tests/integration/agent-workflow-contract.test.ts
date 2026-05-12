@@ -26,6 +26,9 @@ describe("installed workflow contract", () => {
       const syncSkill = await repo.readFile(
         ".codex/skills/truthmark-sync/SKILL.md",
       );
+      const documentSkill = await repo.readFile(
+        ".codex/skills/truthmark-document/SKILL.md",
+      );
       const syncOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
       );
@@ -52,7 +55,7 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("/skill truthmark-structure");
       expect(agents).not.toContain("/skill truthmark-check");
       expect(agents).toContain(
-        "Explicit workflows: Truth Structure, Truth Realize, Truth Check",
+        "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
       );
       expect(agents).not.toContain(
         "truthmark check --json --workflow truth-sync",
@@ -62,8 +65,10 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("Truth Sync: completed");
       expect(agents).not.toContain("Truth Realize: completed");
       expect(structureSkill).toContain("name: truthmark-structure");
+      expect(structureSkill).toContain("docs/ai/repo-rules.md");
       expect(structureSkill).toContain("docs/truthmark/areas.md");
       expect(syncSkill).toContain("name: truthmark-sync");
+      expect(syncSkill).toContain("docs/ai/repo-rules.md");
       expect(syncSkill).toContain(
         "Use this skill automatically before finishing",
       );
@@ -74,6 +79,9 @@ describe("installed workflow contract", () => {
       expect(syncSkill).toContain(
         "direct checkout inspection is the canonical path",
       );
+      expect(documentSkill).toContain("name: truthmark-document");
+      expect(documentSkill).toContain("Truth Document: completed");
+      expect(documentSkill).toContain("must not write functional code");
       expect(syncOpenCodeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(

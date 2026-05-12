@@ -94,7 +94,7 @@ Truthmark can provide places for those rules to live, but the content should bel
 When a repository has no explicit standards yet, a small default baseline is reasonable:
 
 - a documentation governance standard
-- an authority and routing entrypoint such as `TRUTHMARK.md`
+- authority and routing entrypoints such as `.truthmark/config.yml` and `docs/truthmark/areas.md`
 - a verification standard with canonical commands and skip rules
 - a completion checklist or equivalent completion gate
 
