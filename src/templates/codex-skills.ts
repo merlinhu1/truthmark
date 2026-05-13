@@ -163,7 +163,9 @@ truthmark:
 `;
 };
 
-const renderTruthmarkRealizeSkillBody = (): string => {
+const renderTruthmarkRealizeSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return `---
 name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Reads truth docs and routing first, updates functional code only, and reports verification.
@@ -186,8 +188,8 @@ Truth Realize is doc-first:
 
 Workflow:
 
-1. Read the updated truth docs named by the user, or infer the relevant docs from docs/truthmark/areas.md.
-2. Read .truthmark/config.yml, docs/truthmark/areas.md, and the relevant functional code.
+1. Read the updated truth docs named by the user, or infer the relevant docs from ${config.docs.routing.rootIndex}.
+2. Read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and the relevant functional code.
 3. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 4. Update functional code only so implementation matches the truth docs.
 5. Do not edit truth docs or truth routing while realizing those docs.
@@ -217,12 +219,16 @@ Verification:
 `;
 };
 
-export const renderTruthmarkRealizeSkill = (): string => {
-  return renderTruthmarkRealizeSkillBody();
+export const renderTruthmarkRealizeSkill = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderTruthmarkRealizeSkillBody(config);
 };
 
-export const renderTruthmarkRealizeLocalSkill = (): string => {
-  return renderTruthmarkRealizeSkillBody();
+export const renderTruthmarkRealizeLocalSkill = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  return renderTruthmarkRealizeSkillBody(config);
 };
 
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
@@ -294,10 +300,12 @@ export const renderTruthmarkGeminiSyncCommand = (
   );
 };
 
-export const renderTruthmarkGeminiRealizeCommand = (): string => {
+export const renderTruthmarkGeminiRealizeCommand = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return renderGeminiCommand(
     "Realize repository truth docs into code.",
-    renderTruthmarkRealizeSkillBody(),
+    renderTruthmarkRealizeSkillBody(config),
   );
 };
 
@@ -337,10 +345,12 @@ export const renderTruthmarkCopilotSyncPrompt = (
   );
 };
 
-export const renderTruthmarkCopilotRealizePrompt = (): string => {
+export const renderTruthmarkCopilotRealizePrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return renderCopilotPromptFile(
     "Realize repository truth docs into code.",
-    renderTruthmarkRealizeSkillBody(),
+    renderTruthmarkRealizeSkillBody(config),
   );
 };
 

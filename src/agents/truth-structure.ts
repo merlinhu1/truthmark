@@ -16,16 +16,18 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.";
 
-export const renderTruthStructureReportExample = (): string => {
+export const renderTruthStructureReportExample = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return `Truth Structure: completed
 Topology reviewed:
 - controllers: src/auth/**
-- docs root: docs/features
-- route files: docs/truthmark/areas.md
+- docs root: ${config.docs.roots.features ?? config.docs.roots.features_current ?? "docs/features"}
+- route files: ${config.docs.routing.rootIndex}
 Areas reviewed:
 - src/auth/**
 Routing updated:
-- docs/truthmark/areas.md
+- ${config.docs.routing.rootIndex}
 Truth docs created:
 - docs/features/authentication.md
 Topology decisions:
@@ -37,9 +39,9 @@ Notes:
 export const renderTruthStructureSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return `---
+return `---
 name: truthmark-structure
-description: Use when the user asks to design, repair, or refresh missing, stale, broad, overloaded, catch-all, or unrouteable Truthmark area routing. Inspects the repository directly, updates docs/truthmark/areas.md, and may create starter canonical truth docs.
+description: Use when the user asks to design, repair, or refresh missing, stale, broad, overloaded, catch-all, or unrouteable Truthmark area routing. Inspects the repository directly, updates ${config.docs.routing.rootIndex}, and may create starter canonical truth docs.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -48,11 +50,11 @@ truthmark-version: ${TRUTHMARK_VERSION}
 Use this skill to design or repair Truthmark area structure.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
-- inspect repository layout, current docs, .truthmark/config.yml, docs/truthmark/areas.md, and relevant code directly
+- inspect repository layout, current docs, .truthmark/config.yml, ${config.docs.routing.rootIndex}, and relevant code directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
 - define areas by product or behavior ownership, not by mechanical directory mirroring
-- create or repair docs/truthmark/areas.md
+- create or repair ${config.docs.routing.rootIndex}
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.

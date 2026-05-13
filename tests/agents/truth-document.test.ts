@@ -68,8 +68,8 @@ describe("renderTruthDocumentSkillBody", () => {
     const report = renderTruthDocumentReportExample();
 
     expect(report).toContain("Truth Document: completed");
-    expect(report).toContain("src/api/orders/**");
-    expect(report).toContain("docs/features/orders/order-submission.md");
+    expect(report).toContain("src/routing/area-resolver.ts");
+    expect(report).toContain("docs/features/contracts.md");
   });
 });
 

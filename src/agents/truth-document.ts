@@ -16,23 +16,25 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.";
 
-export const renderTruthDocumentReportExample = (): string => {
+export const renderTruthDocumentReportExample = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return `Truth Document: completed
 
 Implementation reviewed:
-- src/api/orders/**
+- src/routing/area-resolver.ts
 
 Truth docs created:
-- docs/features/orders/order-submission.md
-
-Truth docs updated:
 - docs/features/contracts.md
 
+Truth docs updated:
+- docs/features/check-diagnostics.md
+
 Routing updated:
-- docs/truthmark/areas/orders.md
+- ${config.docs.routing.rootIndex}
 
 Notes:
-- Documented existing order submission behavior from route handlers and tests.`;
+- Documented routing and behavior from route handlers and tests.`;
 };
 
 export const renderTruthDocumentSkillBody = (

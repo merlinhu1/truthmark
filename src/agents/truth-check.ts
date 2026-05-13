@@ -14,11 +14,14 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.";
 
-export const renderTruthCheckReportExample = (): string => {
+export const renderTruthCheckReportExample = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const rootRouteIndex = config.docs.routing.rootIndex;
   return `Truth Check: completed
 
 Files reviewed:
-- docs/truthmark/areas.md
+- ${rootRouteIndex}
 
 Issues found:
 - none
@@ -49,11 +52,11 @@ Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
 
 Truth Check is agent-led:
 
-- inspect .truthmark/config.yml, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
+- inspect .truthmark/config.yml, ${config.docs.routing.rootIndex}, canonical docs, and relevant implementation directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
 - check that current docs describe current code rather than historical plans
-- check that docs/truthmark/areas.md routes code surfaces to canonical truth docs
+- check that ${config.docs.routing.rootIndex} routes code surfaces to canonical truth docs
 - check that canonical behavior docs keep active Product Decisions and Rationale sections
 - optionally run truthmark check when local tooling is available
 - must not require the truthmark binary; direct inspection is always valid
@@ -64,5 +67,5 @@ ${DECISION_TRUTH_INSTRUCTIONS}
 
 Report completion in this shape:
 
-${renderMarkdownExample(renderTruthCheckReportExample())}`;
+${renderMarkdownExample(renderTruthCheckReportExample(config))}`;
 };

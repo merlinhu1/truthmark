@@ -80,7 +80,7 @@ const workflowSkillFiles = (
   if (config.realization.enabled) {
     files.push({
       path: `${basePath}/truthmark-realize/SKILL.md`,
-      content: renderTruthmarkRealizeLocalSkill(),
+      content: renderTruthmarkRealizeLocalSkill(config),
     });
   }
 
@@ -127,7 +127,7 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     files.push(
       {
         path: TRUTHMARK_REALIZE_SKILL_PATH,
-        content: renderTruthmarkRealizeSkill(),
+        content: renderTruthmarkRealizeSkill(config),
       },
       {
         path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
@@ -163,7 +163,7 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
   if (config.realization.enabled) {
     files.push({
       path: TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
-      content: renderTruthmarkCopilotRealizePrompt(),
+      content: renderTruthmarkCopilotRealizePrompt(config),
     });
   }
 
@@ -218,7 +218,7 @@ const filesForPlatform = (
           ? [
               {
                 path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-                content: renderTruthmarkGeminiRealizeCommand(),
+                content: renderTruthmarkGeminiRealizeCommand(config),
               },
             ]
           : []),

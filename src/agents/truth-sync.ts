@@ -20,14 +20,16 @@ const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
 };
 
-export const renderTruthSyncWorkerPrompt = (): string => {
+export const renderTruthSyncWorkerPrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
   return `### Truth Sync Worker
 The parent provides the task focus and any repository context already gathered.
 Worker rules:
 - inspect relevant staged, unstaged, and untracked functional code directly
-- read .truthmark/config.yml, docs/truthmark/areas.md, and canonical truth docs directly
+- read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and canonical truth docs directly
 - Code verification is parent-owned; report what was run or why it was not run
-- may write truth docs and docs/truthmark/areas.md only for Truth Sync alignment
+- may write truth docs and ${config.docs.routing.rootIndex} only for Truth Sync alignment
 - must not rewrite functional code
 Return result in this shape:
 - status: completed | blocked
@@ -79,9 +81,9 @@ Optional validation tooling:
 - update Product Decisions and Rationale when a behavior change comes from a decision change
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
-${renderTruthSyncWorkerPrompt()}
+${renderTruthSyncWorkerPrompt(config)}
 Parent post-sync verification:
-- verify only truth docs and docs/truthmark/areas.md changed during sync
+- verify only truth docs and ${config.docs.routing.rootIndex} changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
 - verify the worker report matches the required headings and sections
@@ -97,9 +99,9 @@ ${renderMarkdownExample(
   )}
 Blocked report example:
 ${renderMarkdownExample(
-    renderTruthSyncBlockedReport({
+  renderTruthSyncBlockedReport({
       reason: "routing repair is not allowed",
-      manualReviewFiles: ["docs/truthmark/areas.md"],
+      manualReviewFiles: [config.docs.routing.rootIndex],
       nextAction: "update routing metadata and rerun Truth Sync",
     }),
   )}`;

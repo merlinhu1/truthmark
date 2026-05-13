@@ -65,7 +65,7 @@ export const scaffoldHierarchy = async (
     await ensureRepoFile(
       rootDir,
       `${featureRoot}/README.md`,
-      renderFeatureRootReadmeTemplate(),
+      renderFeatureRootReadmeTemplate(config),
     ),
   );
   results.push(

@@ -1,8 +1,27 @@
+import path from "node:path";
 import { stringify } from "yaml";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
-import { createDefaultRawConfig } from "../config/defaults.js";
+import {
+  createDefaultConfig,
+  createDefaultRawConfig,
+} from "../config/defaults.js";
+
+const asRelativePath = (value: string): string => {
+  return value.split(path.sep).join("/");
+};
+
+const currentDate = (): string => new Date().toISOString().slice(0, 10);
+
+const resolveRelativePath = (fromPath: string, toPath: string): string => {
+  return asRelativePath(path.relative(path.dirname(fromPath), toPath));
+};
+
+const featureRoot = (config: TruthmarkConfig): string =>
+  config.docs.roots.features ??
+  config.docs.roots.features_current ??
+  "docs/features";
 
 export const renderConfigTemplate = (): string => {
   return stringify(createDefaultRawConfig());
@@ -43,18 +62,24 @@ const titleCase = (value: string): string => {
     .join(" ");
 };
 
-export const renderHierarchicalAreasIndexTemplate = (config: TruthmarkConfig): string => {
+export const renderHierarchicalAreasIndexTemplate = (
+  config: TruthmarkConfig,
+): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const childPath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
   const title = titleCase(defaultArea);
+  const sourceOfTruth = resolveRelativePath(
+    config.docs.routing.rootIndex,
+    ".truthmark/config.yml",
+  );
 
   return [
     "---",
     "status: active",
     "doc_type: route-index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../.truthmark/config.yml",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     "# Truthmark Areas",
@@ -77,16 +102,18 @@ export const renderHierarchicalAreasIndexTemplate = (config: TruthmarkConfig): s
 export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
-  const featureRoot = config.docs.roots.features ?? config.docs.roots.features_current ?? "docs/features";
-  const leafTruthDoc = `${featureRoot}/${defaultArea}/overview.md`;
+  const featuresRoot = featureRoot(config);
+  const leafTruthDoc = `${featuresRoot}/${defaultArea}/overview.md`;
+  const templatePath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
+  const sourceOfTruth = resolveRelativePath(templatePath, ".truthmark/config.yml");
 
   return [
     "---",
     "status: active",
     "doc_type: area-route",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../../.truthmark/config.yml",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     `# ${title} Areas`,
@@ -105,14 +132,22 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   ].join("\n");
 };
 
-export const renderFeatureRootReadmeTemplate = (): string => {
+export const renderFeatureRootReadmeTemplate = (
+  config: TruthmarkConfig = createDefaultConfig(),
+): string => {
+  const templatePath = `${featureRoot(config)}/README.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    config.docs.routing.rootIndex,
+  );
+
   return [
     "---",
     "status: active",
     "doc_type: index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../truthmark/areas.md",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     "# Feature Docs",
@@ -127,14 +162,19 @@ export const renderFeatureRootReadmeTemplate = (): string => {
 export const renderFeatureDomainReadmeTemplate = (config: TruthmarkConfig): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
+  const templatePath = `${featureRoot(config)}/${defaultArea}/README.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+  );
 
   return [
     "---",
     "status: active",
     "doc_type: index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    `  - ../../truthmark/areas/${defaultArea}.md`,
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     `# ${title} Feature Docs`,
@@ -157,7 +197,7 @@ export const renderFeatureDocTemplateFile = (): string => {
     "---",
     "status: active",
     "doc_type: feature",
-    "last_reviewed: 2026-05-12",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
     "  - {{source_of_truth}}",
     "---",
@@ -250,6 +290,12 @@ export const renderFeatureLeafDocTemplate = (
 ): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
+  const templatePath = `${featureRoot(config)}/${defaultArea}/overview.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+  );
+  const today = currentDate();
 
   return renderTemplate(template, {
     area: defaultArea,
@@ -259,19 +305,17 @@ export const renderFeatureLeafDocTemplate = (
       "- Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
     current_behavior:
       "- Document current behavior here when implementation changes make repository truth incomplete.",
-    decision:
-      "- Decision (2026-05-09): Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+    decision: `- Decision (${today}): Feature README files are indexes; behavior truth belongs in bounded leaf docs.`,
     flows_and_states: "- None beyond current behavior.",
     maintenance_notes:
       "- Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.",
     non_goals:
       "- This doc is not a catch-all for unrelated repository behavior.",
-    purpose:
-      `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
+    purpose: `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
     rationale:
       "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
     scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
-    source_of_truth: `../../truthmark/areas/${defaultArea}.md`,
+    source_of_truth: sourceOfTruth,
     template_path: FEATURE_DOC_TEMPLATE_PATH,
     title: `${title} Overview`,
   });
