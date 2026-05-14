@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../areas.md
   - ../../README.md
@@ -13,10 +13,17 @@ source_of_truth:
 ## Initialization And Scaffold
 
 Truth documents:
-- docs/architecture/overview.md
-- docs/architecture/module-map.md
-- docs/features/init-and-scaffold.md
-- docs/features/repository/overview.md
+```yaml
+truth_documents:
+  - path: docs/architecture/overview.md
+    kind: architecture
+  - path: docs/architecture/module-map.md
+    kind: architecture
+  - path: docs/truth/init-and-scaffold.md
+    kind: behavior
+  - path: docs/truth/repository/overview.md
+    kind: behavior
+```
 
 Code surface:
 - src/fs/paths.ts

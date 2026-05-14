@@ -20,7 +20,7 @@ describe("discoverMarkdownDocuments", () => {
         "---\nstatus: active\n---\n# System Architecture\n",
       );
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "# Authentication\n",
       );
       await repo.writeFile("README.md", "# Truthmark\n");
@@ -78,7 +78,7 @@ describe("discoverMarkdownDocuments", () => {
       expect(documents.map((document) => document.path)).toEqual([
         "README.md",
         "docs/architecture/system.md",
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
       ]);
       expect(documents[1]).toMatchObject({
         path: "docs/architecture/system.md",
@@ -116,7 +116,6 @@ describe("init templates", () => {
       instruction_targets: expect.any(Array),
       frontmatter: expect.any(Object),
       ignore: expect.any(Array),
-      realization: { enabled: true },
     });
     expect(config.frontmatter).toMatchObject({
       required: [],
@@ -126,14 +125,14 @@ describe("init templates", () => {
       ai: "docs/ai",
       standards: "docs/standards",
       architecture: "docs/architecture",
-      features: "docs/features",
+      truth: "docs/truth",
     });
   });
 
   it("seeds docs/truthmark/areas.md from discovered docs without moving them", () => {
     const areas = renderAreasTemplate([
       {
-        path: "docs/features/authentication.md",
+        path: "docs/truth/authentication.md",
         title: "Authentication",
         hasFrontmatter: false,
       },
@@ -144,11 +143,15 @@ describe("init templates", () => {
       },
     ]);
 
-    expect(areas).toContain("docs/features/authentication.md");
+    expect(areas).toContain("docs/truth/authentication.md");
     expect(areas).toContain("docs/api/authentication.md");
     expect(areas).toContain("Truth documents:");
+    expect(areas).toContain("```yaml");
+    expect(areas).toContain("kind: behavior");
+    expect(areas).toContain("kind: contract");
     expect(areas).toContain("Code surface:");
     expect(areas).toContain("Update truth when:");
+    expect(areas).not.toContain("- docs/truth/authentication.md");
   });
 
   it("renders a managed AGENTS.md block with stable markers and workflow boundaries", () => {
@@ -165,6 +168,9 @@ describe("init templates", () => {
     );
     expect(agentsBlock).toContain(
       "may write truth docs and docs/truthmark/areas.md only",
+    );
+    expect(agentsBlock).toContain(
+      "Support new or changed behavior-bearing truth claims with checkout evidence",
     );
     expect(agentsBlock).toContain("must not rewrite functional code");
     expect(agentsBlock).toContain(

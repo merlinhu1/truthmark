@@ -28,24 +28,24 @@ Read:
 
 1. [docs/architecture/overview.md](../architecture/overview.md)
 2. [docs/architecture/module-map.md](../architecture/module-map.md)
-3. [docs/features/init-and-scaffold.md](../features/init-and-scaffold.md)
-4. [docs/features/contracts.md](../features/contracts.md)
+3. [docs/truth/init-and-scaffold.md](../truth/init-and-scaffold.md)
+4. [docs/truth/contracts.md](../truth/contracts.md)
 
 ### Diagnostics, routing, or containment checks
 
 Read:
 
 1. [docs/architecture/module-map.md](../architecture/module-map.md)
-2. [docs/features/check-diagnostics.md](../features/check-diagnostics.md)
+2. [docs/truth/check-diagnostics.md](../truth/check-diagnostics.md)
 3. [docs/standards/documentation-governance.md](../standards/documentation-governance.md)
-4. [docs/features/contracts.md](../features/contracts.md)
+4. [docs/truth/contracts.md](../truth/contracts.md)
 
 ### Installed workflow, prompt, or reporting changes
 
 Read:
 
 1. [.truthmark/config.yml](../../.truthmark/config.yml)
-2. [docs/features/installed-workflows.md](../features/installed-workflows.md)
+2. [docs/truth/installed-workflows.md](../truth/installed-workflows.md)
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
 4. [docs/ai/agent-skills-workflow-review.md](agent-skills-workflow-review.md)
 
@@ -62,7 +62,7 @@ Read:
 Do:
 
 - treat [docs/ai/repo-rules.md](repo-rules.md) as the primary authority for repository-wide rules
-- route code changes to the nearest maintained architecture, contract, and feature docs
+- route code changes to the nearest maintained architecture, contract, and truth docs
 - update [docs/truthmark/areas.md](../truthmark/areas.md) when canonical routing changes
 - preserve the generated Truthmark block in [AGENTS.md](../../AGENTS.md) unless the template behavior itself is changing
 - keep non-canonical planning notes separate from current-state docs

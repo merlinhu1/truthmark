@@ -4,7 +4,7 @@ doc_type: agent-guide
 last_reviewed: 2026-05-13
 source_of_truth:
   - repo-rules.md
-  - ../features/installed-workflows.md
+  - ../truth/installed-workflows.md
   - ../../.codex/skills/truthmark-sync/SKILL.md
   - ../../.codex/skills/truthmark-structure/SKILL.md
   - ../../.codex/skills/truthmark-document/SKILL.md
@@ -21,7 +21,7 @@ source_of_truth:
 
 # Agent Skills And Workflow Review
 
-This note summarizes the external skill-authoring guidance reviewed on 2026-05-13 and applies it to Truthmark's installed project workflows. It is a reference for future workflow-surface changes, not a replacement for [installed-workflows.md](../features/installed-workflows.md).
+This note summarizes the external skill-authoring guidance reviewed on 2026-05-13 and applies it to Truthmark's installed project workflows. It is a reference for future workflow-surface changes, not a replacement for [installed-workflows.md](../truth/installed-workflows.md).
 
 ## External Standard
 
@@ -79,7 +79,7 @@ Generated runtime surfaces include `.codex/skills/`, `.claude/skills/`, `.openco
 | Sync | "I changed session code; finish and sync truth" | docs-only edit, formatting-only edit, no functional code diff | reads changed code and routing, updates only truth docs or routing, reports skipped or blocked correctly |
 | Structure | "split broad repository routing into auth and billing" | "document current auth behavior" | repairs route topology before docs, creates bounded starter docs, preserves authored content |
 | Document | "document existing order submission behavior" | "implement the behavior in this truth doc" | reads code and tests, writes docs/routing only, does not edit functional code |
-| Realize | "realize docs/features/auth/session-timeout.md into code" | "sync docs after my code change" | reads truth docs first, edits functional code only, runs relevant tests |
+| Realize | "realize docs/truth/auth/session-timeout.md into code" | "sync docs after my code change" | reads truth docs first, edits functional code only, runs relevant tests |
 | Check | "audit truth health before review" | "run lint and tests" | reports issues and suggested fixes, optionally runs `truthmark check`, does not silently rewrite unrelated files |
 
 ## Next Improvements

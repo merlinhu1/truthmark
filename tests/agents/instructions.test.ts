@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   renderTruthCheckInstructions,
   renderTruthStructureInstructions,
@@ -18,6 +19,9 @@ describe("renderTruthSyncInstructions", () => {
     );
     expect(instructions).toContain("staged, unstaged, and untracked functional code files");
     expect(instructions).toContain("Run relevant tests before finishing");
+    expect(instructions).toContain(
+      "Support new or changed behavior-bearing truth claims with checkout evidence",
+    );
     expect(instructions).toContain("documentation-only change");
     expect(instructions).toContain("Explicit invocation runs immediately");
     expect(instructions).toContain("Later functional-code changes reopen the finish-time requirement");
@@ -43,6 +47,27 @@ describe("renderTruthSyncInstructions", () => {
     expect(lines.slice(0, 4).join("\n")).toContain("Truth Sync");
     expect(lines.length).toBeLessThanOrEqual(18);
   });
+
+  it("uses the configured route index in the compact Sync reminder", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        routing: {
+          ...baseConfig.docs.routing,
+          rootIndex: "docs/routes/index.md",
+          areaFilesRoot: "docs/routes/areas",
+        },
+      },
+    };
+
+    const instructions = renderTruthSyncInstructions(config);
+
+    expect(instructions).toContain("May write truth docs and docs/routes/index.md only");
+    expect(instructions).toContain("Read docs/routes/index.md and only relevant child route files under docs/routes/areas/");
+    expect(instructions).not.toContain("May write truth docs and docs/truthmark/areas.md only");
+  });
 });
 
 describe("agent-native workflow instructions", () => {
@@ -54,6 +79,11 @@ describe("agent-native workflow instructions", () => {
     expect(renderTruthStructureInstructions()).toContain("topology pressure");
     expect(renderTruthStructureInstructions()).toContain("If the skill is unavailable");
     expect(renderTruthCheckInstructions()).toContain("truthmark-check");
-    expect(renderTruthCheckInstructions()).toContain("truthmark check command may be used");
+    expect(renderTruthCheckInstructions()).toContain(
+      "run the truthmark check command only when available for additional validation",
+    );
+    expect(renderTruthCheckInstructions()).toContain(
+      "inspect the checkout directly when the command is unavailable",
+    );
   });
 });

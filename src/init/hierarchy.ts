@@ -5,19 +5,30 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import type { FileWriteResult } from "../fs/paths.js";
 import { ensureRepoFile, resolveRepoPath } from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
+import { parseAreasMarkdown } from "../routing/areas.js";
+import { resolveTruthDocsRoot } from "../truth/docs.js";
 import {
-  FEATURE_DOC_TEMPLATE_PATH,
+  ARCHITECTURE_DOC_TEMPLATE_PATH,
+  BEHAVIOR_DOC_TEMPLATE_PATH,
+  CONTRACT_DOC_TEMPLATE_PATH,
+  OPERATIONS_DOC_TEMPLATE_PATH,
+  TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
+  WORKFLOW_DOC_TEMPLATE_PATH,
   renderChildAreaTemplate,
-  renderFeatureDocTemplateFile,
-  renderFeatureDomainReadmeTemplate,
-  renderFeatureLeafDocTemplate,
-  renderFeatureRootReadmeTemplate,
+  renderArchitectureDocTemplateFile,
+  renderBehaviorDocTemplateFile,
+  renderContractDocTemplateFile,
+  renderTruthDomainReadmeTemplate,
+  renderTruthRootReadmeTemplate,
   renderHierarchicalAreasIndexTemplate,
+  renderOperationsDocTemplateFile,
+  renderBehaviorLeafDocTemplate,
+  renderTestBehaviorDocTemplateFile,
+  renderWorkflowDocTemplateFile,
 } from "../templates/init-files.js";
 
 const KNOWN_DEFAULT_ROOTS = [
-  DEFAULT_DOCS_HIERARCHY.roots.features,
-  "docs/features/current",
+  DEFAULT_DOCS_HIERARCHY.roots.truth,
   "docs/api",
   DEFAULT_DOCS_HIERARCHY.roots.architecture,
   DEFAULT_DOCS_HIERARCHY.roots.standards,
@@ -33,12 +44,27 @@ const hasMarkdownFiles = async (rootDir: string, root: string): Promise<boolean>
   return matches.length > 0;
 };
 
-const readFeatureDocTemplate = async (rootDir: string): Promise<string> => {
+const truthRoot = resolveTruthDocsRoot;
+
+const rootIndexReferencesChildRoute = async (
+  rootDir: string,
+  rootIndexPath: string,
+  childRoutePath: string,
+): Promise<boolean> => {
+  const rootIndexSource = await fs.readFile(resolveRepoPath(rootDir, rootIndexPath), "utf8");
+  const parsedRootIndex = parseAreasMarkdown(rootIndexSource);
+
+  return parsedRootIndex.areaFileReferences.some((areaReference) =>
+    areaReference.areaFiles.includes(childRoutePath),
+  );
+};
+
+const readBehaviorDocTemplate = async (rootDir: string): Promise<string> => {
   try {
-    return await fs.readFile(resolveRepoPath(rootDir, FEATURE_DOC_TEMPLATE_PATH), "utf8");
+    return await fs.readFile(resolveRepoPath(rootDir, BEHAVIOR_DOC_TEMPLATE_PATH), "utf8");
   } catch (error: unknown) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      return renderFeatureDocTemplateFile();
+      return renderBehaviorDocTemplateFile();
     }
     throw error;
   }
@@ -49,8 +75,8 @@ export const scaffoldHierarchy = async (
   config: TruthmarkConfig,
 ): Promise<FileWriteResult[]> => {
   const results: FileWriteResult[] = [];
-  const featureRoot = config.docs.roots.features ?? config.docs.roots.features_current ?? "docs/features";
-  const featureDomainRoot = `${featureRoot}/${config.docs.routing.defaultArea}`;
+  const truthDocsRoot = truthRoot(config);
+  const truthDomainRoot = `${truthDocsRoot}/${config.docs.routing.defaultArea}`;
   const childRoutePath = `${config.docs.routing.areaFilesRoot}/${config.docs.routing.defaultArea}.md`;
 
   results.push(
@@ -60,30 +86,57 @@ export const scaffoldHierarchy = async (
       renderHierarchicalAreasIndexTemplate(config),
     ),
   );
-  results.push(await ensureRepoFile(rootDir, childRoutePath, renderChildAreaTemplate(config)));
+  if (
+    await rootIndexReferencesChildRoute(rootDir, config.docs.routing.rootIndex, childRoutePath)
+  ) {
+    results.push(await ensureRepoFile(rootDir, childRoutePath, renderChildAreaTemplate(config)));
+  }
   results.push(
     await ensureRepoFile(
       rootDir,
-      `${featureRoot}/README.md`,
-      renderFeatureRootReadmeTemplate(config),
+      `${truthDocsRoot}/README.md`,
+      renderTruthRootReadmeTemplate(config),
     ),
   );
   results.push(
     await ensureRepoFile(
       rootDir,
-      `${featureDomainRoot}/README.md`,
-      renderFeatureDomainReadmeTemplate(config),
+      `${truthDomainRoot}/README.md`,
+      renderTruthDomainReadmeTemplate(config),
     ),
   );
   results.push(
-    await ensureRepoFile(rootDir, FEATURE_DOC_TEMPLATE_PATH, renderFeatureDocTemplateFile()),
+    await ensureRepoFile(rootDir, BEHAVIOR_DOC_TEMPLATE_PATH, renderBehaviorDocTemplateFile()),
   );
-  const featureDocTemplate = await readFeatureDocTemplate(rootDir);
+  results.push(
+    await ensureRepoFile(rootDir, CONTRACT_DOC_TEMPLATE_PATH, renderContractDocTemplateFile()),
+  );
   results.push(
     await ensureRepoFile(
       rootDir,
-      `${featureDomainRoot}/overview.md`,
-      renderFeatureLeafDocTemplate(config, featureDocTemplate),
+      ARCHITECTURE_DOC_TEMPLATE_PATH,
+      renderArchitectureDocTemplateFile(),
+    ),
+  );
+  results.push(
+    await ensureRepoFile(rootDir, WORKFLOW_DOC_TEMPLATE_PATH, renderWorkflowDocTemplateFile()),
+  );
+  results.push(
+    await ensureRepoFile(rootDir, OPERATIONS_DOC_TEMPLATE_PATH, renderOperationsDocTemplateFile()),
+  );
+  results.push(
+    await ensureRepoFile(
+      rootDir,
+      TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
+      renderTestBehaviorDocTemplateFile(),
+    ),
+  );
+  const behaviorDocTemplate = await readBehaviorDocTemplate(rootDir);
+  results.push(
+    await ensureRepoFile(
+      rootDir,
+      `${truthDomainRoot}/overview.md`,
+      renderBehaviorLeafDocTemplate(config, behaviorDocTemplate),
     ),
   );
   return results;

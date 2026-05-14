@@ -40,9 +40,19 @@ export const runCheck = async (cwd: string): Promise<CommandResult> => {
   const authority = await checkAuthority(rootDir, loadResult.config);
   const areas = await checkAreas(rootDir, loadResult.config);
   const markdownPaths = [...new Set([...authority.paths, ...areas.truthDocumentPaths])];
-  const frontmatter = await checkFrontmatter(rootDir, loadResult.config, markdownPaths);
+  const frontmatter = await checkFrontmatter(
+    rootDir,
+    loadResult.config,
+    markdownPaths,
+    areas.truthDocumentEntries,
+  );
   const links = await checkLinks(rootDir, markdownPaths);
-  const decisionSections = await checkDecisionSections(rootDir, loadResult.config, markdownPaths);
+  const decisionSections = await checkDecisionSections(
+    rootDir,
+    loadResult.config,
+    markdownPaths,
+    areas.truthDocumentEntries,
+  );
   const generatedSurfaces = await checkGeneratedSurfaces(rootDir, loadResult.config);
   const diagnostics = [
     ...loadResult.diagnostics,

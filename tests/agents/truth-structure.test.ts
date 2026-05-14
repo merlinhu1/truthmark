@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import matter from "gray-matter";
 
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
+  renderTruthStructureReportExample,
   renderTruthStructureSkillBody,
 } from "../../src/agents/truth-structure.js";
 import {
@@ -35,10 +37,14 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "Starter truth docs must include ## Product Decisions and ## Rationale sections.",
     );
-    expect(skill).toContain("When creating or updating a feature doc");
-    expect(skill).toContain("read docs/templates/feature-doc.md");
-    expect(skill).toContain("follow its frontmatter, heading order, and section intent");
-    expect(skill).toContain("align existing feature docs to the template standard");
+    expect(skill).toContain("When creating or updating a truth doc");
+    expect(skill).toContain("docs/templates/behavior-doc.md");
+    expect(skill).toContain("inspect the routed truth kind");
+    expect(skill).toContain("align it to the selected template standard");
+    expect(skill).toContain("Truth-doc restructure gate");
+    expect(skill).toContain(
+      "Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.",
+    );
     expect(skill).not.toContain("# {{title}}");
   });
 
@@ -62,7 +68,7 @@ describe("renderTruthStructureSkillBody", () => {
     );
     expect(skill).toContain("docs/truthmark/areas.md");
     expect(skill).toContain("create starter truth docs");
-    expect(skill).toContain("docs/features/**");
+    expect(skill).toContain("docs/truth/**");
     expect(skill).toContain("docs/architecture/**");
     expect(skill).toContain("canonical current-truth destinations");
     expect(skill).toContain("Truthmark hierarchy:");
@@ -74,6 +80,16 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "If an existing canonical doc lacks either section, add the missing heading beside Current Behavior with a concise current-state placeholder or active decision.",
     );
+    expect(skill).toContain("Evidence Gate");
+    expect(skill).toContain(
+      "apply the Evidence Gate before finishing",
+    );
+    expect(skill).toContain(
+      "Route ownership changes require topology evidence from repository layout, implementation boundaries, current docs, config, tests, or route files.",
+    );
+    expect(skill).toContain(
+      "remove, narrow, or block unsupported claims",
+    );
     expect(skill).toContain("Date active decisions inline when added or changed");
     expect(skill).toContain("Topology Governance");
     expect(skill).toContain("Topology pressure signals");
@@ -81,26 +97,70 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain("unrouteable Truthmark area routing");
     expect(skill).toContain("infer product and domain ownership");
     expect(skill).toContain(
-      "feature docs behavior-oriented, not endpoint-oriented",
+      "behavior truth docs behavior-oriented, not endpoint-oriented",
     );
     expect(skill).toContain(
       "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
     );
     expect(skill).toContain(
-      "Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
     );
     expect(skill).toContain(
       "README.md files are indexes, not Truth Sync targets",
     );
     expect(skill).toContain("bounded leaf truth docs");
-    expect(skill).toContain("<feature-root>/<domain>/<behavior>.md");
+    expect(skill).toContain("<truth-root>/<domain>/<behavior>.md");
     expect(skill).toContain("If this skill surface is unavailable");
     expect(skill).toContain("Topology decisions");
     expect(skill).toContain("Truth Structure: completed");
     expect(skill).toContain("Areas reviewed");
     expect(skill).toContain("Routing updated");
     expect(skill).toContain("Truth docs created");
+    expect(skill).toContain("Truth docs restructured");
+    expect(skill).toContain("Evidence checked");
     expect(skill).toContain("Notes");
+  });
+
+  it("uses the provided hierarchy config in embedded report examples", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        roots: {
+          ...baseConfig.docs.roots,
+          truth: "docs/truth",
+        },
+        routing: {
+          ...baseConfig.docs.routing,
+          rootIndex: "docs/routes/index.md",
+          areaFilesRoot: "docs/routes/areas",
+        },
+      },
+    };
+
+    const report = renderTruthStructureReportExample(config);
+
+    expect(report).toContain("docs root: docs/truth");
+    expect(report).toContain("docs/routes/index.md");
+    expect(report).toContain("docs/truth/authentication/session.md");
+  });
+
+  it("uses the default truth root consistently when current truth root are absent", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        roots: {},
+      },
+    };
+
+    const skill = renderTruthStructureSkillBody(config);
+
+    expect(skill).toContain("managed semantic root");
+    expect(skill).toContain("organize docs/truth");
+    expect(skill).not.toContain("legacy feature-root label");
   });
 });
 

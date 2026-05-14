@@ -36,7 +36,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/features/payments/checkout.md
+- docs/truth/payments/checkout.md
 
 Code surface:
 - services/payments/checkout/**
@@ -56,7 +56,7 @@ Update truth when:
       expect(result.areas).toEqual([
         expect.objectContaining({
           name: "Checkout",
-          truthDocuments: ["docs/features/payments/checkout.md"],
+          truthDocuments: ["docs/truth/payments/checkout.md"],
           sourcePath: "docs/truthmark/areas/payments.md",
           parentName: "Payments",
         }),
@@ -187,7 +187,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/features/payments.md
+- docs/truth/payments.md
 
 Code surface:
 - services/payments/checkout/**
@@ -198,7 +198,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/features/payments-legacy.md
+- docs/truth/payments-legacy.md
 
 Code surface:
 - services/payments/legacy-checkout/**
@@ -251,7 +251,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/features/payments.md
+- docs/truth/payments.md
 
 Code surface:
 - services/orders/**
@@ -305,7 +305,7 @@ Update truth when:
 ## Admin Docs
 
 Truth documents:
-- docs/features/apps/admin-docs.md
+- docs/truth/apps/admin-docs.md
 
 Code surface:
 - apps/admin/docs/**

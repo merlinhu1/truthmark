@@ -1,10 +1,16 @@
+import type { TruthmarkConfig } from "../config/schema.js";
 import { renderTruthRealizeCompletedReport } from "../realize/report.js";
+import { defaultAgentConfig, resolveTruthDocsRoot } from "./shared.js";
 
 const renderMarkdownExample = (content: string): string => {
   return [`\`\`\`md`, content, `\`\`\``].join("\n");
 };
 
-export const renderTruthRealizePrompt = (): string => {
+export const renderTruthRealizePrompt = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const truthDocsRoot = resolveTruthDocsRoot(config);
+
   return `### Manual Truth Realize
 Only run when the user explicitly asks to realize truth docs into code. This is a manual installed instruction or skill, not a dedicated CLI command.
 Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
@@ -15,7 +21,7 @@ Doc first:
 Report changed code files and verification steps:
 ${renderMarkdownExample(
     renderTruthRealizeCompletedReport({
-      truthDocsUsed: ["docs/features/authentication.md"],
+      truthDocsUsed: [`${truthDocsRoot}/authentication/session-timeout.md`],
       codeUpdated: ["src/auth/session.ts"],
       verification: ["npm test -- auth"],
     }),

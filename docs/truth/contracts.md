@@ -1,7 +1,8 @@
 ---
 status: active
-doc_type: feature
-last_reviewed: 2026-05-10
+doc_type: contract
+truth_kind: contract
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../../src/config/schema.ts
   - ../../src/checks/check.ts
@@ -17,6 +18,18 @@ source_of_truth:
 
 This document defines the current machine-facing contracts exposed by Truthmark: the config file shape and the CLI result envelope.
 
+## Contract Surface
+
+- The committed `.truthmark/config.yml` schema and defaults.
+- Route metadata under `docs/truthmark/areas.md` and delegated child route files.
+- The JSON result envelope emitted by `truthmark config`, `truthmark init`, and `truthmark check`.
+
+## Inputs
+
+- Committed config fields under `.truthmark/config.yml`.
+- Routed truth-document metadata from `docs/truthmark/areas.md` and `docs/truthmark/areas/**/*.md`.
+- CLI options such as `--json`, `--stdout`, and command-specific flags.
+
 ## Config Contract
 
 Truthmark loads `.truthmark/config.yml` and validates it against the current schema.
@@ -26,7 +39,7 @@ Current fields:
 - `version`: must be `1`
 - `platforms`: optional list of agent harnesses to initialize; defaults to all supported platforms
 - `docs.layout`: currently `hierarchical`
-- `docs.roots`: named canonical doc roots
+- `docs.roots`: named canonical doc roots; omitted root names are filled from current defaults
 - `docs.routing.root_index`: root area index path
 - `docs.routing.area_files_root`: child area route directory
 - `docs.routing.default_area`: default child route file basename used by scaffold
@@ -36,7 +49,6 @@ Current fields:
 - `frontmatter.required`: frontmatter fields that produce `error` diagnostics when missing
 - `frontmatter.recommended`: frontmatter fields that produce `review` diagnostics when missing
 - `ignore`: glob patterns excluded from relevant checks and routing logic
-- `realization.enabled`: whether doc-first realization is enabled
 
 The default scaffolded authority list includes:
 
@@ -45,7 +57,29 @@ The default scaffolded authority list includes:
 - `docs/ai/**/*.md`
 - `docs/standards/**/*.md`
 - `docs/architecture/**/*.md`
-- `docs/features/**/*.md`
+- `docs/truth/**/*.md`
+
+## Route Metadata Contract
+
+Route files may express `Truth documents` in either of these forms:
+
+- a legacy Markdown list of document paths
+- a fenced YAML block with a `truth_documents` array of `{ path, kind }` entries
+
+New scaffolded child route files use the fenced YAML form so routed truth kind is explicit from the first generated route. The legacy list form remains a compatibility input for existing repositories.
+
+Supported routed truth kinds are:
+
+- `behavior`
+- `contract`
+- `architecture`
+- `workflow`
+- `operations`
+- `test-behavior`
+
+When explicit `kind` metadata is present, it is the authoritative routed kind and the fenced metadata block owns the `Truth documents` section. Legacy list lines in the same section are ignored. When route files use the legacy list form, Truthmark falls back to path-based kind inference such as `<configured truth root>/**` or `docs/truth/** -> behavior`, `docs/contracts/**` or `docs/api/** -> contract`, `docs/architecture/** -> architecture`, `docs/workflows/** -> workflow`, `docs/operations/** -> operations`, and `docs/testing/** -> test-behavior`.
+
+Canonical truth docs may include optional `truth_kind` frontmatter. When present, it must match the routed kind.
 
 Supported `platforms` values are:
 
@@ -78,6 +112,14 @@ Diagnostic fields:
 - `data`: optional machine-readable extras
 
 Human-rendered output is intended for people. JSON output is the machine-facing contract.
+
+## Compatibility Rules
+
+- `version` remains `1` in the committed config contract.
+- `docs.roots.truth` is the configured root for behavior truth docs.
+- Repositories refresh generated workflow surfaces through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
+- Truth Realize has no config switch; selected platforms receive its explicit manual workflow surface.
+- There is no `.truthmark/local.yml` compatibility surface in the current implementation.
 
 ## Config Result Data
 
@@ -193,7 +235,8 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - Missing authority files are `error` diagnostics.
 - Authority globs and code-surface globs that match nothing are `review` diagnostics.
 - Coverage diagnostics discover unmapped functional code across common code roots with the same path classifier used by Truth Sync. V1 coverage must include Go, Python, C#, Java, JavaScript, TypeScript, frontend roots, monorepo app or package roots, Terraform, Kubernetes manifests, CI workflows, OpenAPI or Swagger, GraphQL, and protobuf surfaces within those roots.
-- `doc-structure` emits `review` diagnostics when configured architecture or current feature docs are missing active `Product Decisions` or `Rationale` sections.
+- `frontmatter` emits `error` diagnostics when `truth_kind` is invalid or present and disagrees with routed truth-kind metadata.
+- `doc-structure` emits `review` diagnostics when configured architecture or routed truth docs are missing `Scope`, active `Product Decisions`, active `Rationale`, or the kind-specific required headings for their routed truth kind.
 
 ## Product Decisions
 
@@ -202,9 +245,10 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Date active decisions inline when added or changed.
 - The V1 user-facing CLI surface is limited to `config`, `init`, and `check`; workflow verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, `build`, and `context` are not top-level commands.
 - `gemini-cli` installs both hierarchical `GEMINI.md` context and project-scoped `.gemini/commands/truthmark/*.toml` custom commands so Gemini users get the same explicit workflow entrypoints without adding top-level CLI verbs.
+- Decision (2026-05-14): Truth Realize is manually invoked through installed workflow surfaces and is not controlled by `realization.enabled` or any other config key.
 
 ## Rationale
 
-Separating config from init keeps repository layout reviewable and predictable. Keeping decisions with the owning feature, contract, or architecture doc prevents agents from having to infer which historical note is still active.
+Separating config from init keeps repository layout reviewable and predictable. Keeping decisions with the owning behavior, contract, or architecture doc prevents agents from having to infer which historical note is still active.
 
 Keeping workflow verbs out of the CLI preserves the agent-native model: installed skills and instruction blocks run the workflows, while the CLI installs and validates repository artifacts.

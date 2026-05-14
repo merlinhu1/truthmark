@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import matter from "gray-matter";
 
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   TRUTH_SYNC_EXPLICIT_INVOCATIONS,
   renderTruthSyncSkillBody,
@@ -86,29 +87,81 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "block and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary",
     );
-    expect(skillBody).toContain("do not create another generic feature doc");
+    expect(skillBody).toContain("do not create another generic truth doc");
     expect(skillBody).toContain(
       "README.md files are indexes, not Truth Sync targets",
     );
     expect(skillBody).toContain(
-      "must not append behavior details to a feature README",
+      "must not append behavior details to a README.md index",
     );
     expect(skillBody).toContain("create or update a bounded leaf truth doc");
+    expect(skillBody).toContain("Evidence Gate");
+    expect(skillBody).toContain(
+      "perform a route-first impacted-doc check",
+    );
+    expect(skillBody).toContain(
+      "support each claim with primary evidence from implementation code, config files, routing files, generated surface templates, schemas, or contract definitions in the active checkout",
+    );
+    expect(skillBody).toContain(
+      "use tests, examples, snapshots, and existing canonical docs as corroborating evidence",
+    );
+    expect(skillBody).toContain(
+      "remove, narrow, or block unsupported claims",
+    );
     expect(skillBody).toContain(
       "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
     );
     expect(skillBody).toContain(
-      "Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
     );
-    expect(skillBody).toContain("When creating or updating a feature doc");
-    expect(skillBody).toContain("read docs/templates/feature-doc.md");
-    expect(skillBody).toContain("follow its frontmatter, heading order, and section intent");
-    expect(skillBody).toContain("align existing feature docs to the template standard");
+    expect(skillBody).toContain("When creating or updating a truth doc");
+    expect(skillBody).toContain("docs/templates/behavior-doc.md");
+    expect(skillBody).toContain("inspect the routed truth kind");
+    expect(skillBody).toContain("align it to the selected template standard");
+    expect(skillBody).toContain("Truth-doc restructure gate");
+    expect(skillBody).toContain(
+      "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
+    );
+    expect(skillBody).toContain(
+      "if a narrow append or section replacement would make truth worse",
+    );
+    expect(skillBody).toContain(
+      "report which truth docs were restructured and why a narrow edit was not sufficient",
+    );
     expect(skillBody).not.toContain("# {{title}}");
     expect(skillBody).toContain(
       "update Product Decisions and Rationale when a behavior change comes from a decision change",
     );
+    expect(skillBody).toContain("Evidence checked");
+    expect(skillBody).toContain("Claim:");
+    expect(skillBody).toContain("Result: supported");
+    expect(skillBody).toContain("structured Truth Sync report contract");
     expect(skillBody).toContain("/truthmark:sync");
+  });
+
+  it("uses the provided hierarchy config in embedded report examples", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        roots: {
+          ...baseConfig.docs.roots,
+          truth: "docs/truth",
+        },
+        routing: {
+          ...baseConfig.docs.routing,
+          rootIndex: "docs/routes/index.md",
+          areaFilesRoot: "docs/routes/areas",
+        },
+      },
+    };
+
+    const skillBody = renderTruthSyncSkillBody(config);
+
+    expect(skillBody).toContain("docs/truth/repository/overview.md");
+    expect(skillBody).toContain("docs/routes/index.md:11");
+    expect(skillBody).toContain("verify only truth docs and docs/routes/index.md changed");
   });
 });
 

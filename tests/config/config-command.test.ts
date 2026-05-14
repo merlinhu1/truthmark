@@ -36,9 +36,9 @@ describe("runConfig", () => {
         ai: "docs/ai",
         standards: "docs/standards",
         architecture: "docs/architecture",
-        features: "docs/features",
+        truth: "docs/truth",
       });
-      expect(config.authority).toContain("docs/features/**/*.md");
+      expect(config.authority).toContain("docs/truth/**/*.md");
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
       await expect(fs.stat(`${repo.rootDir}/docs/truthmark/areas.md`)).rejects.toThrow();
       expect(result.diagnostics).toEqual(

@@ -3,7 +3,7 @@ name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Reads truth docs and routing first, updates functional code only, and reports verification.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 1.2.3
+truthmark-version: 1.2.4
 ---
 
 # Truthmark Realize
@@ -41,7 +41,7 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- docs/features/authentication.md
+- docs/truth/authentication/session-timeout.md
 
 Code updated:
 - src/auth/session.ts

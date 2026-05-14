@@ -5,7 +5,11 @@ import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   defaultAgentConfig,
+  renderClaimEvidenceCheckedSection,
+  renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
+  renderTruthDocRestructureGateSection,
+  resolveTruthDocsRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 
@@ -19,19 +23,35 @@ export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
 export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const truthDocsRoot = resolveTruthDocsRoot(config);
+
   return `Truth Document: completed
 
 Implementation reviewed:
 - src/routing/area-resolver.ts
 
 Truth docs created:
-- docs/features/contracts.md
+- ${truthDocsRoot}/contracts.md
 
 Truth docs updated:
-- docs/features/check-diagnostics.md
+- ${truthDocsRoot}/check-diagnostics.md
+
+Truth docs restructured:
+- ${truthDocsRoot}/check-diagnostics.md
 
 Routing updated:
 - ${config.docs.routing.rootIndex}
+
+${renderClaimEvidenceCheckedSection([
+    {
+      claim: "Route resolution behavior is documented in the contracts truth doc.",
+      evidence: [
+        "src/routing/area-resolver.ts:14",
+        `${config.docs.routing.rootIndex}:9`,
+      ],
+      result: "supported",
+    },
+  ])}
 
 Notes:
 - Documented routing and behavior from route handlers and tests.`;
@@ -65,14 +85,21 @@ Truth Document is manual and implementation-first:
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
 - keep feature README.md files as indexes rather than truth-document targets
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
-- keep feature docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
+- keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content
+${renderRouteFirstEvidenceGateSection(
+    "the documented behavior",
+    "if no truth doc changed, report why current truth was already sufficient or why documentation was blocked",
+  )}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
+${renderTruthDocRestructureGateSection(
+    "Truth Document may restructure only truth docs for the implemented behavior being documented.",
+  )}
 ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
 
 Report completion in this shape:
-${renderMarkdownExample(renderTruthDocumentReportExample())}`;
+${renderMarkdownExample(renderTruthDocumentReportExample(config))}`;
 };

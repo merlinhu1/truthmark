@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../areas.md
   - ../../README.md
@@ -13,12 +13,19 @@ source_of_truth:
 ## Check And Routing
 
 Truth documents:
-- docs/architecture/overview.md
-- docs/architecture/module-map.md
-- docs/features/check-diagnostics.md
-- docs/features/contracts.md
-- docs/features/routing-examples.md
-- docs/standards/documentation-governance.md
+```yaml
+truth_documents:
+  - path: docs/truth/contracts.md
+    kind: contract
+  - path: docs/architecture/overview.md
+    kind: architecture
+  - path: docs/architecture/module-map.md
+    kind: architecture
+  - path: docs/truth/check-diagnostics.md
+    kind: behavior
+  - path: docs/truth/routing-examples.md
+    kind: behavior
+```
 
 Code surface:
 - src/checks/**

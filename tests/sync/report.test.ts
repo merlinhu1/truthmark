@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  parseTruthSyncReport,
   renderTruthSyncBlockedReport,
   renderTruthSyncCompletedReport,
   renderTruthSyncSkippedReport,
@@ -8,22 +9,53 @@ import {
 
 describe("Truth Sync reporting", () => {
   it("renders completed handoff notes in the README shape", () => {
-    expect(
-      renderTruthSyncCompletedReport({
-        changedCode: ["src/auth/session.ts"],
-        truthDocsUpdated: ["docs/features/authentication.md"],
-        notes: ["Updated session timeout behavior."],
-      }),
-    ).toBe(`Truth Sync: completed
+    const report = renderTruthSyncCompletedReport({
+      changedCode: ["src/auth/session.ts"],
+      truthDocsUpdated: ["docs/truth/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: [
+            "src/auth/session.ts:12",
+            "docs/truthmark/areas/repository.md:18",
+          ],
+          result: "supported",
+        },
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
+
+    expect(report).toBe(`Truth Sync: completed
 
 Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/features/authentication.md
+- docs/truth/authentication.md
+
+Evidence checked:
+- Claim: Session timeout behavior is documented in the authentication truth doc.
+  Evidence: src/auth/session.ts:12 / docs/truthmark/areas/repository.md:18
+  Result: supported
 
 Notes:
 - Updated session timeout behavior.`);
+    expect(parseTruthSyncReport(report)).toEqual({
+      status: "completed",
+      changedCode: ["src/auth/session.ts"],
+      truthDocsUpdated: ["docs/truth/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: [
+            "src/auth/session.ts:12",
+            "docs/truthmark/areas/repository.md:18",
+          ],
+          result: "supported",
+        },
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
   });
 
   it("renders skipped handoff notes in the README shape", () => {
@@ -39,7 +71,7 @@ Reason:
     expect(
       renderTruthSyncBlockedReport({
         reason: "relevant tests failed before sync",
-        manualReviewFiles: ["docs/features/authentication.md"],
+        manualReviewFiles: ["docs/truth/authentication.md"],
         nextAction: "fix the failing tests, then rerun Truth Sync",
       }),
     ).toBe(`Truth Sync: blocked
@@ -48,10 +80,28 @@ Reason:
 - relevant tests failed before sync
 
 Files requiring manual review:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Next action:
 - fix the failing tests, then rerun Truth Sync`);
+  });
+
+  it("rejects completed reports without structured evidence", () => {
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Truth docs updated:
+- docs/truth/authentication.md
+
+Evidence checked:
+- Session timeout behavior was reviewed.
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("Evidence checked");
   });
 
   it("omits the manual review section when the file list is empty", () => {

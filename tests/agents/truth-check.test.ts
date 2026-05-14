@@ -30,6 +30,12 @@ describe("renderTruthCheckSkillBody", () => {
     );
     expect(skill).toContain("optionally run truthmark check");
     expect(skill).toContain("must not require the truthmark binary");
+    expect(skill).toContain(
+      "support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests",
+    );
+    expect(skill).toContain(
+      "remove unsupported findings or mark them as open questions with explicit confidence",
+    );
     expect(skill).toContain("Truthmark hierarchy:");
     expect(skill).toContain("Product Decisions");
     expect(skill).toContain("Rationale");
@@ -37,6 +43,8 @@ describe("renderTruthCheckSkillBody", () => {
     expect(skill).toContain("Files reviewed");
     expect(skill).toContain("Issues found");
     expect(skill).toContain("Fixes suggested");
+    expect(skill).toContain("Evidence checked");
+    expect(skill).toContain("Confidence");
     expect(skill).toContain("Validation");
   });
 });

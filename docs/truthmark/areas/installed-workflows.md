@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../areas.md
   - ../../README.md
@@ -13,16 +13,23 @@ source_of_truth:
 ## Installed Workflows
 
 Truth documents:
-- docs/features/contracts.md
-- docs/features/installed-workflows.md
+```yaml
+truth_documents:
+  - path: docs/truth/contracts.md
+    kind: contract
+  - path: docs/truth/installed-workflows.md
+    kind: workflow
+```
 
 Code surface:
 - src/agents/**
+- src/generation/**
 - src/realize/**
 - src/sync/**
 - src/templates/agents-block.ts
 - src/templates/codex-skills.ts
 - src/templates/generated-surfaces.ts
+- src/truth/**
 - src/version.ts
 
 Update truth when:

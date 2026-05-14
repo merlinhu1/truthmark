@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../areas.md
   - ../../README.md
@@ -13,8 +13,11 @@ source_of_truth:
 ## Contracts And Commands
 
 Truth documents:
-- docs/README.md
-- docs/features/contracts.md
+```yaml
+truth_documents:
+  - path: docs/truth/contracts.md
+    kind: contract
+```
 
 Code surface:
 - src/cli/**

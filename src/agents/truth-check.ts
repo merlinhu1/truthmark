@@ -1,5 +1,7 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
+  renderAuditEvidenceCheckedSection,
+  renderAuditEvidenceGateSection,
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
@@ -28,6 +30,15 @@ Issues found:
 
 Fixes suggested:
 - none
+
+${renderAuditEvidenceCheckedSection([
+    {
+      finding: "The root route index is present and maps repository truth owners.",
+      evidence: [".truthmark/config.yml:1", `${rootRouteIndex}:1`],
+      suggestedFix: "none",
+      confidence: "high",
+    },
+  ])}
 
 Validation:
 - truthmark check`;
@@ -61,6 +72,7 @@ Truth Check is agent-led:
 - optionally run truthmark check when local tooling is available
 - must not require the truthmark binary; direct inspection is always valid
 - report issues and suggested fixes without silently rewriting unrelated files
+${renderAuditEvidenceGateSection()}
 
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

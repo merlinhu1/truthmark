@@ -68,8 +68,6 @@ frontmatter:
   recommended:
     - status
 ignore: []
-realization:
-  enabled: true
 `,
       );
 

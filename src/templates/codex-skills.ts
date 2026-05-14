@@ -1,5 +1,9 @@
 import type { TruthmarkConfig } from "../config/schema.js";
-import { EVIDENCE_AUTHORITY_INSTRUCTIONS, defaultAgentConfig } from "../agents/shared.js";
+import {
+  EVIDENCE_AUTHORITY_INSTRUCTIONS,
+  defaultAgentConfig,
+  resolveTruthDocsRoot,
+} from "../agents/shared.js";
 import { renderTruthCheckSkillBody } from "../agents/truth-check.js";
 import { renderTruthDocumentSkillBody } from "../agents/truth-document.js";
 import { renderTruthStructureSkillBody } from "../agents/truth-structure.js";
@@ -166,6 +170,8 @@ truthmark:
 const renderTruthmarkRealizeSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const truthDocsRoot = resolveTruthDocsRoot(config);
+
   return `---
 name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Reads truth docs and routing first, updates functional code only, and reports verification.
@@ -208,7 +214,7 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- docs/features/authentication.md
+- ${truthDocsRoot}/authentication/session-timeout.md
 
 Code updated:
 - src/auth/session.ts

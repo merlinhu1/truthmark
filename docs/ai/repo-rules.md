@@ -20,7 +20,7 @@ Conflict order:
 3. [docs/truthmark/areas.md](../truthmark/areas.md) and `docs/truthmark/areas/**/*.md`
 4. `docs/standards/**/*.md`
 5. `docs/architecture/**/*.md`
-6. `docs/features/**/*.md`
+6. `docs/truth/**/*.md`
 
 Authoritative context is the current checkout plus user-provided session context; chat, external notes, and off-repo memory are non-authoritative unless committed or supplied now.
 
@@ -54,4 +54,4 @@ If blocked, re-read the relevant canonical docs and owning implementation, then 
 
 ## Maintenance
 
-Update this file only for repository-wide agent rules. Keep it compact and policy-focused. Put procedures in standards or guides, feature behavior in `docs/features`, and update `last_reviewed`.
+Update this file only for repository-wide agent rules. Keep it compact and policy-focused. Put procedures in standards or guides, feature behavior in `docs/truth`, and update `last_reviewed`.

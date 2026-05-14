@@ -6,7 +6,7 @@ export const DEFAULT_DOCS_HIERARCHY = {
     ai: "docs/ai",
     standards: "docs/standards",
     architecture: "docs/architecture",
-    features: "docs/features",
+    truth: "docs/truth",
   },
   routing: {
     root_index: "docs/truthmark/areas.md",
@@ -22,7 +22,7 @@ export const DEFAULT_AUTHORITY = [
   `${DEFAULT_DOCS_HIERARCHY.roots.ai}/**/*.md`,
   `${DEFAULT_DOCS_HIERARCHY.roots.standards}/**/*.md`,
   `${DEFAULT_DOCS_HIERARCHY.roots.architecture}/**/*.md`,
-  `${DEFAULT_DOCS_HIERARCHY.roots.features}/**/*.md`,
+  `${DEFAULT_DOCS_HIERARCHY.roots.truth}/**/*.md`,
 ] as const;
 
 export const DEFAULT_INSTRUCTION_TARGETS = ["AGENTS.md"] as const;
@@ -42,9 +42,6 @@ export const createDefaultRawConfig = () => ({
     recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
   },
   ignore: ["node_modules/**", "vendor/**", "dist/**", "build/**"],
-  realization: {
-    enabled: true,
-  },
 });
 
 export const createDefaultConfig = (): TruthmarkConfig => ({
@@ -67,7 +64,4 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
     recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
   },
   ignore: ["node_modules/**", "vendor/**", "dist/**", "build/**"],
-  realization: {
-    enabled: true,
-  },
 });

@@ -1,6 +1,7 @@
 ---
 status: active
-doc_type: feature
+doc_type: behavior
+truth_kind: behavior
 last_reviewed: 2026-05-09
 source_of_truth:
   - ../../src/checks/areas.ts
@@ -12,11 +13,20 @@ source_of_truth:
 
 This document gives examples for designing explicit Truthmark areas in larger repositories. The examples are patterns, not required folder names.
 
+## Scope
+
+This doc covers example routing patterns for larger repositories so agents and maintainers can split route ownership by behavior rather than by broad directory mirroring.
+
+## Current Behavior
+
+- Truthmark treats frontend, API schema, workflow, infrastructure, and monorepo service paths as functional surfaces when they change production behavior, contracts, or operational ownership.
+- Route design should produce bounded truth owners that map changed code to a small set of canonical docs.
+
 ## Express, Nest, And Fastify
 
 Large Node API apps should route by product behavior rather than by framework layer. For example, route `src/modules/billing/**`, `src/routes/billing/**`, or `apps/api/src/billing/**` to a billing truth doc instead of routing all controllers through `src/**`.
 
-API schema files are functional surfaces when they define behavior or contracts. Route `api/openapi.yaml`, `schema/**/*.graphql`, and `proto/**/*.proto` to the nearest contract or feature truth doc.
+API schema files are functional surfaces when they define behavior or contracts. Route `api/openapi.yaml`, `schema/**/*.graphql`, and `proto/**/*.proto` to the nearest contract or behavior truth doc.
 
 ## Frontend Apps
 

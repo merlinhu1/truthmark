@@ -80,8 +80,8 @@ describe("init and check workflow acceptance", () => {
       expect(initResult.exitCode).toBe(0);
 
       await repo.writeFile(
-        "docs/features/authentication.md",
-        "---\nstatus: active\ndoc_type: feature\nlast_reviewed: 2026-05-06\nsource_of_truth:\n  - ../../../src/auth/session.ts\n---\n\n# Authentication\n",
+        "docs/truth/authentication.md",
+        "---\nstatus: active\ndoc_type: behavior\ntruth_kind: behavior\nlast_reviewed: 2026-05-06\nsource_of_truth:\n  - ../../../src/auth/session.ts\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
         "docs/truthmark/areas.md",
@@ -90,7 +90,7 @@ describe("init and check workflow acceptance", () => {
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/auth/**

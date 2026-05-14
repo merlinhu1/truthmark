@@ -1,7 +1,8 @@
 ---
 status: active
-doc_type: feature
-last_reviewed: 2026-05-09
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../../src/checks/check.ts
   - ../../src/checks/authority.ts
@@ -60,11 +61,14 @@ Each resolved leaf area must define:
 - `Code surface`
 - `Update truth when`
 
+`Truth documents` may be expressed either as a legacy Markdown list of document paths or as a fenced YAML block with a `truth_documents` array of `{ path, kind }` entries. Explicit route metadata is authoritative and owns the section, so legacy list lines in the same section are ignored. Legacy lists fall back to path-based kind inference such as the configured truth root, `docs/truth/** -> behavior`, `docs/contracts/**` or `docs/api/** -> contract`, `docs/architecture/** -> architecture`, `docs/workflows/** -> workflow`, `docs/operations/** -> operations`, and `docs/testing/** -> test-behavior`. When an explicit route entry is a glob, Truthmark expands it to concrete truth document entries before frontmatter and doc-structure checks so the routed kind applies to every matched file.
+
 Current severity behavior:
 
 - malformed or incomplete root or child area block: `error`
 - missing truth document: `error`
 - out-of-repository truth document or code surface: `error`
+- conflicting routed kinds for the same truth document path: `error`
 - child route file outside the configured area-files root: `error`
 - nested delegation inside a child route file: `error`
 - duplicate resolved leaf area key: `error`
@@ -115,6 +119,8 @@ Current severity behavior:
 
 - invalid frontmatter: `error`
 - missing configured required field: `error`
+- invalid `truth_kind`: `error`
+- present `truth_kind` that disagrees with routed truth kind metadata: `error`
 - missing configured recommended field: `review`
 
 ### Internal Links
@@ -128,12 +134,19 @@ Current severity behavior:
 
 ### Decision Structure
 
-Decision-structure checks review configured architecture and current feature docs that are part of the routed truth surface.
+Decision-structure checks review configured architecture docs and routed truth docs that are part of the current truth surface.
 
 Current severity behavior:
 
+- canonical doc missing `Scope`: `review`
 - canonical doc missing active `Product Decisions`: `review`
 - canonical doc missing active `Rationale`: `review`
+- behavior doc missing `Current Behavior`: `review`
+- contract doc missing `Contract Surface` or all contract-detail sections: `review`
+- architecture doc missing both `Boundaries` and `Components`: `review`
+- workflow doc missing `Triggers` or `Execution Model`: `review`
+- operations doc missing both `Runtime Topology` and `Configuration`: `review`
+- test-behavior doc missing `Execution Model` or both `Fixtures And Data Model` and `Assertions And Invariants`: `review`
 
 ### Generated Surfaces
 
@@ -170,9 +183,9 @@ Branch scope identifies the active checkout:
 ## Product Decisions
 
 - `truthmark check` validates current truth health, but installed workflows remain agent-led and do not depend on the binary.
-- Area resolution follows the configured hierarchy contract instead of assuming a flat `docs/features/*.md` world.
+- Area resolution follows the configured hierarchy contract instead of assuming a flat current-behavior-doc tree.
 - Decision-bearing canonical docs are part of truth health because missing rationale weakens future reconstruction.
-- Topology pressure is handled by Truth Structure rather than by asking teams to manually maintain feature-folder shape.
+- Topology pressure is handled by Truth Structure rather than by asking teams to manually maintain truth-folder shape.
 - Branch-scope data is advisory metadata for the current checkout; it is not a cache, packet, or off-repo memory layer.
 - Decision (2026-05-13): Branch-scope hashes follow the committed config and route files rather than a separate root workflow note.
 

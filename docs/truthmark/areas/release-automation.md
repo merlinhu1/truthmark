@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../areas.md
   - ../../README.md
@@ -13,7 +13,11 @@ source_of_truth:
 ## Release Automation
 
 Truth documents:
-- docs/features/release/automation.md
+```yaml
+truth_documents:
+  - path: docs/truth/release/automation.md
+    kind: workflow
+```
 
 Code surface:
 - .github/workflows/**

@@ -14,6 +14,7 @@ import {
 export type AreaRoutingConfig = {
   rootIndex: string;
   areaFilesRoot: string;
+  truthDocsRoot?: string;
 };
 
 export type ResolvedTruthArea = TruthArea & {
@@ -135,7 +136,9 @@ export const resolveAreaRouting = async (
     };
   }
 
-  const rootParsed = parseAreasMarkdown(rootRead.source ?? "");
+  const rootParsed = parseAreasMarkdown(rootRead.source ?? "", {
+    truthDocsRoot: config.truthDocsRoot,
+  });
   diagnostics.push(
     ...rootParsed.diagnostics.map((diagnostic) => ({
       ...diagnostic,
@@ -180,7 +183,9 @@ export const resolveAreaRouting = async (
       }
 
       routeFiles.push(areaFile);
-      const childParsed = parseAreasMarkdown(childRead.source ?? "");
+      const childParsed = parseAreasMarkdown(childRead.source ?? "", {
+        truthDocsRoot: config.truthDocsRoot,
+      });
       diagnostics.push(
         ...childParsed.diagnostics.map((diagnostic) => ({
           ...diagnostic,

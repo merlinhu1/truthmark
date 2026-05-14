@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import matter from "gray-matter";
 
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
   renderTruthDocumentReportExample,
@@ -38,14 +39,21 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("existing implemented behavior");
     expect(skill).toContain("no functional-code changes");
     expect(skill).toContain("must not write functional code");
-    expect(skill).toContain("docs/templates/feature-doc.md");
-    expect(skill).toContain("When creating or updating a feature doc");
+    expect(skill).toContain("docs/templates/behavior-doc.md");
+    expect(skill).toContain("When creating or updating a truth doc");
+    expect(skill).toContain("Truth-doc restructure gate");
+    expect(skill).toContain(
+      "Truth Document may restructure only truth docs for the implemented behavior being documented.",
+    );
+    expect(skill).toContain(
+      "if a narrow append or section replacement would make truth worse",
+    );
     expect(skill).toContain("behavior-oriented, not endpoint-oriented");
     expect(skill).toContain(
       "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
     );
     expect(skill).toContain(
-      "Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
     );
     expect(skill).toContain(
       "run Truth Structure first when routing repair is safe and in scope",
@@ -56,11 +64,23 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain(
       "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
     );
+    expect(skill).toContain("Evidence Gate");
+    expect(skill).toContain(
+      "perform a route-first impacted-doc check",
+    );
+    expect(skill).toContain(
+      "support each claim with primary evidence from implementation code, config files, routing files, generated surface templates, schemas, or contract definitions in the active checkout",
+    );
+    expect(skill).toContain(
+      "remove, narrow, or block unsupported claims",
+    );
     expect(skill).toContain("Truth Document: completed");
     expect(skill).toContain("Implementation reviewed");
     expect(skill).toContain("Truth docs created");
     expect(skill).toContain("Truth docs updated");
     expect(skill).toContain("Routing updated");
+    expect(skill).toContain("Evidence checked");
+    expect(skill).toContain("docs restructured");
     expect(skill).toContain("Notes");
   });
 
@@ -69,7 +89,34 @@ describe("renderTruthDocumentSkillBody", () => {
 
     expect(report).toContain("Truth Document: completed");
     expect(report).toContain("src/routing/area-resolver.ts");
-    expect(report).toContain("docs/features/contracts.md");
+    expect(report).toContain("docs/truth/contracts.md");
+    expect(report).toContain("Evidence checked");
+    expect(report).toContain("Claim:");
+  });
+
+  it("uses the provided hierarchy config in embedded report examples", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        roots: {
+          ...baseConfig.docs.roots,
+          truth: "docs/truth",
+        },
+        routing: {
+          ...baseConfig.docs.routing,
+          rootIndex: "docs/routes/index.md",
+          areaFilesRoot: "docs/routes/areas",
+        },
+      },
+    };
+
+    const skill = renderTruthDocumentSkillBody(config);
+
+    expect(skill).toContain("docs/truth/contracts.md");
+    expect(skill).toContain("docs/truth/check-diagnostics.md");
+    expect(skill).toContain("docs/routes/index.md");
   });
 });
 

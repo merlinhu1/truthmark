@@ -16,9 +16,9 @@ This guide is for humans maintaining Truthmark's own docs tree.
 
 ## When To Update Which Docs
 
-- Change to scaffolded files or AGENTS management: update [docs/features/init-and-scaffold.md](../features/init-and-scaffold.md)
-- Change to diagnostics, routing, containment, or branch scope: update [docs/features/check-diagnostics.md](../features/check-diagnostics.md)
-- Change to installed workflow text, skip reasons, or report shape: update [docs/features/installed-workflows.md](../features/installed-workflows.md)
+- Change to scaffolded files or AGENTS management: update [docs/truth/init-and-scaffold.md](../truth/init-and-scaffold.md)
+- Change to diagnostics, routing, containment, or branch scope: update [docs/truth/check-diagnostics.md](../truth/check-diagnostics.md)
+- Change to installed workflow text, skip reasons, or report shape: update [docs/truth/installed-workflows.md](../truth/installed-workflows.md)
 - Change to repository-wide rules or completion policy: update [docs/ai/repo-rules.md](../ai/repo-rules.md) or the relevant standard
 
 ## Maintaining AGENTS.md

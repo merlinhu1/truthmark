@@ -64,8 +64,8 @@ describe("runCheck", () => {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/repository/overview.md",
-        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Missing](docs/missing.md).\n`,
+        "docs/truth/repository/overview.md",
+        `${await repo.readFile("docs/truth/repository/overview.md")}\nSee [Missing](docs/missing.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -92,8 +92,8 @@ describe("runCheck", () => {
         "utf8",
       );
       await repo.writeFile(
-        "docs/features/repository/overview.md",
-        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
+        "docs/truth/repository/overview.md",
+        `${await repo.readFile("docs/truth/repository/overview.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -102,7 +102,7 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "docs/features/repository/overview.md",
+            diagnostic.file === "docs/truth/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -133,8 +133,8 @@ describe("runCheck", () => {
         path.resolve(repo.rootDir, "docs", "linked-outside.md"),
       );
       await repo.writeFile(
-        "docs/features/repository/overview.md",
-        `${await repo.readFile("docs/features/repository/overview.md")}\nSee [Outside](docs/linked-outside.md).\n`,
+        "docs/truth/repository/overview.md",
+        `${await repo.readFile("docs/truth/repository/overview.md")}\nSee [Outside](docs/linked-outside.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -143,7 +143,7 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "docs/features/repository/overview.md",
+            diagnostic.file === "docs/truth/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -202,8 +202,6 @@ frontmatter:
   recommended:
     - status
 ignore: []
-realization:
-  enabled: true
 `,
       );
 
@@ -271,8 +269,6 @@ frontmatter:
   recommended:
     - status
 ignore: []
-realization:
-  enabled: true
 `,
       );
 
@@ -309,8 +305,8 @@ realization:
       await repo.writeFile(
         ".truthmark/config.yml",
         config.replace(
-          "  - docs/features/**/*.md\n",
-          "  - docs/features/**/*.md\n  - docs/optional/**/*.md\n",
+          "  - docs/truth/**/*.md\n",
+          "  - docs/truth/**/*.md\n  - docs/optional/**/*.md\n",
         ),
       );
 
@@ -347,7 +343,7 @@ realization:
         "export const session = true;\n",
       );
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
@@ -357,7 +353,7 @@ realization:
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 `,
       );
 
@@ -376,7 +372,7 @@ Truth documents:
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/billing/**
@@ -404,7 +400,7 @@ Update truth when:
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/platform.md",
+        "docs/truth/platform.md",
         "---\nstatus: active\n---\n\n# Platform\n",
       );
       await repo.writeFile(
@@ -427,7 +423,7 @@ Update truth when:
 ## Platform
 
 Truth documents:
-- docs/features/platform.md
+- docs/truth/platform.md
 
 Code surface:
 - web/**
@@ -461,7 +457,7 @@ Update truth when:
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/platform.md",
+        "docs/truth/platform.md",
         "---\nstatus: active\n---\n\n# Platform\n",
       );
       await repo.writeFile(
@@ -504,7 +500,7 @@ Update truth when:
 ## Platform
 
 Truth documents:
-- docs/features/platform.md
+- docs/truth/platform.md
 
 Code surface:
 - src/**
@@ -547,7 +543,7 @@ Update truth when:
 docs:
   layout: hierarchical
   roots:
-    features: docs/features
+    truth: docs/truth
   routing:
     root_index: docs/truthmark/areas.md
     area_files_root: docs/truthmark/areas
@@ -556,9 +552,7 @@ docs:
 authority:
   - docs/truthmark/areas.md
   - docs/truthmark/areas/**/*.md
-  - docs/features/**/*.md
-realization:
-  enabled: true
+  - docs/truth/**/*.md
 `,
       );
       await repo.writeFile(
@@ -584,7 +578,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/features/payments/checkout.md
+- docs/truth/payments/checkout.md
 
 Code surface:
 - services/payments/checkout/**
@@ -594,7 +588,7 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/features/payments/checkout.md",
+        "docs/truth/payments/checkout.md",
         "# Checkout\n",
       );
       await repo.writeFile(
@@ -696,8 +690,6 @@ frontmatter:
   required: []
   recommended: []
 ignore: []
-realization:
-  enabled: true
 `,
       );
       await initializeRepo(repo.rootDir);
@@ -764,8 +756,6 @@ frontmatter:
   required: []
   recommended: []
 ignore: []
-realization:
-  enabled: true
 `,
       );
       await repo.writeFile("docs/truthmark/areas.md", "# Truthmark Areas\n");
@@ -839,7 +829,7 @@ realization:
 ## Authentication
 
 Truth documents:
-- docs/features/missing-authentication.md
+- docs/truth/missing-authentication.md
 
 Code surface:
 - src/auth/**
@@ -875,7 +865,7 @@ Update truth when:
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/typo/**
@@ -909,7 +899,7 @@ Update truth when:
         "export const session = true;\n",
       );
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
@@ -919,7 +909,7 @@ Update truth when:
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/auth/**
@@ -957,7 +947,7 @@ Update truth when:
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "# Authentication\n",
       );
 
@@ -976,7 +966,7 @@ Update truth when:
         `version: 1
 authority:
   - docs/truthmark/areas.md
-  - docs/features/**/*.md
+  - docs/truth/**/*.md
 instruction_targets:
   - AGENTS.md
 frontmatter:
@@ -984,8 +974,6 @@ frontmatter:
     - status
   recommended: []
 ignore: []
-realization:
-  enabled: true
 `,
       );
 
@@ -1107,7 +1095,7 @@ Update truth when:
 ## Broken Area
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 ## Valid Area
 
@@ -1234,6 +1222,80 @@ Update truth when:
           force: true,
         },
       );
+      await repo.cleanup();
+    }
+  });
+
+  it("propagates explicit truth kind metadata from glob routes to matched docs", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile("src/api.ts", "export const api = true;\n");
+      await repo.writeFile(
+        "docs/truth/api.md",
+        `---
+status: active
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-14
+source_of_truth:
+  - docs/truthmark/areas.md
+---
+
+# API
+
+## Scope
+
+API truth.
+
+## Current Behavior
+
+API behavior.
+
+## Product Decisions
+
+- Decision (2026-05-14): Test glob kind propagation.
+
+## Rationale
+
+This doc intentionally disagrees with the routed glob kind.
+`,
+      );
+      await repo.writeFile(
+        "docs/truthmark/areas.md",
+        `# Truthmark Areas
+
+## API
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truth/**/*.md
+    kind: contract
+\`\`\`
+
+Code surface:
+- src/**
+
+Update truth when:
+- API behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "frontmatter",
+            severity: "error",
+            file: "docs/truth/api.md",
+            message: expect.stringContaining("routed truth kind contract"),
+          }),
+        ]),
+      );
+    } finally {
       await repo.cleanup();
     }
   });
@@ -1381,7 +1443,7 @@ Update truth when:
         "export const session = true;\n",
       );
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
@@ -1391,7 +1453,7 @@ Update truth when:
 ## Auth API
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/auth/**
@@ -1402,7 +1464,7 @@ Update truth when:
 ## Auth/API
 
 Truth documents:
-- docs/features/missing-authentication.md
+- docs/truth/missing-authentication.md
 
 Code surface:
 - src/billing/**
@@ -1432,7 +1494,7 @@ Update truth when:
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
@@ -1448,7 +1510,7 @@ Update truth when:
         `version: 1
 authority:
   - docs/truthmark/areas.md
-  - docs/features/**/*.md
+  - docs/truth/**/*.md
 instruction_targets:
   - AGENTS.md
 frontmatter:
@@ -1457,8 +1519,6 @@ frontmatter:
     - status
 ignore:
   - src/generated/**
-realization:
-  enabled: true
 `,
       );
       await repo.writeFile(
@@ -1468,7 +1528,7 @@ realization:
   ## Authentication
 
   Truth documents:
-  - docs/features/authentication.md
+  - docs/truth/authentication.md
 
   Code surface:
   - src/auth/**
@@ -1504,7 +1564,7 @@ realization:
 
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/features/authentication.md",
+        "docs/truth/authentication.md",
         "---\nstatus: active\n---\n\n# Authentication\n",
       );
       await fs.mkdir(outsideDir, { recursive: true });
@@ -1522,7 +1582,7 @@ realization:
 ## Authentication
 
 Truth documents:
-- docs/features/authentication.md
+- docs/truth/authentication.md
 
 Code surface:
 - src/external/**

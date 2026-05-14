@@ -5,7 +5,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health. Inspects truth docs, routing, and implementation directly; may optionally run truthmark check when available.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.2.3
+truthmark-version: 1.2.4
 ---
 
 # Truthmark Check
@@ -26,12 +26,17 @@ Implementation code and canonical truth docs are inspected evidence for current 
 - optionally run truthmark check when local tooling is available
 - must not require the truthmark binary; direct inspection is always valid
 - report issues and suggested fixes without silently rewriting unrelated files
+Evidence Gate:
+- support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests
+- existing canonical docs are context, not sole proof when implementation conflicts
+- remove unsupported findings or mark them as open questions with explicit confidence
+- if you edit docs as a follow-up, validate new or changed behavior-bearing claims before finishing
 
 Truthmark hierarchy:
 - Config: .truthmark/config.yml
 - Root route index: docs/truthmark/areas.md
 - Area route files: docs/truthmark/areas/**/*.md
-- Feature docs: docs/features/**/*.md
+- Truth docs: docs/truth/**/*.md
 Decision truth lives in the canonical doc it governs.
 Date active decisions inline when added or changed, for example `Decision (2026-05-09): ...`.
 Do not create separate timestamped ADR logs or planning tickets for active decisions.
@@ -51,6 +56,12 @@ Issues found:
 
 Fixes suggested:
 - none
+
+Evidence checked:
+- Finding: The root route index is present and maps repository truth owners.
+  Evidence: .truthmark/config.yml:1 / docs/truthmark/areas.md:1
+  Suggested fix: none
+  Confidence: high
 
 Validation:
 - truthmark check

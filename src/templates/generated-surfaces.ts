@@ -75,14 +75,11 @@ const workflowSkillFiles = (
       path: `${basePath}/truthmark-check/SKILL.md`,
       content: renderTruthmarkCheckLocalSkill(config),
     },
-  ];
-
-  if (config.realization.enabled) {
-    files.push({
+    {
       path: `${basePath}/truthmark-realize/SKILL.md`,
       content: renderTruthmarkRealizeLocalSkill(config),
-    });
-  }
+    },
+  ];
 
   return files;
 };
@@ -121,20 +118,15 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
       path: TRUTHMARK_CHECK_SKILL_METADATA_PATH,
       content: renderTruthmarkCheckSkillMetadata(),
     },
+    {
+      path: TRUTHMARK_REALIZE_SKILL_PATH,
+      content: renderTruthmarkRealizeSkill(config),
+    },
+    {
+      path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
+      content: renderTruthmarkRealizeSkillMetadata(),
+    },
   ];
-
-  if (config.realization.enabled) {
-    files.push(
-      {
-        path: TRUTHMARK_REALIZE_SKILL_PATH,
-        content: renderTruthmarkRealizeSkill(config),
-      },
-      {
-        path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
-        content: renderTruthmarkRealizeSkillMetadata(),
-      },
-    );
-  }
 
   return files;
 };
@@ -158,14 +150,11 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
       path: TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
       content: renderTruthmarkCopilotCheckPrompt(config),
     },
-  ];
-
-  if (config.realization.enabled) {
-    files.push({
+    {
       path: TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
       content: renderTruthmarkCopilotRealizePrompt(config),
-    });
-  }
+    },
+  ];
 
   return files;
 };
@@ -214,14 +203,10 @@ const filesForPlatform = (
           path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
           content: renderTruthmarkGeminiCheckCommand(config),
         },
-        ...(config.realization.enabled
-          ? [
-              {
-                path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-                content: renderTruthmarkGeminiRealizeCommand(config),
-              },
-            ]
-          : []),
+        {
+          path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
+          content: renderTruthmarkGeminiRealizeCommand(config),
+        },
       ];
   }
 };
