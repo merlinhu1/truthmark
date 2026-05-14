@@ -159,7 +159,7 @@ describe("init templates", () => {
 
     expect(agentsBlock).toContain("<!-- truthmark:start -->");
     expect(agentsBlock).toContain("<!-- truthmark:end -->");
-    expect(agentsBlock.split("\n").length).toBeLessThanOrEqual(25);
+    expect(agentsBlock.split("\n").length).toBeLessThanOrEqual(20);
     expect(agentsBlock).not.toContain("### Manual Truth Realize");
     expect(agentsBlock).not.toContain("### Truth Structure");
     expect(agentsBlock).not.toContain("### Truth Check");
@@ -174,13 +174,15 @@ describe("init templates", () => {
     );
     expect(agentsBlock).toContain("must not rewrite functional code");
     expect(agentsBlock).toContain(
-      "if routing is missing/stale/broad/overloaded/catch-all or cannot map changed code to a bounded truth owner",
+      "If routing cannot map changed code to a bounded truth owner",
     );
     expect(agentsBlock).toContain(
       "otherwise block and recommend Truth Structure",
     );
     expect(agentsBlock).not.toContain("write functional code only");
     expect(agentsBlock).not.toContain("do not edit truth docs or truth routing");
+    expect(agentsBlock).not.toContain("Explicit invocation:");
+    expect(agentsBlock).not.toContain("/skill truthmark-sync");
   });
 
   it("renders default standards only when comparable standards are missing", () => {

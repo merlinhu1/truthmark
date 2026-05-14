@@ -254,7 +254,7 @@ El README raíz es para personas que evalúan y prueban el paquete. Las especifi
 - [Contratos de API y CLI](docs/truth/contracts.md)
 - [Comportamiento de init y scaffold](docs/truth/init-and-scaffold.md)
 - [Diagnósticos de check](docs/truth/check-diagnostics.md)
-- [Flujos de trabajo instalados](docs/truth/installed-workflows.md)
+- [Flujos de trabajo instalados](docs/truth/workflows/overview.md)
 - [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
 
 El comportamiento actual pertenece al árbol canónico de documentación anterior.

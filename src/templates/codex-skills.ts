@@ -2,12 +2,15 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
+  renderHierarchySummary,
+  renderTruthDocOwnershipGateSection,
   resolveTruthDocsRoot,
 } from "../agents/shared.js";
 import { renderTruthCheckSkillBody } from "../agents/truth-check.js";
 import { renderTruthDocumentSkillBody } from "../agents/truth-document.js";
 import { renderTruthStructureSkillBody } from "../agents/truth-structure.js";
 import { renderTruthSyncSkillBody } from "../agents/truth-sync.js";
+import { getTruthmarkWorkflow } from "../agents/workflow-manifest.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 
 export const TRUTHMARK_STRUCTURE_SKILL_PATH =
@@ -99,13 +102,15 @@ export const renderTruthmarkStructureLocalSkill = (
 };
 
 export const renderTruthmarkStructureSkillMetadata = (): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-structure");
+
   return `interface:
-  display_name: "Truthmark Structure"
-  short_description: "Design or repair Truthmark area routing"
-  default_prompt: "Use $truthmark-structure to design or repair Truthmark area routing."
+  display_name: "${workflow.displayName}"
+  short_description: "${workflow.shortDescription}"
+  default_prompt: "${workflow.defaultPrompt}"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
   version: "${TRUTHMARK_VERSION}"
@@ -126,13 +131,15 @@ export const renderTruthmarkDocumentLocalSkill = (
 };
 
 export const renderTruthmarkDocumentSkillMetadata = (): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-document");
+
   return `interface:
-  display_name: "Truthmark Document"
-  short_description: "Document existing implemented behavior"
-  default_prompt: "Use $truthmark-document to document existing implemented behavior."
+  display_name: "${workflow.displayName}"
+  short_description: "${workflow.shortDescription}"
+  default_prompt: "${workflow.defaultPrompt}"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
   version: "${TRUTHMARK_VERSION}"
@@ -153,13 +160,15 @@ export const renderTruthmarkSyncLocalSkill = (
 };
 
 export const renderTruthmarkSyncSkillMetadata = (): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
+
   return `interface:
-  display_name: "Truthmark Sync"
-  short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"
-  default_prompt: "Use $truthmark-sync after functional code changes; skip docs-only/no-code changes."
+  display_name: "${workflow.displayName}"
+  short_description: "${workflow.shortDescription}"
+  default_prompt: "${workflow.defaultPrompt}"
 
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
   version: "${TRUTHMARK_VERSION}"
@@ -171,10 +180,11 @@ const renderTruthmarkRealizeSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-realize");
 
   return `---
 name: truthmark-realize
-description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Reads truth docs and routing first, updates functional code only, and reports verification.
+description: ${workflow.description}
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -195,12 +205,17 @@ Truth Realize is doc-first:
 Workflow:
 
 1. Read the updated truth docs named by the user, or infer the relevant docs from ${config.docs.routing.rootIndex}.
-2. Read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and the relevant functional code.
+2. Read .truthmark/config.yml, ${config.docs.routing.rootIndex}, relevant child route files, tests, and the relevant functional code.
 3. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-4. Update functional code only so implementation matches the truth docs.
+${renderTruthDocOwnershipGateSection(
+    "source truth docs before writing code",
+    "if a source truth doc is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence, block before writing code and recommend Truth Structure or Truth Document",
+  )}
+4. Update functional code only so implementation matches bounded, current truth claims from the source docs.
 5. Do not edit truth docs or truth routing while realizing those docs.
 6. Run relevant tests for the changed code.
 7. Report changed code files and verification steps.
+${renderHierarchySummary(config)}
 
 Read and write boundaries:
 
@@ -238,13 +253,15 @@ export const renderTruthmarkRealizeLocalSkill = (
 };
 
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-realize");
+
   return `interface:
-  display_name: "Truthmark Realize"
-  short_description: "Realize truth docs into code"
-  default_prompt: "Use $truthmark-realize to realize the updated truth docs into code."
+  display_name: "${workflow.displayName}"
+  short_description: "${workflow.shortDescription}"
+  default_prompt: "${workflow.defaultPrompt}"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
   version: "${TRUTHMARK_VERSION}"
@@ -265,13 +282,15 @@ export const renderTruthmarkCheckLocalSkill = (
 };
 
 export const renderTruthmarkCheckSkillMetadata = (): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-check");
+
   return `interface:
-  display_name: "Truthmark Check"
-  short_description: "Audit repository truth health"
-  default_prompt: "Use $truthmark-check to audit repository truth health."
+  display_name: "${workflow.displayName}"
+  short_description: "${workflow.shortDescription}"
+  default_prompt: "${workflow.defaultPrompt}"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
   version: "${TRUTHMARK_VERSION}"
@@ -282,8 +301,10 @@ truthmark:
 export const renderTruthmarkGeminiStructureCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-structure");
+
   return renderGeminiCommand(
-    "Design or repair Truthmark area routing.",
+    workflow.description,
     renderTruthStructureSkillBody(config),
   );
 };
@@ -291,8 +312,10 @@ export const renderTruthmarkGeminiStructureCommand = (
 export const renderTruthmarkGeminiDocumentCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-document");
+
   return renderGeminiCommand(
-    "Document existing implemented behavior.",
+    workflow.description,
     renderTruthDocumentSkillBody(config),
   );
 };
@@ -300,8 +323,10 @@ export const renderTruthmarkGeminiDocumentCommand = (
 export const renderTruthmarkGeminiSyncCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
+
   return renderGeminiCommand(
-    "Sync repository truth docs from functional code changes; skip docs-only/no-code changes.",
+    workflow.description,
     renderTruthSyncSkillBody(config),
   );
 };
@@ -309,8 +334,10 @@ export const renderTruthmarkGeminiSyncCommand = (
 export const renderTruthmarkGeminiRealizeCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-realize");
+
   return renderGeminiCommand(
-    "Realize repository truth docs into code.",
+    workflow.description,
     renderTruthmarkRealizeSkillBody(config),
   );
 };
@@ -318,8 +345,10 @@ export const renderTruthmarkGeminiRealizeCommand = (
 export const renderTruthmarkGeminiCheckCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-check");
+
   return renderGeminiCommand(
-    "Audit repository truth health.",
+    workflow.description,
     renderTruthCheckSkillBody(config),
   );
 };
@@ -327,8 +356,10 @@ export const renderTruthmarkGeminiCheckCommand = (
 export const renderTruthmarkCopilotStructurePrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-structure");
+
   return renderCopilotPromptFile(
-    "Design or repair Truthmark area routing.",
+    workflow.description,
     renderTruthStructureSkillBody(config),
   );
 };
@@ -336,8 +367,10 @@ export const renderTruthmarkCopilotStructurePrompt = (
 export const renderTruthmarkCopilotDocumentPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-document");
+
   return renderCopilotPromptFile(
-    "Document existing implemented behavior.",
+    workflow.description,
     renderTruthDocumentSkillBody(config),
   );
 };
@@ -345,8 +378,10 @@ export const renderTruthmarkCopilotDocumentPrompt = (
 export const renderTruthmarkCopilotSyncPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
+
   return renderCopilotPromptFile(
-    "Sync repository truth docs from functional code changes; skip docs-only/no-code changes.",
+    workflow.description,
     renderTruthSyncSkillBody(config),
   );
 };
@@ -354,8 +389,10 @@ export const renderTruthmarkCopilotSyncPrompt = (
 export const renderTruthmarkCopilotRealizePrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-realize");
+
   return renderCopilotPromptFile(
-    "Realize repository truth docs into code.",
+    workflow.description,
     renderTruthmarkRealizeSkillBody(config),
   );
 };
@@ -363,8 +400,10 @@ export const renderTruthmarkCopilotRealizePrompt = (
 export const renderTruthmarkCopilotCheckPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-check");
+
   return renderCopilotPromptFile(
-    "Audit repository truth health.",
+    workflow.description,
     renderTruthCheckSkillBody(config),
   );
 };

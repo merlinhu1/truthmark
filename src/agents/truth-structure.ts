@@ -4,14 +4,17 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaimEvidenceCheckedSection,
   renderHierarchySummary,
   renderTopologyEvidenceGateSection,
+  renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveTruthDocsRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
+import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
@@ -36,6 +39,8 @@ Routing updated:
 - ${config.docs.routing.rootIndex}
 Truth docs created:
 - ${truthDocsRoot}/authentication/session.md
+Truth docs split:
+- ${truthDocsRoot}/authentication/README.md -> ${truthDocsRoot}/authentication/session.md
 Truth docs restructured:
 - ${truthDocsRoot}/authentication/README.md
 ${renderClaimEvidenceCheckedSection([
@@ -55,10 +60,11 @@ export const renderTruthStructureSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-structure");
 
 return `---
 name: truthmark-structure
-description: Use when the user asks to design, repair, or refresh missing, stale, broad, overloaded, catch-all, or unrouteable Truthmark area routing. Inspects the repository directly, updates ${config.docs.routing.rootIndex}, and may create starter canonical truth docs.
+description: ${workflow.description}
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -84,6 +90,11 @@ ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 Truth Structure owns documentation topology. Do not depend on humans to manually organize ${truthDocsRoot}. Treat the configured truth root as a managed semantic root.
 Inspect controllers, routes, handlers, services, packages, tests, existing truth docs, and route files; infer product and domain ownership from behavior boundaries, not from mechanical directory mirroring.
 When topology pressure exists, repair structure before creating or extending truth docs.
+${renderTruthDocOwnershipGateSection(
+  "candidate route owners and current truth docs",
+  "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split and reroute into bounded truth docs when safe; otherwise block with manual-review files",
+)}
+${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 Topology pressure signals:
 - one area maps broad code such as src/**, app/**, server/**, services/**, or packages/**
 - one area maps multiple unrelated controllers, route groups, services, or bounded contexts
@@ -99,6 +110,7 @@ Use these review thresholds as guidance:
 - more than 5 controllers mapped through one catch-all area
 Repair rules:
 - split broad, overloaded, or catch-all areas into behavior-owned child route files
+- split mixed-owner truth docs into bounded owner docs before adding new behavior claims
 - create route files under ${config.docs.routing.areaFilesRoot}/ when a product/domain boundary is clear
 - create behavior truth docs under the configured truth root only when behavior lacks a current doc
 - README.md files are indexes, not Truth Sync targets
@@ -107,6 +119,7 @@ Repair rules:
 - keep API endpoint details in the nearest contract truth doc when such a doc exists
 - update routing so future Truth Sync can target small docs
 - preserve existing authored docs; move or rewrite only when needed to remove ambiguity
+- report Truth docs split when one broad or mixed-owner truth doc becomes multiple bounded docs
 ${renderTruthDocRestructureGateSection(
   "Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.",
 )}

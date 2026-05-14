@@ -1,11 +1,11 @@
 ---
 agent: 'agent'
-description: 'Design or repair Truthmark area routing.'
+description: 'Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, or needs split/repair. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.'
 ---
 
 ---
 name: truthmark-structure
-description: Use when the user asks to design, repair, or refresh missing, stale, broad, overloaded, catch-all, or unrouteable Truthmark area routing. Inspects the repository directly, updates docs/truthmark/areas.md, and may create starter canonical truth docs.
+description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, or needs split/repair. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
 truthmark-version: 1.2.4
@@ -23,10 +23,10 @@ Implementation code and canonical truth docs are inspected evidence for current 
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
-When creating or updating a truth doc, inspect the routed truth kind and use the matching template under docs/templates/.
-Use docs/templates/behavior-doc.md for behavior truth docs, docs/templates/contract-doc.md for contract docs, docs/templates/architecture-doc.md for architecture docs, docs/templates/workflow-doc.md for workflow docs, docs/templates/operations-doc.md for operations docs, and docs/templates/test-behavior-doc.md for test-behavior docs.
-When updating an existing truth doc, align it to the selected template standard while preserving authored content that remains accurate.
-If the selected template is missing, use a minimal structure with Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
+When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
+Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
+Align existing docs to that template while preserving accurate authored content.
+If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
 Teams may edit the template files under docs/templates/ to define their local truth-doc standards.
 - use docs/truth/**, docs/architecture/**, or docs/standards/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs
@@ -36,6 +36,17 @@ Teams may edit the template files under docs/templates/ to define their local tr
 Truth Structure owns documentation topology. Do not depend on humans to manually organize docs/truth. Treat the configured truth root as a managed semantic root.
 Inspect controllers, routes, handlers, services, packages, tests, existing truth docs, and route files; infer product and domain ownership from behavior boundaries, not from mechanical directory mirroring.
 When topology pressure exists, repair structure before creating or extending truth docs.
+Truth-doc ownership gate:
+- before editing or relying on candidate route owners and current truth docs, verify each target/source truth doc is a bounded owner for the behavior
+- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
+- if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split and reroute into bounded truth docs when safe; otherwise block with manual-review files
+- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason as applicable
+Product Decisions/Rationale preservation gate:
+- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections in every source or touched truth doc
+- preserve each current decision and rationale in the bounded owner doc it governs; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
+- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
+- if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing
+- after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
 Topology pressure signals:
 - one area maps broad code such as src/**, app/**, server/**, services/**, or packages/**
 - one area maps multiple unrelated controllers, route groups, services, or bounded contexts
@@ -51,6 +62,7 @@ Use these review thresholds as guidance:
 - more than 5 controllers mapped through one catch-all area
 Repair rules:
 - split broad, overloaded, or catch-all areas into behavior-owned child route files
+- split mixed-owner truth docs into bounded owner docs before adding new behavior claims
 - create route files under docs/truthmark/areas/ when a product/domain boundary is clear
 - create behavior truth docs under the configured truth root only when behavior lacks a current doc
 - README.md files are indexes, not Truth Sync targets
@@ -59,25 +71,20 @@ Repair rules:
 - keep API endpoint details in the nearest contract truth doc when such a doc exists
 - update routing so future Truth Sync can target small docs
 - preserve existing authored docs; move or rewrite only when needed to remove ambiguity
-Truth-doc restructure gate:
+- report Truth docs split when one broad or mixed-owner truth doc becomes multiple bounded docs
+Truth-doc shape repair gate:
 - Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.
-- before editing a truth doc, check whether the target doc is still a good fit for a narrow update
-- restructure only if a narrow append or section replacement would make truth worse
-- restructure when required template sections are missing, one doc mixes multiple owners or behaviors, stale sections conflict with implementation evidence, the update spans unrelated sections, an index-like summary is being used as a bounded behavior doc, or frontmatter/source evidence/headings no longer match the routed truth kind or template
-- prefer the smallest restructure that restores a maintainable truth shape
-- preserve supported existing claims; remove, narrow, or block unsupported or stale claims instead of carrying them forward silently
-- prefer bounded leaf docs and routing updates for large ownership splits
-- report which truth docs were restructured and why a narrow edit was not sufficient
+- repair shape in place only after the ownership gate confirms the doc is the right bounded owner
+- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
+- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
+- preserve supported claims; remove, narrow, or block unsupported or stale claims
+- report docs restructured and why a narrow edit was not sufficient
 Evidence Gate:
-- when Truth Structure writes routed docs, ownership claims, Product Decisions, or Rationale, apply the Evidence Gate before finishing
-- Route ownership changes require topology evidence from repository layout, implementation boundaries, current docs, config, tests, or route files.
-- review each new or changed behavior-bearing claim or ownership claim in touched truth docs
-- support each claim with primary evidence from implementation code, config files, routing files, generated surface templates, schemas, or contract definitions in the active checkout
-- use tests, examples, snapshots, and existing canonical docs as corroborating evidence, not as the sole source when implementation says otherwise
-- remove, narrow, or block unsupported claims instead of leaving unsupported truth behind
-Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
-Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.
-Keep architecture docs focused on structure and ownership; keep current product behavior in behavior or contract docs.
+- apply the Evidence Gate before finishing when Truth Structure writes routed docs, ownership claims, Product Decisions, or Rationale
+- support ownership/behavior claims with topology or primary checkout evidence from layout, implementation boundaries, docs, config, route files, tests, templates, schemas, or contracts
+- tests/examples/canonical docs corroborate; remove, narrow, or block unsupported claims
+Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
+Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
 - Do not finish topology repair with routed canonical current-truth docs missing Product Decisions or Rationale sections.
 - If an existing canonical doc lacks either section, add the missing heading beside Current Behavior with a concise current-state placeholder or active decision.
 Portable fallback:
@@ -90,11 +97,9 @@ Truthmark hierarchy:
 - Root route index: docs/truthmark/areas.md
 - Area route files: docs/truthmark/areas/**/*.md
 - Truth docs: docs/truth/**/*.md
-Decision truth lives in the canonical doc it governs.
-Date active decisions inline when added or changed, for example `Decision (2026-05-09): ...`.
-Do not create separate timestamped ADR logs or planning tickets for active decisions.
-Replace old active decisions instead of appending separate timestamped decision logs; Git history is the audit trail.
-Update Product Decisions and Rationale when a behavior change comes from a decision change.
+Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
+Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
+Update Product Decisions and Rationale when a decision changes behavior.
 Report completion in this shape:
 ```md
 Truth Structure: completed
@@ -108,6 +113,8 @@ Routing updated:
 - docs/truthmark/areas.md
 Truth docs created:
 - docs/truth/authentication/session.md
+Truth docs split:
+- docs/truth/authentication/README.md -> docs/truth/authentication/session.md
 Truth docs restructured:
 - docs/truth/authentication/README.md
 Evidence checked:

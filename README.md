@@ -302,7 +302,7 @@ The root README is for people evaluating and trying the package. Detailed functi
 - [API and CLI contracts](docs/truth/contracts.md)
 - [Init and scaffold behavior](docs/truth/init-and-scaffold.md)
 - [Check diagnostics](docs/truth/check-diagnostics.md)
-- [Installed workflows](docs/truth/installed-workflows.md)
+- [Installed workflows](docs/truth/workflows/overview.md)
 - [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
 
 Current behavior belongs in the canonical docs tree above.

@@ -20,6 +20,12 @@ describe("renderTruthStructureSkillBody", () => {
 
     expect(parsed.data.name).toBe("truthmark-structure");
     expect(parsed.data["user-invocable"]).toBe(true);
+    expect(parsed.data.description).toContain(
+      "routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner",
+    );
+    expect(parsed.data.description).toContain(
+      "Not for documenting implemented behavior, syncing a code diff, or realizing docs into code",
+    );
     expect(parsed.content).toContain(
       "Use this skill to design or repair Truthmark area structure.",
     );
@@ -38,10 +44,27 @@ describe("renderTruthStructureSkillBody", () => {
       "Starter truth docs must include ## Product Decisions and ## Rationale sections.",
     );
     expect(skill).toContain("When creating or updating a truth doc");
-    expect(skill).toContain("docs/templates/behavior-doc.md");
+    expect(skill).toContain("docs/templates/<kind>-doc.md");
     expect(skill).toContain("inspect the routed truth kind");
-    expect(skill).toContain("align it to the selected template standard");
-    expect(skill).toContain("Truth-doc restructure gate");
+    expect(skill).toContain("Align existing docs to that template");
+    expect(skill).toContain("Truth-doc ownership gate");
+    expect(skill).toContain(
+      "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership",
+    );
+    expect(skill).toContain(
+      "Product Decisions/Rationale preservation gate",
+    );
+    expect(skill).toContain(
+      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections",
+    );
+    expect(skill).toContain(
+      "preserve each current decision and rationale in the bounded owner doc it governs",
+    );
+    expect(skill).toContain(
+      "if ownership of a decision or rationale is unclear, block with manual-review files",
+    );
+    expect(skill).toContain("Truth docs split");
+    expect(skill).toContain("Truth-doc shape repair gate");
     expect(skill).toContain(
       "Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.",
     );
@@ -85,28 +108,34 @@ describe("renderTruthStructureSkillBody", () => {
       "apply the Evidence Gate before finishing",
     );
     expect(skill).toContain(
-      "Route ownership changes require topology evidence from repository layout, implementation boundaries, current docs, config, tests, or route files.",
+      "support ownership/behavior claims with topology or primary checkout evidence",
     );
     expect(skill).toContain(
       "remove, narrow, or block unsupported claims",
     );
-    expect(skill).toContain("Date active decisions inline when added or changed");
+    expect(skill).toContain("date active decisions inline when added or changed");
     expect(skill).toContain("Topology Governance");
     expect(skill).toContain("Topology pressure signals");
     expect(skill).toContain("one area maps broad code");
-    expect(skill).toContain("unrouteable Truthmark area routing");
+    expect(skill).toContain("unrouteable, mixed-owner");
     expect(skill).toContain("infer product and domain ownership");
     expect(skill).toContain(
       "behavior truth docs behavior-oriented, not endpoint-oriented",
     );
     expect(skill).toContain(
-      "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
+      "Maintain architecture docs only for structure-level changes",
     );
     expect(skill).toContain(
-      "Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs",
     );
     expect(skill).toContain(
       "README.md files are indexes, not Truth Sync targets",
+    );
+    expect(skill).toContain(
+      "split mixed-owner truth docs into bounded owner docs before adding new behavior claims",
+    );
+    expect(skill).toContain(
+      "report Truth docs split when one broad or mixed-owner truth doc becomes multiple bounded docs",
     );
     expect(skill).toContain("bounded leaf truth docs");
     expect(skill).toContain("<truth-root>/<domain>/<behavior>.md");

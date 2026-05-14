@@ -4,9 +4,11 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
+  renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveTruthDocsRoot,
 } from "./shared.js";
@@ -15,6 +17,7 @@ import {
   renderTruthSyncCompletedReport,
 } from "../sync/report.js";
 import { TRUTHMARK_VERSION } from "../version.js";
+import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 export const TRUTH_SYNC_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.";
@@ -37,8 +40,11 @@ Worker rules:
 Return result in this shape:
 - status: completed | blocked
 - changedCodeReviewed: string[]
+- ownershipReviewed: string[]
+- structureRequired?: string[]
 - truthDocsUpdated: string[]
 - routingDocsUpdated: string[]
+- truthDocsSplit?: string[]
 - evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
 - notes: string[]
 - blockedReason?: string
@@ -49,10 +55,11 @@ export const renderTruthSyncSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
 
   return `---
 name: truthmark-sync
-description: Use automatically before finishing when functional code changed since the last successful Truth Sync, and when the user explicitly invokes /truthmark-sync, $truthmark-sync, or /truthmark:sync. Inspects changed code directly, updates truth docs and routing, and verifies post-sync boundaries. Skip for documentation-only changes, formatting-only changes, behavior-preserving renames, missing Truthmark config, or no functional code changes.
+description: ${workflow.description}
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -78,6 +85,11 @@ Topology quality gate:
 - README.md files are indexes, not Truth Sync targets
 - must not append behavior details to a README.md index
 - create or update a bounded leaf truth doc when behavior changes do not fit an existing leaf doc
+${renderTruthDocOwnershipGateSection(
+    "changed functional files and impacted truth docs",
+    "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners, run Truth Structure before syncing when safe and in scope; otherwise block and recommend Truth Structure",
+  )}
+${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
     "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
@@ -102,6 +114,7 @@ Parent post-sync verification:
 - verify the worker report matches the required headings and sections
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
+- verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
 Report completion in this shape:
 ${renderMarkdownExample(

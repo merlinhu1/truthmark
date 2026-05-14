@@ -21,7 +21,10 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(parsed.data.name).toBe("truthmark-document");
     expect(parsed.data["user-invocable"]).toBe(true);
     expect(parsed.data.description).toContain(
-      "when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs",
+      "finds implemented behavior missing canonical truth",
+    );
+    expect(parsed.data.description).toContain(
+      "Not for functional-code changes, doc-first implementation, or topology repair that needs Structure",
     );
     expect(parsed.data.description).not.toContain("when an update finds");
     expect(parsed.content).toContain(
@@ -39,21 +42,41 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("existing implemented behavior");
     expect(skill).toContain("no functional-code changes");
     expect(skill).toContain("must not write functional code");
-    expect(skill).toContain("docs/templates/behavior-doc.md");
+    expect(skill).toContain("docs/templates/<kind>-doc.md");
     expect(skill).toContain("When creating or updating a truth doc");
-    expect(skill).toContain("Truth-doc restructure gate");
+    expect(skill).toContain("Truth-doc ownership gate");
+    expect(skill).toContain(
+      "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners",
+    );
+    expect(skill).toContain(
+      "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason",
+    );
+    expect(skill).toContain(
+      "Product Decisions/Rationale preservation gate",
+    );
+    expect(skill).toContain(
+      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections",
+    );
+    expect(skill).toContain(
+      "preserve each current decision and rationale in the bounded owner doc it governs",
+    );
+    expect(skill).toContain(
+      "if ownership of a decision or rationale is unclear, block with manual-review files",
+    );
+    expect(skill).toContain("Truth-doc shape repair gate");
     expect(skill).toContain(
       "Truth Document may restructure only truth docs for the implemented behavior being documented.",
     );
+    expect(skill).toContain("use Truth Structure for ownership splits");
     expect(skill).toContain(
-      "if a narrow append or section replacement would make truth worse",
+      "repair shape when a narrow edit would make truth worse",
     );
     expect(skill).toContain("behavior-oriented, not endpoint-oriented");
     expect(skill).toContain(
-      "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
+      "Maintain architecture docs only for structure-level changes",
     );
     expect(skill).toContain(
-      "Do not put ordinary product behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs",
     );
     expect(skill).toContain(
       "run Truth Structure first when routing repair is safe and in scope",
@@ -66,10 +89,10 @@ describe("renderTruthDocumentSkillBody", () => {
     );
     expect(skill).toContain("Evidence Gate");
     expect(skill).toContain(
-      "perform a route-first impacted-doc check",
+      "route-first: map the documented behavior to bounded route owners and primary canonical docs",
     );
     expect(skill).toContain(
-      "support each claim with primary evidence from implementation code, config files, routing files, generated surface templates, schemas, or contract definitions in the active checkout",
+      "support claims with primary checkout evidence",
     );
     expect(skill).toContain(
       "remove, narrow, or block unsupported claims",

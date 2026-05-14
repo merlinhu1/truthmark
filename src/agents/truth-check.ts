@@ -8,6 +8,7 @@ import {
   renderHierarchySummary,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
+import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
@@ -47,9 +48,11 @@ Validation:
 export const renderTruthCheckSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-check");
+
   return `---
 name: truthmark-check
-description: Use when the user asks to audit repository truth health. Inspects truth docs, routing, and implementation directly; may optionally run truthmark check when available.
+description: ${workflow.description}
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -68,10 +71,12 @@ Truth Check is agent-led:
 - inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
 - check that current docs describe current code rather than historical plans
 - check that ${config.docs.routing.rootIndex} routes code surfaces to canonical truth docs
+- check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure
 - check that canonical behavior docs keep active Product Decisions and Rationale sections
 - optionally run truthmark check when local tooling is available
 - must not require the truthmark binary; direct inspection is always valid
 - report issues and suggested fixes without silently rewriting unrelated files
+- if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
 
 ${renderHierarchySummary(config)}

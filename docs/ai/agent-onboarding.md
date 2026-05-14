@@ -45,7 +45,7 @@ Read:
 Read:
 
 1. [.truthmark/config.yml](../../.truthmark/config.yml)
-2. [docs/truth/installed-workflows.md](../truth/installed-workflows.md)
+2. [docs/truth/workflows/overview.md](../truth/workflows/overview.md) and the relevant workflow leaf doc under `docs/truth/workflows/`
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
 4. [docs/ai/agent-skills-workflow-review.md](agent-skills-workflow-review.md)
 

@@ -254,7 +254,7 @@ V1 сейчас предоставляет:
 - [Контракты API и CLI](docs/truth/contracts.md)
 - [Поведение init и scaffold](docs/truth/init-and-scaffold.md)
 - [Диагностика check](docs/truth/check-diagnostics.md)
-- [Установленные workflow](docs/truth/installed-workflows.md)
+- [Установленные workflow](docs/truth/workflows/overview.md)
 - [Руководство по поддержанию истины репозитория](docs/standards/maintaining-repository-truth.md)
 
 Текущее поведение должно жить в каноническом дереве документации выше.

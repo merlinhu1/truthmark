@@ -56,7 +56,7 @@ This doc covers the current module grouping of the Truthmark codebase and the pr
 
 - `src/init/`, `src/templates/`, and the write-path parts of `src/fs/` pair with [docs/truth/init-and-scaffold.md](../truth/init-and-scaffold.md)
 - `src/checks/`, `src/routing/`, `src/config/`, `src/output/`, and the containment-path parts of `src/fs/` pair with [docs/truth/check-diagnostics.md](../truth/check-diagnostics.md)
-- `src/agents/`, `src/generation/`, `src/sync/`, `src/realize/`, `src/truth/`, and installed workflow skill templates under `src/templates/` pair with [docs/truth/installed-workflows.md](../truth/installed-workflows.md)
+- `src/agents/`, `src/generation/`, `src/sync/`, `src/realize/`, `src/truth/`, and installed workflow skill templates under `src/templates/` pair with [docs/truth/workflows/overview.md](../truth/workflows/overview.md) and bounded workflow docs under `docs/truth/workflows/`
 
 ## Product Decisions
 

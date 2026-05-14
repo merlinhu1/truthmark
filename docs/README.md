@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: index
-last_reviewed: 2026-05-12
+last_reviewed: 2026-05-15
 source_of_truth:
   - docs/ai/repo-rules.md
   - ../.truthmark/config.yml
@@ -17,20 +17,13 @@ source_of_truth:
 
 ## Scope
 
-This doc defines the current structure, authority order, and maintenance expectations of Truthmark's canonical `docs/` tree.
+This doc defines the current structure, navigation map, and maintenance expectations of Truthmark's canonical `docs/` tree.
 
-## Authority Order
+## Authority Source
 
-When documents conflict, authority descends in this order:
+Repository-wide conflict order and completion policy live in [docs/ai/repo-rules.md](ai/repo-rules.md). Use this index for navigation and document-class guidance; it does not restate the full authority hierarchy.
 
-1. [docs/ai/repo-rules.md](ai/repo-rules.md) for repository-wide agent rules and completion policy
-2. [.truthmark/config.yml](../.truthmark/config.yml) for the committed hierarchy contract
-3. [docs/truthmark/areas.md](truthmark/areas.md) and `docs/truthmark/areas/**/*.md` for code-to-doc routing metadata
-4. `docs/standards/**/*.md` for reusable repository standards
-5. `docs/architecture/**/*.md` for current structure and module boundaries
-6. `docs/truth/**/*.md` for current product behavior and contracts
-
-[README.md](../README.md) may help with onboarding and positioning, but it must not override current-state docs.
+[README.md](../README.md) may help with onboarding and positioning, but it must not override current-state docs or repository-wide agent rules.
 
 ## Audience Split
 
@@ -96,9 +89,9 @@ New repositories should run `truthmark config` before `truthmark init` so teams 
 ### For agents
 
 1. [docs/ai/repo-rules.md](ai/repo-rules.md)
-2. [docs/ai/agent-onboarding.md](ai/agent-onboarding.md)
-3. [docs/truthmark/areas.md](truthmark/areas.md)
-4. [docs/architecture/module-map.md](architecture/module-map.md)
+2. [docs/ai/agent-onboarding.md](ai/agent-onboarding.md), when routing is unclear or cross-area
+3. [docs/truthmark/areas.md](truthmark/areas.md), when mapping code to canonical truth
+4. [docs/architecture/module-map.md](architecture/module-map.md), when changing module boundaries
 5. the relevant standard and truth docs for the task
 
 Use [docs/truth/routing-examples.md](truth/routing-examples.md) when designing areas for larger API, frontend, infrastructure, or monorepo repositories.
@@ -109,8 +102,8 @@ The canonical tree should stay small, explicit, and current. Historical notes ar
 
 ## Product Decisions
 
-- Decision (2026-05-14): The docs index owns authority order and document-class guidance for the canonical tree, while deeper docs own behavior within their specific area.
+- Decision (2026-05-15): The docs index owns navigation and document-class guidance for the canonical tree, while [docs/ai/repo-rules.md](ai/repo-rules.md) owns repository-wide authority order and completion policy.
 
 ## Rationale
 
-Keeping the docs index focused on authority and navigation gives agents and maintainers one stable place to resolve where current truth should live before they edit deeper canonical docs.
+Keeping the docs index focused on navigation avoids loading duplicated authority prose while still giving agents and maintainers one stable place to resolve where current truth should live before they edit deeper canonical docs.

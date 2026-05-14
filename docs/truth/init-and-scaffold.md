@@ -105,9 +105,10 @@ The current managed-instruction update behavior is:
 - remove older managed-looking chunks when possible
 - preserve manual text outside the managed block
 - normalize the known legacy `Codex` preamble wording to host-neutral agent wording when refreshing an instruction file
+- normalize legacy unconditional docs-map and onboarding preamble lines to conditional reads so normal sessions do not load routing docs before they are needed
 - append the managed block when no block exists
 - keep the generated workflow block as a compact automatic-Sync trigger and boundary index so it does not consume unnecessary model context in long legacy instruction files
-- keep detailed report examples and long workflow procedure in explicit generated skill files instead of host instruction blocks
+- keep detailed report examples, platform-specific invocation strings, and long workflow procedure in explicit generated skill files instead of host instruction blocks
 - preserve repository instruction authority while clarifying that implementation code and canonical truth docs are behavior evidence, not a way to override workflow write boundaries
 
 Repository-specific instructions should therefore live outside the managed block.
@@ -142,7 +143,7 @@ Important current defaults:
 - explicit Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check surfaces are installed only for configured platforms
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
 - generated workflow surfaces leave Truth Sync subagent selection to the acting agent and host environment
-- managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skills carry the detailed workflow bodies
+- managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skills carry invocation strings and detailed workflow bodies
 - generated workflow surfaces must not demote repository instruction docs such as [docs/ai/repo-rules.md](../ai/repo-rules.md) when warning agents that product truth cannot override workflow write boundaries
 - scaffolded default standards include AI-native topology repair guidance and an architecture-vs-behavior boundary so new repositories do not rely on human folder discipline
 - Truth Sync is the only generated skill with implicit invocation enabled because it is the automatic finish-time workflow
@@ -173,6 +174,7 @@ Current init JSON reporting uses:
 - Init reports migration risk instead of rewriting existing truth doc placement on the user's behalf.
 - V1 uses configured shared instruction targets such as `AGENTS.md` plus generated skill or command surfaces for host compatibility instead of creating host-specific top-level instruction files for every adapter.
 - Managed instruction blocks are compact automatic-Sync indexes; generated skills and command files own explicit workflow procedure.
+- Decision (2026-05-15): Repository instruction preambles make docs-map and onboarding reads conditional, and managed instruction blocks omit platform-specific workflow invocation strings so ordinary sessions load less context.
 - Decision (2026-05-13): `.truthmark/config.yml` and route files are the committed hierarchy contract, so init no longer creates a low-value top-level note.
 - Decision (2026-05-14): Truth-doc templates are kind-specific under `docs/templates/*.md`; `docs/templates/behavior-doc.md` is the default bounded behavior template and the other five typed templates carry kind-specific required sections.
 - Decision (2026-05-14): Truth Realize stays manual-only through explicit generated surfaces and is no longer configurable with `realization.enabled`.
@@ -182,7 +184,7 @@ Current init JSON reporting uses:
 
 This split makes the hierarchy reviewable before generated workflow behavior lands in the repo. Keeping route ownership in Markdown preserves local editing ergonomics. Refusing silent migrations avoids accidental truth loss when a repository reshapes its canonical docs tree.
 
-Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract. Keeping managed blocks terse protects ordinary agent context while preserving the automatic Sync gate, workflow boundaries, and branch-local authority.
+Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract. Keeping managed blocks terse protects ordinary agent context while preserving the automatic Sync gate, workflow boundaries, and branch-local authority. Conditional docs-map and onboarding reads keep routing guidance available without forcing every normal session to load it.
 
 Keeping typed truth-doc templates in `docs/templates/` gives repository owners one local standard surface per truth kind while keeping generated workflow text compact as more workflow surfaces are added.
 

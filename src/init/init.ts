@@ -120,7 +120,15 @@ const normalizeLegacyInstructionPreamble = (content: string): string => {
       "Use that file as the primary repository instruction source for Codex.",
       "Use that file as the primary repository instruction source for this agent.",
     )
-    .replaceAll("Codex-specific:", "Agent-specific:");
+    .replaceAll("Codex-specific:", "Agent-specific:")
+    .replaceAll(
+      "- Read `docs/README.md` for the canonical docs map.",
+      "- Read `docs/README.md` only when choosing or updating canonical docs.",
+    )
+    .replaceAll(
+      "- Use `docs/ai/agent-onboarding.md` for quick task routing.",
+      "- Use `docs/ai/agent-onboarding.md` only when task routing is unclear or cross-area.",
+    );
 };
 
 const upsertManagedBlock = (existingContent: string | null, block: string): string => {

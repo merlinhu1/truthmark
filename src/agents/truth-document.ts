@@ -4,14 +4,17 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaimEvidenceCheckedSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
+  renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveTruthDocsRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
+import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
@@ -60,9 +63,11 @@ Notes:
 export const renderTruthDocumentSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-document");
+
   return `---
 name: truthmark-document
-description: Use when the user explicitly asks to document existing implemented behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs. Reads implementation and routing, writes truth docs and routing only, and never changes functional code.
+description: ${workflow.description}
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
@@ -88,6 +93,11 @@ Truth Document is manual and implementation-first:
 - keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content
+${renderTruthDocOwnershipGateSection(
+    "the implemented behavior and candidate truth docs",
+    "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, run Truth Structure first when safe and in scope; otherwise block and recommend Truth Structure",
+  )}
+${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 ${renderRouteFirstEvidenceGateSection(
     "the documented behavior",
     "if no truth doc changed, report why current truth was already sufficient or why documentation was blocked",

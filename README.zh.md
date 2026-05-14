@@ -254,7 +254,7 @@ V1 目前提供：
 - [API 和 CLI 契约](docs/truth/contracts.md)
 - [Init 和脚手架行为](docs/truth/init-and-scaffold.md)
 - [Check 诊断](docs/truth/check-diagnostics.md)
-- [已安装工作流](docs/truth/installed-workflows.md)
+- [已安装工作流](docs/truth/workflows/overview.md)
 - [仓库事实维护指南](docs/standards/maintaining-repository-truth.md)
 
 当前行为应放在上面的规范文档树中。

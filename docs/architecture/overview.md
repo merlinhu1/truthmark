@@ -7,7 +7,8 @@ source_of_truth:
   - ../truth/contracts.md
   - ../truth/init-and-scaffold.md
   - ../truth/check-diagnostics.md
-  - ../truth/installed-workflows.md
+  - ../truth/workflows/overview.md
+  - ../truth/workflows/shared-gates.md
 ---
 
 # Architecture Overview

@@ -254,7 +254,7 @@ Die Root-README ist für Menschen gedacht, die das Paket evaluieren und ausprobi
 - [API- und CLI-Verträge](docs/truth/contracts.md)
 - [Init- und Scaffold-Verhalten](docs/truth/init-and-scaffold.md)
 - [Check-Diagnostik](docs/truth/check-diagnostics.md)
-- [Installierte Workflows](docs/truth/installed-workflows.md)
+- [Installierte Workflows](docs/truth/workflows/overview.md)
 - [Leitfaden zur Pflege von Repository-Wahrheit](docs/standards/maintaining-repository-truth.md)
 
 Aktuelles Verhalten gehört in den oben genannten kanonischen Dokumentationsbaum.
