@@ -1,8 +1,10 @@
 ---
 status: active
-doc_type: feature
-last_reviewed: 2026-05-13
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-14
 source_of_truth:
+  - ../../src/config/defaults.ts
   - ../../src/fs/paths.ts
   - ../../src/init/init.ts
   - ../../src/init/hierarchy.ts
@@ -27,7 +29,7 @@ This document describes the current behavior of `truthmark config` and `truthmar
 1. resolves the active repository and worktree
 2. requires an existing valid `.truthmark/config.yml`
 3. creates default standards only when they are missing or empty
-4. creates missing configured docs and routing structure such as the configured root route index, the configured default child route file, the configured feature-root README, a default area index README, an editable feature-doc template, and a default bounded leaf truth doc
+4. creates missing configured docs and routing structure such as the configured root route index, the configured default child route file with explicit truth kind metadata when the root route index delegates it, the configured truth-root README, a default area index README, six editable typed truth-doc templates, and a default bounded behavior truth doc
 5. loads the configured `platforms` list
 6. writes or refreshes configured instruction targets and configured platform surfaces
 7. rewrites managed Truthmark instruction blocks while preserving manual content outside those blocks
@@ -41,11 +43,16 @@ Current scaffold targets:
 
 - `.truthmark/config.yml` via `truthmark config`
 - [docs/truthmark/areas.md](../truthmark/areas.md)
-- configured child route files under `docs/truthmark/areas/**/*.md`
-- configured feature-root README files such as `docs/features/README.md`
-- configured default-area index README files such as `docs/features/repository/README.md`
-- [docs/templates/feature-doc.md](../templates/feature-doc.md)
-- configured default-area bounded leaf truth docs such as `docs/features/repository/overview.md`
+- configured child route files referenced by the root route index under `docs/truthmark/areas/**/*.md`
+- configured truth-root README files such as `docs/truth/README.md`
+- configured default-area index README files such as `docs/truth/repository/README.md`
+- [docs/templates/behavior-doc.md](../templates/behavior-doc.md)
+- [docs/templates/contract-doc.md](../templates/contract-doc.md)
+- [docs/templates/architecture-doc.md](../templates/architecture-doc.md)
+- [docs/templates/workflow-doc.md](../templates/workflow-doc.md)
+- [docs/templates/operations-doc.md](../templates/operations-doc.md)
+- [docs/templates/test-behavior-doc.md](../templates/test-behavior-doc.md)
+- configured default-area bounded leaf truth docs such as `docs/truth/repository/overview.md`
 - [docs/standards/default-principles.md](../standards/default-principles.md)
 - [docs/standards/documentation-governance.md](../standards/documentation-governance.md)
 - the managed block inside [AGENTS.md](../../AGENTS.md)
@@ -98,9 +105,10 @@ The current managed-instruction update behavior is:
 - remove older managed-looking chunks when possible
 - preserve manual text outside the managed block
 - normalize the known legacy `Codex` preamble wording to host-neutral agent wording when refreshing an instruction file
+- normalize legacy unconditional docs-map and onboarding preamble lines to conditional reads so normal sessions do not load routing docs before they are needed
 - append the managed block when no block exists
 - keep the generated workflow block as a compact automatic-Sync trigger and boundary index so it does not consume unnecessary model context in long legacy instruction files
-- keep detailed report examples and long workflow procedure in explicit generated skill files instead of host instruction blocks
+- keep detailed report examples, platform-specific invocation strings, and long workflow procedure in explicit generated skill files instead of host instruction blocks
 - preserve repository instruction authority while clarifying that implementation code and canonical truth docs are behavior evidence, not a way to override workflow write boundaries
 
 Repository-specific instructions should therefore live outside the managed block.
@@ -112,16 +120,16 @@ Truthmark does not create `OPENCODE.md` in V1. OpenCode-compatible behavior is i
 Hierarchy is configured in `.truthmark/config.yml`:
 
 - `docs.layout` is currently `hierarchical`
-- `docs.roots` names the canonical doc roots
+- `docs.roots` names the canonical doc roots and partial root maps are merged over current defaults
 - `docs.routing.root_index` is the root route index path
 - `docs.routing.area_files_root` is the directory for child route files
-- `docs.routing.default_area` is the scaffolded child route basename
+- `docs.routing.default_area` is the initial scaffolded child route basename
 - `docs.routing.max_delegation_depth` must currently be `1`
 
-`truthmark init` creates missing structure for that hierarchy, but it does not silently move, delete, or reinterpret existing truth docs when teams change the configured roots. Those cases produce review diagnostics for manual migration.
-The default scaffold treats feature `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the configured feature root, such as `<feature-root>/<domain>/<behavior>.md`.
-`truthmark init` creates [docs/templates/feature-doc.md](../templates/feature-doc.md) when it is missing or empty. The default template includes Purpose, Scope, Current Behavior, Core Rules, Flows And States, Contracts, Product Decisions, Rationale, Non-Goals, and Maintenance Notes sections, with inline scope criteria for agents. Its Scope guidance tells agents to split content into another bounded leaf doc when a change introduces a distinct outcome, lifecycle, rule family, external contract, or code owner.
-When creating the default bounded leaf truth doc, init reads the repository's template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{source_of_truth}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, and `{{template_path}}`. Section placeholders such as `{{scope}}` expand to section body text; the template owns heading structure. Existing non-empty template files are preserved so teams can define a local feature-doc standard.
+`truthmark init` creates missing structure for that hierarchy, but child route files stay governed by the root route index: if an authored non-empty root index no longer delegates the configured default child route, rerunning init does not recreate that unreferenced child route. Init does not silently move, delete, or reinterpret existing truth docs when teams change the configured roots. Those cases produce review diagnostics for manual migration.
+The default scaffold treats truth `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the configured truth root, such as `<truth-root>/<domain>/<behavior>.md`.
+`truthmark init` creates [docs/templates/behavior-doc.md](../templates/behavior-doc.md) when it is missing or empty and also seeds [docs/templates/contract-doc.md](../templates/contract-doc.md), [docs/templates/architecture-doc.md](../templates/architecture-doc.md), [docs/templates/workflow-doc.md](../templates/workflow-doc.md), [docs/templates/operations-doc.md](../templates/operations-doc.md), and [docs/templates/test-behavior-doc.md](../templates/test-behavior-doc.md) when they are missing or empty. The default behavior template includes Purpose, Scope, Current Behavior, Core Rules, Flows And States, Contracts, Product Decisions, Rationale, Non-Goals, and Maintenance Notes sections, with inline scope criteria for agents. Kind-specific templates add the required anchors for contract, architecture, workflow, operations, and test-behavior truth surfaces. The default child route references the seeded leaf truth doc with fenced YAML `truth_documents` metadata and `kind: behavior` rather than relying on path inference.
+When creating the default bounded behavior truth doc, init reads the repository's behavior template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{source_of_truth}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, and `{{template_path}}`. The seeded leaf uses `doc_type: behavior` and `truth_kind: behavior`. Existing non-empty template files are preserved so teams can define local truth-doc standards.
 
 ## Current Defaults
 
@@ -129,18 +137,18 @@ Important current defaults:
 
 - default authority includes the canonical doc classes under `docs/`
 - default code surface in the scaffolded root and child route files starts as `src/**`
-- default feature scaffolding creates an index at `<feature-root>/README.md`, an index at `<feature-root>/<default-area>/README.md`, an editable template at `docs/templates/feature-doc.md`, and a bounded leaf truth doc at `<feature-root>/<default-area>/overview.md`
+- default truth scaffolding creates an index at `<truth-root>/README.md`, an index at `<truth-root>/<default-area>/README.md`, six editable templates under `docs/templates/*.md`, and a bounded leaf truth doc at `<truth-root>/<default-area>/overview.md` routed through explicit `{ path, kind }` metadata
 - default platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`
 - shared instruction targets are refreshed independently of platform-specific surfaces
 - explicit Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check surfaces are installed only for configured platforms
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
 - generated workflow surfaces leave Truth Sync subagent selection to the acting agent and host environment
-- managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skills carry the detailed workflow bodies
+- managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skills carry invocation strings and detailed workflow bodies
 - generated workflow surfaces must not demote repository instruction docs such as [docs/ai/repo-rules.md](../ai/repo-rules.md) when warning agents that product truth cannot override workflow write boundaries
-- scaffolded default standards include AI-native topology repair guidance and an architecture-vs-feature boundary so new repositories do not rely on human feature-folder discipline
+- scaffolded default standards include AI-native topology repair guidance and an architecture-vs-behavior boundary so new repositories do not rely on human folder discipline
 - Truth Sync is the only generated skill with implicit invocation enabled because it is the automatic finish-time workflow
 - `truthmark check` is optional validation for agent workflows, not a required workflow preflight
-- realization is enabled as generated Codex and OpenCode explicit surfaces plus an installed instruction surface, not as a dedicated CLI subcommand
+- Truth Realize is always installed as an explicit manual surface for configured platforms; it has no separate config toggle and no dedicated CLI subcommand
 - Gemini CLI support uses `GEMINI.md` for hierarchical memory and `.gemini/commands/truthmark/*.toml` for explicit workflow commands instead of introducing Truthmark-specific top-level CLI verbs
 
 ## Init Diagnostics
@@ -166,17 +174,19 @@ Current init JSON reporting uses:
 - Init reports migration risk instead of rewriting existing truth doc placement on the user's behalf.
 - V1 uses configured shared instruction targets such as `AGENTS.md` plus generated skill or command surfaces for host compatibility instead of creating host-specific top-level instruction files for every adapter.
 - Managed instruction blocks are compact automatic-Sync indexes; generated skills and command files own explicit workflow procedure.
+- Decision (2026-05-15): Repository instruction preambles make docs-map and onboarding reads conditional, and managed instruction blocks omit platform-specific workflow invocation strings so ordinary sessions load less context.
 - Decision (2026-05-13): `.truthmark/config.yml` and route files are the committed hierarchy contract, so init no longer creates a low-value top-level note.
-- Decision (2026-05-12): Feature-doc structure is centralized in `docs/templates/feature-doc.md`; generated workflow skills point agents to that file instead of embedding a full copy of the template.
-- Decision (2026-05-13): Default standards define architecture docs as structure and ownership truth, not a place for ordinary feature behavior.
+- Decision (2026-05-14): Truth-doc templates are kind-specific under `docs/templates/*.md`; `docs/templates/behavior-doc.md` is the default bounded behavior template and the other five typed templates carry kind-specific required sections.
+- Decision (2026-05-14): Truth Realize stays manual-only through explicit generated surfaces and is no longer configurable with `realization.enabled`.
+- Decision (2026-05-13): Default standards define architecture docs as structure and ownership truth, not a place for ordinary product behavior.
 
 ## Rationale
 
 This split makes the hierarchy reviewable before generated workflow behavior lands in the repo. Keeping route ownership in Markdown preserves local editing ergonomics. Refusing silent migrations avoids accidental truth loss when a repository reshapes its canonical docs tree.
 
-Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract. Keeping managed blocks terse protects ordinary agent context while preserving the automatic Sync gate, workflow boundaries, and branch-local authority.
+Keeping host-specific detail in generated skills and Gemini command files prevents the repository root from accumulating parallel instruction files that drift from the managed workflow contract. Keeping managed blocks terse protects ordinary agent context while preserving the automatic Sync gate, workflow boundaries, and branch-local authority. Conditional docs-map and onboarding reads keep routing guidance available without forcing every normal session to load it.
 
-Centralizing the feature-doc template gives repository owners one editable standard for future bounded leaf docs while keeping generated skills compact as more workflow surfaces are added.
+Keeping typed truth-doc templates in `docs/templates/` gives repository owners one local standard surface per truth kind while keeping generated workflow text compact as more workflow surfaces are added.
 
 ## Primary Code Files
 

@@ -23,7 +23,7 @@ export const renderTruthCheckInstructions = (
   return `### Truth Check
 Use when the user asks to audit repository truth health.
 Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
-Inspect truth docs, routing, implementation, and ${config.docs.routing.rootIndex} directly. The truthmark check command may be used when available. Report files reviewed, issues, suggested fixes, and validation.`;
+Inspect truth docs, routing, implementation, and ${config.docs.routing.rootIndex} directly. Support findings with checkout evidence, include confidence, run the truthmark check command only when available for additional validation, and inspect the checkout directly when the command is unavailable. Report files reviewed, issues, suggested fixes, evidence checked, and validation.`;
 };
 
 export const renderTruthSyncInstructions = (
@@ -37,9 +37,10 @@ Memory anchor: code changed -> relevant tests -> Truth Sync -> report.
 Delegate to a subagent only when the host supports subagent dispatch; the acting agent and environment own that choice.
 Inspect the current checkout directly. Do not invoke packet helpers or rely on cache files.
 Run relevant tests before finishing when functional code changes occurred.
+Support new or changed behavior-bearing truth claims with checkout evidence and report the evidence reviewed.
 Truthmark is agent-native: installed skills and this managed block are the workflow runtime. Inspect the checkout directly; truthmark CLI commands are optional validation tools after installation.
 Code first: code leads; truth docs follow; Truth Sync never rewrites code for alignment.
-May write truth docs and docs/truthmark/areas.md only; must not rewrite functional code.
+May write truth docs and ${config.docs.routing.rootIndex} only; must not rewrite functional code.
 Read ${config.docs.routing.rootIndex} and only relevant child route files under ${config.docs.routing.areaFilesRoot}/ when routing resolution requires them.
 If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when repair is safe and in scope; otherwise block and recommend Truth Structure.
 If mapped truth is missing, extend mapped truth docs first, create an area-local truth doc second, and create a new area only as a last resort.

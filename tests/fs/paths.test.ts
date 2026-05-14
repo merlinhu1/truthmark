@@ -55,10 +55,10 @@ describe("repo path writes", () => {
 
     try {
       await repo.writeFile("docs/templates/.keep", "");
-      await fs.symlink(outsidePath, path.join(repo.rootDir, "docs", "templates", "feature-doc.md"));
+      await fs.symlink(outsidePath, path.join(repo.rootDir, "docs", "templates", "behavior-doc.md"));
 
       await expect(
-        ensureRepoFile(repo.rootDir, "docs/templates/feature-doc.md", "# Template\n"),
+        ensureRepoFile(repo.rootDir, "docs/templates/behavior-doc.md", "# Template\n"),
       ).rejects.toThrow("must stay inside the repository root");
       await expect(fs.stat(outsidePath)).rejects.toThrow();
     } finally {

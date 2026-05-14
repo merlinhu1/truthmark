@@ -120,7 +120,15 @@ const normalizeLegacyInstructionPreamble = (content: string): string => {
       "Use that file as the primary repository instruction source for Codex.",
       "Use that file as the primary repository instruction source for this agent.",
     )
-    .replaceAll("Codex-specific:", "Agent-specific:");
+    .replaceAll("Codex-specific:", "Agent-specific:")
+    .replaceAll(
+      "- Read `docs/README.md` for the canonical docs map.",
+      "- Read `docs/README.md` only when choosing or updating canonical docs.",
+    )
+    .replaceAll(
+      "- Use `docs/ai/agent-onboarding.md` for quick task routing.",
+      "- Use `docs/ai/agent-onboarding.md` only when task routing is unclear or cross-area.",
+    );
 };
 
 const upsertManagedBlock = (existingContent: string | null, block: string): string => {
@@ -213,7 +221,10 @@ const writeManagedAgentsFile = async (
   return writeRepoFile(rootDir, path, upsertManagedBlock(existingContent, block));
 };
 
-const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
+const diagnosticCategoryForPath = (
+  filePath: string,
+  config: TruthmarkConfig,
+): DiagnosticCategory => {
   if (filePath === "AGENTS.md") {
     return "truth-sync";
   }
@@ -257,7 +268,7 @@ const diagnosticCategoryForPath = (filePath: string): DiagnosticCategory => {
     return "truth-sync";
   }
 
-  if (filePath === "docs/truthmark/areas.md") {
+  if (filePath === config.docs.routing.rootIndex) {
     return "authority";
   }
 
@@ -291,14 +302,11 @@ const workflowSkillFiles = (
       path: `${basePath}/truthmark-check/SKILL.md`,
       content: renderTruthmarkCheckLocalSkill(config),
     },
-  ];
-
-  if (config.realization.enabled) {
-    files.push({
+    {
       path: `${basePath}/truthmark-realize/SKILL.md`,
-        content: renderTruthmarkRealizeLocalSkill(),
-    });
-  }
+      content: renderTruthmarkRealizeLocalSkill(config),
+    },
+  ];
 
   return files;
 };
@@ -337,20 +345,15 @@ const codexFiles = (config: TruthmarkConfig): PlatformFile[] => {
       path: TRUTHMARK_CHECK_SKILL_METADATA_PATH,
       content: renderTruthmarkCheckSkillMetadata(),
     },
+    {
+      path: TRUTHMARK_REALIZE_SKILL_PATH,
+      content: renderTruthmarkRealizeSkill(config),
+    },
+    {
+      path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
+      content: renderTruthmarkRealizeSkillMetadata(),
+    },
   ];
-
-  if (config.realization.enabled) {
-    files.push(
-      {
-        path: TRUTHMARK_REALIZE_SKILL_PATH,
-        content: renderTruthmarkRealizeSkill(),
-      },
-      {
-        path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
-        content: renderTruthmarkRealizeSkillMetadata(),
-      },
-    );
-  }
 
   return files;
 };
@@ -374,14 +377,11 @@ const copilotFiles = (config: TruthmarkConfig, block: string): PlatformFile[] =>
       path: TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
       content: renderTruthmarkCopilotCheckPrompt(config),
     },
-  ];
-
-  if (config.realization.enabled) {
-    files.push({
+    {
       path: TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
-      content: renderTruthmarkCopilotRealizePrompt(),
-    });
-  }
+      content: renderTruthmarkCopilotRealizePrompt(config),
+    },
+  ];
 
   return files;
 };
@@ -430,14 +430,10 @@ const filesForPlatform = (
           path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
           content: renderTruthmarkGeminiCheckCommand(config),
         },
-        ...(config.realization.enabled
-          ? [
-              {
-                path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-                content: renderTruthmarkGeminiRealizeCommand(),
-              },
-            ]
-          : []),
+        {
+          path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
+          content: renderTruthmarkGeminiRealizeCommand(config),
+        },
       ];
   }
 };
@@ -464,9 +460,12 @@ const messageForWriteResult = (result: FileWriteResult): string => {
   }
 };
 
-const writeDiagnostics = (results: FileWriteResult[]): CommandResult["diagnostics"] => {
+const writeDiagnostics = (
+  results: FileWriteResult[],
+  config: TruthmarkConfig,
+): CommandResult["diagnostics"] => {
   return results.map((result) => ({
-    category: diagnosticCategoryForPath(result.path),
+    category: diagnosticCategoryForPath(result.path, config),
     severity: "action",
     message: messageForWriteResult(result),
     file: result.path,
@@ -526,7 +525,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
       changedResults.length > 0
         ? "Initialized or updated the Truthmark repository scaffold."
         : "Truthmark repository scaffold is already up to date.",
-    diagnostics: [...writeDiagnostics(results), ...migrationDiagnostics],
+    diagnostics: [...writeDiagnostics(results, config), ...migrationDiagnostics],
     data: {
       repositoryRoot: repository.repositoryRoot,
       worktreePath: repository.worktreePath,

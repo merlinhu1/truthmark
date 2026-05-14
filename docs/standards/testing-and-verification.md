@@ -4,7 +4,7 @@ doc_type: standard
 last_reviewed: 2026-05-13
 source_of_truth:
   - ../../package.json
-  - ../features/contracts.md
+  - ../truth/contracts.md
 ---
 
 # Testing And Verification

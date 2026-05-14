@@ -41,13 +41,14 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
     roots: { ...DEFAULT_DOCS_HIERARCHY.roots },
     routing: { ...DEFAULT_DOCS_HIERARCHY.routing },
   };
+  const roots: Record<string, string> = { ...DEFAULT_DOCS_HIERARCHY.roots, ...rawDocs.roots };
 
   return {
     version: rawConfig.version,
     platforms: rawConfig.platforms ?? [...DEFAULT_PLATFORMS],
     docs: {
       layout: rawDocs.layout,
-      roots: { ...rawDocs.roots },
+      roots,
       routing: {
         rootIndex: rawDocs.routing.root_index,
         areaFilesRoot: rawDocs.routing.area_files_root,
@@ -62,9 +63,6 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
       recommended: rawConfig.frontmatter?.recommended ?? [],
     },
     ignore: rawConfig.ignore ?? [],
-    realization: {
-      enabled: rawConfig.realization.enabled,
-    },
   };
 };
 

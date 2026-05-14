@@ -11,7 +11,7 @@ docs:
     ai: docs/ai
     standards: docs/standards
     architecture: docs/architecture
-    features: docs/features
+    truth: docs/truth
   routing:
     root_index: docs/truthmark/areas.md
     area_files_root: docs/truthmark/areas
@@ -23,9 +23,11 @@ authority:
   - docs/ai/**/*.md
   - docs/standards/**/*.md
   - docs/architecture/**/*.md
-  - docs/features/**/*.md
+  - docs/truth/**/*.md
 instruction_targets:
   - AGENTS.md
+  - CLAUDE.md
+  - GEMINI.md
 frontmatter:
   required: []
   recommended:
@@ -38,5 +40,3 @@ ignore:
   - vendor/**
   - dist/**
   - build/**
-realization:
-  enabled: true

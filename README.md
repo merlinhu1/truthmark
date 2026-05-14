@@ -1,6 +1,6 @@
 # Truthmark
 
-**Truthmark automates truth maintenance for AI software development.**
+**Truthmark installs repository truth workflows for AI software development.**
 
 English | [Deutsch](README.de.md) | [中文](README.zh.md) | [Español](README.es.md) | [Русский](README.ru.md)
 
@@ -8,14 +8,14 @@ English | [Deutsch](README.de.md) | [中文](README.zh.md) | [Español](README.e
 
 AI coding agents already write code fast. The expensive part is keeping repository truth aligned with what changed.
 
-Truthmark adds an automatic finish-time safeguard to that workflow. The normal path is simple:
+Truthmark adds a finish-time workflow guard to that workflow. The normal path is simple:
 
 - agent changes functional code
 - run relevant tests
-- Truth Sync updates mapped truth docs before the agent finishes
+- the installed Truth Sync workflow updates mapped truth docs before the agent finishes
 - review the truth-doc diff if one was produced
 
-Most tools ask teams to adopt a habit. Truthmark automates the habit.
+Most tools ask teams to adopt a habit. Truthmark turns the habit into repository workflow infrastructure.
 
 Truthmark turns an AI workflow into repo infrastructure, not personal tooling. It installs a Git-native, branch-scoped truth layer inside the repository, gives agents explicit routing and bounded workflow surfaces, and keeps that truth reviewable in Git instead of scattering it across prompt history, stale docs, or private tool memory.
 
@@ -51,12 +51,12 @@ For teams who already know agents can generate code, Truthmark answers the next 
 
 Truthmark is not trying to make agents sound smarter. It is trying to make AI-assisted repository change easier to trust.
 
-- Automated truth sync after code changes turns documentation maintenance into a workflow safeguard instead of a team habit.
+- Installed Truth Sync after code changes turns documentation maintenance into a workflow safeguard instead of a team habit.
 - Branch-scoped truth moves with the code, so reviewers can inspect current truth in ordinary Git diffs.
 - Repository-native workflow surfaces make rollout lighter and handoffs more resilient than per-user setup alone.
 - Explicit routing in `docs/truthmark/areas.md` and delegated child route files gives agents ownership boundaries and safer write paths.
 - Local-first operation avoids a daemon, database, remote service, or MCP dependency.
-- The model works across JavaScript, TypeScript, Go, Python, C#, and Java codebases.
+- The routing model is language-agnostic, with coverage diagnostics for common JavaScript, TypeScript, Go, Python, C#, and Java code surfaces.
 
 For tech leads, the value is governance without extra infrastructure: tests, code review, and ownership still do the real work; Truthmark makes the agent's context durable, inspectable, and branch-scoped.
 
@@ -133,10 +133,10 @@ Review `.truthmark/config.yml` before `init`; it is the committed hierarchy cont
 .truthmark/config.yml
 docs/truthmark/areas.md
 docs/truthmark/areas/repository.md
-docs/templates/feature-doc.md
-docs/features/README.md
-docs/features/repository/README.md
-docs/features/repository/overview.md
+docs/templates/behavior-doc.md
+docs/truth/README.md
+docs/truth/repository/README.md
+docs/truth/repository/overview.md
 AGENTS.md
 CLAUDE.md
 GEMINI.md
@@ -144,7 +144,7 @@ GEMINI.md
 
 Supported platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`. The default config includes all of them; remove platforms you do not use from `.truthmark/config.yml` before rerunning `truthmark init`.
 
-The default scaffold keeps feature `README.md` files as indexes and starts current behavior truth in bounded leaf docs such as `docs/features/repository/overview.md`.
+The default scaffold keeps truth `README.md` files as indexes and starts current behavior truth in bounded leaf docs such as `docs/truth/repository/overview.md`.
 
 Existing repositories usually need one cleanup pass after `init`: run the installed Truth Structure workflow when the generated `repository` route is too broad, ownership spans multiple products or services, or route files still point at placeholder docs. Truth Structure splits broad routing, creates or repairs starter canonical truth docs, and gives Truth Sync precise destinations before functional-code work begins. Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-structure`; OpenCode-style hosts can invoke `/skill truthmark-structure`.
 
@@ -171,22 +171,22 @@ review the truth-doc diff
 Truth Document is manual and implementation-first: code is inspected as evidence, truth docs are created or repaired, and functional code must not be changed. Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-document`. OpenCode-style hosts can invoke `/skill truthmark-document`.
 
 ```text
-/truthmark-document document the implemented session timeout behavior under docs/features/authentication
+/truthmark-document document the implemented session timeout behavior under docs/truth/authentication
 ```
 
 ### Normal code changes
 
-Most users should not need to invoke Truth Sync directly. The important behavior is that Truth Sync acts as an automatic finish-time safeguard when functional code changed. The normal path is:
+Most users should not need to invoke Truth Sync directly. The important behavior is that the installed agent workflow treats Truth Sync as a finish-time guard when functional code changed. The normal path is:
 
 ```text
 agent changes functional code
 run relevant tests
-Truth Sync triggers before the agent finishes
+the installed Truth Sync workflow runs before the agent finishes
 review the truth-doc diff if one was produced
 commit or hand off the work
 ```
 
-Truth Sync is code-first: code leads, truth docs follow, and Truth Sync must not rewrite functional code. Its main job is to act as an automatic finish-time safeguard when functional code changed. Direct invocation is mainly for troubleshooting, forcing an early sync before handoff, or running the workflow intentionally.
+Truth Sync is code-first: code leads, truth docs follow, and Truth Sync must not rewrite functional code. Its main job is to run through the installed agent workflow as a finish-time guard when functional code changed. Direct invocation is mainly for troubleshooting, forcing an early sync before handoff, or running the workflow intentionally.
 
 Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-sync`. OpenCode-style hosts can invoke `/skill truthmark-sync`.
 
@@ -212,18 +212,17 @@ Truth Realize is manual and doc-first: truth docs lead, code follows, and the ag
 Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-realize`. OpenCode-style hosts can invoke `/skill truthmark-realize`.
 
 ```text
-/truthmark-realize realize docs/features/authentication/session-timeout.md into code
+/truthmark-realize realize docs/truth/authentication/session-timeout.md into code
 ```
 
 ## What it installs
 
 Truthmark keeps the durable workflow surface small and repository-native. After `truthmark init`, the repo itself carries the routing, rules, and installed workflow surfaces, so teams are not relying only on one operator's local setup.
 
-- `.truthmark/config.yml` for machine-readable configuration
-- `.truthmark/config.yml` for the committed hierarchy contract
+- `.truthmark/config.yml` for the machine-readable committed hierarchy contract
 - `docs/truthmark/areas.md` for the root route index
 - `docs/truthmark/areas/**/*.md` for delegated child route files
-- `docs/templates/feature-doc.md` for the editable feature-doc standard used by generated workflows
+- `docs/templates/behavior-doc.md` plus the other kind-specific templates under `docs/templates/` for the editable truth-doc standards used by generated workflows
 - managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Copilot instructions, and `GEMINI.md`
 - host-native skills, prompts, or commands for Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check
 
@@ -235,7 +234,7 @@ The installed workflow surfaces are the runtime:
 - Truth Realize updates code to match truth docs.
 - Truth Check audits repository truth health.
 
-Feature `README.md` files are indexes. Truth Sync is expected to read and update bounded leaf docs for current behavior. Generated workflow surfaces preserve repository-rule authority while treating implementation code and canonical truth docs as evidence for current behavior.
+Truth `README.md` files are indexes. Truth Sync is expected to read and update bounded leaf docs for current behavior. Generated workflow surfaces preserve repository-rule authority while treating implementation code and canonical truth docs as evidence for current behavior.
 
 Generated surfaces are managed by Truthmark, include a version marker, and may be refreshed by `truthmark init`.
 
@@ -300,10 +299,10 @@ The root README is for people evaluating and trying the package. Detailed functi
 
 - [Docs index](docs/README.md)
 - [Architecture overview](docs/architecture/overview.md)
-- [API and CLI contracts](docs/features/contracts.md)
-- [Init and scaffold behavior](docs/features/init-and-scaffold.md)
-- [Check diagnostics](docs/features/check-diagnostics.md)
-- [Installed workflows](docs/features/installed-workflows.md)
+- [API and CLI contracts](docs/truth/contracts.md)
+- [Init and scaffold behavior](docs/truth/init-and-scaffold.md)
+- [Check diagnostics](docs/truth/check-diagnostics.md)
+- [Installed workflows](docs/truth/workflows/overview.md)
 - [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
 
 Current behavior belongs in the canonical docs tree above.

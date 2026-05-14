@@ -4,10 +4,11 @@ doc_type: architecture
 last_reviewed: 2026-05-13
 source_of_truth:
   - ../../.truthmark/config.yml
-  - ../features/contracts.md
-  - ../features/init-and-scaffold.md
-  - ../features/check-diagnostics.md
-  - ../features/installed-workflows.md
+  - ../truth/contracts.md
+  - ../truth/init-and-scaffold.md
+  - ../truth/check-diagnostics.md
+  - ../truth/workflows/overview.md
+  - ../truth/workflows/shared-gates.md
 ---
 
 # Architecture Overview
@@ -41,13 +42,19 @@ The durable surfaces are ordinary repository files:
 
 Generated workflow surfaces are committed repository files with Truthmark version markers. The V1 upgrade path is to upgrade the package, rerun `truthmark init`, and review the generated diffs.
 
+## Boundaries
+
+- The CLI owns committed config, routing, diagnostics, scaffolded files, and generated workflow surfaces inside the active repository.
+- Repository truth stays in Git-tracked Markdown and managed instruction surfaces rather than off-repo caches, daemons, or hosted services.
+- Architecture docs own structure and ownership boundaries; behavior and contract docs own ordinary product behavior and machine-facing contracts.
+
 ## Core Pipelines
 
 ### Config and init pipeline
 
 `truthmark config` writes the committed hierarchy contract to `.truthmark/config.yml`.
 
-`truthmark init` requires that config, resolves the active repository, creates missing structural files for the configured hierarchy, reads the configured `platforms` list, writes or refreshes only those platform surfaces, and returns a structured list of created, updated, or unchanged files plus any migration-review diagnostics. The default scaffold creates feature `README.md` files as indexes and seeds current behavior truth in bounded leaf docs such as `<feature-root>/<default-area>/overview.md`. It does not delete platform files when a platform is removed from config, and it does not silently move existing truth docs when hierarchy changes.
+`truthmark init` requires that config, resolves the active repository, creates missing structural files for the configured hierarchy, reads the configured `platforms` list, writes or refreshes only those platform surfaces, and returns a structured list of created, updated, or unchanged files plus any migration-review diagnostics. The default scaffold creates truth `README.md` files as indexes and seeds current behavior truth in bounded leaf docs such as `<truth-root>/<default-area>/overview.md`. It does not delete platform files when a platform is removed from config, and it does not silently move existing truth docs when hierarchy changes.
 
 Key implementation surfaces:
 
@@ -85,7 +92,7 @@ These modules support the installed workflow contract even though V1 does not ex
 
 Truthmark should maintain architecture docs when a change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
 
-Ordinary feature behavior, endpoint details, UI copy, validation rules, and bug fixes belong in feature or contract docs unless they change those architecture boundaries. Architecture docs should describe structure and ownership rather than becoming a second home for feature truth.
+Ordinary product behavior, endpoint details, UI copy, validation rules, and bug fixes belong in behavior or contract docs unless they change those architecture boundaries. Architecture docs should describe structure and ownership rather than becoming a second home for product truth.
 
 ## Branch Scope
 
@@ -121,9 +128,9 @@ Current automatic coverage discovery scans common roots such as `src/`, `api/`, 
 
 - Truthmark is config-first: repositories review committed hierarchy before installed workflow surfaces are generated.
 - Hierarchical routing is the only scaffold model in V1, with one child delegation level from the root route index.
-- Default feature scaffolding uses index `README.md` files plus bounded leaf truth docs so Truth Sync has a small current-behavior target from the first init.
-- Current architecture and feature docs carry their own active decisions and rationale instead of delegating that truth to historical ADR-style logs.
-- Architecture docs are maintained for structure and ownership changes, not for ordinary feature behavior.
+- Default truth scaffolding uses index `README.md` files plus bounded leaf truth docs so Truth Sync has a small current-behavior target from the first init.
+- Current architecture and truth docs carry their own active decisions and rationale instead of delegating that truth to historical ADR-style logs.
+- Architecture docs are maintained for structure and ownership changes, not for ordinary product behavior.
 - The current checkout is the truth boundary; Truthmark does not create off-repo memory, packet files, or cache files that compete with branch-local Markdown.
 - Branch identity is diagnostic metadata, not an external authority source. It helps agents and humans see which checkout was validated without moving truth outside Git.
 

@@ -1,14 +1,14 @@
 ---
 agent: 'agent'
-description: 'Sync repository truth docs from functional code changes; skip docs-only/no-code changes.'
+description: 'Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.'
 ---
 
 ---
 name: truthmark-sync
-description: Use automatically before finishing when functional code changed since the last successful Truth Sync, and when the user explicitly invokes /truthmark-sync, $truthmark-sync, or /truthmark:sync. Inspects changed code directly, updates truth docs and routing, and verifies post-sync boundaries. Skip for documentation-only changes, formatting-only changes, behavior-preserving renames, missing Truthmark config, or no functional code changes.
+description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.2.3
+truthmark-version: 1.2.4
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -25,20 +25,45 @@ Implementation code and canonical truth docs are inspected evidence for current 
 6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
-- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic feature doc
+- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
 - run Truth Structure before syncing when topology repair is safe and in scope
 - block and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary
 - report the route files and changed code paths that require structure repair
 - README.md files are indexes, not Truth Sync targets
-- must not append behavior details to a feature README
+- must not append behavior details to a README.md index
 - create or update a bounded leaf truth doc when behavior changes do not fit an existing leaf doc
-When creating or updating a feature doc, read docs/templates/feature-doc.md and follow its frontmatter, heading order, and section intent.
-When updating an existing feature doc, align existing feature docs to the template standard while preserving authored content that remains accurate.
-If docs/templates/feature-doc.md is missing, use the built-in minimal feature-doc structure with Current Behavior, Product Decisions, and Rationale sections.
-Teams may edit docs/templates/feature-doc.md to define their local feature-doc standard.
-Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
-Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.
-Keep architecture docs focused on structure and ownership; keep current product behavior in feature or contract docs.
+Truth-doc ownership gate:
+- before editing or relying on changed functional files and impacted truth docs, verify each target/source truth doc is a bounded owner for the behavior
+- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
+- if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners, run Truth Structure before syncing when safe and in scope; otherwise block and recommend Truth Structure
+- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason as applicable
+Product Decisions/Rationale preservation gate:
+- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections in every source or touched truth doc
+- preserve each current decision and rationale in the bounded owner doc it governs; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
+- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
+- if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing
+- after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
+When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
+Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
+Align existing docs to that template while preserving accurate authored content.
+If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
+Teams may edit the template files under docs/templates/ to define their local truth-doc standards.
+Truth-doc shape repair gate:
+- Truth Sync may restructure only truth docs impacted by the current functional-code change.
+- repair shape in place only after the ownership gate confirms the doc is the right bounded owner
+- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
+- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
+- preserve supported claims; remove, narrow, or block unsupported or stale claims
+- report docs restructured and why a narrow edit was not sufficient
+Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
+Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
+Evidence Gate:
+- route-first: map changed functional files to bounded route owners and primary canonical docs
+- review new or changed behavior-bearing claims only in touched docs, route ownership, Product Decisions, and Rationale
+- support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions
+- tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
+- remove, narrow, or block unsupported claims
+- if no impacted doc changed, report why truth was already current or why sync was skipped
 Optional validation tooling:
 - you may run truthmark check when local tooling is available
 - do not require the truthmark binary; direct checkout inspection is the canonical path
@@ -48,12 +73,10 @@ Truthmark hierarchy:
 - Config: .truthmark/config.yml
 - Root route index: docs/truthmark/areas.md
 - Area route files: docs/truthmark/areas/**/*.md
-- Feature docs: docs/features/**/*.md
-Decision truth lives in the canonical doc it governs.
-Date active decisions inline when added or changed, for example `Decision (2026-05-09): ...`.
-Do not create separate timestamped ADR logs or planning tickets for active decisions.
-Replace old active decisions instead of appending separate timestamped decision logs; Git history is the audit trail.
-Update Product Decisions and Rationale when a behavior change comes from a decision change.
+- Truth docs: docs/truth/**/*.md
+Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
+Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
+Update Product Decisions and Rationale when a decision changes behavior.
 ### Truth Sync Worker
 The parent provides the task focus and any repository context already gathered.
 Worker rules:
@@ -65,8 +88,12 @@ Worker rules:
 Return result in this shape:
 - status: completed | blocked
 - changedCodeReviewed: string[]
+- ownershipReviewed: string[]
+- structureRequired?: string[]
 - truthDocsUpdated: string[]
 - routingDocsUpdated: string[]
+- truthDocsSplit?: string[]
+- evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
 - notes: string[]
 - blockedReason?: string
 - manualReviewFiles?: string[]
@@ -75,7 +102,9 @@ Parent post-sync verification:
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
 - verify the worker report matches the required headings and sections
+- validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
+- verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
 Report completion in this shape:
 ```md
@@ -85,7 +114,12 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/features/repository/overview.md
+- docs/truth/repository/overview.md
+
+Evidence checked:
+- Claim: Session timeout behavior is documented in the mapped repository truth doc.
+  Evidence: src/auth/session.ts:12 / docs/truthmark/areas.md:11
+  Result: supported
 
 Notes:
 - Updated session timeout behavior.

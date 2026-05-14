@@ -1,7 +1,8 @@
 ---
 status: active
-doc_type: feature
-last_reviewed: 2026-05-13
+doc_type: behavior
+truth_kind: workflow
+last_reviewed: 2026-05-14
 source_of_truth:
   - ../../truthmark/areas/release-automation.md
   - ../../../.github/workflows/ci.yml
@@ -18,23 +19,45 @@ This doc owns the repository automation that verifies Truthmark changes in pull 
 
 This doc covers the committed GitHub Actions workflows under `.github/workflows/`. It does not redefine the `truthmark` CLI contracts or the detailed behavior of `check`, `init`, or installed workflows.
 
-## Current Behavior
+## Triggers
+
+- Pushes to `main`
+- Pull requests
+- Published GitHub releases
+
+## Inputs
+
+- The checked-out repository contents
+- GitHub Actions event context for pushes, pull requests, and releases
+- npm registry credentials and release-environment configuration for publishing
+
+## Execution Model
+
+Release automation runs through the committed GitHub Actions workflows under `.github/workflows/`. The `CI` workflow verifies repository changes, and the `Publish` workflow revalidates release state before publishing to npm.
+
+## Steps
 
 - The `CI` workflow runs on pushes to `main` and on every pull request.
 - The `verify` job checks out the repository, installs Node 24 with npm caching, runs `npm ci`, then runs `npm run check` and `npm run package:check`.
 - The `Publish` workflow runs when a GitHub release is published.
 - The `publish` job checks out the repository, installs Node 24 with the npm registry configured, runs `npm ci`, runs `npm run release:check`, and then runs `npm publish`.
 
+## State, Retry, And Failure Behavior
+
+- Failed verification or release-check steps stop the current job and prevent later publish steps from running.
+- Publishing occurs only for the GitHub release event path; branch pushes and pull requests do not publish.
+- GitHub Actions reruns remain host-managed; Truthmark owns the committed workflow definitions, not GitHub's execution controls.
+
+## Outputs
+
+- CI verification results for pushes and pull requests
+- npm publication after a successful release-triggered publish job
+
 ## Core Rules
 
 - Pull request and main-branch automation must verify linting, types, tests, build output, and package-file integrity through the existing npm scripts.
 - Publish automation must re-run the full release verification before publishing.
 - Publishing is triggered from a GitHub release event, not from branch pushes alone.
-
-## Flows And States
-
-- Change validation flow: push or pull request -> `CI` workflow -> `verify` job -> `npm run check` and `npm run package:check`.
-- Release flow: published GitHub release -> `Publish` workflow -> `publish` job -> `npm run release:check` -> `npm publish`.
 
 ## Contracts
 

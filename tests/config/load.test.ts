@@ -13,8 +13,6 @@ describe("loadConfig", () => {
         `version: 1
 authority:
   - docs/truthmark/areas.md
-realization:
-  enabled: true
 `,
       );
 
@@ -29,7 +27,7 @@ realization:
         docs: {
           layout: "hierarchical",
           roots: {
-            features: "docs/features",
+            truth: "docs/truth",
           },
           routing: {
             rootIndex: "docs/truthmark/areas.md",
@@ -44,7 +42,6 @@ realization:
           recommended: [],
         },
         ignore: [],
-        realization: { enabled: true },
       });
     } finally {
       await repo.cleanup();
@@ -71,8 +68,6 @@ frontmatter:
     - status
 ignore:
   - dist/**
-realization:
-  enabled: true
 `,
       );
 
@@ -98,7 +93,7 @@ realization:
 docs:
   layout: hierarchical
   roots:
-    features: docs/product
+    truth: docs/product
   routing:
     root_index: docs/truthmark/routes.md
     area_files_root: docs/truthmark/routes
@@ -106,8 +101,6 @@ docs:
     max_delegation_depth: 1
 authority:
   - docs/truthmark/areas.md
-realization:
-  enabled: true
 `,
       );
 
@@ -117,7 +110,7 @@ realization:
       expect(result.config?.docs).toMatchObject({
         layout: "hierarchical",
         roots: {
-          features: "docs/product",
+          truth: "docs/product",
         },
         routing: {
           rootIndex: "docs/truthmark/routes.md",
@@ -125,6 +118,41 @@ realization:
           defaultArea: "core",
           maxDelegationDepth: 1,
         },
+      });
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("merges omitted docs roots from the current defaults", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        `version: 1
+docs:
+  layout: hierarchical
+  roots:
+    ai: docs/ai
+  routing:
+    root_index: docs/truthmark/areas.md
+    area_files_root: docs/truthmark/areas
+    default_area: repository
+    max_delegation_depth: 1
+authority:
+  - docs/truthmark/areas.md
+`,
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.diagnostics).toEqual([]);
+      expect(result.config?.docs.roots).toMatchObject({
+        ai: "docs/ai",
+        standards: "docs/standards",
+        architecture: "docs/architecture",
+        truth: "docs/truth",
       });
     } finally {
       await repo.cleanup();
@@ -141,7 +169,7 @@ realization:
 docs:
   layout: hierarchical
   roots:
-    features: docs/features
+    truth: docs/truth
   routing:
     root_index: docs/truthmark/areas.md
     area_files_root: docs/truthmark/areas
@@ -149,8 +177,6 @@ docs:
     max_delegation_depth: 2
 authority:
   - docs/truthmark/areas.md
-realization:
-  enabled: true
 `,
       );
 
@@ -183,8 +209,6 @@ platforms:
   - unknown-agent
 authority:
   - docs/truthmark/areas.md
-realization:
-  enabled: true
 `,
       );
 
@@ -209,8 +233,6 @@ realization:
         `version: 2
 authority: invalid
 automation:
-  enabled: true
-realization:
   enabled: true
 `,
       );
@@ -245,8 +267,6 @@ alignment:
   mode: packet
 outputs:
   directory: .truthmark/cache
-realization:
-  enabled: true
 `,
       );
 

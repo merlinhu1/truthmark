@@ -1,8 +1,36 @@
+import path from "node:path";
 import { stringify } from "yaml";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
-import { createDefaultRawConfig } from "../config/defaults.js";
+import {
+  createDefaultConfig,
+  createDefaultRawConfig,
+} from "../config/defaults.js";
+import { inferTruthDocumentKindFromPath } from "../routing/areas.js";
+import { resolveTruthDocsRoot } from "../truth/docs.js";
+
+const asRelativePath = (value: string): string => {
+  return value.split(path.sep).join("/");
+};
+
+const currentDate = (): string => new Date().toISOString().slice(0, 10);
+
+const resolveRelativePath = (fromPath: string, toPath: string): string => {
+  return asRelativePath(path.relative(path.dirname(fromPath), toPath));
+};
+
+const truthRoot = resolveTruthDocsRoot;
+
+const renderTruthDocumentsMetadata = (
+  documents: Array<{ path: string; kind: string }>,
+): string[] => {
+  return [
+    "```yaml",
+    stringify({ truth_documents: documents }).trimEnd(),
+    "```",
+  ];
+};
 
 export const renderConfigTemplate = (): string => {
   return stringify(createDefaultRawConfig());
@@ -11,11 +39,13 @@ export const renderConfigTemplate = (): string => {
 export const renderAreasTemplate = (
   documents: DiscoveredMarkdownDocument[],
 ): string => {
-  const truthDocuments = documents.map((document) => document.path);
-  const truthDocumentLines =
-    truthDocuments.length > 0
-      ? truthDocuments.map((documentPath) => `- ${documentPath}`)
-      : ["- docs/features/"];
+  const truthDocuments =
+    documents.length > 0
+      ? documents.map((document) => ({
+          path: document.path,
+          kind: inferTruthDocumentKindFromPath(document.path) ?? "behavior",
+        }))
+      : [{ path: "docs/truth/**/*.md", kind: "behavior" }];
 
   return [
     "# Truthmark Areas",
@@ -23,7 +53,7 @@ export const renderAreasTemplate = (
     "## Repository Truth Surface",
     "",
     "Truth documents:",
-    ...truthDocumentLines,
+    ...renderTruthDocumentsMetadata(truthDocuments),
     "",
     "Code surface:",
     "- src/**",
@@ -43,18 +73,24 @@ const titleCase = (value: string): string => {
     .join(" ");
 };
 
-export const renderHierarchicalAreasIndexTemplate = (config: TruthmarkConfig): string => {
+export const renderHierarchicalAreasIndexTemplate = (
+  config: TruthmarkConfig,
+): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const childPath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
   const title = titleCase(defaultArea);
+  const sourceOfTruth = resolveRelativePath(
+    config.docs.routing.rootIndex,
+    ".truthmark/config.yml",
+  );
 
   return [
     "---",
     "status: active",
     "doc_type: route-index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../.truthmark/config.yml",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     "# Truthmark Areas",
@@ -77,16 +113,18 @@ export const renderHierarchicalAreasIndexTemplate = (config: TruthmarkConfig): s
 export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
-  const featureRoot = config.docs.roots.features ?? config.docs.roots.features_current ?? "docs/features";
-  const leafTruthDoc = `${featureRoot}/${defaultArea}/overview.md`;
+  const truthDocsRoot = truthRoot(config);
+  const leafTruthDoc = `${truthDocsRoot}/${defaultArea}/overview.md`;
+  const templatePath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
+  const sourceOfTruth = resolveRelativePath(templatePath, ".truthmark/config.yml");
 
   return [
     "---",
     "status: active",
     "doc_type: area-route",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../../.truthmark/config.yml",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
     `# ${title} Areas`,
@@ -94,7 +132,11 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
     `## ${title}`,
     "",
     "Truth documents:",
-    `- ${leafTruthDoc}`,
+    "```yaml",
+    "truth_documents:",
+    `  - path: ${leafTruthDoc}`,
+    "    kind: behavior",
+    "```",
     "",
     "Code surface:",
     "- src/**",
@@ -105,43 +147,56 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   ].join("\n");
 };
 
-export const renderFeatureRootReadmeTemplate = (): string => {
+export const renderTruthRootReadmeTemplate = (
+  config: TruthmarkConfig = createDefaultConfig(),
+): string => {
+  const templatePath = `${truthRoot(config)}/README.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    config.docs.routing.rootIndex,
+  );
+
   return [
     "---",
     "status: active",
     "doc_type: index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    "  - ../../truthmark/areas.md",
+    `  - ${sourceOfTruth}`,
     "---",
     "",
-    "# Feature Docs",
+    "# Truth Docs",
     "",
-    "This directory is an index for current feature behavior docs organized by the configured Truthmark hierarchy.",
+    "This directory is an index for current truth docs organized by the configured Truthmark hierarchy.",
     "",
-    "README.md files are indexes, not Truth Sync targets. Keep behavior truth in bounded leaf docs under `<domain>/<behavior>.md`.",
+    "README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.",
     "",
   ].join("\n");
 };
 
-export const renderFeatureDomainReadmeTemplate = (config: TruthmarkConfig): string => {
+export const renderTruthDomainReadmeTemplate = (config: TruthmarkConfig): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
+  const templatePath = `${truthRoot(config)}/${defaultArea}/README.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+  );
 
   return [
     "---",
     "status: active",
     "doc_type: index",
-    "last_reviewed: 2026-05-09",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
-    `  - ../../truthmark/areas/${defaultArea}.md`,
+    `  - ${sourceOfTruth}`,
     "---",
     "",
-    `# ${title} Feature Docs`,
+    `# ${title} Truth Docs`,
     "",
-    `This directory indexes bounded ${title.toLowerCase()} feature truth docs.`,
+    `This directory indexes bounded ${title.toLowerCase()} truth docs.`,
     "",
-    "README.md files are indexes, not Truth Sync targets. Keep behavior truth in bounded leaf docs in this directory.",
+    "README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs in this directory.",
     "",
     "Current leaf docs:",
     "",
@@ -150,14 +205,20 @@ export const renderFeatureDomainReadmeTemplate = (config: TruthmarkConfig): stri
   ].join("\n");
 };
 
-export const FEATURE_DOC_TEMPLATE_PATH = "docs/templates/feature-doc.md";
+export const BEHAVIOR_DOC_TEMPLATE_PATH = "docs/templates/behavior-doc.md";
+export const CONTRACT_DOC_TEMPLATE_PATH = "docs/templates/contract-doc.md";
+export const ARCHITECTURE_DOC_TEMPLATE_PATH = "docs/templates/architecture-doc.md";
+export const WORKFLOW_DOC_TEMPLATE_PATH = "docs/templates/workflow-doc.md";
+export const OPERATIONS_DOC_TEMPLATE_PATH = "docs/templates/operations-doc.md";
+export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH = "docs/templates/test-behavior-doc.md";
 
-export const renderFeatureDocTemplateFile = (): string => {
+export const renderBehaviorDocTemplateFile = (): string => {
   return [
     "---",
     "status: active",
-    "doc_type: feature",
-    "last_reviewed: 2026-05-12",
+    "doc_type: behavior",
+    "truth_kind: behavior",
+    `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
     "  - {{source_of_truth}}",
     "---",
@@ -185,7 +246,7 @@ export const renderFeatureDocTemplateFile = (): string => {
     "Keep README.md files as indexes only.",
     "-->",
     "",
-    "This doc was created from the editable feature-doc template at {{template_path}}.",
+    "This doc was created from the editable behavior-doc template at {{template_path}}.",
     "",
     "## Current Behavior",
     "",
@@ -238,41 +299,160 @@ export const renderFeatureDocTemplateFile = (): string => {
   ].join("\n");
 };
 
+const renderTypedTruthDocTemplate = (
+  truthKind: string,
+  docType: string,
+  title: string,
+  sections: string[],
+): string => {
+  const placeholderNameForSection = (section: string): string => {
+    return section
+      .replace(/^#+\s+/u, "")
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+  };
+
+  return [
+    "---",
+    "status: active",
+    `doc_type: ${docType}`,
+    `truth_kind: ${truthKind}`,
+    `last_reviewed: ${currentDate()}`,
+    "source_of_truth:",
+    "  - {{source_of_truth}}",
+    "---",
+    "",
+    `# ${title}`,
+    "",
+    "## Purpose",
+    "",
+    "{{purpose}}",
+    "",
+    "## Scope",
+    "",
+    "{{scope}}",
+    "",
+    ...sections.flatMap((section) => [
+      section,
+      "",
+      `{{${placeholderNameForSection(section)}}}`,
+      "",
+    ]),
+    "## Product Decisions",
+    "",
+    "{{decision}}",
+    "",
+    "## Rationale",
+    "",
+    "{{rationale}}",
+    "",
+    "## Non-Goals",
+    "",
+    "{{non_goals}}",
+    "",
+    "## Maintenance Notes",
+    "",
+    "{{maintenance_notes}}",
+    "",
+  ].join("\n");
+};
+
+export const renderContractDocTemplateFile = (): string => {
+  return renderTypedTruthDocTemplate("contract", "contract", "{{title}}", [
+    "## Contract Surface",
+    "## Inputs",
+    "## Outputs",
+    "## Errors And Diagnostics",
+    "## Compatibility Rules",
+    "## Versioning And Migration",
+  ]);
+};
+
+export const renderArchitectureDocTemplateFile = (): string => {
+  return renderTypedTruthDocTemplate("architecture", "architecture", "{{title}}", [
+    "## System Role",
+    "## Boundaries",
+    "## Components",
+    "## Data And Control Flow",
+    "## Ownership",
+    "## Cross-Cutting Constraints",
+  ]);
+};
+
+export const renderWorkflowDocTemplateFile = (): string => {
+  return renderTypedTruthDocTemplate("workflow", "behavior", "{{title}}", [
+    "## Triggers",
+    "## Inputs",
+    "## Execution Model",
+    "## Steps",
+    "## State, Retry, And Failure Behavior",
+    "## Outputs",
+  ]);
+};
+
+export const renderOperationsDocTemplateFile = (): string => {
+  return renderTypedTruthDocTemplate("operations", "behavior", "{{title}}", [
+    "## Operational Surface",
+    "## Runtime Topology",
+    "## Configuration",
+    "## Permissions",
+    "## Deployment And Rollback",
+    "## Availability And Observability",
+  ]);
+};
+
+export const renderTestBehaviorDocTemplateFile = (): string => {
+  return renderTypedTruthDocTemplate("test-behavior", "behavior", "{{title}}", [
+    "## Test Surface",
+    "## Fixtures And Data Model",
+    "## Execution Model",
+    "## Assertions And Invariants",
+    "## Isolation Rules",
+    "## Reporting And Failure Semantics",
+  ]);
+};
+
 const renderTemplate = (template: string, values: Record<string, string>): string => {
   return Object.entries(values).reduce((rendered, [key, value]) => {
     return rendered.split(`{{${key}}}`).join(value);
   }, template);
 };
 
-export const renderFeatureLeafDocTemplate = (
+export const renderBehaviorLeafDocTemplate = (
   config: TruthmarkConfig,
-  template = renderFeatureDocTemplateFile(),
+  template = renderBehaviorDocTemplateFile(),
 ): string => {
   const defaultArea = config.docs.routing.defaultArea;
   const title = titleCase(defaultArea);
+  const templatePath = `${truthRoot(config)}/${defaultArea}/overview.md`;
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+  );
+  const today = currentDate();
 
   return renderTemplate(template, {
     area: defaultArea,
     contracts:
       "- External contracts should link to the nearest canonical contract doc when one exists.",
     core_rules:
-      "- Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+      "- Truth README files are indexes; behavior truth belongs in bounded leaf docs.",
     current_behavior:
       "- Document current behavior here when implementation changes make repository truth incomplete.",
-    decision:
-      "- Decision (2026-05-09): Feature README files are indexes; behavior truth belongs in bounded leaf docs.",
+    decision: `- Decision (${today}): Truth README files are indexes; behavior truth belongs in bounded leaf docs.`,
     flows_and_states: "- None beyond current behavior.",
     maintenance_notes:
       "- Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.",
     non_goals:
       "- This doc is not a catch-all for unrelated repository behavior.",
-    purpose:
-      `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
+    purpose: `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
     rationale:
       "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
     scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
-    source_of_truth: `../../truthmark/areas/${defaultArea}.md`,
-    template_path: FEATURE_DOC_TEMPLATE_PATH,
+    source_of_truth: sourceOfTruth,
+    template_path: BEHAVIOR_DOC_TEMPLATE_PATH,
     title: `${title} Overview`,
+    truth_kind: "behavior",
   });
 };

@@ -18,6 +18,12 @@ describe("renderTruthCheckSkillBody", () => {
     expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("/truthmark:check");
     expect(skill).toContain("name: truthmark-check");
     expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
+    expect(skill).toContain(
+      "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
+    );
+    expect(skill).toContain(
+      "Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.",
+    );
     expect(skill).toContain("audit repository truth health");
     expect(skill).toContain(
       "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
@@ -30,6 +36,12 @@ describe("renderTruthCheckSkillBody", () => {
     );
     expect(skill).toContain("optionally run truthmark check");
     expect(skill).toContain("must not require the truthmark binary");
+    expect(skill).toContain(
+      "support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests",
+    );
+    expect(skill).toContain(
+      "remove unsupported findings or mark open questions",
+    );
     expect(skill).toContain("Truthmark hierarchy:");
     expect(skill).toContain("Product Decisions");
     expect(skill).toContain("Rationale");
@@ -37,6 +49,8 @@ describe("renderTruthCheckSkillBody", () => {
     expect(skill).toContain("Files reviewed");
     expect(skill).toContain("Issues found");
     expect(skill).toContain("Fixes suggested");
+    expect(skill).toContain("Evidence checked");
+    expect(skill).toContain("Confidence");
     expect(skill).toContain("Validation");
   });
 });

@@ -1,7 +1,8 @@
 ---
 status: active
-doc_type: feature
-last_reviewed: 2026-05-12
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-14
 source_of_truth:
   - {{source_of_truth}}
 ---
@@ -10,7 +11,7 @@ source_of_truth:
 
 ## Purpose
 
-<!-- State why this feature exists, the user or system outcome it protects, and the problem it solves. Keep roadmap or implementation plans out of this section. -->
+<!-- State why this behavior exists, the user or system outcome it protects, and the problem it solves. Keep roadmap or implementation plans out of this section. -->
 
 {{purpose}}
 
@@ -29,7 +30,7 @@ Split into another leaf doc when content introduces:
 Keep README.md files as indexes only.
 -->
 
-This doc was created from the editable feature-doc template at {{template_path}}.
+This doc was created from the editable behavior-doc template at {{template_path}}.
 
 ## Current Behavior
 

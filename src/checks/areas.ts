@@ -7,11 +7,14 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
 import { resolveAreaRouting } from "../routing/area-resolver.js";
 import type { Diagnostic } from "../output/diagnostic.js";
+import type { TruthDocumentEntry } from "../routing/areas.js";
 import { classifyPath } from "../sync/classify.js";
+import { resolveTruthDocsRoot } from "../truth/docs.js";
 
 export type AreasCheckResult = {
   diagnostics: Diagnostic[];
   truthDocumentPaths: string[];
+  truthDocumentEntries: TruthDocumentEntry[];
   routePrecision: {
     leafAreaCount: number;
     broadAreaCount: number;
@@ -84,6 +87,7 @@ export const checkAreas = async (
   const routing = await resolveAreaRouting(rootDir, {
     rootIndex: config.docs.routing.rootIndex,
     areaFilesRoot: config.docs.routing.areaFilesRoot,
+    truthDocsRoot: resolveTruthDocsRoot(config),
   });
 
   const discoveredCodeFiles = await fg([...COVERAGE_SCAN_PATTERNS], {
@@ -99,6 +103,7 @@ export const checkAreas = async (
   const diagnostics: Diagnostic[] = [...routing.diagnostics];
   const truthDocumentPaths: string[] = [];
   const seenTruthDocumentPaths = new Set<string>();
+  const truthDocumentEntryMap = new Map<string, TruthDocumentEntry>();
   const areaCoverage = routing.areas.map((area) => ({
     area,
     valid: true,
@@ -119,9 +124,32 @@ export const checkAreas = async (
 
   for (const area of truthReferences) {
     let areaHasTruthDocumentErrors = false;
+    const registerTruthDocumentEntry = (truthDocumentEntry: TruthDocumentEntry): boolean => {
+      const existingEntry = truthDocumentEntryMap.get(truthDocumentEntry.path);
+
+      if (existingEntry && existingEntry.kind !== truthDocumentEntry.kind) {
+        diagnostics.push({
+          category: "area-index",
+          severity: "error",
+          message: `Truth document ${truthDocumentEntry.path} is routed with conflicting kinds ${existingEntry.kind} and ${truthDocumentEntry.kind}.`,
+          area: area.name,
+          file: truthDocumentEntry.path,
+        });
+        return false;
+      }
+
+      if (!existingEntry) {
+        truthDocumentEntryMap.set(truthDocumentEntry.path, truthDocumentEntry);
+      }
+
+      return true;
+    };
 
     for (const truthDocument of area.truthDocuments) {
       if (looksLikeGlob(truthDocument)) {
+        const routedGlobEntry = area.truthDocumentEntries.find(
+          (entry) => entry.path === truthDocument,
+        );
         const matches = (await fg([truthDocument], { cwd: rootDir, onlyFiles: true })).sort();
 
         if (matches.length === 0) {
@@ -155,6 +183,15 @@ export const checkAreas = async (
           if (!seenTruthDocumentPaths.has(match)) {
             seenTruthDocumentPaths.add(match);
             truthDocumentPaths.push(match);
+          }
+          if (
+            routedGlobEntry &&
+            !registerTruthDocumentEntry({
+              ...routedGlobEntry,
+              path: match,
+            })
+          ) {
+            areaHasTruthDocumentErrors = true;
           }
         }
 
@@ -193,6 +230,12 @@ export const checkAreas = async (
       if (!seenTruthDocumentPaths.has(truthDocument)) {
         seenTruthDocumentPaths.add(truthDocument);
         truthDocumentPaths.push(truthDocument);
+      }
+
+      const routedEntry = area.truthDocumentEntries.find((entry) => entry.path === truthDocument);
+
+      if (routedEntry && !registerTruthDocumentEntry(routedEntry)) {
+        areaHasTruthDocumentErrors = true;
       }
     }
 
@@ -327,6 +370,7 @@ export const checkAreas = async (
   return {
     diagnostics,
     truthDocumentPaths,
+    truthDocumentEntries: [...truthDocumentEntryMap.values()],
     routePrecision: {
       leafAreaCount: routing.areas.length,
       broadAreaCount,

@@ -52,9 +52,6 @@ export type RawTruthmarkConfig = {
     recommended?: string[];
   };
   ignore?: string[];
-  realization: {
-    enabled: boolean;
-  };
 };
 
 export type TruthmarkConfig = {
@@ -68,15 +65,12 @@ export type TruthmarkConfig = {
     recommended: string[];
   };
   ignore: string[];
-  realization: {
-    enabled: boolean;
-  };
 };
 
 export const truthmarkConfigSchema: JSONSchemaType<RawTruthmarkConfig> = {
   type: "object",
   additionalProperties: false,
-  required: ["version", "authority", "realization"],
+  required: ["version", "authority"],
   properties: {
     version: {
       type: "integer",
@@ -171,16 +165,6 @@ export const truthmarkConfigSchema: JSONSchemaType<RawTruthmarkConfig> = {
       nullable: true,
       items: {
         type: "string",
-      },
-    },
-    realization: {
-      type: "object",
-      additionalProperties: false,
-      required: ["enabled"],
-      properties: {
-        enabled: {
-          type: "boolean",
-        },
       },
     },
   },

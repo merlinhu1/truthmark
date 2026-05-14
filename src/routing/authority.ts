@@ -1,36 +1,17 @@
-import fg from "fast-glob";
+import type { TruthmarkConfig } from "../config/schema.js";
+import { checkAuthority, type AuthorityCheckResult } from "../checks/authority.js";
 
-type ResolveAuthorityPathsResult = {
-  paths: string[];
-  diagnostics: [];
-};
+export type ResolveAuthorityPathsResult = AuthorityCheckResult;
 
-const looksLikeGlob = (pattern: string): boolean => {
-  return /[*?[\]{}()!+@]/u.test(pattern);
-};
-
+/**
+ * Backwards-compatible shim for the earlier routing authority helper.
+ * Prefer checkAuthority from ../checks/authority.ts for runtime validation.
+ */
 export const resolveAuthorityPaths = async (
   rootDir: string,
   authority: string[],
 ): Promise<ResolveAuthorityPathsResult> => {
-  const orderedPaths: string[] = [];
-  const seenPaths = new Set<string>();
-
-  for (const entry of authority) {
-    const expandedPaths = looksLikeGlob(entry)
-      ? await fg([entry], { cwd: rootDir, onlyFiles: true })
-      : [entry];
-
-    for (const path of expandedPaths.sort()) {
-      if (!seenPaths.has(path)) {
-        seenPaths.add(path);
-        orderedPaths.push(path);
-      }
-    }
-  }
-
-  return {
-    paths: orderedPaths,
-    diagnostics: [],
-  };
+  const config = { authority } as unknown as TruthmarkConfig;
+  return checkAuthority(rootDir, config);
 };
+

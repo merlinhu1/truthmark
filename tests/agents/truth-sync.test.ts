@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import matter from "gray-matter";
 
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   TRUTH_SYNC_EXPLICIT_INVOCATIONS,
   renderTruthSyncSkillBody,
@@ -42,14 +43,17 @@ describe("renderTruthSyncSkillBody", () => {
     expect(parsed.data.name).toBe("truthmark-sync");
     expect(parsed.data["user-invocable"]).toBe(true);
     expect(parsed.data.description).toContain(
-      "Skip for documentation-only changes, formatting-only changes, behavior-preserving renames, missing Truthmark config, or no functional code changes.",
+      "Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes",
+    );
+    expect(parsed.data.description).toContain(
+      "Not for doc-first realization or manual topology design",
     );
   });
 
   it("documents direct checkout inspection as the canonical runtime", () => {
     const skillBody = renderTruthSyncSkillBody();
 
-    expect(skillBody).toContain("Use automatically before finishing");
+    expect(skillBody).toContain("Use this skill automatically before finishing");
     expect(skillBody).toContain("last successful Truth Sync");
     expect(skillBody).toContain("Inspect git status");
     expect(skillBody).toContain(
@@ -86,29 +90,106 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "block and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary",
     );
-    expect(skillBody).toContain("do not create another generic feature doc");
+    expect(skillBody).toContain("do not create another generic truth doc");
     expect(skillBody).toContain(
       "README.md files are indexes, not Truth Sync targets",
     );
     expect(skillBody).toContain(
-      "must not append behavior details to a feature README",
+      "must not append behavior details to a README.md index",
     );
     expect(skillBody).toContain("create or update a bounded leaf truth doc");
+    expect(skillBody).toContain("Evidence Gate");
     expect(skillBody).toContain(
-      "Maintain architecture docs when a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.",
+      "route-first: map changed functional files to bounded route owners and primary canonical docs",
     );
     expect(skillBody).toContain(
-      "Do not put ordinary feature behavior, endpoint details, UI copy, validation rules, or bug fixes in architecture docs unless they change those architecture boundaries.",
+      "support claims with primary checkout evidence",
     );
-    expect(skillBody).toContain("When creating or updating a feature doc");
-    expect(skillBody).toContain("read docs/templates/feature-doc.md");
-    expect(skillBody).toContain("follow its frontmatter, heading order, and section intent");
-    expect(skillBody).toContain("align existing feature docs to the template standard");
+    expect(skillBody).toContain(
+      "tests/examples/canonical docs corroborate",
+    );
+    expect(skillBody).toContain(
+      "remove, narrow, or block unsupported claims",
+    );
+    expect(skillBody).toContain(
+      "Maintain architecture docs only for structure-level changes",
+    );
+    expect(skillBody).toContain(
+      "Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs",
+    );
+    expect(skillBody).toContain("When creating or updating a truth doc");
+    expect(skillBody).toContain("docs/templates/<kind>-doc.md");
+    expect(skillBody).toContain("inspect the routed truth kind");
+    expect(skillBody).toContain("Align existing docs to that template");
+    expect(skillBody).toContain("Truth-doc ownership gate");
+    expect(skillBody).toContain(
+      "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners",
+    );
+    expect(skillBody).toContain(
+      "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason",
+    );
+    expect(skillBody).toContain(
+      "Product Decisions/Rationale preservation gate",
+    );
+    expect(skillBody).toContain(
+      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections",
+    );
+    expect(skillBody).toContain(
+      "preserve each current decision and rationale in the bounded owner doc it governs",
+    );
+    expect(skillBody).toContain(
+      "if ownership of a decision or rationale is unclear, block with manual-review files",
+    );
+    expect(skillBody).toContain("Truth-doc shape repair gate");
+    expect(skillBody).toContain(
+      "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
+    );
+    expect(skillBody).toContain("use Truth Structure for ownership splits");
+    expect(skillBody).toContain(
+      "repair shape when a narrow edit would make truth worse",
+    );
+    expect(skillBody).toContain(
+      "report docs restructured and why",
+    );
     expect(skillBody).not.toContain("# {{title}}");
     expect(skillBody).toContain(
       "update Product Decisions and Rationale when a behavior change comes from a decision change",
     );
+    expect(skillBody).toContain("Evidence checked");
+    expect(skillBody).toContain("Claim:");
+    expect(skillBody).toContain("Result: supported");
+    expect(skillBody).toContain("structured Truth Sync report contract");
+    expect(skillBody).toContain("ownershipReviewed: string[]");
+    expect(skillBody).toContain("truthDocsSplit?: string[]");
+    expect(skillBody).toContain(
+      "verify the final report records ownership review, structure requirement, split, restructure, or blocked reason",
+    );
     expect(skillBody).toContain("/truthmark:sync");
+  });
+
+  it("uses the provided hierarchy config in embedded report examples", () => {
+    const baseConfig = createDefaultConfig();
+    const config = {
+      ...baseConfig,
+      docs: {
+        ...baseConfig.docs,
+        roots: {
+          ...baseConfig.docs.roots,
+          truth: "docs/truth",
+        },
+        routing: {
+          ...baseConfig.docs.routing,
+          rootIndex: "docs/routes/index.md",
+          areaFilesRoot: "docs/routes/areas",
+        },
+      },
+    };
+
+    const skillBody = renderTruthSyncSkillBody(config);
+
+    expect(skillBody).toContain("docs/truth/repository/overview.md");
+    expect(skillBody).toContain("docs/routes/index.md:11");
+    expect(skillBody).toContain("verify only truth docs and docs/routes/index.md changed");
   });
 });
 
@@ -121,10 +202,10 @@ describe("Truth Sync generated metadata", () => {
     );
     expect(metadata).toContain("allow_implicit_invocation: true");
     expect(renderTruthmarkGeminiSyncCommand()).toContain(
-      'description = "Sync repository truth docs from functional code changes; skip docs-only/no-code changes."',
+      'description = "Use automatically at finish-time after functional code changes',
     );
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
-      "description: 'Sync repository truth docs from functional code changes; skip docs-only/no-code changes.'",
+      "description: 'Use automatically at finish-time after functional code changes",
     );
   });
 });
