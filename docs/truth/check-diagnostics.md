@@ -8,6 +8,9 @@ source_of_truth:
   - ../../src/checks/authority.ts
   - ../../src/checks/areas.ts
   - ../../src/checks/branch-scope.ts
+  - ../../src/freshness/check.ts
+  - ../../src/impact/build.ts
+  - ../../src/evidence/validate.ts
   - ../../src/checks/frontmatter.ts
   - ../../src/checks/links.ts
   - ../../src/markdown/discovery.ts
@@ -29,11 +32,14 @@ The command:
 2. computes branch-scope metadata
 3. loads `.truthmark/config.yml`
 4. runs authority, area, decision-structure, frontmatter, internal-link, generated-surface, and coverage diagnostics when config is valid
-5. returns a human summary or the shared JSON envelope
+5. when `--base <ref>` is supplied, builds an ImpactSet and adds freshness diagnostics for changed code without route ownership, stale evidence, invalid base comparisons, and changed public API without docs sync
+6. returns a human summary or the shared JSON envelope
 
 There is no supported `--workflow` helper mode. Agent workflows inspect the checkout directly and may run `truthmark check` only as optional validation.
 
 The command reports repository truth health for the active checkout. It does not prepare mandatory workflow context, choose verification commands, or decide whether a coding task can finish.
+
+`truthmark check` without `--base` keeps the existing checkout-health behavior and does not compute ImpactSet. `truthmark check --base <ref>` adds branch-impact freshness diagnostics and includes `data.impactSet` in JSON output.
 
 Topology repair remains an installed workflow responsibility. `truthmark check` may expose routing or coverage symptoms, but AI agents must be able to perform Truth Structure directly from committed config, route files, docs, and implementation when the Truthmark binary is unavailable.
 
@@ -160,12 +166,29 @@ Current severity behavior:
 - configured generated surface content stale: `review`
 - generated Truthmark version marker differs from the current package version: `review`
 
+### Freshness
+
+Freshness checks run only when `--base <ref>` is supplied.
+
+Current severity behavior:
+
+- changed functional code with no route owner: `review`
+- changed public API with no affected truth document: `review`
+- changed public API with affected truth docs that were not changed in the impact set: `review`
+- invalid base ref or failed base comparison: `error`
+- deleted `source_of_truth` or evidence reference: `error`
+- `source_of_truth` glob reference with no matching files: `error`
+- evidence reference outside the repository root: `error`
+- missing evidence symbol, invalid evidence span, or stale evidence hash: `error`
+- evidence line spans are validated even when the evidence block does not include a content hash
+
 ## Result Shape
 
 - human output reports the number of `error` and `review` diagnostics
 - JSON output returns the shared command envelope
 - JSON output includes `data.branchScope`
 - JSON output includes `data.truthVisibility`
+- JSON output includes `data.impactSet` only when `--base <ref>` is supplied
 - JSON output does not include workflow payloads
 
 Branch scope identifies the active checkout:

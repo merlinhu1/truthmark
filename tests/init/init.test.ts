@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 
+import { getTruthmarkWorkflow } from "../../src/agents/workflow-manifest.js";
 import { runCheck } from "../../src/checks/check.js";
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
@@ -502,7 +503,7 @@ Agent-specific:
       expect(
         await repo.readFile(".gemini/commands/truthmark/sync.toml"),
       ).toContain(
-        'description = "Sync repository truth docs from functional code changes; skip docs-only/no-code changes."',
+        `description = "${getTruthmarkWorkflow("truthmark-sync").description}"`,
       );
       expect(
         await repo.readFile(".gemini/commands/truthmark/sync.toml"),
@@ -512,7 +513,9 @@ Agent-specific:
       ).toContain("name: truthmark-document");
       expect(
         await repo.readFile(".gemini/commands/truthmark/realize.toml"),
-      ).toContain('description = "Realize repository truth docs into code."');
+      ).toContain(
+        `description = "${getTruthmarkWorkflow("truthmark-realize").description}"`,
+      );
       const geminiInstructions = await repo.readFile("GEMINI.md");
       expect(geminiInstructions).not.toContain("/truthmark:sync");
       expect(geminiInstructions).toContain(

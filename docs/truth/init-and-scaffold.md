@@ -155,8 +155,8 @@ Important current defaults:
 
 Current init JSON reporting uses:
 
-- `truth-sync` for the managed `AGENTS.md` block and generated Truth Structure, Truth Document, Truth Sync, and Truth Check skill assets
-- `realization` for generated Truth Realize skill assets
+- `truth-sync` for the managed `AGENTS.md` block and generated Truth Structure, Truth Document, Truth Sync, and Truth Check assets
+- `realization` for generated Truth Realize assets
 - `authority` for [docs/truthmark/areas.md](../truthmark/areas.md)
 - `config` for the remaining scaffolded files
 

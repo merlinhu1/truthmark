@@ -240,14 +240,20 @@ Generated surfaces are managed by Truthmark, include a version marker, and may b
 
 ## Commands
 
-Truthmark V1 intentionally keeps the CLI small because the ongoing workflow is meant to live in the installed agent surfaces, not in a long list of daily manual commands. In downstream repositories, `truthmark config` creates the committed hierarchy contract, `truthmark init` installs and refreshes workflow surfaces from that reviewed config, and `truthmark check` validates truth artifacts for manual audits, CI, or troubleshooting.
+Truthmark V1 keeps the CLI focused because the ongoing workflow is meant to live in the installed agent surfaces, not in a long list of daily manual commands. In downstream repositories, `truthmark config` creates the committed hierarchy contract, `truthmark init` installs and refreshes workflow surfaces from that reviewed config, `truthmark check` validates truth artifacts for manual audits, CI, or troubleshooting, and the repository-intelligence commands generate derived review artifacts when local tooling is available.
 
 ```bash
 truthmark config
 truthmark init
 truthmark check
+truthmark index
+truthmark impact --base main
+truthmark context --workflow truth-sync --base main
 truthmark config --json
 truthmark check --json
+truthmark index --json
+truthmark impact --base main --json
+truthmark context --workflow truth-sync --base main --json
 ```
 
 `config` writes only `.truthmark/config.yml` unless `--stdout` is used.
@@ -255,6 +261,12 @@ truthmark check --json
 `init` requires `.truthmark/config.yml`, then installs or refreshes the local workflow files.
 
 `check` validates configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, and coverage diagnostics.
+
+`index` builds RepoIndex and RouteMap JSON for the active checkout.
+
+`impact --base <ref>` maps changed files to routed truth docs, owning routes, nearby tests, and public symbols.
+
+`context --workflow <workflow> [--base <ref>]` generates a bounded ContextPack for Truth Sync, Truth Document, or Truth Realize. `--format markdown` renders a human-readable pack.
 
 Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check are installed agent workflows, not top-level daily CLI commands.
 
@@ -288,10 +300,14 @@ V1 currently provides:
 - `truthmark config`
 - `truthmark init`
 - `truthmark check`
+- `truthmark index`
+- `truthmark impact`
+- `truthmark context`
 - managed `AGENTS.md` workflow instructions
 - generated Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check skill surfaces for configured agent hosts
 - branch-scope metadata
-- config, authority, routing, decision-structure, frontmatter, link, and polyglot coverage diagnostics
+- config, authority, routing, decision-structure, frontmatter, link, freshness, and polyglot coverage diagnostics
+- derived RepoIndex, RouteMap, ImpactSet, and ContextPack artifacts for faster local review when the CLI is available
 
 ## Documentation
 

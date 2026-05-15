@@ -150,33 +150,64 @@ Los repositorios existentes suelen necesitar una pasada de limpieza después de 
 
 Truthmark es más fuerte en el camino por defecto, no como un conjunto de comandos manuales. El agente que actúa y el entorno anfitrión deciden si delegan o ejecutan el flujo instalado en línea.
 
-Usa Truth Document cuando el comportamiento ya está implementado pero los documentos de verdad canónica faltan o son débiles. El agente lee implementación, pruebas, rutas y documentos existentes, escribe solo documentos de verdad y rutas, y no debe cambiar código funcional. Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-document`; los hosts de estilo OpenCode pueden usar `/skill truthmark-document`.
+### Comportamiento existente sin docs
+
+Usa esto cuando la implementación ya existe pero faltan o son débiles los documentos de verdad canónica:
+
+```text
+el usuario identifica un comportamiento implementado o un endpoint de api
+el usuario invoca explícitamente truth document
+el agente lee implementación, pruebas, rutas y docs existentes
+el agente solo escribe truth docs y rutas
+revisar el diff de truth docs
+```
+
+Truth Document es manual y con prioridad de implementación: el código sirve como evidencia, los documentos de verdad se crean o reparan, y no se debe cambiar código funcional. Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-document`; los hosts de estilo OpenCode pueden usar `/skill truthmark-document`.
+
+```text
+/truthmark-document documenta el comportamiento implementado del timeout de sesión en docs/truth/authentication
+```
+
+### Cambios de código normales
 
 La mayoría de los usuarios no debería invocar Truth Sync directamente. Lo importante es que el flujo instalado del agente trate Truth Sync como una guarda de cierre cuando cambió código funcional. El flujo normal es:
 
 ```text
 el agente cambia código funcional
 se ejecutan las pruebas relevantes
-el flujo instalado Truth Sync se ejecuta antes de que el agente termine
-se revisa el diff de documentos de verdad si se produjo uno
-se confirma o se entrega el trabajo
+el flujo instalado truth sync se ejecuta antes de que el agente termine
+revisar el diff de truth docs si se produjo uno
+confirmar o entregar el trabajo
 ```
 
 Truth Sync es code-first: el código lidera, los documentos de verdad siguen, y Truth Sync no debe reescribir código funcional. Su tarea principal es ejecutarse mediante el flujo instalado del agente como guarda de cierre cuando cambió código funcional. La invocación directa se usa sobre todo para depurar, forzar una sincronización temprana antes de entregar el trabajo o ejecutar el flujo de forma intencional.
+
 Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-sync`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-sync`.
+
+```text
+/truthmark-sync sincroniza ahora la verdad del repositorio antes de la entrega
+```
+
+### Cambios doc-first
+
 Usa este flujo cuando una decisión de producto o arquitectura empieza en la documentación:
 
 ```text
-el usuario edita los documentos de verdad
-el usuario invoca explícitamente Truth Realize
-el agente lee los documentos de verdad y el código relevante
+el usuario edita truth docs
+el usuario invoca explícitamente truth realize
+el agente lee truth docs y el código relevante
 el agente actualiza solo el código
 se ejecutan las pruebas relevantes
-se confirma o se entrega el trabajo
+confirmar o entregar el trabajo
 ```
 
 Truth Realize es manual y doc-first: los documentos de verdad lideran, el código sigue, y el agente no debe editar los documentos de verdad que está realizando.
+
 Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/truthmark-realize`. Los hosts de estilo OpenCode pueden usar `/skill truthmark-realize`.
+
+```text
+/truthmark-realize realiza docs/truth/authentication/session-timeout.md como código
+```
 
 ## Qué instala
 
@@ -203,20 +234,41 @@ Las superficies generadas son administradas por Truthmark, incluyen un marcador 
 
 ## Comandos
 
-Truthmark V1 mantiene la CLI pequeña a propósito porque el flujo continuo debe vivir en las superficies instaladas del agente, no en una lista larga de comandos manuales de uso diario. En repositorios derivados, `truthmark config` crea el contrato de jerarquía confirmado en Git, `truthmark init` instala y refresca superficies de flujo de trabajo a partir de esa configuración revisada, y `truthmark check` valida los artefactos de verdad para auditorías manuales, CI o depuración.
+Truthmark V1 mantiene la CLI pequeña a propósito porque el flujo continuo debe vivir en las superficies instaladas del agente, no en una lista larga de comandos manuales de uso diario. En repositorios derivados, `truthmark config` crea el contrato de jerarquía confirmado en Git, `truthmark init` instala y refresca superficies de flujo de trabajo a partir de esa configuración revisada, `truthmark check` valida los artefactos de verdad para auditorías manuales, CI o depuración, y los comandos de inteligencia del repositorio generan artefactos derivados de revisión cuando hay herramientas locales disponibles.
 
 ```bash
 truthmark config
 truthmark init
 truthmark check
+truthmark index
+truthmark impact --base main
+truthmark context --workflow truth-sync --base main
 truthmark config --json
 truthmark check --json
+truthmark index --json
+truthmark impact --base main --json
+truthmark context --workflow truth-sync --base main --json
 ```
 
 `config` solo escribe `.truthmark/config.yml`, salvo que se use `--stdout`.
+
 `init` requiere `.truthmark/config.yml` y luego instala o refresca los archivos locales de flujo de trabajo.
+
 `check` valida configuración, autoridad, enrutamiento, documentos que contienen decisiones, frontmatter, enlaces internos, alcance de rama y diagnósticos de cobertura.
+
+`index` construye JSON de RepoIndex y RouteMap para el checkout activo.
+
+`impact --base <ref>` mapea los archivos cambiados a los truth docs enrutados, rutas propietarias, pruebas cercanas y símbolos públicos.
+
+`context --workflow <workflow> [--base <ref>]` genera un ContextPack acotado para Truth Sync, Truth Document o Truth Realize. `--format markdown` lo renderiza en un formato legible para personas.
+
 Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check son flujos de trabajo instalados para agentes, no comandos CLI principales de uso diario.
+
+Se ejecutan a través de las superficies configuradas del host agente, por ejemplo Codex/Claude/Copilot `/truthmark-*`, OpenCode `/skill truthmark-*` o Gemini `/truthmark:*`.
+
+```text
+/truthmark-check audita el enrutamiento y la cobertura de verdad antes de la revisión
+```
 
 ## Por qué existe
 
@@ -235,15 +287,20 @@ Asume que los equipos serios necesitan:
 ## Estado del proyecto
 
 Truthmark no es un servidor de memoria ni un servidor MCP. Es una práctica de repositorio empaquetada como un pequeño instalador CLI más superficies de flujo de trabajo nativas para agentes que convierten las reglas del flujo de IA en infraestructura del repositorio.
+
 V1 actualmente ofrece:
 
 - `truthmark config`
 - `truthmark init`
 - `truthmark check`
+- `truthmark index`
+- `truthmark impact`
+- `truthmark context`
 - instrucciones de flujo de trabajo administradas en `AGENTS.md`
 - superficies de skill generadas para Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check en los anfitriones de agentes configurados
 - metadatos de alcance de rama
 - diagnósticos de configuración, autoridad, enrutamiento, estructura de decisiones, frontmatter, enlaces y cobertura políglota
+- artefactos derivados de RepoIndex, RouteMap, ImpactSet y ContextPack para una revisión local más rápida cuando la CLI está disponible
 
 ## Documentación
 

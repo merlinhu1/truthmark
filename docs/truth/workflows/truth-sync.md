@@ -47,6 +47,8 @@ When Truth Sync restructures a bounded truth doc or runs Structure inline, it in
 
 Truth Sync updates architecture docs in the same sync when changed code alters architecture-level structure or ownership.
 
+ContextPack may be used to accelerate Truth Sync when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack or ImpactSet is unavailable, Truth Sync proceeds manually and reports that repository-intelligence artifacts were not generated.
+
 Completed reports include `Changed code reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs updated`, `Truth docs split` when Structure is run inline, `Evidence checked`, and `Notes`. Skipped reports include `Reason`. Blocked reports include `Reason`, `Files requiring manual review`, and `Next action`.
 
 Current skip reasons are:

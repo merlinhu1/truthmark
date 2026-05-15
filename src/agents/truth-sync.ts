@@ -4,6 +4,7 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderRouteFirstEvidenceGateSection,
@@ -99,6 +100,7 @@ ${renderRouteFirstEvidenceGateSection(
     "changed functional files",
     "if no impacted doc changed, report why truth was already current or why sync was skipped",
   )}
+${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 Optional validation tooling:
 - you may run truthmark check when local tooling is available
 - do not require the truthmark binary; direct checkout inspection is the canonical path

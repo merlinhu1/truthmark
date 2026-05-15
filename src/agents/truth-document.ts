@@ -4,6 +4,7 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaimEvidenceCheckedSection,
@@ -102,6 +103,7 @@ ${renderRouteFirstEvidenceGateSection(
     "the documented behavior",
     "if no truth doc changed, report why current truth was already sufficient or why documentation was blocked",
   )}
+${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
     "Truth Document may restructure only truth docs for the implemented behavior being documented.",

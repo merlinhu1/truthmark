@@ -8,7 +8,7 @@ name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, or needs split/repair. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 1.2.4
+truthmark-version: 1.3.0
 ---
 
 Use this skill to design or repair Truthmark area structure.

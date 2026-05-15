@@ -92,7 +92,24 @@ Area files:
 
 Code surface:
 - .github/workflows/**
+- src/templates/github-action.ts
 
 Update truth when:
 - CI verification steps or triggers change
 - release publishing prerequisites or publish steps change
+
+## Repository Intelligence
+
+Area files:
+- docs/truthmark/areas/repository-intelligence.md
+
+Code surface:
+- src/repo-index/**
+- src/impact/**
+- src/evidence/**
+- src/freshness/**
+- src/context-pack/**
+
+Update truth when:
+- repository indexing, route-map, impact analysis, evidence validation, freshness checks, or context-pack behavior changes
+- `truthmark index`, `truthmark impact`, or `truthmark context` result shapes change

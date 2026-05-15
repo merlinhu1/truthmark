@@ -35,7 +35,7 @@ Explicit invocation runs immediately: ${TRUTH_SYNC_EXPLICIT_INVOCATIONS}
 Later functional-code changes reopen the finish-time requirement, and an earlier explicit run only satisfies the finish gate if no later functional-code changes occur.
 Memory anchor: code changed -> relevant tests -> Truth Sync -> report.
 Delegate to a subagent only when the host supports subagent dispatch; the acting agent and environment own that choice.
-Inspect the current checkout directly. Do not invoke packet helpers or rely on cache files.
+Inspect the current checkout directly. ImpactSet and ContextPack are optional derived context; they do not override checkout evidence or write boundaries.
 Run relevant tests before finishing when functional code changes occurred.
 Support new or changed behavior-bearing truth claims with checkout evidence and report the evidence reviewed.
 Truthmark is agent-native: installed skills and this managed block are the workflow runtime. Inspect the checkout directly; truthmark CLI commands are optional validation tools after installation.

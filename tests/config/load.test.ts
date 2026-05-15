@@ -22,7 +22,13 @@ authority:
       expect(result.diagnostics).toEqual([]);
       expect(result.config).toMatchObject({
         version: 1,
-        platforms: ["codex", "opencode", "claude-code", "github-copilot", "gemini-cli"],
+        platforms: [
+          "codex",
+          "opencode",
+          "claude-code",
+          "github-copilot",
+          "gemini-cli",
+        ],
         authority: ["docs/truthmark/areas.md"],
         docs: {
           layout: "hierarchical",
@@ -223,7 +229,6 @@ authority:
       await repo.cleanup();
     }
   });
-
   it("returns config diagnostics for invalid config data", async () => {
     const repo = await createTempRepo();
 

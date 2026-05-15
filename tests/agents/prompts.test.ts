@@ -20,6 +20,8 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain(
       "implement only bounded, current truth claims from the source docs",
     );
+    expect(prompt).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
+    expect(prompt).toContain("workflow write boundaries");
     expect(prompt).toContain("write functional code only");
     expect(prompt).toContain("do not edit truth docs or truth routing");
     expect(prompt).not.toContain("Truth-doc restructure gate");
