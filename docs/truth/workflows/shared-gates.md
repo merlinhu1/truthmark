@@ -63,6 +63,14 @@ Truth Check uses an audit-shaped gate: findings and suggested fixes need evidenc
 
 Truth Sync completed reports have a deterministic structured parser for Markdown reports with `Evidence checked` entries containing `Claim`, `Evidence`, and `Result` fields.
 
+## Repository Intelligence Boundary
+
+RepoIndex, RouteMap, ImpactSet, and ContextPack are derived acceleration artifacts. They may guide routing, context selection, evidence review, and verification planning, but they do not own truth, route authority, or write permissions.
+
+When the Truthmark CLI is unavailable, workflows must inspect `.truthmark/config.yml`, `docs/truthmark/areas.md`, child area files, changed source files, and routed truth docs directly. The workflow may proceed manually, but the completion report must say that RepoIndex, ImpactSet, ContextPack, and freshness diagnostics were not generated.
+
+If a repository-intelligence artifact conflicts with the current checkout, the checkout wins. Agents rerun the CLI when available or ignore the stale artifact when it cannot be regenerated. ContextPack-only content is not evidence; generated truth docs must cite checkout files, route files, truth docs, tests, schemas, or explicit evidence blocks.
+
 ## Shape Repair Gate
 
 Shape repair is in-place cleanup inside an already-bounded truth owner. It covers missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings.

@@ -99,6 +99,10 @@ describe("output rendering", () => {
       "realization",
       "doc-structure",
       "generated-surface",
+      "repo-index",
+      "impact",
+      "freshness",
+      "context-pack",
     ]);
   });
 });

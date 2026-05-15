@@ -27,6 +27,7 @@ describe("renderTruthSyncInstructions", () => {
     expect(instructions).toContain("Later functional-code changes reopen the finish-time requirement");
     expect(instructions).toContain("must not rewrite functional code");
     expect(instructions).toContain("host supports subagent dispatch");
+    expect(instructions).toContain("ImpactSet and ContextPack are optional derived context");
     expect(instructions).toContain(
       "If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner",
     );

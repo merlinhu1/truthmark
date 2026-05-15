@@ -9,6 +9,10 @@ export const DIAGNOSTIC_CATEGORIES = [
   "realization",
   "doc-structure",
   "generated-surface",
+  "repo-index",
+  "impact",
+  "freshness",
+  "context-pack",
 ] as const;
 
 export type DiagnosticCategory = (typeof DIAGNOSTIC_CATEGORIES)[number];

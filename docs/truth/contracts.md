@@ -2,27 +2,29 @@
 status: active
 doc_type: contract
 truth_kind: contract
-last_reviewed: 2026-05-14
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../src/config/schema.ts
   - ../../src/checks/check.ts
   - ../../src/templates/init-files.ts
+  - ../../src/templates/generated-surfaces.ts
   - ../../src/init/init.ts
   - ../../src/output/diagnostic.ts
   - ../../src/output/render.ts
+  - ../../src/cli/handlers.ts
 ---
 
 # Contracts
 
 ## Scope
 
-This document defines the current machine-facing contracts exposed by Truthmark: the config file shape and the CLI result envelope.
+This document defines the current machine-facing contracts exposed by Truthmark: the config file shape, route metadata, repository-intelligence artifacts, and the CLI result envelope.
 
 ## Contract Surface
 
 - The committed `.truthmark/config.yml` schema and defaults.
 - Route metadata under `docs/truthmark/areas.md` and delegated child route files.
-- The JSON result envelope emitted by `truthmark config`, `truthmark init`, and `truthmark check`.
+- The JSON result envelope emitted by `truthmark config`, `truthmark init`, `truthmark check`, `truthmark index`, `truthmark impact`, and `truthmark context`.
 
 ## Inputs
 
@@ -104,7 +106,7 @@ Current shape:
 
 Diagnostic fields:
 
-- `category`: one of `config`, `authority`, `frontmatter`, `links`, `area-index`, `coverage`, `truth-sync`, `realization`, `doc-structure`, or `generated-surface`
+- `category`: one of `config`, `authority`, `frontmatter`, `links`, `area-index`, `coverage`, `truth-sync`, `realization`, `doc-structure`, `generated-surface`, `repo-index`, `impact`, `freshness`, or `context-pack`
 - `severity`: one of `info`, `action`, `review`, or `error`
 - `message`: human-readable detail
 - `file`: optional repository-relative file path
@@ -112,6 +114,14 @@ Diagnostic fields:
 - `data`: optional machine-readable extras
 
 Human-rendered output is intended for people. JSON output is the machine-facing contract.
+
+`truthmark index --json` returns `data.repoIndex` with `schemaVersion: repo-index/v0` and `data.routeMap` with `schemaVersion: route-map/v0`.
+
+`truthmark impact --base <ref> --json` returns `data.impactSet` with `schemaVersion: impact-set/v0`.
+
+`truthmark context --workflow <workflow> [--base <ref>] --json` returns `data.contextPack` with `schemaVersion: context-pack/v0`. `--workflow` accepts `truth-sync`, `truth-document`, and `truth-realize`. `--format` accepts `json` or `markdown`; unsupported formats return a `context-pack` error diagnostic. `--format markdown` renders a deterministic Markdown ContextPack for human review, and `--json --format markdown` includes that Markdown under `data.markdown`.
+
+RepoIndex, RouteMap, ImpactSet, and ContextPack are derived from the active checkout. They do not override route files, source files, truth docs, or installed workflow write boundaries.
 
 ## Compatibility Rules
 
@@ -243,7 +253,7 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - The committed config file owns the documentation hierarchy contract, while route files own domain-to-doc mappings.
 - `truthmark config` and `truthmark init` are separate contracts so repositories can review hierarchy before workflow installation.
 - Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Date active decisions inline when added or changed.
-- The V1 user-facing CLI surface is limited to `config`, `init`, and `check`; workflow verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, `build`, and `context` are not top-level commands.
+- The V1 user-facing CLI surface is `config`, `init`, `check`, `index`, `impact`, and `context`; workflow verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, and `build` are not top-level commands.
 - `gemini-cli` installs both hierarchical `GEMINI.md` context and project-scoped `.gemini/commands/truthmark/*.toml` custom commands so Gemini users get the same explicit workflow entrypoints without adding top-level CLI verbs.
 - Decision (2026-05-14): Truth Realize is manually invoked through installed workflow surfaces and is not controlled by `realization.enabled` or any other config key.
 

@@ -44,6 +44,8 @@ When ownership is bounded, Truth Document creates or updates leaf truth docs, ke
 
 When Truth Document restructures a bounded truth doc or runs Structure first, it inventories Product Decisions and Rationale before editing. Existing entries must be preserved in or moved to their bounded owner docs, narrowed or removed only with checkout evidence, or blocked for manual review when ownership is unclear.
 
+ContextPack may be used to gather bounded source context when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack is unavailable, Truth Document proceeds manually and reports that repository-intelligence artifacts were not generated.
+
 Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs created`, `Truth docs updated`, `Truth docs restructured`, `Routing updated`, `Evidence checked`, and `Notes`.
 
 ## Product Decisions

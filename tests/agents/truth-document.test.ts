@@ -87,6 +87,8 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain(
       "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
     );
+    expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
+    expect(skill).toContain("repository-intelligence artifacts were not generated");
     expect(skill).toContain("Evidence Gate");
     expect(skill).toContain(
       "route-first: map the documented behavior to bounded route owners and primary canonical docs",

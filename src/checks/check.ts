@@ -8,6 +8,11 @@ import { checkLinks } from "./links.js";
 import { checkAreas } from "./areas.js";
 import { checkDecisionSections } from "./decisions.js";
 import { checkGeneratedSurfaces } from "./generated-surfaces.js";
+import { checkFreshness } from "../freshness/check.js";
+
+export type CheckOptions = {
+  base?: string;
+};
 
 const summarizeDiagnostics = (diagnostics: CommandResult["diagnostics"]): string => {
   const errorCount = diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;
@@ -20,7 +25,7 @@ const summarizeDiagnostics = (diagnostics: CommandResult["diagnostics"]): string
   return `Truthmark check completed with ${errorCount} error diagnostics and ${reviewCount} review diagnostics.`;
 };
 
-export const runCheck = async (cwd: string): Promise<CommandResult> => {
+export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise<CommandResult> => {
   const repository = await getGitRepository(cwd);
   const rootDir = repository.worktreePath;
   const branchScope = await getBranchScopeData(rootDir);
@@ -54,6 +59,9 @@ export const runCheck = async (cwd: string): Promise<CommandResult> => {
     areas.truthDocumentEntries,
   );
   const generatedSurfaces = await checkGeneratedSurfaces(rootDir, loadResult.config);
+  const freshness = options.base
+    ? await checkFreshness(rootDir, loadResult.config, areas.truthDocumentPaths, options.base)
+    : null;
   const diagnostics = [
     ...loadResult.diagnostics,
     ...authority.diagnostics,
@@ -62,6 +70,7 @@ export const runCheck = async (cwd: string): Promise<CommandResult> => {
     ...areas.diagnostics,
     ...decisionSections,
     ...generatedSurfaces,
+    ...(freshness?.diagnostics ?? []),
   ];
   const truthVisibility = {
     routePrecision: areas.routePrecision,
@@ -74,7 +83,8 @@ export const runCheck = async (cwd: string): Promise<CommandResult> => {
       (diagnostic) =>
         diagnostic.category === "doc-structure" || diagnostic.category === "generated-surface",
     ).length,
-    topologyPressureCount: areas.topologyPressureCount,
+      topologyPressureCount: areas.topologyPressureCount,
+      freshnessDiagnosticCount: freshness?.diagnostics.length ?? 0,
   };
 
   return {
@@ -84,6 +94,7 @@ export const runCheck = async (cwd: string): Promise<CommandResult> => {
     data: {
       branchScope,
       truthVisibility,
+      ...(freshness ? { impactSet: freshness.impactSet } : {}),
     },
   };
 };

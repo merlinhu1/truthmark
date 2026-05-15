@@ -49,6 +49,21 @@ Read:
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
 4. [docs/ai/agent-skills-workflow-review.md](agent-skills-workflow-review.md)
 
+### Package version changes
+
+Read:
+
+1. [docs/standards/versioning.md](../standards/versioning.md)
+2. [docs/standards/change-notes.md](../standards/change-notes.md)
+3. [docs/standards/testing-and-verification.md](../standards/testing-and-verification.md)
+
+### PR or release text
+
+Read:
+
+1. [docs/standards/change-notes.md](../standards/change-notes.md)
+2. [docs/standards/versioning.md](../standards/versioning.md), only when package version changes are in scope
+
 ### Documentation structure or policy changes
 
 Read:
@@ -64,6 +79,8 @@ Do:
 - treat [docs/ai/repo-rules.md](repo-rules.md) as the primary authority for repository-wide rules
 - route code changes to the nearest maintained architecture, contract, and truth docs
 - update [docs/truthmark/areas.md](../truthmark/areas.md) when canonical routing changes
+- apply [docs/standards/versioning.md](../standards/versioning.md) before changing or accepting a package version
+- write `changes/` notes from [docs/standards/change-notes.md](../standards/change-notes.md) when PR or release text is needed
 - preserve the generated Truthmark block in [AGENTS.md](../../AGENTS.md) unless the template behavior itself is changing
 - keep non-canonical planning notes separate from current-state docs
 

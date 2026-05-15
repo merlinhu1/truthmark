@@ -65,6 +65,8 @@ Canonical docs should include frontmatter and keep these fields current:
 
 - When repository-wide agent policy changes, update [docs/ai/repo-rules.md](ai/repo-rules.md).
 - When code-to-doc routing changes, update [docs/truthmark/areas.md](truthmark/areas.md) in the same change.
+- When package versions or release/version policy change, apply [docs/standards/versioning.md](standards/versioning.md) before accepting the version.
+- When PR or release source text is needed, write a `changes/` note using [docs/standards/change-notes.md](standards/change-notes.md).
 - When `truthmark init` or scaffolded files change, update the relevant truth or architecture doc, not only [README.md](../README.md).
 - When `truthmark check` changes what it validates or how it reports diagnostics, update both the current truth doc and the contract doc.
 - When major product, onboarding, install, command, positioning, or workflow behavior changes, review the root [README.md](../README.md) and update it if the human entry point would otherwise be stale.

@@ -35,6 +35,8 @@ This doc covers the committed GitHub Actions workflows under `.github/workflows/
 
 Release automation runs through the committed GitHub Actions workflows under `.github/workflows/`. The `CI` workflow verifies repository changes, and the `Publish` workflow revalidates release state before publishing to npm.
 
+The repository also ships `examples/github-actions/truthmark-impact.yml` as a consumer example. It is not a release workflow for this repository. The example shows a non-blocking PR mode that comments with `truthmark impact --base` and `truthmark check --base` results, uploads the JSON reports, and a blocking mode controlled by `TRUTHMARK_BLOCKING`.
+
 ## Steps
 
 - The `CI` workflow runs on pushes to `main` and on every pull request.
@@ -47,6 +49,7 @@ Release automation runs through the committed GitHub Actions workflows under `.g
 - Failed verification or release-check steps stop the current job and prevent later publish steps from running.
 - Publishing occurs only for the GitHub release event path; branch pushes and pull requests do not publish.
 - GitHub Actions reruns remain host-managed; Truthmark owns the committed workflow definitions, not GitHub's execution controls.
+- The example ImpactSet workflow is intentionally opt-in and consumer-copied; it does not run unless a repository installs it.
 
 ## Outputs
 

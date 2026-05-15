@@ -25,6 +25,12 @@ export const EVIDENCE_AUTHORITY_INSTRUCTIONS = [
   "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
 ].join("\n");
 
+export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
+  "Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.",
+  "They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.",
+  "If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
+].join("\n");
+
 export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
   "When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.",
   "Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.",

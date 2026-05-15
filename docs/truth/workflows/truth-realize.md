@@ -42,6 +42,8 @@ When source truth is bounded and current, Truth Realize implements only the boun
 
 Completion reports include `Truth docs used`, `Code updated`, and `Verification`.
 
+ContextPack may be used to collect bounded implementation context when available. It does not replace checkout inspection, does not grant write permission outside the workflow boundary, and cannot override source truth docs or current code. If ContextPack is unavailable, Truth Realize proceeds manually and reports that repository-intelligence artifacts were not generated.
+
 ## Product Decisions
 
 - Decision (2026-05-15): Truth Realize remains available only through explicit user invocation and is always generated for configured platforms instead of being gated by a config toggle.

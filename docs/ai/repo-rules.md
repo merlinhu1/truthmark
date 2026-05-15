@@ -28,7 +28,7 @@ Code is the implementation. On code/doc conflict, inspect code, decide whether c
 
 ## Product Boundary
 
-Truthmark has three CLI commands: `config`, `init`, and `check`. Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check are installed workflow surfaces, not CLI commands.
+Truthmark public CLI commands are `config`, `init`, `check`, `index`, `impact`, and `context`. Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check are installed workflow surfaces, not CLI commands.
 
 Agents inspect the active checkout directly. There is no daemon, database, remote service, or V1 MCP server.
 

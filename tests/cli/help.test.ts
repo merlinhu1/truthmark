@@ -8,7 +8,6 @@ const forbiddenCommands = [
   "scan",
   "doctor",
   "build",
-  "context",
   "realize",
 ];
 
@@ -20,6 +19,9 @@ describe("truthmark CLI", () => {
     expect(result.stdout).toContain("config");
     expect(result.stdout).toContain("init");
     expect(result.stdout).toContain("check");
+    expect(result.stdout).toContain("index");
+    expect(result.stdout).toContain("impact");
+    expect(result.stdout).toContain("context");
 
     for (const command of forbiddenCommands) {
       expect(result.stdout).not.toContain(command);
