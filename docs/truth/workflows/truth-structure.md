@@ -46,7 +46,7 @@ Topology pressure includes broad code mappings, overloaded child route files, mu
 
 Truth Structure splits broad, overloaded, catch-all, or mixed-owner areas into behavior-owned route files and bounded leaf truth docs when safe. It updates routing so future Truth Sync can target small docs. If a split is unsafe or ambiguous, it blocks with manual-review files.
 
-In Claude Code and GitHub Copilot, Truth Structure surfaces may reference the generated read-only route auditor when the parent agent chooses bounded validation fan-out. Claude Code exposes the `truth-route-auditor` project subagent; GitHub Copilot exposes the generated `@truth-route-auditor` custom agent. The route auditor gathers topology and ownership findings only; the parent workflow owns all route edits, starter truth-doc writes, topology decisions, and the final report.
+In Claude Code and GitHub Copilot, Truth Structure surfaces may reference the generated read-only route auditor when the parent agent chooses bounded validation fan-out. Claude Code exposes the `truth-route-auditor` project subagent; GitHub Copilot exposes the generated `@truth-route-auditor` custom agent. The route auditor gathers topology and ownership findings only, inspects only the parent-assigned shard plus required checkout evidence files, and does not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent workflow owns repo-policy interpretation, all route edits, starter truth-doc writes, topology decisions, and the final report.
 
 Before splitting or restructuring truth docs, Truth Structure inventories Product Decisions and Rationale in every source doc. It moves each current entry into the bounded owner doc it governs, removes or narrows entries only with checkout evidence, and blocks with manual-review files when ownership is unclear.
 
@@ -59,7 +59,7 @@ Completed reports include `Topology reviewed`, `Areas reviewed`, `Routing update
 - Decision (2026-05-15): Truth Structure owns ownership repair. Mixed-owner docs must be split/rerouted when safe, not repaired in place by Sync or Document.
 - Decision (2026-05-15): Truth Structure must satisfy canonical decision-section expectations for new starter docs and repaired routed docs.
 - Decision (2026-05-15): Truth Structure must preserve or explicitly account for Product Decisions and Rationale when splitting or restructuring truth docs.
-- Decision (2026-05-16): Claude Code and GitHub Copilot Truth Structure may use the generated read-only route auditor for validation input, while parent agents retain all topology write ownership.
+- Decision (2026-05-16): Claude Code and GitHub Copilot Truth Structure may use the generated read-only route auditor for bounded validation input without preloading repo-wide policy by default, while parent agents retain policy and topology write ownership.
 
 ## Rationale
 

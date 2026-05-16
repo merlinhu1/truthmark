@@ -5,12 +5,14 @@ import {
   renderTruthmarkCopilotClaimVerifierAgent,
   renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkCopilotDocReviewerAgent,
+  renderTruthmarkCopilotDocWriterAgent,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotRouteAuditorAgent,
   renderTruthmarkCopilotStructurePrompt,
   renderTruthmarkCopilotSyncPrompt,
   renderTruthmarkClaudeClaimVerifierAgent,
   renderTruthmarkClaudeDocReviewerAgent,
+  renderTruthmarkClaudeDocWriterAgent,
   renderTruthmarkClaudeRouteAuditorAgent,
   renderTruthmarkClaimVerifierAgent,
   renderTruthmarkCheckClaudeSkill,
@@ -20,6 +22,7 @@ import {
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkDocReviewerAgent,
+  renderTruthmarkDocWriterAgent,
   renderTruthmarkGeminiCheckCommand,
   renderTruthmarkGeminiDocumentCommand,
   renderTruthmarkGeminiRealizeCommand,
@@ -29,6 +32,7 @@ import {
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkOpenCodeClaimVerifierAgent,
   renderTruthmarkOpenCodeDocReviewerAgent,
+  renderTruthmarkOpenCodeDocWriterAgent,
   renderTruthmarkOpenCodeRouteAuditorAgent,
   renderTruthmarkRealizeLocalSkill,
   renderTruthmarkRealizeSkill,
@@ -46,12 +50,14 @@ import {
   TRUTHMARK_CHECK_SKILL_PATH,
   TRUTHMARK_CLAUDE_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_CLAUDE_DOC_REVIEWER_AGENT_PATH,
+  TRUTHMARK_CLAUDE_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_CLAUDE_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_COPILOT_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH,
+  TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
@@ -59,6 +65,7 @@ import {
   TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
   TRUTHMARK_DOCUMENT_SKILL_PATH,
   TRUTHMARK_DOC_REVIEWER_AGENT_PATH,
+  TRUTHMARK_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
   TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
@@ -66,6 +73,7 @@ import {
   TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
   TRUTHMARK_OPENCODE_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH,
+  TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
   TRUTHMARK_REALIZE_SKILL_PATH,
@@ -136,6 +144,10 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
       path: TRUTHMARK_DOC_REVIEWER_AGENT_PATH,
       content: renderTruthmarkDocReviewerAgent(),
     },
+    {
+      path: TRUTHMARK_DOC_WRITER_AGENT_PATH,
+      content: renderTruthmarkDocWriterAgent(),
+    },
   ];
 
   return files;
@@ -175,6 +187,10 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
       path: TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH,
       content: renderTruthmarkOpenCodeDocReviewerAgent(),
     },
+    {
+      path: TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH,
+      content: renderTruthmarkOpenCodeDocWriterAgent(config),
+    },
   ];
 };
 
@@ -213,6 +229,10 @@ const claudeFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[]
       path: TRUTHMARK_CLAUDE_DOC_REVIEWER_AGENT_PATH,
       content: renderTruthmarkClaudeDocReviewerAgent(),
     },
+    {
+      path: TRUTHMARK_CLAUDE_DOC_WRITER_AGENT_PATH,
+      content: renderTruthmarkClaudeDocWriterAgent(),
+    },
   ];
 };
 
@@ -250,6 +270,10 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
     {
       path: TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH,
       content: renderTruthmarkCopilotDocReviewerAgent(),
+    },
+    {
+      path: TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH,
+      content: renderTruthmarkCopilotDocWriterAgent(),
     },
   ];
 

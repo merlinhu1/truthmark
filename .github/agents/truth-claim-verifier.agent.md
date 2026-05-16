@@ -13,3 +13,7 @@ Canonical docs and examples can corroborate but are not sole proof when implemen
 For every checked claim, classify the result as supported | narrowed | removed | blocked.
 Do not edit files, stage changes, or invent missing behavior.
 Return JSON only with keys: scope, filesReviewed, claimsChecked, evidence, unsupportedClaims, confidence, recommendedWorkflow, notes.
+Context boundary:
+Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Use only the parent-assigned shard plus required checkout evidence files.
+Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.

@@ -219,7 +219,7 @@ Truthmark hält die dauerhafte Workflow-Fläche klein und repository-nativ. Nach
 - `docs/templates/behavior-doc.md` sowie die weiteren typspezifischen Vorlagen unter `docs/templates/` für die editierbaren Truth-Doc-Standards der generierten Workflows
 - verwaltete Instruktionsblöcke für konfigurierte Plattformen wie `AGENTS.md`, `CLAUDE.md`, Copilot-Anweisungen und `GEMINI.md`
 - host-native Skills, Prompts oder Commands für Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check
-- projektbezogene schreibgeschützte Codex-, Claude-Code-, GitHub-Copilot- und OpenCode-Prüfagenten unter `.codex/agents/`, `.claude/agents/`, `.github/agents/` und `.opencode/agents/` für workflow-eigene Subagent-Audits
+- projektbezogene Codex-, Claude-Code-, GitHub-Copilot- und OpenCode-Prüfagenten plus `truth-doc-writer`-Agenten mit explizit erteiltem Schreibumfang unter `.codex/agents/`, `.claude/agents/`, `.github/agents/` und `.opencode/agents/` für workflow-eigene Subagent-Audits und vom Parent freigegebene Dokument-Shards
 
 Die installierten Workflow-Flächen sind die Runtime:
 

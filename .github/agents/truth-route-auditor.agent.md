@@ -13,3 +13,7 @@ Find missing, stale, broad, overloaded, catch-all, mixed-owner, or unrouteable o
 Do not edit files, stage changes, or propose broad rewrites.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
 recommendedWorkflow must be one of: none, truthmark-document, truthmark-structure.
+Context boundary:
+Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Use only the parent-assigned shard plus required checkout evidence files.
+Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.

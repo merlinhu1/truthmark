@@ -11,6 +11,9 @@ import { runInit } from "../../src/init/init.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
+const READ_ONLY_CONTEXT_BOUNDARY =
+  "Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
+
 describe("runInit", () => {
   it("does not initialize agent surfaces before config exists", async () => {
     const repo = await createTempRepo();
@@ -212,6 +215,9 @@ describe("runInit", () => {
       const docReviewerAgent = await repo.readFile(
         ".codex/agents/truth-doc-reviewer.toml",
       );
+      const docWriterAgent = await repo.readFile(
+        ".codex/agents/truth-doc-writer.toml",
+      );
       const openCodeRouteAuditorAgent = await repo.readFile(
         ".opencode/agents/truth-route-auditor.md",
       );
@@ -220,6 +226,9 @@ describe("runInit", () => {
       );
       const openCodeDocReviewerAgent = await repo.readFile(
         ".opencode/agents/truth-doc-reviewer.md",
+      );
+      const openCodeDocWriterAgent = await repo.readFile(
+        ".opencode/agents/truth-doc-writer.md",
       );
       const copilotRouteAuditorAgent = await repo.readFile(
         ".github/agents/truth-route-auditor.agent.md",
@@ -230,6 +239,9 @@ describe("runInit", () => {
       const copilotDocReviewerAgent = await repo.readFile(
         ".github/agents/truth-doc-reviewer.agent.md",
       );
+      const copilotDocWriterAgent = await repo.readFile(
+        ".github/agents/truth-doc-writer.agent.md",
+      );
       const claudeRouteAuditorAgent = await repo.readFile(
         ".claude/agents/truth-route-auditor.md",
       );
@@ -238,6 +250,9 @@ describe("runInit", () => {
       );
       const claudeDocReviewerAgent = await repo.readFile(
         ".claude/agents/truth-doc-reviewer.md",
+      );
+      const claudeDocWriterAgent = await repo.readFile(
+        ".claude/agents/truth-doc-writer.md",
       );
       const claudeInstructions = await repo.readFile("CLAUDE.md");
       const syncClaudeSkill = await repo.readFile(
@@ -292,6 +307,7 @@ describe("runInit", () => {
       expect(documentSkill).toContain("name: truthmark-document");
       expect(documentSkill).toContain("Truth Document: completed");
       expect(documentSkill).toContain("must not write functional code");
+      expect(documentSkill).toContain("truth_doc_writer");
       expect(documentSkillMetadata).toContain(
         'display_name: "Truthmark Document"',
       );
@@ -300,6 +316,7 @@ describe("runInit", () => {
       expect(documentOpenCodeSkill).toContain("OpenCode subagent mode:");
       expect(documentOpenCodeSkill).toContain("@truth-route-auditor");
       expect(documentOpenCodeSkill).toContain("@truth-claim-verifier");
+      expect(documentOpenCodeSkill).toContain("@truth-doc-writer");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain("user-invocable: true");
       expect(syncSkill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
@@ -310,6 +327,7 @@ describe("runInit", () => {
         "direct checkout inspection is the canonical path",
       );
       expect(syncSkill).toContain("host supports subagent dispatch");
+      expect(syncSkill).toContain("truth_doc_writer");
       expect(syncSkill).toContain(
         "Read .truthmark/config.yml, the configured root route index",
       );
@@ -330,9 +348,11 @@ describe("runInit", () => {
       expect(syncOpenCodeSkill).toContain("OpenCode subagent mode:");
       expect(syncOpenCodeSkill).toContain("@truth-route-auditor");
       expect(syncOpenCodeSkill).toContain("@truth-claim-verifier");
+      expect(syncOpenCodeSkill).toContain("@truth-doc-writer");
       expect(syncCopilotPrompt).toContain("Copilot custom-agent mode:");
       expect(syncCopilotPrompt).toContain("@truth-route-auditor");
       expect(syncCopilotPrompt).toContain("@truth-claim-verifier");
+      expect(syncCopilotPrompt).toContain("@truth-doc-writer");
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
@@ -340,6 +360,7 @@ describe("runInit", () => {
       expect(syncClaudeSkill).toContain("Claude Code subagent mode:");
       expect(syncClaudeSkill).toContain("truth-route-auditor subagent");
       expect(syncClaudeSkill).toContain("truth-claim-verifier subagent");
+      expect(syncClaudeSkill).toContain("truth-doc-writer subagent");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain("user-invocable: true");
       expect(realizeSkill).toContain("may write functional code only");
@@ -365,37 +386,67 @@ describe("runInit", () => {
       expect(checkOpenCodeSkill).toContain("@truth-doc-reviewer");
       expect(routeAuditorAgent).toContain('name = "truth_route_auditor"');
       expect(routeAuditorAgent).toContain('sandbox_mode = "read-only"');
+      expect(routeAuditorAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(claimVerifierAgent).toContain('name = "truth_claim_verifier"');
       expect(claimVerifierAgent).toContain('sandbox_mode = "read-only"');
+      expect(claimVerifierAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(docReviewerAgent).toContain('name = "truth_doc_reviewer"');
       expect(docReviewerAgent).toContain('sandbox_mode = "read-only"');
+      expect(docReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
+      expect(docWriterAgent).toContain('name = "truth_doc_writer"');
+      expect(docWriterAgent).toContain('sandbox_mode = "workspace-write"');
+      expect(docWriterAgent).toContain("Require an explicit write lease");
+      expect(docWriterAgent).not.toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(openCodeRouteAuditorAgent).toContain("mode: subagent");
       expect(openCodeRouteAuditorAgent).toContain("edit: deny");
+      expect(openCodeRouteAuditorAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(openCodeClaimVerifierAgent).toContain("mode: subagent");
       expect(openCodeClaimVerifierAgent).toContain("edit: deny");
+      expect(openCodeClaimVerifierAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(openCodeDocReviewerAgent).toContain("mode: subagent");
       expect(openCodeDocReviewerAgent).toContain("edit: deny");
+      expect(openCodeDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
+      expect(openCodeDocWriterAgent).toContain("mode: subagent");
+      expect(openCodeDocWriterAgent).toContain('"docs/truth/**": allow');
+      expect(openCodeDocWriterAgent).toContain("@truth-doc-writer");
+      expect(openCodeDocWriterAgent).not.toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(copilotRouteAuditorAgent).toContain("name: truth-route-auditor");
       expect(copilotRouteAuditorAgent).toContain("tools: [read, search]");
       expect(copilotRouteAuditorAgent).toContain("Stay read-only.");
+      expect(copilotRouteAuditorAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(copilotClaimVerifierAgent).toContain(
         "name: truth-claim-verifier",
       );
       expect(copilotClaimVerifierAgent).toContain("unsupportedClaims");
+      expect(copilotClaimVerifierAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(copilotDocReviewerAgent).toContain("name: truth-doc-reviewer");
       expect(copilotDocReviewerAgent).toContain("recommendedWorkflow");
+      expect(copilotDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
+      expect(copilotDocWriterAgent).toContain("name: truth-doc-writer");
+      expect(copilotDocWriterAgent).toContain("tools: [read, search, edit]");
+      expect(copilotDocWriterAgent).toContain("offLeaseChanges");
+      expect(copilotDocWriterAgent).not.toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(claudeRouteAuditorAgent).toContain("name: truth-route-auditor");
       expect(claudeRouteAuditorAgent).toContain("tools: Read, Grep, Glob, LS");
       expect(claudeRouteAuditorAgent).toContain(
         "Manual invocation: use the truth-route-auditor subagent",
       );
+      expect(claudeRouteAuditorAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(claudeRouteAuditorAgent).toContain("Do not edit files");
       expect(claudeClaimVerifierAgent).toContain("name: truth-claim-verifier");
       expect(claudeClaimVerifierAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeClaimVerifierAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(claudeClaimVerifierAgent).toContain("Do not edit files");
       expect(claudeDocReviewerAgent).toContain("name: truth-doc-reviewer");
       expect(claudeDocReviewerAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(claudeDocReviewerAgent).toContain("Rationale");
+      expect(claudeDocWriterAgent).toContain("name: truth-doc-writer");
+      expect(claudeDocWriterAgent).toContain(
+        "tools: Read, Grep, Glob, LS, Edit, MultiEdit",
+      );
+      expect(claudeDocWriterAgent).toContain("explicit parent write lease");
+      expect(claudeDocWriterAgent).not.toContain(READ_ONLY_CONTEXT_BOUNDARY);
       await expect(
         fs.stat(`${repo.rootDir}/skills/truthmark-structure/SKILL.md`),
       ).rejects.toThrow();
@@ -1023,6 +1074,56 @@ authority:
             message: expect.stringContaining("defaulting to behavior"),
           }),
         ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("renders OpenCode doc-writer edit permissions from configured truth and routing paths", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        `version: 1
+platforms:
+  - opencode
+docs:
+  layout: hierarchical
+  roots:
+    truth: product/truth
+  routing:
+    root_index: product/routes/index.md
+    area_files_root: product/routes/areas
+    default_area: repository
+    max_delegation_depth: 1
+authority:
+  - product/routes/index.md
+  - product/routes/areas/**/*.md
+  - product/truth/**/*.md
+`,
+      );
+
+      await runInit(repo.rootDir);
+
+      const openCodeDocWriterAgent = await repo.readFile(
+        ".opencode/agents/truth-doc-writer.md",
+      );
+      expect(openCodeDocWriterAgent).toContain(
+        '"product/truth/**": allow',
+      );
+      expect(openCodeDocWriterAgent).toContain(
+        '"product/routes/index.md": allow',
+      );
+      expect(openCodeDocWriterAgent).toContain(
+        '"product/routes/areas/**/*.md": allow',
+      );
+      expect(openCodeDocWriterAgent).not.toContain(
+        '"docs/truth/**": allow',
+      );
+      expect(openCodeDocWriterAgent).not.toContain(
+        '"docs/truthmark/areas.md": allow',
       );
     } finally {
       await repo.cleanup();

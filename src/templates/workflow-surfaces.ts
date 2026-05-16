@@ -12,7 +12,8 @@ import { renderTruthStructureSkillBody } from "../agents/truth-structure.js";
 import { renderTruthSyncSkillBody } from "../agents/truth-sync.js";
 import {
   getTruthmarkWorkflow,
-  type TruthmarkSubagentId,
+  type TruthmarkReadOnlySubagentId,
+  type TruthmarkWriteSubagentId,
 } from "../agents/workflow-manifest.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 
@@ -52,6 +53,8 @@ export const TRUTHMARK_CLAIM_VERIFIER_AGENT_PATH =
 
 export const TRUTHMARK_DOC_REVIEWER_AGENT_PATH =
   ".codex/agents/truth-doc-reviewer.toml";
+export const TRUTHMARK_DOC_WRITER_AGENT_PATH =
+  ".codex/agents/truth-doc-writer.toml";
 
 export const TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH =
   ".opencode/agents/truth-route-auditor.md";
@@ -61,6 +64,8 @@ export const TRUTHMARK_OPENCODE_CLAIM_VERIFIER_AGENT_PATH =
 
 export const TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH =
   ".opencode/agents/truth-doc-reviewer.md";
+export const TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH =
+  ".opencode/agents/truth-doc-writer.md";
 
 export const TRUTHMARK_CLAUDE_ROUTE_AUDITOR_AGENT_PATH =
   ".claude/agents/truth-route-auditor.md";
@@ -70,6 +75,8 @@ export const TRUTHMARK_CLAUDE_CLAIM_VERIFIER_AGENT_PATH =
 
 export const TRUTHMARK_CLAUDE_DOC_REVIEWER_AGENT_PATH =
   ".claude/agents/truth-doc-reviewer.md";
+export const TRUTHMARK_CLAUDE_DOC_WRITER_AGENT_PATH =
+  ".claude/agents/truth-doc-writer.md";
 
 export const TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH =
   ".gemini/commands/truthmark/structure.toml";
@@ -109,6 +116,8 @@ export const TRUTHMARK_COPILOT_CLAIM_VERIFIER_AGENT_PATH =
 
 export const TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH =
   ".github/agents/truth-doc-reviewer.agent.md";
+export const TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH =
+  ".github/agents/truth-doc-writer.agent.md";
 
 const renderGeminiCommand = (description: string, prompt: string): string => {
   return `description = "${description}"
@@ -136,12 +145,58 @@ const renderTomlStringArray = (values: string[]): string => {
   return `[${values.map(renderTomlString).join(", ")}]`;
 };
 
+const normalizeOpenCodePermissionPath = (path: string): string => {
+  const normalized = path
+    .replace(/\\/gu, "/")
+    .replace(/^\.\//u, "")
+    .replace(/\/+$/u, "");
+
+  return normalized === "" ? "." : normalized;
+};
+
+const appendOpenCodePermissionGlob = (root: string, glob: string): string => {
+  return root === "." ? glob.replace(/^\//u, "") : `${root}${glob}`;
+};
+
+const renderOpenCodeWriterEditAllowRules = (
+  config: TruthmarkConfig,
+): string => {
+  const truthDocsRoot = normalizeOpenCodePermissionPath(
+    resolveTruthDocsRoot(config),
+  );
+  const rootRouteIndex = normalizeOpenCodePermissionPath(
+    config.docs.routing.rootIndex,
+  );
+  const areaFilesRoot = normalizeOpenCodePermissionPath(
+    config.docs.routing.areaFilesRoot,
+  );
+  const allowedPatterns = [
+    appendOpenCodePermissionGlob(truthDocsRoot, "/**"),
+    rootRouteIndex,
+    appendOpenCodePermissionGlob(areaFilesRoot, "/**/*.md"),
+  ];
+
+  return [...new Set(allowedPatterns)]
+    .map((pattern) => `    ${JSON.stringify(pattern)}: allow`)
+    .join("\n");
+};
+
 type TruthmarkSubagentProfile = {
   codexName: string;
   copilotName: string;
   description: string;
   nicknameCandidates: string[];
   instructions: string;
+};
+
+const READ_ONLY_SUBAGENT_CONTEXT_BOUNDARY = `Context boundary:
+Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Use only the parent-assigned shard plus required checkout evidence files.
+Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.`;
+
+const renderReadOnlySubagentInstructions = (instructions: string): string => {
+  return `${instructions}
+${READ_ONLY_SUBAGENT_CONTEXT_BOUNDARY}`;
 };
 
 const TRUTHMARK_SUBAGENT_PROFILES = {
@@ -186,7 +241,34 @@ Do not edit files, stage changes, or rewrite docs.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
 recommendedWorkflow must be one of: none, truthmark-document, truthmark-structure.`,
   },
-} satisfies Record<TruthmarkSubagentId, TruthmarkSubagentProfile>;
+} satisfies Record<TruthmarkReadOnlySubagentId, TruthmarkSubagentProfile>;
+type TruthmarkWriteSubagentProfile = {
+  codexName: string;
+  copilotName: string;
+  description: string;
+  nicknameCandidates: string[];
+  instructions: string;
+};
+const TRUTHMARK_WRITE_SUBAGENT_PROFILES = {
+  truth_doc_writer: {
+    codexName: "truth_doc_writer",
+    copilotName: "truth-doc-writer",
+    description:
+      "Write-capable Truthmark doc worker for one parent-leased truth-document shard.",
+    nicknameCandidates: ["Doc Writer", "Truth Writer", "Doc Sync"],
+    instructions: `Write one leased Truthmark truth-document shard assigned by the parent.
+Require an explicit write lease before editing. The lease must name workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields.
+Read every requiredReads entry directly before editing.
+Edit only leased canonical truth docs or leased truth routing files. Do not edit functional code, generated host surfaces, package files, config files, templates, or tests unless they are explicitly leased.
+Do not expand your own write scope. If the task needs an off-lease file, stop and report blocked.
+Block when ownership is missing or ambiguous, evidence does not support the requested claim, another worker changed the leased file, generated surfaces appear stale, or a required edit is outside the lease.
+Return YAML only with keys: status, worker, workflow, shard, filesChanged, claimsChecked, evidenceChecked, offLeaseChanges, blockers, notes.
+status must be completed or blocked.
+filesChanged must list only files you actually changed.
+offLeaseChanges must be empty for completed reports.
+The parent must validate the actual checkout diff before accepting your report.`,
+  },
+} satisfies Record<TruthmarkWriteSubagentId, TruthmarkWriteSubagentProfile>;
 
 const renderCodexReadOnlyAgent = ({
   name,
@@ -209,16 +291,55 @@ ${developerInstructions}
 """
 `;
 };
+const renderCodexWriteAgent = ({
+  name,
+  description,
+  nicknameCandidates,
+  developerInstructions,
+}: {
+  name: string;
+  description: string;
+  nicknameCandidates: string[];
+  developerInstructions: string;
+}): string => {
+  return `# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+name = ${renderTomlString(name)}
+description = ${renderTomlString(description)}
+sandbox_mode = "workspace-write"
+nickname_candidates = ${renderTomlStringArray(nicknameCandidates)}
+developer_instructions = """
+${developerInstructions}
+"""
+`;
+};
 
 const renderCopilotReadOnlyAgent = ({
   copilotName,
   description,
   instructions,
 }: TruthmarkSubagentProfile): string => {
+  const agentInstructions = renderReadOnlySubagentInstructions(instructions);
+
   return `---
 name: ${copilotName}
 description: ${description}
 tools: [read, search]
+---
+
+# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+
+${agentInstructions}
+`;
+};
+const renderCopilotWriteAgent = ({
+  copilotName,
+  description,
+  instructions,
+}: TruthmarkWriteSubagentProfile): string => {
+  return `---
+name: ${copilotName}
+description: ${description}
+tools: [read, search, edit]
 ---
 
 # Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
@@ -232,6 +353,8 @@ const renderClaudeReadOnlyAgent = ({
   description,
   instructions,
 }: TruthmarkSubagentProfile): string => {
+  const agentInstructions = renderReadOnlySubagentInstructions(instructions);
+
   return `---
 name: ${copilotName}
 description: ${description}
@@ -241,6 +364,24 @@ tools: Read, Grep, Glob, LS
 # Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
 
 Manual invocation: use the ${copilotName} subagent.
+
+${agentInstructions}
+`;
+};
+const renderClaudeWriteAgent = ({
+  copilotName,
+  description,
+  instructions,
+}: TruthmarkWriteSubagentProfile): string => {
+  return `---
+name: ${copilotName}
+description: ${description}
+tools: Read, Grep, Glob, LS, Edit, MultiEdit
+---
+
+# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+
+Manual invocation: use the ${copilotName} subagent with an explicit parent write lease.
 
 ${instructions}
 `;
@@ -253,7 +394,7 @@ export const renderTruthmarkRouteAuditorAgent = (): string => {
     name: profile.codexName,
     description: profile.description,
     nicknameCandidates: profile.nicknameCandidates,
-    developerInstructions: profile.instructions,
+    developerInstructions: renderReadOnlySubagentInstructions(profile.instructions),
   });
 };
 
@@ -264,7 +405,7 @@ export const renderTruthmarkClaimVerifierAgent = (): string => {
     name: profile.codexName,
     description: profile.description,
     nicknameCandidates: profile.nicknameCandidates,
-    developerInstructions: profile.instructions,
+    developerInstructions: renderReadOnlySubagentInstructions(profile.instructions),
   });
 };
 
@@ -272,6 +413,16 @@ export const renderTruthmarkDocReviewerAgent = (): string => {
   const profile = TRUTHMARK_SUBAGENT_PROFILES.truth_doc_reviewer;
 
   return renderCodexReadOnlyAgent({
+    name: profile.codexName,
+    description: profile.description,
+    nicknameCandidates: profile.nicknameCandidates,
+    developerInstructions: renderReadOnlySubagentInstructions(profile.instructions),
+  });
+};
+export const renderTruthmarkDocWriterAgent = (): string => {
+  const profile = TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer;
+
+  return renderCodexWriteAgent({
     name: profile.codexName,
     description: profile.description,
     nicknameCandidates: profile.nicknameCandidates,
@@ -296,6 +447,11 @@ export const renderTruthmarkCopilotDocReviewerAgent = (): string => {
     TRUTHMARK_SUBAGENT_PROFILES.truth_doc_reviewer,
   );
 };
+export const renderTruthmarkCopilotDocWriterAgent = (): string => {
+  return renderCopilotWriteAgent(
+    TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
+  );
+};
 
 export const renderTruthmarkClaudeRouteAuditorAgent = (): string => {
   return renderClaudeReadOnlyAgent(
@@ -314,6 +470,11 @@ export const renderTruthmarkClaudeDocReviewerAgent = (): string => {
     TRUTHMARK_SUBAGENT_PROFILES.truth_doc_reviewer,
   );
 };
+export const renderTruthmarkClaudeDocWriterAgent = (): string => {
+  return renderClaudeWriteAgent(
+    TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
+  );
+};
 
 const renderOpenCodeReadOnlyAgent = ({
   invocation,
@@ -324,6 +485,8 @@ const renderOpenCodeReadOnlyAgent = ({
   description: string;
   instructions: string;
 }): string => {
+  const agentInstructions = renderReadOnlySubagentInstructions(instructions);
+
   return `---
 description: ${description}
 mode: subagent
@@ -340,6 +503,47 @@ permission:
     "git log*": allow
     "rg *": allow
     "grep *": allow
+---
+
+# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+
+Manual invocation: @${invocation}
+
+${agentInstructions}
+`;
+};
+const renderOpenCodeWriteAgent = ({
+  invocation,
+  description,
+  instructions,
+  config,
+}: {
+  invocation: string;
+  description: string;
+  instructions: string;
+  config: TruthmarkConfig;
+}): string => {
+  const editAllowRules = renderOpenCodeWriterEditAllowRules(config);
+
+  return `---
+description: ${description}
+mode: subagent
+permission:
+  read: allow
+  list: allow
+  grep: allow
+  glob: allow
+  edit:
+    "*": deny
+${editAllowRules}
+  task: deny
+  webfetch: deny
+  websearch: deny
+  external_directory: deny
+  bash:
+    "*": ask
+    "git status*": allow
+    "git diff*": allow
 ---
 
 # Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
@@ -377,6 +581,18 @@ export const renderTruthmarkOpenCodeDocReviewerAgent = (): string => {
     invocation: profile.copilotName,
     description: profile.description,
     instructions: profile.instructions,
+  });
+};
+export const renderTruthmarkOpenCodeDocWriterAgent = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const profile = TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer;
+
+  return renderOpenCodeWriteAgent({
+    invocation: profile.copilotName,
+    description: profile.description,
+    instructions: profile.instructions,
+    config,
   });
 };
 

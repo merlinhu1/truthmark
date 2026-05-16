@@ -17,12 +17,17 @@ Parent workflow:
 4. Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
 Claude Code subagent mode:
 - use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out
-- dispatch read-only project subagents only: truth-route-auditor subagent, truth-claim-verifier subagent
-- subagents inspect checkout evidence directly, return structured findings, and must not edit files
-- Parent agent owns all Truth Sync writes
+- dispatch read-only project subagents for verification: truth-route-auditor subagent, truth-claim-verifier subagent
+- read-only subagents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; read-only subagents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
+- dispatch write-capable project subagents only with explicit write leases: truth-doc-writer subagent
+- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields
+- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes
+- parent must inspect the actual checkout diff against each lease before accepting a worker report
+- Parent agent owns Truth Sync acceptance, lease validation, and final report
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -81,9 +86,10 @@ Decision truth lives in the canonical doc it governs; date active decisions inli
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
 Parent post-sync verification:
-- verify only truth docs and docs/truthmark/areas.md changed during sync
+- verify only truth docs and leased truth routing files changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
+- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
 - verify the worker report matches the required headings and sections
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface

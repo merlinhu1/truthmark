@@ -78,25 +78,29 @@ export const renderTruthDocumentSkillBody = (
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Document writes",
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const codexSubagentMode = options.includeCodexSubagentMode
     ? `${renderCodexSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Document writes",
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
     ? `${renderCopilotCustomAgentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Document writes",
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const openCodeSubagentMode = options.includeOpenCodeSubagentMode
     ? `${renderOpenCodeSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Document writes",
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
@@ -146,6 +150,12 @@ ${renderTruthDocRestructureGateSection(
 ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
+Parent post-document verification:
+- verify only truth docs and leased truth routing files changed during document work
+- block on functional code, generated host surfaces, or unrelated diffs caused by document work
+- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
+- verify worker reports list status, filesChanged, claimsChecked, evidenceChecked, offLeaseChanges, blockers, and notes
+- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
 
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthDocumentReportExample(config))}`;

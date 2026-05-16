@@ -50,24 +50,33 @@ describe("Truthmark workflow manifest", () => {
     }
   });
 
-  it("defines subagent recommendations only for workflows that benefit from read-only verification", () => {
+  it("defines read-only and write-capable subagent recommendations by workflow", () => {
     expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-check"].subagents).toEqual([
       "truth_route_auditor",
       "truth_claim_verifier",
       "truth_doc_reviewer",
     ]);
+    expect(getTruthmarkWorkflow("truthmark-check").writeSubagents).toBeUndefined();
     expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-document"].subagents).toEqual([
       "truth_route_auditor",
       "truth_claim_verifier",
+    ]);
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-document"].writeSubagents).toEqual([
+      "truth_doc_writer",
     ]);
     expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].subagents).toEqual([
       "truth_route_auditor",
       "truth_claim_verifier",
     ]);
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].writeSubagents).toEqual([
+      "truth_doc_writer",
+    ]);
     expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-structure"].subagents).toEqual([
       "truth_route_auditor",
     ]);
+    expect(getTruthmarkWorkflow("truthmark-structure").writeSubagents).toBeUndefined();
     expect(getTruthmarkWorkflow("truthmark-realize").subagents).toBeUndefined();
+    expect(getTruthmarkWorkflow("truthmark-realize").writeSubagents).toBeUndefined();
   });
 
   it("keeps routing descriptions focused on trigger selection", () => {

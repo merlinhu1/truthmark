@@ -34,7 +34,7 @@ Truth Sync is code-first. Code leads, truth docs follow, and functional code mus
 
 ## Execution Model
 
-Truth Sync may update routed truth docs and routing when routing repair is needed. It may create missing canonical truth docs when routeable implementation would otherwise remain undocumented. In Codex, Claude Code, GitHub Copilot, or OpenCode, Truth Sync may automatically use generated read-only verifier subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
+Truth Sync may update routed truth docs and routing when routing repair is needed. It may create missing canonical truth docs when routeable implementation would otherwise remain undocumented. In Codex, Claude Code, GitHub Copilot, or OpenCode, Truth Sync may automatically use generated read-only verifier subagents and explicit-lease `truth-doc-writer` subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
 ## Current Behavior
 
@@ -51,6 +51,7 @@ Truth Sync updates architecture docs in the same sync when changed code alters a
 ContextPack may be used to accelerate Truth Sync when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack or ImpactSet is unavailable, Truth Sync proceeds manually and reports that repository-intelligence artifacts were not generated.
 
 Completed reports include `Changed code reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs updated`, `Truth docs split` when Structure is run inline, `Evidence checked`, and `Notes`. Skipped reports include `Reason`. Blocked reports include `Reason`, `Files requiring manual review`, and `Next action`.
+When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent compares actual changed files to the lease before accepting the worker report.
 
 Current skip reasons are:
 
@@ -62,7 +63,7 @@ Current skip reasons are:
 
 Truth Sync's generated frontmatter description and Codex metadata carry those skip cases because skill metadata is the host-visible routing boundary before the full workflow body is loaded.
 
-Truth Sync delegation is host-owned. Generated workflow surfaces may describe when delegation is allowed, but must not name writable subagents or a project-local subagent preference file. Codex, Claude Code, GitHub Copilot, and OpenCode generated surfaces may name project-scoped read-only verifier agents for workflow-owned automatic verification; the parent workflow still owns all truth-doc and routing writes.
+Truth Sync delegation is host-owned. Generated workflow surfaces may describe when delegation is allowed, but must not create unrestricted writable helpers or a project-local subagent preference file. Codex, Claude Code, GitHub Copilot, and OpenCode generated surfaces may name project-scoped read-only verifier agents for workflow-owned automatic verification and `truth-doc-writer` for leased truth-doc shards. Read-only verifier agents inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent workflow creates each lease, requires allowedWrites and forbiddenWrites, validates the actual checkout diff against the lease, and owns repo-policy interpretation and final acceptance.
 
 ## Product Decisions
 
@@ -70,7 +71,7 @@ Truth Sync delegation is host-owned. Generated workflow surfaces may describe wh
 - Decision (2026-05-15): Truth Sync must not worsen weak topology by adding generic truth docs behind missing, stale, broad, overloaded, catch-all, or unrouteable routing.
 - Decision (2026-05-15): Truth Sync must switch to Truth Structure or block when impacted truth docs are mixed-owner or broad.
 - Decision (2026-05-15): Truth Sync must not lose Product Decisions or Rationale during bounded shape repair or inline Structure handoff.
-- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode subagents may automatically gather read-only route and claim evidence for Sync when host-supported, but parent agents retain all write ownership.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode subagents may automatically gather bounded read-only route and claim evidence for Sync when host-supported without preloading repo-wide policy by default. Sync may also dispatch `truth-doc-writer` only with an explicit write lease, while parent agents retain policy, acceptance, and diff-validation ownership.
 
 ## Rationale
 
@@ -80,7 +81,7 @@ Truth Sync is the finish-time bridge from code to truth, so it must protect rout
 
 - no functional-code rewrites during sync
 - no generic docs behind weak routing
-- no writable subagent ownership baked into generated surfaces
+- no unleased writable subagent ownership baked into generated surfaces
 
 ## Maintenance Notes
 

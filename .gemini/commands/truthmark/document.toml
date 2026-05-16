@@ -72,6 +72,12 @@ Truthmark hierarchy:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
+Parent post-document verification:
+- verify only truth docs and leased truth routing files changed during document work
+- block on functional code, generated host surfaces, or unrelated diffs caused by document work
+- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
+- verify worker reports list status, filesChanged, claimsChecked, evidenceChecked, offLeaseChanges, blockers, and notes
+- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
 
 Report completion in this shape:
 ```md

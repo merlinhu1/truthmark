@@ -163,7 +163,7 @@ The command emits `action` diagnostics describing whether each scaffolded file w
 `truthmark init` requires an existing valid `.truthmark/config.yml`. It does not create config; `truthmark config` is the required first step in a new repository.
 Configured `instruction_targets` are generated or refreshed independently of platform-specific surfaces, so `AGENTS.md` remains managed even when `claude-code` is not in `platforms`.
 
-Generated Truth Structure, Truth Document, Truth Sync, Truth Check, Codex, Claude Code, GitHub Copilot, and OpenCode verifier-agent surfaces, and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
+Generated Truth Structure, Truth Document, Truth Sync, Truth Check, Codex, Claude Code, GitHub Copilot, and OpenCode verifier or leased doc-writer agent surfaces, and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
 
 Current agent-native scaffold targets include:
 
@@ -180,6 +180,7 @@ Current agent-native scaffold targets include:
 - `.codex/agents/truth-route-auditor.toml`
 - `.codex/agents/truth-claim-verifier.toml`
 - `.codex/agents/truth-doc-reviewer.toml`
+- `.codex/agents/truth-doc-writer.toml`
 - `.claude/skills/truthmark-structure/SKILL.md`
 - `.claude/skills/truthmark-document/SKILL.md`
 - `.claude/skills/truthmark-sync/SKILL.md`
@@ -188,6 +189,7 @@ Current agent-native scaffold targets include:
 - `.claude/agents/truth-route-auditor.md`
 - `.claude/agents/truth-claim-verifier.md`
 - `.claude/agents/truth-doc-reviewer.md`
+- `.claude/agents/truth-doc-writer.md`
 - `.opencode/skills/truthmark-structure/SKILL.md`
 - `.opencode/skills/truthmark-document/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
@@ -196,6 +198,7 @@ Current agent-native scaffold targets include:
 - `.opencode/agents/truth-route-auditor.md`
 - `.opencode/agents/truth-claim-verifier.md`
 - `.opencode/agents/truth-doc-reviewer.md`
+- `.opencode/agents/truth-doc-writer.md`
 - `AGENTS.md`
 - `CLAUDE.md`
 - `.github/copilot-instructions.md`
@@ -207,6 +210,7 @@ Current agent-native scaffold targets include:
 - `.github/agents/truth-route-auditor.agent.md`
 - `.github/agents/truth-claim-verifier.agent.md`
 - `.github/agents/truth-doc-reviewer.agent.md`
+- `.github/agents/truth-doc-writer.agent.md`
 - `GEMINI.md`
 - `.gemini/commands/truthmark/structure.toml`
 - `.gemini/commands/truthmark/document.toml`
@@ -214,7 +218,9 @@ Current agent-native scaffold targets include:
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 
-Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, and OpenCode-style skill indexers can parse every generated workflow surface. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, and OpenCode-style skill indexers can parse every generated workflow surface. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated verifier agents are read-only and context-bounded to parent-assigned shards, while generated `truth-doc-writer` agents are write-capable only through parent-provided leases and parent diff validation. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+
+The OpenCode `truth-doc-writer` edit allow-list is rendered from the active `docs.roots.truth`, `docs.routing.root_index`, and `docs.routing.area_files_root` config paths so valid leases remain writable in non-default documentation layouts.
 
 ## Check Result Data
 

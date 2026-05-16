@@ -35,6 +35,7 @@ Claude Code subagent mode:
 - use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out
 - dispatch read-only project subagents only: truth-route-auditor subagent, truth-claim-verifier subagent, truth-doc-reviewer subagent
 - subagents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; subagents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
 - Parent agent owns the final Truth Check report
 
 Truthmark hierarchy:

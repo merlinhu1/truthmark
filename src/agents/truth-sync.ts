@@ -35,15 +35,20 @@ export const renderTruthSyncWorkerPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return `### Truth Sync Worker
-The parent provides the task focus and any repository context already gathered.
+The parent provides the task focus, explicit write lease, and any repository context already gathered.
 Worker rules:
+- require a write lease with workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields before editing
 - inspect relevant staged, unstaged, and untracked functional code directly
 - read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and canonical truth docs directly
 - Code verification is parent-owned; report what was run or why it was not run
-- may write truth docs and ${config.docs.routing.rootIndex} only for Truth Sync alignment
-- must not rewrite functional code
+- may write only leased truth docs and leased truth routing files for Truth Sync alignment
+- must not rewrite functional code or generated host surfaces
+- stop and report blocked when the required edit needs an off-lease file
 Return result in this shape:
 - status: completed | blocked
+- worker: string
+- shard: string
+- filesChanged: string[]
 - changedCodeReviewed: string[]
 - ownershipReviewed: string[]
 - structureRequired?: string[]
@@ -51,6 +56,7 @@ Return result in this shape:
 - routingDocsUpdated: string[]
 - truthDocsSplit?: string[]
 - evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
+- offLeaseChanges: string[]
 - notes: string[]
 - blockedReason?: string
 - manualReviewFiles?: string[]`;
@@ -70,25 +76,29 @@ export const renderTruthSyncSkillBody = (
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Sync writes",
+        "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const codexSubagentMode = options.includeCodexSubagentMode
     ? `${renderCodexSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Sync writes",
+        "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
     ? `${renderCopilotCustomAgentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Sync writes",
+        "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const openCodeSubagentMode = options.includeOpenCodeSubagentMode
     ? `${renderOpenCodeSubagentModeSection(
         workflow.subagents ?? [],
-        "Parent agent owns all Truth Sync writes",
+        "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
       )}\n`
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
@@ -111,7 +121,7 @@ Parent workflow:
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
 4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
 ${subagentMode}Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -144,9 +154,10 @@ Optional validation tooling:
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
 Parent post-sync verification:
-- verify only truth docs and ${config.docs.routing.rootIndex} changed during sync
+- verify only truth docs and leased truth routing files changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
+- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
 - verify the worker report matches the required headings and sections
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface

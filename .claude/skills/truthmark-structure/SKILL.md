@@ -22,6 +22,7 @@ Claude Code subagent mode:
 - use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out
 - dispatch read-only project subagents only: truth-route-auditor subagent
 - subagents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; subagents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
 - Parent agent owns all Truth Structure writes and final topology decisions
 
 When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.

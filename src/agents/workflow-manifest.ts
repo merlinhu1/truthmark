@@ -5,10 +5,14 @@ export type TruthmarkWorkflowId =
   | "truthmark-realize"
   | "truthmark-check";
 
-export type TruthmarkSubagentId =
+export type TruthmarkReadOnlySubagentId =
   | "truth_route_auditor"
   | "truth_claim_verifier"
   | "truth_doc_reviewer";
+export type TruthmarkWriteSubagentId = "truth_doc_writer";
+export type TruthmarkSubagentId =
+  | TruthmarkReadOnlySubagentId
+  | TruthmarkWriteSubagentId;
 
 export type TruthmarkWorkflowManifestEntry = {
   id: TruthmarkWorkflowId;
@@ -23,7 +27,8 @@ export type TruthmarkWorkflowManifestEntry = {
   requiredGates: string[];
   allowedWrites: string[];
   reportSections: string[];
-  subagents?: TruthmarkSubagentId[];
+  subagents?: TruthmarkReadOnlySubagentId[];
+  writeSubagents?: TruthmarkWriteSubagentId[];
 };
 
 export const TRUTHMARK_WORKFLOW_MANIFEST = {
@@ -70,6 +75,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Notes",
     ],
     subagents: ["truth_route_auditor", "truth_claim_verifier"],
+    writeSubagents: ["truth_doc_writer"],
   },
   "truthmark-structure": {
     id: "truthmark-structure",
@@ -154,6 +160,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Notes",
     ],
     subagents: ["truth_route_auditor", "truth_claim_verifier"],
+    writeSubagents: ["truth_doc_writer"],
   },
   "truthmark-realize": {
     id: "truthmark-realize",

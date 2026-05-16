@@ -155,8 +155,12 @@ describe("Truth Document generated surfaces", () => {
     );
     expect(renderTruthmarkDocumentSkill()).toContain("truth_route_auditor");
     expect(renderTruthmarkDocumentSkill()).toContain("truth_claim_verifier");
+    expect(renderTruthmarkDocumentSkill()).toContain("truth_doc_writer");
     expect(renderTruthmarkDocumentSkill()).toContain(
-      "Parent agent owns all Truth Document writes",
+      "Parent agent owns Truth Document acceptance, lease validation, and final report",
+    );
+    expect(renderTruthmarkDocumentSkill()).toContain(
+      "compare actual changed files against allowedWrites and forbiddenWrites",
     );
     expect(renderTruthmarkDocumentClaudeSkill()).toContain(
       "Claude Code subagent mode:",
@@ -171,7 +175,10 @@ describe("Truth Document generated surfaces", () => {
       "truth-claim-verifier subagent",
     );
     expect(renderTruthmarkDocumentClaudeSkill()).toContain(
-      "Parent agent owns all Truth Document writes",
+      "truth-doc-writer subagent",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
     expect(renderTruthmarkDocumentLocalSkill()).toContain(
       "/skill truthmark-document",

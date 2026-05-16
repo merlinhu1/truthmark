@@ -40,6 +40,7 @@ Copilot custom-agent mode:
 - use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out
 - dispatch read-only project custom agents only: @truth-route-auditor, @truth-claim-verifier, @truth-doc-reviewer
 - custom agents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; custom agents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
 - Parent agent owns the final Truth Check report
 
 Truthmark hierarchy:

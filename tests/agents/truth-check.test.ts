@@ -4,6 +4,7 @@ import {
   TRUTH_CHECK_EXPLICIT_INVOCATIONS,
   renderTruthCheckSkillBody,
 } from "../../src/agents/truth-check.js";
+import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   renderTruthmarkClaimVerifierAgent,
   renderTruthmarkCheckLocalSkill,
@@ -12,11 +13,18 @@ import {
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkClaudeClaimVerifierAgent,
   renderTruthmarkClaudeDocReviewerAgent,
+  renderTruthmarkClaudeDocWriterAgent,
   renderTruthmarkClaudeRouteAuditorAgent,
+  renderTruthmarkCopilotClaimVerifierAgent,
+  renderTruthmarkCopilotDocReviewerAgent,
   renderTruthmarkDocReviewerAgent,
+  renderTruthmarkDocWriterAgent,
   renderTruthmarkOpenCodeClaimVerifierAgent,
   renderTruthmarkOpenCodeDocReviewerAgent,
+  renderTruthmarkOpenCodeDocWriterAgent,
   renderTruthmarkOpenCodeRouteAuditorAgent,
+  renderTruthmarkCopilotDocWriterAgent,
+  renderTruthmarkCopilotRouteAuditorAgent,
   renderTruthmarkRouteAuditorAgent,
 } from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
@@ -66,6 +74,9 @@ describe("renderTruthCheckSkillBody", () => {
 });
 
 describe("Truth Check generated surfaces", () => {
+  const readOnlyContextBoundary =
+    "Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
+
   it("renders Codex metadata and OpenCode skill content", () => {
     expect(renderTruthmarkCheckSkill()).toContain("name: truthmark-check");
     expect(renderTruthmarkCheckSkill()).toContain("Codex subagent mode:");
@@ -113,17 +124,20 @@ describe("Truth Check generated surfaces", () => {
 
     expect(routeAuditor).toContain('name = "truth_route_auditor"');
     expect(routeAuditor).toContain('sandbox_mode = "read-only"');
+    expect(routeAuditor).toContain(readOnlyContextBoundary);
     expect(routeAuditor).toContain("Return JSON only");
     expect(routeAuditor).toContain("recommendedWorkflow");
     expect(routeAuditor).not.toContain("write truth docs");
 
     expect(claimVerifier).toContain('name = "truth_claim_verifier"');
     expect(claimVerifier).toContain('sandbox_mode = "read-only"');
+    expect(claimVerifier).toContain(readOnlyContextBoundary);
     expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
     expect(claimVerifier).toContain("Do not edit files");
 
     expect(docReviewer).toContain('name = "truth_doc_reviewer"');
     expect(docReviewer).toContain('sandbox_mode = "read-only"');
+    expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
     expect(docReviewer).toContain("Rationale");
   });
@@ -134,14 +148,17 @@ describe("Truth Check generated surfaces", () => {
     expect(routeAuditor).toContain("name: truth-route-auditor");
     expect(routeAuditor).toContain("tools: Read, Grep, Glob, LS");
     expect(routeAuditor).toContain("Manual invocation: use the truth-route-auditor subagent");
+    expect(routeAuditor).toContain(readOnlyContextBoundary);
     expect(routeAuditor).toContain("Do not edit files");
     expect(routeAuditor).toContain("Return JSON only");
     expect(claimVerifier).toContain("name: truth-claim-verifier");
     expect(claimVerifier).toContain("tools: Read, Grep, Glob, LS");
+    expect(claimVerifier).toContain(readOnlyContextBoundary);
     expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
     expect(claimVerifier).toContain("Do not edit files");
     expect(docReviewer).toContain("name: truth-doc-reviewer");
     expect(docReviewer).toContain("tools: Read, Grep, Glob, LS");
+    expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
     expect(docReviewer).toContain("Rationale");
   });
@@ -153,15 +170,81 @@ describe("Truth Check generated surfaces", () => {
     expect(routeAuditor).toContain("edit: deny");
     expect(routeAuditor).toContain("task: deny");
     expect(routeAuditor).toContain("@truth-route-auditor");
+    expect(routeAuditor).toContain(readOnlyContextBoundary);
     expect(routeAuditor).toContain("Return JSON only");
     expect(routeAuditor).toContain("recommendedWorkflow");
     expect(claimVerifier).toContain("mode: subagent");
     expect(claimVerifier).toContain("edit: deny");
+    expect(claimVerifier).toContain(readOnlyContextBoundary);
     expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
     expect(claimVerifier).toContain("Do not edit files");
     expect(docReviewer).toContain("mode: subagent");
     expect(docReviewer).toContain("edit: deny");
+    expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
     expect(docReviewer).toContain("Rationale");
+  });
+
+  it("renders read-only Copilot verifier agents with bounded context", () => {
+    const routeAuditor = renderTruthmarkCopilotRouteAuditorAgent();
+    const claimVerifier = renderTruthmarkCopilotClaimVerifierAgent();
+    const docReviewer = renderTruthmarkCopilotDocReviewerAgent();
+
+    expect(routeAuditor).toContain("name: truth-route-auditor");
+    expect(routeAuditor).toContain("tools: [read, search]");
+    expect(routeAuditor).toContain(readOnlyContextBoundary);
+    expect(routeAuditor).toContain("Return JSON only");
+    expect(claimVerifier).toContain("name: truth-claim-verifier");
+    expect(claimVerifier).toContain(readOnlyContextBoundary);
+    expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
+    expect(docReviewer).toContain("name: truth-doc-reviewer");
+    expect(docReviewer).toContain(readOnlyContextBoundary);
+    expect(docReviewer).toContain("Rationale");
+  });
+
+  it("renders write-capable doc writer agents behind explicit leases", () => {
+    const codexWriter = renderTruthmarkDocWriterAgent();
+    const openCodeWriter = renderTruthmarkOpenCodeDocWriterAgent();
+    const claudeWriter = renderTruthmarkClaudeDocWriterAgent();
+    const copilotWriter = renderTruthmarkCopilotDocWriterAgent();
+    const defaultConfig = createDefaultConfig();
+    const customOpenCodeWriter = renderTruthmarkOpenCodeDocWriterAgent({
+      ...defaultConfig,
+      docs: {
+        ...defaultConfig.docs,
+        roots: {
+          ...defaultConfig.docs.roots,
+          truth: "product/truth",
+        },
+        routing: {
+          ...defaultConfig.docs.routing,
+          rootIndex: "product/routes/index.md",
+          areaFilesRoot: "product/routes/areas",
+        },
+      },
+    });
+
+    expect(codexWriter).toContain('name = "truth_doc_writer"');
+    expect(codexWriter).toContain('sandbox_mode = "workspace-write"');
+    expect(codexWriter).toContain("Require an explicit write lease");
+    expect(codexWriter).not.toContain(readOnlyContextBoundary);
+    expect(codexWriter).toContain("Return YAML only");
+    expect(openCodeWriter).toContain("mode: subagent");
+    expect(openCodeWriter).toContain('"docs/truth/**": allow');
+    expect(openCodeWriter).toContain('"docs/truthmark/areas.md": allow');
+    expect(openCodeWriter).toContain("@truth-doc-writer");
+    expect(customOpenCodeWriter).toContain('"product/truth/**": allow');
+    expect(customOpenCodeWriter).toContain(
+      '"product/routes/index.md": allow',
+    );
+    expect(customOpenCodeWriter).toContain(
+      '"product/routes/areas/**/*.md": allow',
+    );
+    expect(customOpenCodeWriter).not.toContain('"docs/truth/**": allow');
+    expect(claudeWriter).toContain("name: truth-doc-writer");
+    expect(claudeWriter).toContain("tools: Read, Grep, Glob, LS, Edit, MultiEdit");
+    expect(copilotWriter).toContain("name: truth-doc-writer");
+    expect(copilotWriter).toContain("tools: [read, search, edit]");
+    expect(copilotWriter).toContain("offLeaseChanges");
   });
 });

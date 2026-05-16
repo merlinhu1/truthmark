@@ -19,7 +19,7 @@ Parent workflow:
 4. Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -78,9 +78,10 @@ Decision truth lives in the canonical doc it governs; date active decisions inli
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
 Parent post-sync verification:
-- verify only truth docs and docs/truthmark/areas.md changed during sync
+- verify only truth docs and leased truth routing files changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
+- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
 - verify the worker report matches the required headings and sections
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
