@@ -2,6 +2,7 @@ export type TruthmarkWorkflowId =
   | "truthmark-sync"
   | "truthmark-structure"
   | "truthmark-document"
+  | "truthmark-preview"
   | "truthmark-realize"
   | "truthmark-check";
 
@@ -81,14 +82,16 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-structure",
     displayName: "Truthmark Structure",
     description:
-      "Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, or needs split/repair. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.",
-    shortDescription: "Design or repair Truthmark area routing",
+      "Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.",
+    shortDescription: "Design, repair, or set up Truthmark area routing",
     defaultPrompt:
-      "Use $truthmark-structure to design or repair Truthmark area routing.",
+      "Use $truthmark-structure to design, repair, or set up Truthmark area routing.",
     allowImplicitInvocation: false,
     positiveTriggers: [
       "split broad repository routing into bounded areas",
       "repair missing, stale, catch-all, unrouteable, or mixed-owner truth ownership",
+      "onboard a new code area into Truthmark routing",
+      "new package, controller, domain, or product area lacks bounded truth ownership",
     ],
     negativeTriggers: [
       "document existing implemented behavior",
@@ -110,6 +113,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Topology reviewed",
       "Areas reviewed",
       "Routing updated",
+      "Initial truth boundary",
       "Truth docs created",
       "Truth docs split",
       "Truth docs restructured",
@@ -184,6 +188,49 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     requiredGates: ["truth-doc ownership"],
     allowedWrites: ["functional code"],
     reportSections: ["Truth docs used", "Code updated", "Verification"],
+  },
+  "truthmark-preview": {
+    id: "truthmark-preview",
+    displayName: "Truthmark Preview",
+    description:
+      "Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.",
+    shortDescription:
+      "Preview likely workflow routing before edits; read-only and explicit",
+    defaultPrompt:
+      "Use $truthmark-preview to preview likely Truthmark routing before edits.",
+    allowImplicitInvocation: false,
+    positiveTriggers: [
+      "explicit request to preview Truthmark workflow routing before edits",
+      "explicit request for likely route owner, target docs, expected writes, or subagent plan",
+    ],
+    negativeTriggers: [
+      "normal validation or final correctness audit",
+      "automatic preflight or finish-time gate",
+      "request to mutate truth docs, routing, or code",
+    ],
+    forbiddenAdjacency: [
+      "must not replace Truth Check",
+      "must not run Truth Sync automatically",
+      "must not authorize later edits or issue write leases",
+    ],
+    requiredGates: [
+      "read-only boundary",
+      "intended-not-authorized handoff",
+      "blocking ambiguity disclosure",
+    ],
+    allowedWrites: ["none by default"],
+    reportSections: [
+      "Requested outcome",
+      "Likely workflow",
+      "Why this workflow",
+      "Likely route owner",
+      "Expected write classes",
+      "Expected target files",
+      "Suggested subagent use",
+      "Blocking ambiguity",
+      "Handoff",
+    ],
+    subagents: ["truth_route_auditor"],
   },
   "truthmark-check": {
     id: "truthmark-check",

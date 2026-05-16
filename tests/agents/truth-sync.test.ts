@@ -233,7 +233,7 @@ describe("Truth Sync generated metadata", () => {
       "Parent agent owns Truth Sync acceptance, lease validation, and final report",
     );
     expect(renderTruthmarkSyncSkill()).toContain(
-      "compare actual changed files against allowedWrites and forbiddenWrites",
+      "validate the worker report against the actual worker diff",
     );
     expect(renderTruthmarkSyncClaudeSkill()).toContain(
       "Claude Code subagent mode:",

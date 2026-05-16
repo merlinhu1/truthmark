@@ -24,7 +24,7 @@ This document describes the current behavior of `truthmark check`.
 
 ## Current Behavior
 
-`truthmark check` is validation tooling. It is not the runtime for Truth Sync, Truth Realize, Truth Structure, or Truth Check skills, and it is not a CI-style merge gate by default.
+`truthmark check` is validation tooling. It is not the runtime for Truth Sync, Truth Preview, Truth Realize, Truth Structure, or Truth Check skills, and it is not a CI-style merge gate by default.
 
 The command:
 

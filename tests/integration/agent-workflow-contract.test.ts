@@ -41,6 +41,9 @@ describe("installed workflow contract", () => {
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
+      const previewSkill = await repo.readFile(
+        ".codex/skills/truthmark-preview/SKILL.md",
+      );
       const checkSkill = await repo.readFile(
         ".codex/skills/truthmark-check/SKILL.md",
       );
@@ -65,7 +68,7 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("/skill truthmark-structure");
       expect(agents).not.toContain("/skill truthmark-check");
       expect(agents).toContain(
-        "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
+        "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check",
       );
       expect(agents).not.toContain(
         "truthmark check --json --workflow truth-sync",
@@ -90,15 +93,15 @@ describe("installed workflow contract", () => {
         "direct checkout inspection is the canonical path",
       );
       expect(documentSkill).toContain("name: truthmark-document");
-      expect(documentSkill).toContain("Truth Document: completed");
+      expect(documentSkill).toContain("support/procedure.md");
+      expect(documentSkill).toContain("support/report-template.md");
       expect(documentSkill).toContain("must not write functional code");
       expect(syncOpenCodeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
       );
-      expect(syncClaudeSkill).toContain("Claude Code subagent mode:");
-      expect(syncClaudeSkill).toContain("truth-route-auditor subagent");
+      expect(syncClaudeSkill).toContain("support/subagents-and-leases.md");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain(
         "Use this skill only when the user explicitly asks",
@@ -107,10 +110,13 @@ describe("installed workflow contract", () => {
         "must not edit truth docs or truth routing",
       );
       expect(realizeOpenCodeSkill).toContain("name: truthmark-realize");
-      expect(realizeOpenCodeSkill).toContain("Truth Realize: completed");
+      expect(realizeOpenCodeSkill).toContain("support/report-template.md");
+      expect(previewSkill).toContain("name: truthmark-preview");
+      expect(previewSkill).toContain("Truth Preview is read-only");
+      expect(previewSkill).toContain("intended, not authorized");
       expect(checkSkill).toContain("name: truthmark-check");
-      expect(checkSkill).toContain("Truth Check: completed");
-      expect(checkSkill).toContain("truth_route_auditor");
+      expect(checkSkill).toContain("support/report-template.md");
+      expect(checkSkill).toContain("support/subagents-and-leases.md");
       expect(routeAuditorAgent).toContain('sandbox_mode = "read-only"');
       expect(routeAuditorAgent).toContain("Do not edit files");
       expect(openCodeRouteAuditorAgent).toContain("mode: subagent");

@@ -5,6 +5,7 @@ truth_kind: workflow
 last_reviewed: 2026-05-16
 source_of_truth:
   - ../../../src/agents/truth-document.ts
+  - ../../../src/agents/write-lease.ts
   - ../../../src/agents/shared.ts
   - ../../../src/templates/workflow-surfaces.ts
 ---
@@ -50,7 +51,7 @@ ContextPack may be used to gather bounded source context when available. It does
 When subagent mode is available, the parent agent may dispatch read-only route and claim verifier workers to gather route and evidence findings. Codex exposes `truth_route_auditor` and `truth_claim_verifier`; Claude Code exposes `truth-route-auditor` and `truth-claim-verifier` project subagents; GitHub Copilot and OpenCode expose `@truth-route-auditor` and `@truth-claim-verifier`. Read-only verifier workers inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The same hosts expose `truth_doc_writer` or `@truth-doc-writer` for leased truth-doc shards. The parent agent creates each lease, requires allowedWrites and forbiddenWrites, validates the actual checkout diff against the lease, and owns repo-policy interpretation, final acceptance, routing decisions, shape repair scope, and the final report.
 
 Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs created`, `Truth docs updated`, `Truth docs restructured`, `Routing updated`, `Evidence checked`, and `Notes`.
-When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent compares actual changed files to the lease before accepting the worker report.
+When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent accepts a completed worker report only after validating the parsed report against the lease identity, required report fields, actual worker diff, `allowedWrites`, `forbiddenWrites`, reported `filesChanged`, reported `offLeaseChanges`, and reported `blockers`. Blocked worker reports remain blocked outcomes and must include blockers; off-lease or forbidden actual diffs are rejected rather than trusted from self-report.
 
 ## Product Decisions
 

@@ -21,7 +21,7 @@ This document owns shared ownership, evidence, shape-repair, architecture-bounda
 
 ## Triggers
 
-The gates apply whenever Truth Structure, Truth Document, Truth Sync, Truth Realize, or Truth Check reads, writes, audits, or relies on canonical truth docs.
+The gates apply whenever Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, or Truth Check reads, writes, audits, or relies on canonical truth docs.
 
 ## Inputs
 

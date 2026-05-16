@@ -160,7 +160,7 @@ describe("Truth Document generated surfaces", () => {
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
     expect(renderTruthmarkDocumentSkill()).toContain(
-      "compare actual changed files against allowedWrites and forbiddenWrites",
+      "validate the worker report against the actual worker diff",
     );
     expect(renderTruthmarkDocumentClaudeSkill()).toContain(
       "Claude Code subagent mode:",

@@ -96,6 +96,7 @@ Truthmark turns repository truth into an explicit workflow surface for agents:
 - `docs/truthmark/areas.md` and delegated child route files map code areas to the docs that own them.
 - Truth Document generates or repairs canonical truth docs for existing implemented behavior when no code change is needed.
 - Truth Sync keeps mapped truth docs aligned with functional changes.
+- Truth Preview previews likely workflow routing before edits without authorizing writes.
 - Truth Realize gives doc-first changes a bounded code-update path.
 - `truthmark check` validates the resulting truth artifacts.
 - The whole model stays local-first and Git-native.
@@ -219,19 +220,25 @@ Codex, Claude Code, and supported Copilot IDEs can invoke it with `/truthmark-re
 
 Truthmark keeps the durable workflow surface small and repository-native. After `truthmark init`, the repo itself carries the routing, rules, and installed workflow surfaces, so teams are not relying only on one operator's local setup.
 
+Truthmark installs two distinct surfaces:
+
+- human-facing CLI commands, run by people or CI to configure the repo, refresh installed files, validate truth artifacts, and optionally generate derived review context
+- agent workflow surfaces, invoked by coding agents or agent hosts during implementation workflows; they are not extra daily terminal commands for humans
+
 - `.truthmark/config.yml` for the machine-readable committed hierarchy contract
 - `docs/truthmark/areas.md` for the root route index
 - `docs/truthmark/areas/**/*.md` for delegated child route files
 - `docs/templates/behavior-doc.md` plus the other kind-specific templates under `docs/templates/` for the editable truth-doc standards used by generated workflows
 - managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Copilot instructions, and `GEMINI.md`
-- host-native skills, prompts, or commands for Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check
-- Codex, Claude Code, GitHub Copilot, and OpenCode project-scoped verifier agents plus leased `truth-doc-writer` agents under `.codex/agents/`, `.claude/agents/`, `.github/agents/`, and `.opencode/agents/` for workflow-owned subagent audits and parent-leased doc shards
+- host-native skills, prompts, or commands for Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check
+- Codex, Claude Code, GitHub Copilot, and OpenCode project-scoped read-only verifiers plus leased `truth-doc-writer` agents where hosts support agents, under `.codex/agents/`, `.claude/agents/`, `.github/agents/`, and `.opencode/agents/` for workflow-owned audits and parent-leased doc shards
 
 The installed workflow surfaces are the runtime:
 
 - Truth Structure creates or repairs area routing and starter truth docs.
 - Truth Document creates or repairs truth docs for existing implemented behavior.
 - Truth Sync keeps mapped truth docs aligned with functional changes.
+- Truth Preview previews likely workflow routing before edits without writing files.
 - Truth Realize updates code to match truth docs.
 - Truth Check audits repository truth health.
 
@@ -241,37 +248,29 @@ Generated surfaces are managed by Truthmark, include a version marker, and may b
 
 ## Commands
 
-Truthmark V1 keeps the CLI focused because the ongoing workflow is meant to live in the installed agent surfaces, not in a long list of daily manual commands. In downstream repositories, `truthmark config` creates the committed hierarchy contract, `truthmark init` installs and refreshes workflow surfaces from that reviewed config, `truthmark check` validates truth artifacts for manual audits, CI, or troubleshooting, and the repository-intelligence commands generate derived review artifacts when local tooling is available.
+Truthmark V1 keeps the terminal CLI focused. Most human users only need setup, refresh, and validation:
 
-```bash
-truthmark config
-truthmark init
-truthmark check
-truthmark index
-truthmark impact --base main
-truthmark context --workflow truth-sync --base main
-truthmark config --json
-truthmark check --json
-truthmark index --json
-truthmark impact --base main --json
-truthmark context --workflow truth-sync --base main --json
-```
+| Human-facing CLI | Use |
+| ---------------- | --- |
+| `truthmark config` | Create `.truthmark/config.yml`; writes only that file unless `--stdout` is used. |
+| `truthmark init` | Install or refresh local workflow files from the reviewed config. |
+| `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, and coverage diagnostics. |
 
-`config` writes only `.truthmark/config.yml` unless `--stdout` is used.
+The remaining CLI commands are optional repository-intelligence helpers. They generate derived review context for the active checkout; they are not sources of truth:
 
-`init` requires `.truthmark/config.yml`, then installs or refreshes the local workflow files.
+| Optional CLI | Use |
+| ------------ | --- |
+| `truthmark index` | Build RepoIndex and RouteMap JSON for the active checkout. |
+| `truthmark impact --base <ref>` | Map changed files to routed truth docs, owning routes, nearby tests, and public symbols. |
+| `truthmark context --workflow <workflow> [--base <ref>]` | Generate a bounded ContextPack for Truth Sync, Truth Document, or Truth Realize. `--format markdown` renders a human-readable pack. |
 
-`check` validates configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, and coverage diagnostics.
+All CLI commands above support `--json` where structured output is useful for automation.
 
-`index` builds RepoIndex and RouteMap JSON for the active checkout.
-
-`impact --base <ref>` maps changed files to routed truth docs, owning routes, nearby tests, and public symbols.
-
-`context --workflow <workflow> [--base <ref>]` generates a bounded ContextPack for Truth Sync, Truth Document, or Truth Realize. `--format markdown` renders a human-readable pack.
-
-Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check are installed agent workflows, not top-level daily CLI commands.
+Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check are installed agent workflows, not top-level daily CLI commands.
 
 They run through the configured agent host surfaces, for example Codex/Claude/Copilot `/truthmark-*`, OpenCode `/skill truthmark-*`, or Gemini `/truthmark:*`.
+
+These invocations look command-like because agent hosts expose skills through slash commands. Treat them as instructions to an agent, not as terminal commands a human is expected to run.
 
 ```text
 /truthmark-check audit routing and truth coverage before review
@@ -305,7 +304,7 @@ V1 currently provides:
 - `truthmark impact`
 - `truthmark context`
 - managed `AGENTS.md` workflow instructions
-- generated Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check skill surfaces for configured agent hosts
+- generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check skill surfaces for configured agent hosts
 - branch-scope metadata
 - config, authority, routing, decision-structure, frontmatter, link, freshness, and polyglot coverage diagnostics
 - derived RepoIndex, RouteMap, ImpactSet, and ContextPack artifacts for faster local review when the CLI is available

@@ -96,6 +96,7 @@ Truthmark macht Repository-Wahrheit zu einer expliziten Workflow-Fläche für Ag
 - `docs/truthmark/areas.md` und delegierte untergeordnete Routendateien ordnen Codebereiche den Dokumenten zu, die sie verantworten.
 - Truth Document erstellt oder repariert kanonische Wahrheitsdokumente für bereits implementiertes Verhalten, wenn keine Codeänderung nötig ist.
 - Truth Sync hält zugeordnete Wahrheitsdokumente bei funktionalen Änderungen synchron.
+- Truth Preview zeigt wahrscheinliches Workflow-Routing vor Änderungen an, ohne Schreibzugriffe zu autorisieren.
 - Truth Realize gibt doc-first Änderungen einen begrenzten Pfad für Code-Updates.
 - `truthmark check` validiert die daraus entstehenden Wahrheitsartefakte.
 - Das gesamte Modell bleibt local-first und Git-nativ.
@@ -213,19 +214,25 @@ Codex, Claude Code und unterstützte Copilot-IDEs können es mit `/truthmark-rea
 
 Truthmark hält die dauerhafte Workflow-Fläche klein und repository-nativ. Nach `truthmark init` trägt das Repository selbst Routing, Regeln und installierte Workflow-Flächen, sodass Teams nicht nur auf die lokale Konfiguration einer einzelnen Person angewiesen sind.
 
+Truthmark installiert zwei getrennte Oberflächen:
+
+- menschenorientierte CLI-Befehle, die Menschen oder CI ausführen, um das Repository zu konfigurieren, installierte Dateien zu aktualisieren, Truth-Artefakte zu validieren und optional abgeleiteten Review-Kontext zu erzeugen
+- Agenten-Workflow-Flächen, die Coding-Agenten oder Agenten-Hosts während Implementierungsworkflows aufrufen; sie sind keine zusätzlichen täglichen Terminalbefehle für Menschen
+
 - `.truthmark/config.yml` für den maschinenlesbaren, festgeschriebenen Hierarchievertrag
 - `docs/truthmark/areas.md` für den Root-Routenindex
 - `docs/truthmark/areas/**/*.md` für delegierte untergeordnete Routendateien
 - `docs/templates/behavior-doc.md` sowie die weiteren typspezifischen Vorlagen unter `docs/templates/` für die editierbaren Truth-Doc-Standards der generierten Workflows
 - verwaltete Instruktionsblöcke für konfigurierte Plattformen wie `AGENTS.md`, `CLAUDE.md`, Copilot-Anweisungen und `GEMINI.md`
-- host-native Skills, Prompts oder Commands für Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check
-- projektbezogene Codex-, Claude-Code-, GitHub-Copilot- und OpenCode-Prüfagenten plus `truth-doc-writer`-Agenten mit explizit erteiltem Schreibumfang unter `.codex/agents/`, `.claude/agents/`, `.github/agents/` und `.opencode/agents/` für workflow-eigene Subagent-Audits und vom Parent freigegebene Dokument-Shards
+- host-native Skills, Prompts oder Commands für Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize und Truth Check
+- projektbezogene schreibgeschützte Codex-, Claude-Code-, GitHub-Copilot- und OpenCode-Prüfer plus geleaste `truth-doc-writer`-Agenten, wo Hosts Agenten unterstützen, unter `.codex/agents/`, `.claude/agents/`, `.github/agents/` und `.opencode/agents/` für workflow-eigene Audits und vom Parent geleaste Dokument-Shards
 
 Die installierten Workflow-Flächen sind die Runtime:
 
 - Truth Structure erstellt oder repariert Area-Routing und erste Wahrheitsdokumente.
 - Truth Document erstellt oder repariert Wahrheitsdokumente für bereits implementiertes Verhalten.
 - Truth Sync hält zugeordnete Wahrheitsdokumente bei funktionalen Änderungen synchron.
+- Truth Preview zeigt wahrscheinliches Workflow-Routing vor Änderungen an, ohne Dateien zu schreiben.
 - Truth Realize aktualisiert Code so, dass er zu den Wahrheitsdokumenten passt.
 - Truth Check auditiert die Gesundheit der Repository-Wahrheit.
 
@@ -235,37 +242,29 @@ Generierte Flächen werden von Truthmark verwaltet, enthalten einen Versionsmark
 
 ## Befehle
 
-Truthmark V1 hält die CLI fokussiert, weil der laufende Workflow in den installierten Agenten-Flächen leben soll und nicht in einer langen Liste täglicher manueller Befehle. In nachgelagerten Repositories erzeugt `truthmark config` den in Git festgeschriebenen Hierarchievertrag, `truthmark init` installiert und aktualisiert Workflow-Flächen aus dieser geprüften Konfiguration, `truthmark check` validiert Wahrheitsartefakte für manuelle Audits, CI oder Fehlersuche, und die Repository-Intelligence-Befehle erzeugen abgeleitete Prüfarbeitsstände, wenn lokale Werkzeuge verfügbar sind.
+Truthmark V1 hält die Terminal-CLI fokussiert. Die meisten menschlichen Nutzer brauchen nur Einrichtung, Aktualisierung und Validierung:
 
-```bash
-truthmark config
-truthmark init
-truthmark check
-truthmark index
-truthmark impact --base main
-truthmark context --workflow truth-sync --base main
-truthmark config --json
-truthmark check --json
-truthmark index --json
-truthmark impact --base main --json
-truthmark context --workflow truth-sync --base main --json
-```
+| Menschenorientierter CLI-Befehl | Zweck |
+| -------------------------------- | ----- |
+| `truthmark config` | Erstellt `.truthmark/config.yml`; schreibt nur diese Datei, außer `--stdout` wird verwendet. |
+| `truthmark init` | Installiert oder aktualisiert lokale Workflow-Dateien aus der geprüften Konfiguration. |
+| `truthmark check` | Validiert Konfiguration, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope und Coverage-Diagnostik. |
 
-`config` schreibt nur `.truthmark/config.yml`, außer `--stdout` wird verwendet.
+Die übrigen CLI-Befehle sind optionale Repository-Intelligence-Helfer. Sie erzeugen abgeleiteten Review-Kontext für den aktiven Checkout; sie sind keine Quellen der Wahrheit:
 
-`init` benötigt `.truthmark/config.yml` und installiert oder aktualisiert anschließend die lokalen Workflow-Dateien.
+| Optionaler CLI-Befehl | Zweck |
+| --------------------- | ----- |
+| `truthmark index` | Baut RepoIndex- und RouteMap-JSON für den aktiven Checkout. |
+| `truthmark impact --base <ref>` | Ordnet geänderte Dateien den gerouteten Truth-Dokumenten, zuständigen Routen, nahen Tests und öffentlichen Symbolen zu. |
+| `truthmark context --workflow <workflow> [--base <ref>]` | Erzeugt ein begrenztes ContextPack für Truth Sync, Truth Document oder Truth Realize. `--format markdown` rendert eine menschenlesbare Fassung. |
 
-`check` validiert Konfiguration, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope und Coverage-Diagnostik.
+Alle oben genannten CLI-Befehle unterstützen `--json`, wenn strukturierte Ausgabe für Automatisierung nützlich ist.
 
-`index` baut RepoIndex- und RouteMap-JSON für den aktiven Checkout.
-
-`impact --base <ref>` ordnet geänderte Dateien den gerouteten Truth-Dokumenten, Routen, nahen Tests und öffentlichen Symbolen zu.
-
-`context --workflow <workflow> [--base <ref>]` erzeugt ein begrenztes ContextPack für Truth Sync, Truth Document oder Truth Realize. `--format markdown` rendert eine menschenlesbare Fassung.
-
-Truth Structure, Truth Document, Truth Sync, Truth Realize und Truth Check sind installierte Agenten-Workflows, keine täglichen Top-Level-CLI-Befehle.
+Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize und Truth Check sind installierte Agenten-Workflows, keine täglichen Top-Level-CLI-Befehle.
 
 Sie laufen über die konfigurierten Agenten-Host-Flächen, zum Beispiel Codex/Claude/Copilot `/truthmark-*`, OpenCode `/skill truthmark-*` oder Gemini `/truthmark:*`.
+
+Diese Aufrufe wirken befehlsartig, weil Agenten-Hosts Skills über Slash-Commands bereitstellen. Behandle sie als Anweisungen an einen Agenten, nicht als Terminalbefehle, die Menschen ausführen sollen.
 
 ```text
 /truthmark-check routing und truth-abdeckung vor der review prüfen
@@ -298,7 +297,7 @@ V1 bietet derzeit:
 - `truthmark impact`
 - `truthmark context`
 - verwaltete `AGENTS.md`-Workflow-Anweisungen
-- generierte Truth Structure-, Truth Document-, Truth Sync-, Truth Realize- und Truth Check-Skill-Flächen für konfigurierte Agenten-Hosts
+- generierte Truth Structure-, Truth Document-, Truth Sync-, Truth Preview-, Truth Realize- und Truth Check-Skill-Flächen für konfigurierte Agenten-Hosts
 - Branch-Scope-Metadaten
 - Diagnostik für Konfiguration, Autorität, Routing, Entscheidungsstruktur, Frontmatter, Links, Freshness und polyglotte Abdeckung
 - abgeleitete RepoIndex-, RouteMap-, ImpactSet- und ContextPack-Artefakte für schnellere lokale Prüfung, wenn die CLI verfügbar ist

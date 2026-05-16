@@ -6,6 +6,7 @@ import {
   renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkCopilotDocReviewerAgent,
   renderTruthmarkCopilotDocWriterAgent,
+  renderTruthmarkCopilotPreviewPrompt,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotRouteAuditorAgent,
   renderTruthmarkCopilotStructurePrompt,
@@ -15,36 +16,25 @@ import {
   renderTruthmarkClaudeDocWriterAgent,
   renderTruthmarkClaudeRouteAuditorAgent,
   renderTruthmarkClaimVerifierAgent,
-  renderTruthmarkCheckClaudeSkill,
-  renderTruthmarkCheckOpenCodeSkill,
-  renderTruthmarkDocumentClaudeSkill,
-  renderTruthmarkDocumentOpenCodeSkill,
-  renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkDocReviewerAgent,
   renderTruthmarkDocWriterAgent,
   renderTruthmarkGeminiCheckCommand,
   renderTruthmarkGeminiDocumentCommand,
+  renderTruthmarkGeminiPreviewCommand,
   renderTruthmarkGeminiRealizeCommand,
   renderTruthmarkGeminiStructureCommand,
   renderTruthmarkGeminiSyncCommand,
-  renderTruthmarkCheckSkill,
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkOpenCodeClaimVerifierAgent,
   renderTruthmarkOpenCodeDocReviewerAgent,
   renderTruthmarkOpenCodeDocWriterAgent,
   renderTruthmarkOpenCodeRouteAuditorAgent,
-  renderTruthmarkRealizeLocalSkill,
-  renderTruthmarkRealizeSkill,
+  renderTruthmarkPreviewSkillMetadata,
   renderTruthmarkRealizeSkillMetadata,
   renderTruthmarkRouteAuditorAgent,
-  renderTruthmarkStructureClaudeSkill,
-  renderTruthmarkStructureLocalSkill,
-  renderTruthmarkStructureSkill,
+  renderTruthmarkSkillPackage,
   renderTruthmarkStructureSkillMetadata,
-  renderTruthmarkSyncClaudeSkill,
-  renderTruthmarkSyncOpenCodeSkill,
-  renderTruthmarkSyncSkill,
   renderTruthmarkSyncSkillMetadata,
   TRUTHMARK_CHECK_SKILL_METADATA_PATH,
   TRUTHMARK_CHECK_SKILL_PATH,
@@ -58,6 +48,7 @@ import {
   TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH,
+  TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
@@ -68,6 +59,7 @@ import {
   TRUTHMARK_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
   TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
+  TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
   TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
   TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
@@ -75,6 +67,8 @@ import {
   TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH,
+  TRUTHMARK_PREVIEW_SKILL_METADATA_PATH,
+  TRUTHMARK_PREVIEW_SKILL_PATH,
   TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
   TRUTHMARK_REALIZE_SKILL_PATH,
   TRUTHMARK_ROUTE_AUDITOR_AGENT_PATH,
@@ -92,42 +86,62 @@ export type GeneratedSurface = {
 
 const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
-    {
-      path: TRUTHMARK_STRUCTURE_SKILL_PATH,
-      content: renderTruthmarkStructureSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_STRUCTURE_SKILL_PATH,
+      workflowId: "truthmark-structure",
+      host: "codex",
+      config,
+    }),
     {
       path: TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH,
       content: renderTruthmarkStructureSkillMetadata(),
     },
-    {
-      path: TRUTHMARK_DOCUMENT_SKILL_PATH,
-      content: renderTruthmarkDocumentSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_DOCUMENT_SKILL_PATH,
+      workflowId: "truthmark-document",
+      host: "codex",
+      config,
+    }),
     {
       path: TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH,
       content: renderTruthmarkDocumentSkillMetadata(),
     },
-    {
-      path: TRUTHMARK_SYNC_SKILL_PATH,
-      content: renderTruthmarkSyncSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_SYNC_SKILL_PATH,
+      workflowId: "truthmark-sync",
+      host: "codex",
+      config,
+    }),
     {
       path: TRUTHMARK_SYNC_SKILL_METADATA_PATH,
       content: renderTruthmarkSyncSkillMetadata(),
     },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_PREVIEW_SKILL_PATH,
+      workflowId: "truthmark-preview",
+      host: "codex",
+      config,
+    }),
     {
-      path: TRUTHMARK_CHECK_SKILL_PATH,
-      content: renderTruthmarkCheckSkill(config),
+      path: TRUTHMARK_PREVIEW_SKILL_METADATA_PATH,
+      content: renderTruthmarkPreviewSkillMetadata(),
     },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CHECK_SKILL_PATH,
+      workflowId: "truthmark-check",
+      host: "codex",
+      config,
+    }),
     {
       path: TRUTHMARK_CHECK_SKILL_METADATA_PATH,
       content: renderTruthmarkCheckSkillMetadata(),
     },
-    {
-      path: TRUTHMARK_REALIZE_SKILL_PATH,
-      content: renderTruthmarkRealizeSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_REALIZE_SKILL_PATH,
+      workflowId: "truthmark-realize",
+      host: "codex",
+      config,
+    }),
     {
       path: TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
       content: renderTruthmarkRealizeSkillMetadata(),
@@ -155,26 +169,42 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
 
 const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   return [
-    {
-      path: ".opencode/skills/truthmark-structure/SKILL.md",
-      content: renderTruthmarkStructureLocalSkill(config),
-    },
-    {
-      path: ".opencode/skills/truthmark-document/SKILL.md",
-      content: renderTruthmarkDocumentOpenCodeSkill(config),
-    },
-    {
-      path: ".opencode/skills/truthmark-sync/SKILL.md",
-      content: renderTruthmarkSyncOpenCodeSkill(config),
-    },
-    {
-      path: ".opencode/skills/truthmark-check/SKILL.md",
-      content: renderTruthmarkCheckOpenCodeSkill(config),
-    },
-    {
-      path: ".opencode/skills/truthmark-realize/SKILL.md",
-      content: renderTruthmarkRealizeLocalSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-structure/SKILL.md",
+      workflowId: "truthmark-structure",
+      host: "opencode",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-document/SKILL.md",
+      workflowId: "truthmark-document",
+      host: "opencode",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "opencode",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-preview/SKILL.md",
+      workflowId: "truthmark-preview",
+      host: "opencode",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-check/SKILL.md",
+      workflowId: "truthmark-check",
+      host: "opencode",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".opencode/skills/truthmark-realize/SKILL.md",
+      workflowId: "truthmark-realize",
+      host: "opencode",
+      config,
+    }),
     {
       path: TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH,
       content: renderTruthmarkOpenCodeRouteAuditorAgent(),
@@ -194,29 +224,48 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   ];
 };
 
-const claudeFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[] => {
+const claudeFiles = (
+  config: TruthmarkConfig,
+  block: string,
+): GeneratedSurface[] => {
   return [
     ...instructionBlockFiles(["CLAUDE.md"], block),
-    {
-      path: ".claude/skills/truthmark-structure/SKILL.md",
-      content: renderTruthmarkStructureClaudeSkill(config),
-    },
-    {
-      path: ".claude/skills/truthmark-document/SKILL.md",
-      content: renderTruthmarkDocumentClaudeSkill(config),
-    },
-    {
-      path: ".claude/skills/truthmark-sync/SKILL.md",
-      content: renderTruthmarkSyncClaudeSkill(config),
-    },
-    {
-      path: ".claude/skills/truthmark-check/SKILL.md",
-      content: renderTruthmarkCheckClaudeSkill(config),
-    },
-    {
-      path: ".claude/skills/truthmark-realize/SKILL.md",
-      content: renderTruthmarkRealizeLocalSkill(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-structure/SKILL.md",
+      workflowId: "truthmark-structure",
+      host: "claude-code",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-document/SKILL.md",
+      workflowId: "truthmark-document",
+      host: "claude-code",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "claude-code",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-preview/SKILL.md",
+      workflowId: "truthmark-preview",
+      host: "claude-code",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-check/SKILL.md",
+      workflowId: "truthmark-check",
+      host: "claude-code",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".claude/skills/truthmark-realize/SKILL.md",
+      workflowId: "truthmark-realize",
+      host: "claude-code",
+      config,
+    }),
     {
       path: TRUTHMARK_CLAUDE_ROUTE_AUDITOR_AGENT_PATH,
       content: renderTruthmarkClaudeRouteAuditorAgent(),
@@ -236,7 +285,10 @@ const claudeFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[]
   ];
 };
 
-const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[] => {
+const copilotFiles = (
+  config: TruthmarkConfig,
+  block: string,
+): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
     ...instructionBlockFiles([".github/copilot-instructions.md"], block),
     {
@@ -250,6 +302,10 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
     {
       path: TRUTHMARK_COPILOT_SYNC_PROMPT_PATH,
       content: renderTruthmarkCopilotSyncPrompt(config),
+    },
+    {
+      path: TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH,
+      content: renderTruthmarkCopilotPreviewPrompt(config),
     },
     {
       path: TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
@@ -280,7 +336,10 @@ const copilotFiles = (config: TruthmarkConfig, block: string): GeneratedSurface[
   return files;
 };
 
-const instructionBlockFiles = (paths: string[], block: string): GeneratedSurface[] => {
+const instructionBlockFiles = (
+  paths: string[],
+  block: string,
+): GeneratedSurface[] => {
   return paths.map((path) => ({
     path,
     content: block,
@@ -318,6 +377,10 @@ const filesForPlatform = (
           content: renderTruthmarkGeminiSyncCommand(config),
         },
         {
+          path: TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
+          content: renderTruthmarkGeminiPreviewCommand(config),
+        },
+        {
           path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
           content: renderTruthmarkGeminiCheckCommand(config),
         },
@@ -335,10 +398,12 @@ export const renderGeneratedSurfaces = (
 ): GeneratedSurface[] => {
   const files = [
     ...instructionBlockFiles(config.instructionTargets, block),
-    ...config.platforms.flatMap((platform) => filesForPlatform(platform, config, block)),
+    ...config.platforms.flatMap((platform) =>
+      filesForPlatform(platform, config, block),
+    ),
   ];
 
-  return Array.from(new Map(files.map((file) => [file.path, file])).values()).sort((left, right) =>
-    left.path.localeCompare(right.path),
-  );
+  return Array.from(
+    new Map(files.map((file) => [file.path, file])).values(),
+  ).sort((left, right) => left.path.localeCompare(right.path));
 };

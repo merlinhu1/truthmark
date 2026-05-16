@@ -81,8 +81,7 @@ Parent post-sync verification:
 - verify only truth docs and leased truth routing files changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
-- for each write lease, compare actual changed files against allowedWrites and forbiddenWrites before accepting a worker report
-- verify the worker report matches the required headings and sections
+- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired

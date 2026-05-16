@@ -1,7 +1,7 @@
 interface:
   display_name: "Truthmark Structure"
-  short_description: "Design or repair Truthmark area routing"
-  default_prompt: "Use $truthmark-structure to design or repair Truthmark area routing."
+  short_description: "Design, repair, or set up Truthmark area routing"
+  default_prompt: "Use $truthmark-structure to design, repair, or set up Truthmark area routing."
 
 policy:
   allow_implicit_invocation: false

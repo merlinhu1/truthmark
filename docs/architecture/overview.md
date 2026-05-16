@@ -36,7 +36,7 @@ The durable surfaces are ordinary repository files:
 - [docs/truthmark/areas.md](../truthmark/areas.md)
 - canonical docs under `docs/`
 - the managed Truthmark block inside [AGENTS.md](../../AGENTS.md)
-- generated Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check surfaces under `.codex/skills/`, `.opencode/skills/`, `.claude/skills/`, `.github/prompts/`, and `.gemini/commands/truthmark/`
+- generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check surfaces under `.codex/skills/`, `.opencode/skills/`, `.claude/skills/`, `.github/prompts/`, and `.gemini/commands/truthmark/`
 - Codex workflow metadata under `.codex/skills/truthmark-*/agents/openai.yaml`
 - configured platform instruction files such as [AGENTS.md](../../AGENTS.md), `CLAUDE.md`, `.github/copilot-instructions.md`, and `GEMINI.md`
 
@@ -77,7 +77,7 @@ Key implementation surfaces:
 
 ### Installed workflow support
 
-Truthmark also contains support primitives for the installed Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check workflows:
+Truthmark also contains support primitives for the installed Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check workflows:
 
 - `src/templates/agents-block.ts` renders compact managed instruction blocks
 - `src/agents/*` renders detailed workflow and skill text for explicit workflow invocation
@@ -86,7 +86,7 @@ Truthmark also contains support primitives for the installed Truth Structure, Tr
 - `src/sync/*` classifies functional-code paths and renders Truth Sync reports
 - `src/realize/report.ts` renders the Truth Realize completion report shape
 
-These modules support the installed workflow contract even though V1 does not expose dedicated CLI entrypoints for the installed Truth Structure, Truth Document, Truth Sync, Truth Realize, or Truth Check workflows.
+These modules support the installed workflow contract even though V1 does not expose dedicated CLI entrypoints for the installed Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, or Truth Check workflows.
 
 ## Architecture Doc Boundary
 

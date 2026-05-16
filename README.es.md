@@ -96,6 +96,7 @@ Truthmark convierte la verdad del repositorio en una superficie explícita de fl
 - `docs/truthmark/areas.md` y los archivos de rutas secundarias delegadas asignan áreas de código a los documentos que las gobiernan.
 - Truth Document genera o repara documentos de verdad canónica para comportamiento ya implementado cuando no hace falta cambiar código.
 - Truth Sync mantiene alineados los documentos de verdad asignados cuando hay cambios funcionales.
+- Truth Preview previsualiza el enrutamiento de flujo probable antes de editar, sin autorizar escrituras.
 - Truth Realize ofrece a los cambios que empiezan en documentación una ruta acotada para actualizar código.
 - `truthmark check` valida los artefactos de verdad resultantes.
 - Todo el modelo se mantiene local-first y nativo de Git.
@@ -213,19 +214,25 @@ Codex, Claude Code y los IDEs de Copilot compatibles pueden invocarlo con `/trut
 
 Truthmark mantiene pequeña y nativa del repositorio la superficie duradera de flujo de trabajo. Después de `truthmark init`, el propio repositorio lleva el enrutamiento, las reglas y las superficies instaladas, así que el equipo no depende solo de la configuración local de una persona.
 
+Truthmark instala dos superficies distintas:
+
+- comandos CLI orientados a personas, ejecutados por personas o CI para configurar el repositorio, refrescar archivos instalados, validar artefactos de verdad y generar opcionalmente contexto derivado para revisión
+- superficies de flujo de trabajo para agentes, invocadas por agentes de código u hosts de agentes durante flujos de implementación; no son comandos de terminal diarios adicionales para personas
+
 - `.truthmark/config.yml` para el contrato de jerarquía confirmado y legible por máquina
 - `docs/truthmark/areas.md` para el índice raíz de rutas
 - `docs/truthmark/areas/**/*.md` para archivos de rutas secundarias delegadas
 - `docs/templates/behavior-doc.md` y las demás plantillas específicas por tipo bajo `docs/templates/` para los estándares editables de truth docs usados por los flujos generados
 - bloques de instrucciones administrados para plataformas configuradas como `AGENTS.md`, `CLAUDE.md`, instrucciones de Copilot y `GEMINI.md`
-- skills, prompts o comandos nativos del host para Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check
-- agentes verificadores de Codex, Claude Code, GitHub Copilot y OpenCode con alcance de proyecto, más agentes `truth-doc-writer` con alcance de escritura explícitamente concedido, bajo `.codex/agents/`, `.claude/agents/`, `.github/agents/` y `.opencode/agents/` para auditorías con subagentes propias del flujo y shards de documentación concedidos por el padre
+- skills, prompts o comandos nativos del host para Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize y Truth Check
+- verificadores de solo lectura de Codex, Claude Code, GitHub Copilot y OpenCode con alcance de proyecto, más agentes `truth-doc-writer` con lease donde el host admite agentes, bajo `.codex/agents/`, `.claude/agents/`, `.github/agents/` y `.opencode/agents/` para auditorías propias del flujo y shards de documentación concedidos por el padre
 
 Las superficies de flujo de trabajo instaladas son el entorno de ejecución:
 
 - Truth Structure crea o repara el enrutamiento de áreas y documentos de verdad iniciales.
 - Truth Document crea o repara documentos de verdad para comportamiento ya implementado.
 - Truth Sync mantiene alineados los documentos de verdad asignados con los cambios funcionales.
+- Truth Preview previsualiza el enrutamiento de flujo probable antes de editar sin escribir archivos.
 - Truth Realize actualiza el código para que coincida con los documentos de verdad.
 - Truth Check audita la salud de la verdad del repositorio.
 
@@ -235,37 +242,29 @@ Las superficies generadas son administradas por Truthmark, incluyen un marcador 
 
 ## Comandos
 
-Truthmark V1 mantiene la CLI pequeña a propósito porque el flujo continuo debe vivir en las superficies instaladas del agente, no en una lista larga de comandos manuales de uso diario. En repositorios derivados, `truthmark config` crea el contrato de jerarquía confirmado en Git, `truthmark init` instala y refresca superficies de flujo de trabajo a partir de esa configuración revisada, `truthmark check` valida los artefactos de verdad para auditorías manuales, CI o depuración, y los comandos de inteligencia del repositorio generan artefactos derivados de revisión cuando hay herramientas locales disponibles.
+Truthmark V1 mantiene enfocada la CLI de terminal. La mayoría de los usuarios humanos solo necesita configuración, actualización y validación:
 
-```bash
-truthmark config
-truthmark init
-truthmark check
-truthmark index
-truthmark impact --base main
-truthmark context --workflow truth-sync --base main
-truthmark config --json
-truthmark check --json
-truthmark index --json
-truthmark impact --base main --json
-truthmark context --workflow truth-sync --base main --json
-```
+| CLI orientada a personas | Uso |
+| ------------------------ | --- |
+| `truthmark config` | Crea `.truthmark/config.yml`; solo escribe ese archivo, salvo que se use `--stdout`. |
+| `truthmark init` | Instala o refresca los archivos locales de flujo de trabajo desde la configuración revisada. |
+| `truthmark check` | Valida configuración, autoridad, enrutamiento, documentos que contienen decisiones, frontmatter, enlaces internos, alcance de rama y diagnósticos de cobertura. |
 
-`config` solo escribe `.truthmark/config.yml`, salvo que se use `--stdout`.
+Los demás comandos CLI son ayudantes opcionales de inteligencia del repositorio. Generan contexto derivado para revisión sobre el checkout activo; no son fuentes de verdad:
 
-`init` requiere `.truthmark/config.yml` y luego instala o refresca los archivos locales de flujo de trabajo.
+| CLI opcional | Uso |
+| ------------ | --- |
+| `truthmark index` | Construye JSON de RepoIndex y RouteMap para el checkout activo. |
+| `truthmark impact --base <ref>` | Mapea los archivos cambiados a truth docs enrutados, rutas propietarias, pruebas cercanas y símbolos públicos. |
+| `truthmark context --workflow <workflow> [--base <ref>]` | Genera un ContextPack acotado para Truth Sync, Truth Document o Truth Realize. `--format markdown` lo renderiza en un formato legible para personas. |
 
-`check` valida configuración, autoridad, enrutamiento, documentos que contienen decisiones, frontmatter, enlaces internos, alcance de rama y diagnósticos de cobertura.
+Todos los comandos CLI anteriores admiten `--json` cuando la salida estructurada es útil para automatización.
 
-`index` construye JSON de RepoIndex y RouteMap para el checkout activo.
-
-`impact --base <ref>` mapea los archivos cambiados a los truth docs enrutados, rutas propietarias, pruebas cercanas y símbolos públicos.
-
-`context --workflow <workflow> [--base <ref>]` genera un ContextPack acotado para Truth Sync, Truth Document o Truth Realize. `--format markdown` lo renderiza en un formato legible para personas.
-
-Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check son flujos de trabajo instalados para agentes, no comandos CLI principales de uso diario.
+Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize y Truth Check son flujos de trabajo instalados para agentes, no comandos CLI principales de uso diario.
 
 Se ejecutan a través de las superficies configuradas del host agente, por ejemplo Codex/Claude/Copilot `/truthmark-*`, OpenCode `/skill truthmark-*` o Gemini `/truthmark:*`.
+
+Estas invocaciones parecen comandos porque los hosts de agentes exponen skills mediante slash commands. Trátalas como instrucciones para un agente, no como comandos de terminal que una persona deba ejecutar.
 
 ```text
 /truthmark-check audita el enrutamiento y la cobertura de verdad antes de la revisión
@@ -298,7 +297,7 @@ V1 actualmente ofrece:
 - `truthmark impact`
 - `truthmark context`
 - instrucciones de flujo de trabajo administradas en `AGENTS.md`
-- superficies de skill generadas para Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check en los anfitriones de agentes configurados
+- superficies de skill generadas para Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize y Truth Check en los anfitriones de agentes configurados
 - metadatos de alcance de rama
 - diagnósticos de configuración, autoridad, enrutamiento, estructura de decisiones, frontmatter, enlaces y cobertura políglota
 - artefactos derivados de RepoIndex, RouteMap, ImpactSet y ContextPack para una revisión local más rápida cuando la CLI está disponible

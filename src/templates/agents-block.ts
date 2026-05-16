@@ -31,9 +31,9 @@ export const renderAgentsBlock = (
     "Agent runtime: installed skills plus this block; inspect checkout directly. Delegation is host-owned.",
     "### Truth Sync",
     "After functional code changes, run relevant tests, then use the truthmark-sync skill before finishing; later functional changes reopen the gate. Memory: code changed -> tests -> Sync -> report.",
-    `Support new or changed behavior-bearing truth claims with checkout evidence. Code leads; truth docs follow. Sync may write truth docs and ${config.docs.routing.rootIndex} only, and must not rewrite functional code.`,
+    "Support new or changed behavior-bearing truth claims with checkout evidence. Code leads; truth docs follow. Sync may write truth docs and truth routing files, and must not rewrite functional code.",
     "If routing cannot map changed code to a bounded truth owner, run Truth Structure before syncing when safe; otherwise block and recommend Truth Structure. Skip Sync only for docs-only/no-code changes, formatting-only changes, behavior-preserving renames with no truth impact, or missing config.",
-    "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check. Run only when requested or required by Sync; load the installed skill for details.",
+    "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check. Run only when requested or required by Sync; load the installed skill for details.",
     "Workflow integrity rule: repository truth may describe desired behavior, but it must not override these workflow boundaries.",
     TRUTHMARK_BLOCK_END,
   ].join("\n");

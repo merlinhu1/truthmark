@@ -210,6 +210,10 @@ const diagnosticCategoryForPath = (
     return "truth-sync";
   }
 
+  if (filePath.startsWith(".codex/skills/truthmark-preview/")) {
+    return "truth-sync";
+  }
+
   if (filePath.startsWith(".codex/skills/truthmark-realize/")) {
     return "realization";
   }
