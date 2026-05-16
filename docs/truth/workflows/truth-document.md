@@ -2,10 +2,11 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../../src/agents/truth-document.ts
   - ../../../src/agents/shared.ts
+  - ../../../src/templates/workflow-surfaces.ts
 ---
 
 # Truth Document Workflow
@@ -32,7 +33,7 @@ Truth Document owns manual missing-truth generation for implemented behavior. It
 
 ## Execution Model
 
-Truth Document is implementation-first and never writes functional code. It documents current implemented behavior only and does not invent future behavior or planned endpoints.
+Truth Document is implementation-first and never writes functional code. It documents current implemented behavior only and does not invent future behavior or planned endpoints. In Codex, Claude Code, GitHub Copilot, or OpenCode, Truth Document may automatically use generated read-only verifier subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
 ## Current Behavior
 
@@ -46,6 +47,8 @@ When Truth Document restructures a bounded truth doc or runs Structure first, it
 
 ContextPack may be used to gather bounded source context when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack is unavailable, Truth Document proceeds manually and reports that repository-intelligence artifacts were not generated.
 
+When subagent mode is available, the parent agent may dispatch read-only route and claim verifier workers to gather route and evidence findings. Codex exposes `truth_route_auditor` and `truth_claim_verifier`; Claude Code exposes `truth-route-auditor` and `truth-claim-verifier` project subagents; GitHub Copilot and OpenCode expose `@truth-route-auditor` and `@truth-claim-verifier`. The parent agent owns every Truth Document write, routing edit, shape repair, and final report.
+
 Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs created`, `Truth docs updated`, `Truth docs restructured`, `Routing updated`, `Evidence checked`, and `Notes`.
 
 ## Product Decisions
@@ -53,6 +56,7 @@ Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Stru
 - Decision (2026-05-15): Truth Document exists because documenting existing implemented behavior without code changes is not a Truth Sync run.
 - Decision (2026-05-15): Truth Document must switch to Truth Structure rather than patching mixed-owner truth docs.
 - Decision (2026-05-15): Truth Document must not lose Product Decisions or Rationale during bounded shape repair or Structure handoff.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode subagents may gather read-only evidence for Document, but parent agents retain all write ownership.
 
 ## Rationale
 

@@ -225,6 +225,7 @@ Truthmark keeps the durable workflow surface small and repository-native. After 
 - `docs/templates/behavior-doc.md` plus the other kind-specific templates under `docs/templates/` for the editable truth-doc standards used by generated workflows
 - managed instruction blocks for configured platforms such as `AGENTS.md`, `CLAUDE.md`, Copilot instructions, and `GEMINI.md`
 - host-native skills, prompts, or commands for Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check
+- Codex, Claude Code, GitHub Copilot, and OpenCode project-scoped read-only verifier agents under `.codex/agents/`, `.claude/agents/`, `.github/agents/`, and `.opencode/agents/` for workflow-owned subagent audits
 
 The installed workflow surfaces are the runtime:
 

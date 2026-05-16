@@ -8,10 +8,11 @@ import {
   renderTruthStructureSkillBody,
 } from "../../src/agents/truth-structure.js";
 import {
+  renderTruthmarkStructureClaudeSkill,
   renderTruthmarkStructureLocalSkill,
   renderTruthmarkStructureSkill,
   renderTruthmarkStructureSkillMetadata,
-} from "../../src/templates/codex-skills.js";
+} from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthStructureSkillBody", () => {
@@ -203,6 +204,21 @@ describe("Truth Structure generated surfaces", () => {
     );
     expect(renderTruthmarkStructureLocalSkill()).toContain(
       "/truthmark:structure",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "Claude Code subagent mode:",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "use automatically when this workflow runs in Claude Code",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "truth-route-auditor subagent",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "Parent agent owns all Truth Structure writes and final topology decisions",
+    );
+    expect(renderTruthmarkStructureLocalSkill()).not.toContain(
+      "Claude Code subagent mode:",
     );
     expect(renderTruthmarkStructureSkillMetadata()).toContain(
       'display_name: "Truthmark Structure"',

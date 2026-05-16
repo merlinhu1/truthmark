@@ -3,7 +3,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 # Truthmark Document
@@ -45,6 +45,11 @@ Evidence Gate:
 - tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
 - remove, narrow, or block unsupported claims
 - if no truth doc changed, report why current truth was already sufficient or why documentation was blocked
+Codex subagent mode:
+- use automatically when this workflow runs in Codex and the parent agent chooses bounded subagent fan-out
+- dispatch read-only project agents only: truth_route_auditor, truth_claim_verifier
+- workers inspect checkout evidence directly, return structured findings, and must not edit files
+- Parent agent owns all Truth Document writes
 Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
 If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.

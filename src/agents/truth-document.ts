@@ -7,6 +7,10 @@ import {
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderClaudeSubagentModeSection,
+  renderCodexSubagentModeSection,
+  renderCopilotCustomAgentModeSection,
+  renderOpenCodeSubagentModeSection,
   renderClaimEvidenceCheckedSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
@@ -63,8 +67,39 @@ Notes:
 
 export const renderTruthDocumentSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
+  const claudeSubagentMode = options.includeClaudeSubagentMode
+    ? `${renderClaudeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Document writes",
+      )}\n`
+    : "";
+  const codexSubagentMode = options.includeCodexSubagentMode
+    ? `${renderCodexSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Document writes",
+      )}\n`
+    : "";
+  const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
+    ? `${renderCopilotCustomAgentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Document writes",
+      )}\n`
+    : "";
+  const openCodeSubagentMode = options.includeOpenCodeSubagentMode
+    ? `${renderOpenCodeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Document writes",
+      )}\n`
+    : "";
+  const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
   return `---
 name: truthmark-document
@@ -103,7 +138,7 @@ ${renderRouteFirstEvidenceGateSection(
     "the documented behavior",
     "if no truth doc changed, report why current truth was already sufficient or why documentation was blocked",
   )}
-${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
+${subagentMode}${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
     "Truth Document may restructure only truth docs for the implemented behavior being documented.",

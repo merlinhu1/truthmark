@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: agent-guide
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-16
 source_of_truth:
   - repo-rules.md
   - ../README.md
@@ -47,7 +47,7 @@ Read:
 1. [.truthmark/config.yml](../../.truthmark/config.yml)
 2. [docs/truth/workflows/overview.md](../truth/workflows/overview.md) and the relevant workflow leaf doc under `docs/truth/workflows/`
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
-4. [docs/ai/agent-skills-workflow-review.md](agent-skills-workflow-review.md)
+4. The manifest, renderer, generated surfaces, and focused tests named by the workflow truth docs
 
 ### Package version changes
 

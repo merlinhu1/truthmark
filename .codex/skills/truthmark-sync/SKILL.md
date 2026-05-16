@@ -3,7 +3,7 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -18,6 +18,11 @@ Parent workflow:
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+Codex subagent mode:
+- use automatically when this workflow runs in Codex and the parent agent chooses bounded subagent fan-out
+- dispatch read-only project agents only: truth_route_auditor, truth_claim_verifier
+- workers inspect checkout evidence directly, return structured findings, and must not edit files
+- Parent agent owns all Truth Sync writes
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -75,26 +80,6 @@ Truthmark hierarchy:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
-### Truth Sync Worker
-The parent provides the task focus and any repository context already gathered.
-Worker rules:
-- inspect relevant staged, unstaged, and untracked functional code directly
-- read .truthmark/config.yml, docs/truthmark/areas.md, and canonical truth docs directly
-- Code verification is parent-owned; report what was run or why it was not run
-- may write truth docs and docs/truthmark/areas.md only for Truth Sync alignment
-- must not rewrite functional code
-Return result in this shape:
-- status: completed | blocked
-- changedCodeReviewed: string[]
-- ownershipReviewed: string[]
-- structureRequired?: string[]
-- truthDocsUpdated: string[]
-- routingDocsUpdated: string[]
-- truthDocsSplit?: string[]
-- evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
-- notes: string[]
-- blockedReason?: string
-- manualReviewFiles?: string[]
 Parent post-sync verification:
 - verify only truth docs and docs/truthmark/areas.md changed during sync
 - block on any unrelated diff caused by the sync step

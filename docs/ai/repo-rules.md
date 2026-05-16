@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: agent-rules
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../AGENTS.md
   - ../README.md
@@ -48,6 +48,14 @@ Agents inspect the active checkout directly. There is no daemon, database, remot
 12. Follow established module boundaries and existing generated-surface patterns; avoid duplicate surfaces, single-use abstractions, speculative configurability, and impossible-scenario error handling.
 13. Verify the text and file contracts that changed with the narrowest evidence that can falsify them: generated diffs, structured parsers, snapshots, fixture round-trips, build/package/check commands, or focused tests. Do not run broad tests as ceremony when they add no evidence; state skipped checks.
 14. Work surgically and fail visibly: surface assumptions, conflicts, skipped files, blocked ownership, and unverified claims; touch only request-traceable lines, match existing style, checkpoint long workflow or skill edits, and report unrelated issues instead of editing them.
+
+## Instruction Surface Boundary
+
+In `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and `.github/copilot-instructions.md`, only text between `<!-- truthmark:start -->` and `<!-- truthmark:end -->` is the generated Truthmark workflow surface. Repo-local preamble outside those markers should delegate to this file and conditional routing docs, not duplicate completion policy. Do not put this repository's internal policy, completion gates, or maintainer-only standards inside marker-delimited blocks, package templates, installed workflow skills, prompts, or downstream scaffold output.
+
+## Completion Gate
+
+Before declaring changed repository work complete, apply [docs/standards/pre-completion-checklist.md](../standards/pre-completion-checklist.md) and [docs/standards/testing-and-verification.md](../standards/testing-and-verification.md). Skip this gate only for read-only or no-file-change sessions, and state the skip reason when completion or verification would otherwise be expected.
 
 ## Routing
 

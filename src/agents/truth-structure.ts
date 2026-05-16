@@ -6,7 +6,9 @@ import {
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderClaudeSubagentModeSection,
   renderClaimEvidenceCheckedSection,
+  renderCopilotCustomAgentModeSection,
   renderHierarchySummary,
   renderTopologyEvidenceGateSection,
   renderTruthDocOwnershipGateSection,
@@ -58,11 +60,28 @@ Notes:
 
 export const renderTruthStructureSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+  } = {},
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-structure");
+  const claudeSubagentMode = options.includeClaudeSubagentMode
+    ? `${renderClaudeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Structure writes and final topology decisions",
+      )}\n`
+    : "";
+  const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
+    ? `${renderCopilotCustomAgentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Structure writes and final topology decisions",
+      )}\n`
+    : "";
+  const subagentMode = `${claudeSubagentMode}${copilotCustomAgentMode}`;
 
-return `---
+  return `---
 name: truthmark-structure
 description: ${workflow.description}
 argument-hint: Optional area, directory, or routing concern
@@ -81,6 +100,7 @@ Truth Structure is agent-native:
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
+${subagentMode}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 - use ${truthDocsRoot}/**, docs/architecture/**, or docs/standards/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs

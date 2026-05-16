@@ -57,6 +57,10 @@ describe("discoverMarkdownDocuments", () => {
         ".github/prompts/truthmark-sync.prompt.md",
         "# Ignore me\n",
       );
+      await repo.writeFile(
+        ".github/agents/truth-route-auditor.agent.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile("CLAUDE.md", "# Ignore me\n");
       await repo.writeFile("GEMINI.md", "# Ignore me\n");
       await repo.writeFile(

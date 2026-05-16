@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: architecture
-last_reviewed: 2026-05-13
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../.truthmark/config.yml
   - ../truth/contracts.md
@@ -81,7 +81,7 @@ Truthmark also contains support primitives for the installed Truth Structure, Tr
 
 - `src/templates/agents-block.ts` renders compact managed instruction blocks
 - `src/agents/*` renders detailed workflow and skill text for explicit workflow invocation
-- `src/templates/codex-skills.ts` renders generated skill, prompt, command, and metadata content for configured platforms
+- `src/templates/workflow-surfaces.ts` renders generated skill, prompt, command, and metadata content for configured platforms
 - `src/templates/generated-surfaces.ts` assembles configured platform surfaces from the renderers
 - `src/sync/*` classifies functional-code paths and renders Truth Sync reports
 - `src/realize/report.ts` renders the Truth Realize completion report shape
@@ -120,7 +120,7 @@ Current automatic coverage discovery scans common roots such as `src/`, `api/`, 
 - `src/checks/areas.ts`
 - `src/sync/surfaces.ts`
 - `src/agents/instructions.ts`
-- `src/templates/codex-skills.ts`
+- `src/templates/workflow-surfaces.ts`
 - `src/templates/generated-surfaces.ts`
 - `src/templates/agents-block.ts`
 

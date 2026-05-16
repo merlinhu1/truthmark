@@ -3,7 +3,7 @@ name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, or needs split/repair. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 Use this skill to design or repair Truthmark area structure.
@@ -18,6 +18,12 @@ Implementation code and canonical truth docs are inspected evidence for current 
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
+Claude Code subagent mode:
+- use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out
+- dispatch read-only project subagents only: truth-route-auditor subagent
+- subagents inspect checkout evidence directly, return structured findings, and must not edit files
+- Parent agent owns all Truth Structure writes and final topology decisions
+
 When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
 Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
 Align existing docs to that template while preserving accurate authored content.

@@ -2,10 +2,10 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../../src/agents/prompts.ts
-  - ../../../src/templates/codex-skills.ts
+  - ../../../src/templates/workflow-surfaces.ts
   - ../../../src/realize/report.ts
 ---
 

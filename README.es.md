@@ -219,6 +219,7 @@ Truthmark mantiene pequeña y nativa del repositorio la superficie duradera de f
 - `docs/templates/behavior-doc.md` y las demás plantillas específicas por tipo bajo `docs/templates/` para los estándares editables de truth docs usados por los flujos generados
 - bloques de instrucciones administrados para plataformas configuradas como `AGENTS.md`, `CLAUDE.md`, instrucciones de Copilot y `GEMINI.md`
 - skills, prompts o comandos nativos del host para Truth Structure, Truth Document, Truth Sync, Truth Realize y Truth Check
+- agentes verificadores de Codex, Claude Code, GitHub Copilot y OpenCode de solo lectura y con alcance de proyecto bajo `.codex/agents/`, `.claude/agents/`, `.github/agents/` y `.opencode/agents/` para auditorías con subagentes propias del flujo
 
 Las superficies de flujo de trabajo instaladas son el entorno de ejecución:
 

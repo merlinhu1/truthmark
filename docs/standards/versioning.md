@@ -64,10 +64,17 @@ Treat these as published package behavior:
 
 ## Version Change Procedure
 
+Before changing a version number:
+
+1. Identify the previous released version from the latest lower `release/<version>` tag.
+2. Inspect all pending release payload since that previous version: committed branch diff plus staged, unstaged, and untracked files that will ship.
+3. Classify the payload with the decision table above before editing `package.json`.
+4. If the requested new version is lower than the required bump, block the edit and report the required version. Do not accept a patch request for a minor or major payload.
+
 When changing a version number:
 
-1. Decide the bump class before editing the version and state the rationale in the handoff, PR, or release note.
-2. Create or update the matching `changes/` note from [change-notes.md](change-notes.md).
+1. State the previous version, requested version, required bump class, and SemVer rationale in the handoff, PR, or release note.
+2. Create or update the matching `changes/` note from [change-notes.md](change-notes.md), covering the full release payload since the previous version.
 3. Update `package.json` and the root package entries in `package-lock.json` together.
 4. Rerun `truthmark init` only when the package version actually changes, then inspect generated version-marker diffs.
 5. Run the focused verification required by [testing-and-verification.md](testing-and-verification.md). For release-sensitive package version changes, `npm run release:check` is the default final gate.
@@ -78,6 +85,7 @@ When reporting a package version decision, state only:
 
 - chosen version action
 - one-line SemVer rationale
+- whether the requested version matched the required bump
 - files changed or intentionally left unchanged
 - matching change note path when a version changes
 - verification run or explicitly skipped

@@ -182,6 +182,9 @@ describe("runInit", () => {
       const syncOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
       );
+      const syncCopilotPrompt = await repo.readFile(
+        ".github/prompts/truthmark-sync.prompt.md",
+      );
       const realizeSkill = await repo.readFile(
         ".codex/skills/truthmark-realize/SKILL.md",
       );
@@ -199,6 +202,42 @@ describe("runInit", () => {
       );
       const checkOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-check/SKILL.md",
+      );
+      const routeAuditorAgent = await repo.readFile(
+        ".codex/agents/truth-route-auditor.toml",
+      );
+      const claimVerifierAgent = await repo.readFile(
+        ".codex/agents/truth-claim-verifier.toml",
+      );
+      const docReviewerAgent = await repo.readFile(
+        ".codex/agents/truth-doc-reviewer.toml",
+      );
+      const openCodeRouteAuditorAgent = await repo.readFile(
+        ".opencode/agents/truth-route-auditor.md",
+      );
+      const openCodeClaimVerifierAgent = await repo.readFile(
+        ".opencode/agents/truth-claim-verifier.md",
+      );
+      const openCodeDocReviewerAgent = await repo.readFile(
+        ".opencode/agents/truth-doc-reviewer.md",
+      );
+      const copilotRouteAuditorAgent = await repo.readFile(
+        ".github/agents/truth-route-auditor.agent.md",
+      );
+      const copilotClaimVerifierAgent = await repo.readFile(
+        ".github/agents/truth-claim-verifier.agent.md",
+      );
+      const copilotDocReviewerAgent = await repo.readFile(
+        ".github/agents/truth-doc-reviewer.agent.md",
+      );
+      const claudeRouteAuditorAgent = await repo.readFile(
+        ".claude/agents/truth-route-auditor.md",
+      );
+      const claudeClaimVerifierAgent = await repo.readFile(
+        ".claude/agents/truth-claim-verifier.md",
+      );
+      const claudeDocReviewerAgent = await repo.readFile(
+        ".claude/agents/truth-doc-reviewer.md",
       );
       const claudeInstructions = await repo.readFile("CLAUDE.md");
       const syncClaudeSkill = await repo.readFile(
@@ -258,6 +297,9 @@ describe("runInit", () => {
       );
       expect(documentSkillMetadata).toContain("allow_implicit_invocation: false");
       expect(documentOpenCodeSkill).toContain("name: truthmark-document");
+      expect(documentOpenCodeSkill).toContain("OpenCode subagent mode:");
+      expect(documentOpenCodeSkill).toContain("@truth-route-auditor");
+      expect(documentOpenCodeSkill).toContain("@truth-claim-verifier");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain("user-invocable: true");
       expect(syncSkill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
@@ -285,10 +327,19 @@ describe("runInit", () => {
       expect(syncOpenCodeSkill).toContain(
         "Use this skill automatically before finishing",
       );
+      expect(syncOpenCodeSkill).toContain("OpenCode subagent mode:");
+      expect(syncOpenCodeSkill).toContain("@truth-route-auditor");
+      expect(syncOpenCodeSkill).toContain("@truth-claim-verifier");
+      expect(syncCopilotPrompt).toContain("Copilot custom-agent mode:");
+      expect(syncCopilotPrompt).toContain("@truth-route-auditor");
+      expect(syncCopilotPrompt).toContain("@truth-claim-verifier");
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
       );
+      expect(syncClaudeSkill).toContain("Claude Code subagent mode:");
+      expect(syncClaudeSkill).toContain("truth-route-auditor subagent");
+      expect(syncClaudeSkill).toContain("truth-claim-verifier subagent");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain("user-invocable: true");
       expect(realizeSkill).toContain("may write functional code only");
@@ -305,8 +356,46 @@ describe("runInit", () => {
       );
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("Truth Check: completed");
+      expect(checkSkill).toContain("Codex subagent mode:");
       expect(checkSkillMetadata).toContain('display_name: "Truthmark Check"');
       expect(checkOpenCodeSkill).toContain("name: truthmark-check");
+      expect(checkOpenCodeSkill).toContain("OpenCode subagent mode:");
+      expect(checkOpenCodeSkill).toContain("@truth-route-auditor");
+      expect(checkOpenCodeSkill).toContain("@truth-claim-verifier");
+      expect(checkOpenCodeSkill).toContain("@truth-doc-reviewer");
+      expect(routeAuditorAgent).toContain('name = "truth_route_auditor"');
+      expect(routeAuditorAgent).toContain('sandbox_mode = "read-only"');
+      expect(claimVerifierAgent).toContain('name = "truth_claim_verifier"');
+      expect(claimVerifierAgent).toContain('sandbox_mode = "read-only"');
+      expect(docReviewerAgent).toContain('name = "truth_doc_reviewer"');
+      expect(docReviewerAgent).toContain('sandbox_mode = "read-only"');
+      expect(openCodeRouteAuditorAgent).toContain("mode: subagent");
+      expect(openCodeRouteAuditorAgent).toContain("edit: deny");
+      expect(openCodeClaimVerifierAgent).toContain("mode: subagent");
+      expect(openCodeClaimVerifierAgent).toContain("edit: deny");
+      expect(openCodeDocReviewerAgent).toContain("mode: subagent");
+      expect(openCodeDocReviewerAgent).toContain("edit: deny");
+      expect(copilotRouteAuditorAgent).toContain("name: truth-route-auditor");
+      expect(copilotRouteAuditorAgent).toContain("tools: [read, search]");
+      expect(copilotRouteAuditorAgent).toContain("Stay read-only.");
+      expect(copilotClaimVerifierAgent).toContain(
+        "name: truth-claim-verifier",
+      );
+      expect(copilotClaimVerifierAgent).toContain("unsupportedClaims");
+      expect(copilotDocReviewerAgent).toContain("name: truth-doc-reviewer");
+      expect(copilotDocReviewerAgent).toContain("recommendedWorkflow");
+      expect(claudeRouteAuditorAgent).toContain("name: truth-route-auditor");
+      expect(claudeRouteAuditorAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeRouteAuditorAgent).toContain(
+        "Manual invocation: use the truth-route-auditor subagent",
+      );
+      expect(claudeRouteAuditorAgent).toContain("Do not edit files");
+      expect(claudeClaimVerifierAgent).toContain("name: truth-claim-verifier");
+      expect(claudeClaimVerifierAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeClaimVerifierAgent).toContain("Do not edit files");
+      expect(claudeDocReviewerAgent).toContain("name: truth-doc-reviewer");
+      expect(claudeDocReviewerAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeDocReviewerAgent).toContain("Rationale");
       await expect(
         fs.stat(`${repo.rootDir}/skills/truthmark-structure/SKILL.md`),
       ).rejects.toThrow();
@@ -348,6 +437,13 @@ describe("runInit", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
+            diagnostic.file === ".claude/agents/truth-route-auditor.md",
+        ),
+      ).toBe(true);
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "truth-sync" &&
             diagnostic.file === ".codex/skills/truthmark-structure/SKILL.md",
         ),
       ).toBe(true);
@@ -363,6 +459,13 @@ describe("runInit", () => {
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
             diagnostic.file === ".codex/skills/truthmark-check/SKILL.md",
+        ),
+      ).toBe(true);
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "truth-sync" &&
+            diagnostic.file === ".opencode/agents/truth-route-auditor.md",
         ),
       ).toBe(true);
       expect(
@@ -579,6 +682,18 @@ ignore: []
         await repo.readFile(".claude/skills/truthmark-document/SKILL.md"),
       ).toContain("Claude Code /truthmark-document");
       expect(
+        await repo.readFile(".claude/skills/truthmark-document/SKILL.md"),
+      ).toContain("Claude Code subagent mode:");
+      expect(
+        await repo.readFile(".claude/agents/truth-route-auditor.md"),
+      ).toContain("name: truth-route-auditor");
+      expect(
+        await repo.readFile(".claude/agents/truth-claim-verifier.md"),
+      ).toContain("tools: Read, Grep, Glob, LS");
+      expect(
+        await repo.readFile(".claude/agents/truth-doc-reviewer.md"),
+      ).toContain("recommendedWorkflow");
+      expect(
         await repo.readFile(".claude/skills/truthmark-check/SKILL.md"),
       ).toContain("name: truthmark-check");
       expect(
@@ -621,8 +736,17 @@ ignore: []
         await repo.readFile(".github/prompts/truthmark-sync.prompt.md"),
       ).toContain("GitHub Copilot /truthmark-sync");
       expect(
+        await repo.readFile(".github/agents/truth-route-auditor.agent.md"),
+      ).toContain("tools: [read, search]");
+      expect(
+        await repo.readFile(".github/agents/truth-claim-verifier.agent.md"),
+      ).toContain("unsupportedClaims");
+      expect(
         await repo.readFile(".github/prompts/truthmark-structure.prompt.md"),
       ).toContain("name: truthmark-structure");
+      expect(
+        await repo.readFile(".github/prompts/truthmark-structure.prompt.md"),
+      ).toContain("@truth-route-auditor");
       expect(
         await repo.readFile(".github/prompts/truthmark-document.prompt.md"),
       ).toContain("GitHub Copilot /truthmark-document");
@@ -632,6 +756,9 @@ ignore: []
       expect(
         await repo.readFile(".github/prompts/truthmark-realize.prompt.md"),
       ).toContain("GitHub Copilot /truthmark-realize");
+      expect(
+        await repo.readFile(".github/agents/truth-doc-reviewer.agent.md"),
+      ).toContain("recommendedWorkflow");
       await expect(
         fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
       ).rejects.toThrow();

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderTruthRealizePrompt } from "../../src/agents/prompts.js";
-import { renderTruthmarkRealizeSkill } from "../../src/templates/codex-skills.js";
+import { renderTruthmarkRealizeSkill } from "../../src/templates/workflow-surfaces.js";
 
 describe("renderTruthRealizePrompt", () => {
   it("renders manual doc-first realization guidance without a dedicated CLI command", () => {

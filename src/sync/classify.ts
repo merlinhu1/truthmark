@@ -168,6 +168,7 @@ export const classifyPath = (
     normalizedPath.startsWith(".gemini/commands/") ||
     normalizedPath.startsWith(".opencode/") ||
     normalizedPath === ".github/copilot-instructions.md" ||
+    normalizedPath.startsWith(".github/agents/truth-") ||
     normalizedPath.startsWith(".github/prompts/truthmark-") ||
     normalizedPath === "AGENTS.md" ||
     normalizedPath === "CLAUDE.md" ||

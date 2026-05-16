@@ -3,7 +3,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 # Truthmark Check
@@ -30,6 +30,12 @@ Evidence Gate:
 - support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests
 - canonical docs are context, not sole proof when implementation conflicts
 - remove unsupported findings or mark open questions; validate changed claims if you edit docs
+
+OpenCode subagent mode:
+- use automatically when this workflow runs in OpenCode and the parent agent chooses bounded subagent fan-out
+- dispatch read-only project subagents only: @truth-route-auditor, @truth-claim-verifier, @truth-doc-reviewer
+- workers inspect checkout evidence directly, return structured findings, and must not edit files
+- Parent agent owns the final Truth Check report
 
 Truthmark hierarchy:
 - Config: .truthmark/config.yml

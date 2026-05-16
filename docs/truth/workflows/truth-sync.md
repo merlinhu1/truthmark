@@ -2,11 +2,12 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../../src/agents/truth-sync.ts
   - ../../../src/sync/report.ts
   - ../../../src/agents/shared.ts
+  - ../../../src/templates/workflow-surfaces.ts
 ---
 
 # Truth Sync Workflow
@@ -33,7 +34,7 @@ Truth Sync is code-first. Code leads, truth docs follow, and functional code mus
 
 ## Execution Model
 
-Truth Sync may update routed truth docs and routing when routing repair is needed. It may create missing canonical truth docs when routeable implementation would otherwise remain undocumented.
+Truth Sync may update routed truth docs and routing when routing repair is needed. It may create missing canonical truth docs when routeable implementation would otherwise remain undocumented. In Codex, Claude Code, GitHub Copilot, or OpenCode, Truth Sync may automatically use generated read-only verifier subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
 ## Current Behavior
 
@@ -61,7 +62,7 @@ Current skip reasons are:
 
 Truth Sync's generated frontmatter description and Codex metadata carry those skip cases because skill metadata is the host-visible routing boundary before the full workflow body is loaded.
 
-Truth Sync delegation is host-owned. Generated workflow surfaces may describe when delegation is allowed, but must not name a preferred subagent or project-local subagent preference file.
+Truth Sync delegation is host-owned. Generated workflow surfaces may describe when delegation is allowed, but must not name writable subagents or a project-local subagent preference file. Codex, Claude Code, GitHub Copilot, and OpenCode generated surfaces may name project-scoped read-only verifier agents for workflow-owned automatic verification; the parent workflow still owns all truth-doc and routing writes.
 
 ## Product Decisions
 
@@ -69,6 +70,7 @@ Truth Sync delegation is host-owned. Generated workflow surfaces may describe wh
 - Decision (2026-05-15): Truth Sync must not worsen weak topology by adding generic truth docs behind missing, stale, broad, overloaded, catch-all, or unrouteable routing.
 - Decision (2026-05-15): Truth Sync must switch to Truth Structure or block when impacted truth docs are mixed-owner or broad.
 - Decision (2026-05-15): Truth Sync must not lose Product Decisions or Rationale during bounded shape repair or inline Structure handoff.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode subagents may automatically gather read-only route and claim evidence for Sync when host-supported, but parent agents retain all write ownership.
 
 ## Rationale
 
@@ -78,7 +80,7 @@ Truth Sync is the finish-time bridge from code to truth, so it must protect rout
 
 - no functional-code rewrites during sync
 - no generic docs behind weak routing
-- no preferred subagent baked into generated surfaces
+- no writable subagent ownership baked into generated surfaces
 
 ## Maintenance Notes
 

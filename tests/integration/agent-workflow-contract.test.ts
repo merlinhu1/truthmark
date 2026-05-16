@@ -44,6 +44,15 @@ describe("installed workflow contract", () => {
       const checkSkill = await repo.readFile(
         ".codex/skills/truthmark-check/SKILL.md",
       );
+      const routeAuditorAgent = await repo.readFile(
+        ".codex/agents/truth-route-auditor.toml",
+      );
+      const openCodeRouteAuditorAgent = await repo.readFile(
+        ".opencode/agents/truth-route-auditor.md",
+      );
+      const claudeRouteAuditorAgent = await repo.readFile(
+        ".claude/agents/truth-route-auditor.md",
+      );
 
       expect(agents.split("\n").length).toBeLessThanOrEqual(20);
       expect(agents).not.toContain("### Truth Structure");
@@ -88,6 +97,8 @@ describe("installed workflow contract", () => {
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
       );
+      expect(syncClaudeSkill).toContain("Claude Code subagent mode:");
+      expect(syncClaudeSkill).toContain("truth-route-auditor subagent");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain(
         "Use this skill only when the user explicitly asks",
@@ -99,6 +110,14 @@ describe("installed workflow contract", () => {
       expect(realizeOpenCodeSkill).toContain("Truth Realize: completed");
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("Truth Check: completed");
+      expect(checkSkill).toContain("truth_route_auditor");
+      expect(routeAuditorAgent).toContain('sandbox_mode = "read-only"');
+      expect(routeAuditorAgent).toContain("Do not edit files");
+      expect(openCodeRouteAuditorAgent).toContain("mode: subagent");
+      expect(openCodeRouteAuditorAgent).toContain("edit: deny");
+      expect(claudeRouteAuditorAgent).toContain("name: truth-route-auditor");
+      expect(claudeRouteAuditorAgent).toContain("tools: Read, Grep, Glob, LS");
+      expect(claudeRouteAuditorAgent).toContain("Do not edit files");
       await expect(
         repo.readFile("skills/truthmark-sync/SKILL.md"),
       ).rejects.toThrow();

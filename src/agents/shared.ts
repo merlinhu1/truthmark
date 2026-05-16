@@ -111,6 +111,63 @@ export const renderAuditEvidenceGateSection = (): string => {
   ].join("\n");
 };
 
+export const renderCodexSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+): string => {
+  return [
+    "Codex subagent mode:",
+    "- use automatically when this workflow runs in Codex and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project agents only: ${agents.join(", ")}`,
+    "- workers inspect checkout evidence directly, return structured findings, and must not edit files",
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderOpenCodeSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  return [
+    "OpenCode subagent mode:",
+    "- use automatically when this workflow runs in OpenCode and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project subagents only: ${mentions.join(", ")}`,
+    "- workers inspect checkout evidence directly, return structured findings, and must not edit files",
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderClaudeSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+): string => {
+  const mentions = agents.map((agent) => `${agent.replace(/_/gu, "-")} subagent`);
+
+  return [
+    "Claude Code subagent mode:",
+    "- use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project subagents only: ${mentions.join(", ")}`,
+    "- subagents inspect checkout evidence directly, return structured findings, and must not edit files",
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderCopilotCustomAgentModeSection = (
+  agents: string[],
+  parentRule: string,
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+
+  return [
+    "Copilot custom-agent mode:",
+    "- use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out",
+    `- dispatch read-only project custom agents only: ${mentions.join(", ")}`,
+    "- custom agents inspect checkout evidence directly, return structured findings, and must not edit files",
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
 export const defaultAgentConfig = (): TruthmarkConfig => {
   return createDefaultConfig();
 };

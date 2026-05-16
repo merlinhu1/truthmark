@@ -163,7 +163,7 @@ The command emits `action` diagnostics describing whether each scaffolded file w
 `truthmark init` requires an existing valid `.truthmark/config.yml`. It does not create config; `truthmark config` is the required first step in a new repository.
 Configured `instruction_targets` are generated or refreshed independently of platform-specific surfaces, so `AGENTS.md` remains managed even when `claude-code` is not in `platforms`.
 
-Generated Truth Structure, Truth Document, Truth Sync, and Truth Check surfaces and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
+Generated Truth Structure, Truth Document, Truth Sync, Truth Check, Codex, Claude Code, GitHub Copilot, and OpenCode verifier-agent surfaces, and the managed `AGENTS.md` block use the `truth-sync` diagnostic category.
 
 Current agent-native scaffold targets include:
 
@@ -177,16 +177,25 @@ Current agent-native scaffold targets include:
 - `.codex/skills/truthmark-realize/agents/openai.yaml`
 - `.codex/skills/truthmark-check/SKILL.md`
 - `.codex/skills/truthmark-check/agents/openai.yaml`
+- `.codex/agents/truth-route-auditor.toml`
+- `.codex/agents/truth-claim-verifier.toml`
+- `.codex/agents/truth-doc-reviewer.toml`
 - `.claude/skills/truthmark-structure/SKILL.md`
 - `.claude/skills/truthmark-document/SKILL.md`
 - `.claude/skills/truthmark-sync/SKILL.md`
 - `.claude/skills/truthmark-realize/SKILL.md`
 - `.claude/skills/truthmark-check/SKILL.md`
+- `.claude/agents/truth-route-auditor.md`
+- `.claude/agents/truth-claim-verifier.md`
+- `.claude/agents/truth-doc-reviewer.md`
 - `.opencode/skills/truthmark-structure/SKILL.md`
 - `.opencode/skills/truthmark-document/SKILL.md`
 - `.opencode/skills/truthmark-sync/SKILL.md`
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
+- `.opencode/agents/truth-route-auditor.md`
+- `.opencode/agents/truth-claim-verifier.md`
+- `.opencode/agents/truth-doc-reviewer.md`
 - `AGENTS.md`
 - `CLAUDE.md`
 - `.github/copilot-instructions.md`
@@ -195,6 +204,9 @@ Current agent-native scaffold targets include:
 - `.github/prompts/truthmark-sync.prompt.md`
 - `.github/prompts/truthmark-realize.prompt.md`
 - `.github/prompts/truthmark-check.prompt.md`
+- `.github/agents/truth-route-auditor.agent.md`
+- `.github/agents/truth-claim-verifier.agent.md`
+- `.github/agents/truth-doc-reviewer.agent.md`
 - `GEMINI.md`
 - `.gemini/commands/truthmark/structure.toml`
 - `.gemini/commands/truthmark/document.toml`

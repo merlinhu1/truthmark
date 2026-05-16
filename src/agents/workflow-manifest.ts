@@ -5,6 +5,11 @@ export type TruthmarkWorkflowId =
   | "truthmark-realize"
   | "truthmark-check";
 
+export type TruthmarkSubagentId =
+  | "truth_route_auditor"
+  | "truth_claim_verifier"
+  | "truth_doc_reviewer";
+
 export type TruthmarkWorkflowManifestEntry = {
   id: TruthmarkWorkflowId;
   displayName: string;
@@ -18,6 +23,7 @@ export type TruthmarkWorkflowManifestEntry = {
   requiredGates: string[];
   allowedWrites: string[];
   reportSections: string[];
+  subagents?: TruthmarkSubagentId[];
 };
 
 export const TRUTHMARK_WORKFLOW_MANIFEST = {
@@ -63,6 +69,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Evidence checked",
       "Notes",
     ],
+    subagents: ["truth_route_auditor", "truth_claim_verifier"],
   },
   "truthmark-structure": {
     id: "truthmark-structure",
@@ -104,6 +111,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Topology decisions",
       "Notes",
     ],
+    subagents: ["truth_route_auditor"],
   },
   "truthmark-document": {
     id: "truthmark-document",
@@ -145,6 +153,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Evidence checked",
       "Notes",
     ],
+    subagents: ["truth_route_auditor", "truth_claim_verifier"],
   },
   "truthmark-realize": {
     id: "truthmark-realize",
@@ -198,6 +207,11 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Fixes suggested",
       "Evidence checked",
       "Validation",
+    ],
+    subagents: [
+      "truth_route_auditor",
+      "truth_claim_verifier",
+      "truth_doc_reviewer",
     ],
   },
 } satisfies Record<TruthmarkWorkflowId, TruthmarkWorkflowManifestEntry>;

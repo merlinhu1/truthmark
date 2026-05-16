@@ -109,6 +109,9 @@ describe("classifyPath", () => {
     expect(classifyPath(".github/prompts/truthmark-sync.prompt.md", [])).toBe(
       "derived",
     );
+    expect(classifyPath(".github/agents/truth-route-auditor.agent.md", [])).toBe(
+      "derived",
+    );
     expect(classifyPath("CLAUDE.md", [])).toBe("derived");
     expect(classifyPath("GEMINI.md", [])).toBe("derived");
     expect(classifyPath(".gemini/commands/truthmark/sync.toml", [])).toBe("derived");
