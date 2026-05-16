@@ -13,6 +13,7 @@ export type DiscoveredMarkdownDocument = {
 
 const DISCOVERY_IGNORES = [
   "**/.git/**",
+  "**/.github/agents/**",
   "**/.github/instructions/**",
   "**/.github/prompts/**",
   "**/.claude/**",

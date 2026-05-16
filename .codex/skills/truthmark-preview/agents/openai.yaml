@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Preview"
+  short_description: "Preview likely workflow routing before edits; read-only and explicit"
+  default_prompt: "Use $truthmark-preview to preview likely Truthmark routing before edits."
+
+policy:
+  allow_implicit_invocation: false
+
+truthmark:
+  version: "1.4.0"
+  refresh_command: "truthmark init"

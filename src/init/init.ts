@@ -188,8 +188,12 @@ const diagnosticCategoryForPath = (
     filePath === "GEMINI.md" ||
     filePath === ".github/copilot-instructions.md" ||
     filePath.startsWith(".github/prompts/truthmark-") ||
+    filePath.startsWith(".github/agents/truth-") ||
+    filePath.startsWith(".claude/agents/truth-") ||
     filePath.startsWith(".claude/skills/truthmark-") ||
-    filePath.startsWith(".opencode/skills/truthmark-")
+    filePath.startsWith(".opencode/skills/truthmark-") ||
+    filePath.startsWith(".opencode/agents/") ||
+    filePath.startsWith(".codex/agents/")
   ) {
     return "truth-sync";
   }
@@ -203,6 +207,10 @@ const diagnosticCategoryForPath = (
   }
 
   if (filePath.startsWith(".codex/skills/truthmark-sync/")) {
+    return "truth-sync";
+  }
+
+  if (filePath.startsWith(".codex/skills/truthmark-preview/")) {
     return "truth-sync";
   }
 

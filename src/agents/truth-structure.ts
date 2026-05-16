@@ -6,7 +6,9 @@ import {
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderClaudeSubagentModeSection,
   renderClaimEvidenceCheckedSection,
+  renderCopilotCustomAgentModeSection,
   renderHierarchySummary,
   renderTopologyEvidenceGateSection,
   renderTruthDocOwnershipGateSection,
@@ -37,6 +39,11 @@ Areas reviewed:
 - src/auth/**
 Routing updated:
 - ${config.docs.routing.rootIndex}
+Initial truth boundary:
+- Area: Authentication
+- Code: src/auth/**
+- Truth owner: ${truthDocsRoot}/authentication/session.md
+- Scope: session behavior only
 Truth docs created:
 - ${truthDocsRoot}/authentication/session.md
 Truth docs split:
@@ -58,11 +65,28 @@ Notes:
 
 export const renderTruthStructureSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+  } = {},
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-structure");
+  const claudeSubagentMode = options.includeClaudeSubagentMode
+    ? `${renderClaudeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Structure writes and final topology decisions",
+      )}\n`
+    : "";
+  const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
+    ? `${renderCopilotCustomAgentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns all Truth Structure writes and final topology decisions",
+      )}\n`
+    : "";
+  const subagentMode = `${claudeSubagentMode}${copilotCustomAgentMode}`;
 
-return `---
+  return `---
 name: truthmark-structure
 description: ${workflow.description}
 argument-hint: Optional area, directory, or routing concern
@@ -81,11 +105,27 @@ Truth Structure is agent-native:
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
+${subagentMode}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 - use ${truthDocsRoot}/**, docs/architecture/**, or docs/standards/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs
 - keep active Product Decisions and Rationale in the canonical doc that owns the behavior
 - preserve unrelated authored content
+## New area setup
+Use when a user asks to onboard a new code area into Truthmark, a new package, controller, domain, or product area lacks bounded truth ownership, or a new product area needs routing and starter truth docs.
+Do:
+- inspect the named code area
+- infer bounded product or behavior ownership
+- choose the owning route when ownership is clear; otherwise propose the route and block for review
+- create or update the child route entry or file
+- create starter truth docs only where current truth is missing
+- report the initial truth boundary
+Do not:
+- do not edit functional code
+- do not perform full behavior documentation unless evidence is inspected and the task explicitly asks for it
+- do not patch broad or mixed-owner docs in place
+- do not create generic catch-all docs
+- do not treat README files as Sync targets
 ## Topology Governance
 Truth Structure owns documentation topology. Do not depend on humans to manually organize ${truthDocsRoot}. Treat the configured truth root as a managed semantic root.
 Inspect controllers, routes, handlers, services, packages, tests, existing truth docs, and route files; infer product and domain ownership from behavior boundaries, not from mechanical directory mirroring.

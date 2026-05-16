@@ -8,7 +8,7 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -22,7 +22,17 @@ Parent workflow:
 4. Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-6. Dispatch one bounded Truth Sync worker only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+Copilot custom-agent mode:
+- use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out
+- dispatch read-only project custom agents for verification: @truth-route-auditor, @truth-claim-verifier
+- read-only custom agents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; read-only custom agents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
+- dispatch write-capable project custom agents only with explicit write leases: @truth-doc-writer
+- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields
+- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes
+- parent must inspect the actual checkout diff against each lease before accepting a worker report
+- Parent agent owns Truth Sync acceptance, lease validation, and final report
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -80,31 +90,11 @@ Truthmark hierarchy:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
-### Truth Sync Worker
-The parent provides the task focus and any repository context already gathered.
-Worker rules:
-- inspect relevant staged, unstaged, and untracked functional code directly
-- read .truthmark/config.yml, docs/truthmark/areas.md, and canonical truth docs directly
-- Code verification is parent-owned; report what was run or why it was not run
-- may write truth docs and docs/truthmark/areas.md only for Truth Sync alignment
-- must not rewrite functional code
-Return result in this shape:
-- status: completed | blocked
-- changedCodeReviewed: string[]
-- ownershipReviewed: string[]
-- structureRequired?: string[]
-- truthDocsUpdated: string[]
-- routingDocsUpdated: string[]
-- truthDocsSplit?: string[]
-- evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
-- notes: string[]
-- blockedReason?: string
-- manualReviewFiles?: string[]
 Parent post-sync verification:
-- verify only truth docs and docs/truthmark/areas.md changed during sync
+- verify only truth docs and leased truth routing files changed during sync
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
-- verify the worker report matches the required headings and sections
+- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired

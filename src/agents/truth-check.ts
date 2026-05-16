@@ -2,6 +2,10 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import {
   renderAuditEvidenceCheckedSection,
   renderAuditEvidenceGateSection,
+  renderClaudeSubagentModeSection,
+  renderCodexSubagentModeSection,
+  renderCopilotCustomAgentModeSection,
+  renderOpenCodeSubagentModeSection,
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
@@ -47,8 +51,39 @@ Validation:
 
 export const renderTruthCheckSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-check");
+  const claudeSubagentMode = options.includeClaudeSubagentMode
+    ? `${renderClaudeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns the final Truth Check report",
+      )}\n\n`
+    : "";
+  const codexSubagentMode = options.includeCodexSubagentMode
+    ? `${renderCodexSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns the final Truth Check report",
+      )}\n\n`
+    : "";
+  const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
+    ? `${renderCopilotCustomAgentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns the final Truth Check report",
+      )}\n\n`
+    : "";
+  const openCodeSubagentMode = options.includeOpenCodeSubagentMode
+    ? `${renderOpenCodeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns the final Truth Check report",
+      )}\n\n`
+    : "";
+  const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
   return `---
 name: truthmark-check
@@ -79,7 +114,7 @@ Truth Check is agent-led:
 - if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
 
-${renderHierarchySummary(config)}
+${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
 
 Report completion in this shape:

@@ -1,33 +1,39 @@
----
-status: active
-doc_type: agent-guide
-last_reviewed: 2026-05-15
-source_of_truth:
-  - repo-rules.md
-  - ../truth/workflows/overview.md
-  - ../truth/workflows/shared-gates.md
-  - ../../src/agents/workflow-manifest.ts
-  - ../../.codex/skills/truthmark-sync/SKILL.md
-  - ../../.codex/skills/truthmark-structure/SKILL.md
-  - ../../.codex/skills/truthmark-document/SKILL.md
-  - ../../.codex/skills/truthmark-realize/SKILL.md
-  - ../../.codex/skills/truthmark-check/SKILL.md
-  - https://developers.openai.com/codex/skills
-  - https://developers.openai.com/blog/eval-skills
-  - https://developers.openai.com/blog/skills-shell-tips
-  - https://developers.openai.com/blog/skills-agents-sdk
-  - https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
-  - https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf
-  - https://code.claude.com/docs/en/slash-commands
-  - https://agentskills.io/specification
-  - https://research.perplexity.ai/articles/designing-refining-and-maintaining-agent-skills-at-perplexity
----
+# Agent Skills Workflow Review
 
-This note summarizes external skill-authoring guidance reviewed on 2026-05-15 and applies it to Truthmark's installed project workflows. It is a reference for future workflow-surface changes, not a replacement for [workflow overview](../truth/workflows/overview.md) and the bounded workflow truth docs under `docs/truth/workflows/`.
+Status: research reference
+Date: 2026-05-15
+Audience: Truthmark maintainers
+
+This is a non-canonical research reference. It summarizes external skill-authoring guidance reviewed on 2026-05-15 and applies it to Truthmark's installed project workflows. It must not be treated as current Truthmark behavior unless the behavior-bearing parts are promoted into [workflow overview](../docs/truth/workflows/overview.md), the bounded workflow truth docs under `docs/truth/workflows/`, the workflow manifest, renderers, and tests.
+
+Checkout references:
+
+- [docs/ai/repo-rules.md](../docs/ai/repo-rules.md)
+- [docs/truth/workflows/overview.md](../docs/truth/workflows/overview.md)
+- [docs/truth/workflows/shared-gates.md](../docs/truth/workflows/shared-gates.md)
+- [src/agents/workflow-manifest.ts](../src/agents/workflow-manifest.ts)
+- [src/templates/workflow-surfaces.ts](../src/templates/workflow-surfaces.ts)
+- [.codex/skills/truthmark-sync/SKILL.md](../.codex/skills/truthmark-sync/SKILL.md)
+- [.codex/skills/truthmark-structure/SKILL.md](../.codex/skills/truthmark-structure/SKILL.md)
+- [.codex/skills/truthmark-document/SKILL.md](../.codex/skills/truthmark-document/SKILL.md)
+- [.codex/skills/truthmark-realize/SKILL.md](../.codex/skills/truthmark-realize/SKILL.md)
+- [.codex/skills/truthmark-check/SKILL.md](../.codex/skills/truthmark-check/SKILL.md)
+
+External sources reviewed:
+
+- <https://developers.openai.com/codex/skills>
+- <https://developers.openai.com/blog/eval-skills>
+- <https://developers.openai.com/blog/skills-shell-tips>
+- <https://developers.openai.com/blog/skills-agents-sdk>
+- <https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills>
+- <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
+- <https://code.claude.com/docs/en/slash-commands>
+- <https://agentskills.io/specification>
+- <https://research.perplexity.ai/articles/designing-refining-and-maintaining-agent-skills-at-perplexity>
 
 ## External Links Reviewed
 
-All external links in `source_of_truth` resolved on 2026-05-15. The previous Anthropic Claude Code slash-command URL redirects to `https://code.claude.com/docs/en/slash-commands`; use the canonical redirected URL in this doc.
+All external links above resolved on 2026-05-15. The previous Anthropic Claude Code slash-command URL redirects to `https://code.claude.com/docs/en/slash-commands`; use the canonical redirected URL in this doc.
 
 The Perplexity review adds a stricter standard than this doc previously stated: description metadata is routing logic, not a compact summary of the workflow. Expected outputs and success criteria belong in the body, report contract, or eval rubric.
 
@@ -73,7 +79,7 @@ Truthmark currently installs five workflows across host-specific surfaces:
 | `truthmark-realize` | Realize truth docs into functional code | `allow_implicit_invocation: false` |
 | `truthmark-check` | Audit repository truth health | `allow_implicit_invocation: false` |
 
-Generated runtime surfaces include `.codex/skills/`, `.claude/skills/`, `.opencode/skills/`, `.github/prompts/`, `.gemini/commands/truthmark/`, and compact managed instruction blocks in files such as `AGENTS.md`.
+Generated runtime surfaces include `.codex/skills/`, `.codex/agents/`, `.claude/skills/`, `.opencode/skills/`, `.opencode/agents/`, `.github/prompts/`, `.github/agents/`, `.gemini/commands/truthmark/`, and compact managed instruction blocks in files such as `AGENTS.md`.
 
 Current strengths:
 
@@ -82,6 +88,7 @@ Current strengths:
 - The runtime is agent-native. Skills tell agents to inspect the checkout directly and treat the CLI as optional validation rather than a required orchestration bridge.
 - The managed instruction block is compact while detailed procedures live in explicit workflow surfaces, preserving ordinary task context.
 - Codex metadata correctly makes only Sync implicitly invocable. Manual workflows remain explicit in Codex, reducing accidental Structure, Document, Realize, or Check runs.
+- Codex, GitHub Copilot, and OpenCode custom agents are read-only verification helpers for workflow-owned subagent dispatch, not alternate workflow owners; parent workflows retain final reports and writes.
 - Generated-surface tests cover parseable frontmatter, required phrases, report headings, host paths, version markers, and stale-surface diagnostics.
 
 ## Current Findings

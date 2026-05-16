@@ -8,10 +8,11 @@ import {
   renderTruthDocumentSkillBody,
 } from "../../src/agents/truth-document.js";
 import {
+  renderTruthmarkDocumentClaudeSkill,
   renderTruthmarkDocumentLocalSkill,
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
-} from "../../src/templates/codex-skills.js";
+} from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthDocumentSkillBody", () => {
@@ -148,8 +149,45 @@ describe("renderTruthDocumentSkillBody", () => {
 describe("Truth Document generated surfaces", () => {
   it("renders Codex metadata and OpenCode skill content", () => {
     expect(renderTruthmarkDocumentSkill()).toContain("name: truthmark-document");
+    expect(renderTruthmarkDocumentSkill()).toContain("Codex subagent mode:");
+    expect(renderTruthmarkDocumentSkill()).toContain(
+      "use automatically when this workflow runs in Codex",
+    );
+    expect(renderTruthmarkDocumentSkill()).toContain("truth_route_auditor");
+    expect(renderTruthmarkDocumentSkill()).toContain("truth_claim_verifier");
+    expect(renderTruthmarkDocumentSkill()).toContain("truth_doc_writer");
+    expect(renderTruthmarkDocumentSkill()).toContain(
+      "Parent agent owns Truth Document acceptance, lease validation, and final report",
+    );
+    expect(renderTruthmarkDocumentSkill()).toContain(
+      "validate the worker report against the actual worker diff",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "Claude Code subagent mode:",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "use automatically when this workflow runs in Claude Code",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "truth-route-auditor subagent",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "truth-claim-verifier subagent",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "truth-doc-writer subagent",
+    );
+    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+      "Parent agent owns Truth Document acceptance, lease validation, and final report",
+    );
     expect(renderTruthmarkDocumentLocalSkill()).toContain(
       "/skill truthmark-document",
+    );
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+      "Codex subagent mode:",
+    );
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+      "Claude Code subagent mode:",
     );
     expect(renderTruthmarkDocumentLocalSkill()).toContain("/truthmark:document");
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(

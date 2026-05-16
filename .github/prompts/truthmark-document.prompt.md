@@ -8,7 +8,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.3.0
+truthmark-version: 1.4.0
 ---
 
 # Truthmark Document
@@ -50,6 +50,16 @@ Evidence Gate:
 - tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
 - remove, narrow, or block unsupported claims
 - if no truth doc changed, report why current truth was already sufficient or why documentation was blocked
+Copilot custom-agent mode:
+- use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out
+- dispatch read-only project custom agents for verification: @truth-route-auditor, @truth-claim-verifier
+- read-only custom agents inspect checkout evidence directly, return structured findings, and must not edit files
+- parent supplies bounded evidence shards; read-only custom agents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
+- dispatch write-capable project custom agents only with explicit write leases: @truth-doc-writer
+- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields
+- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes
+- parent must inspect the actual checkout diff against each lease before accepting a worker report
+- Parent agent owns Truth Document acceptance, lease validation, and final report
 Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
 If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
@@ -75,6 +85,11 @@ Truthmark hierarchy:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
+Parent post-document verification:
+- verify only truth docs and leased truth routing files changed during document work
+- block on functional code, generated host surfaces, or unrelated diffs caused by document work
+- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
+- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
 
 Report completion in this shape:
 ```md

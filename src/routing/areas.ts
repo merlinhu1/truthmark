@@ -82,12 +82,15 @@ const parseListSection = (sectionLines: string[]): string[] => {
   return sectionLines
     .map((line) => line.trim())
     .filter((line) => line.startsWith("- "))
-    .map((line) => line.slice(2).trim())
+    .map((line) => line.slice(2).trim().replaceAll("\\*", "*"))
     .filter((line) => line.length > 0);
 };
 
 const isTruthDocumentKind = (value: unknown): value is TruthDocumentKind => {
-  return typeof value === "string" && TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind);
+  return (
+    typeof value === "string" &&
+    TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind)
+  );
 };
 
 export const inferTruthDocumentKindFromPath = (
@@ -95,7 +98,9 @@ export const inferTruthDocumentKindFromPath = (
   options: ParseAreasMarkdownOptions = {},
 ): TruthDocumentKind | null => {
   const normalizedPath = documentPath.replaceAll("\\", "/");
-  const truthDocsRoot = options.truthDocsRoot?.replaceAll("\\", "/").replace(/\/+$/u, "");
+  const truthDocsRoot = options.truthDocsRoot
+    ?.replaceAll("\\", "/")
+    .replace(/\/+$/u, "");
 
   if (
     (truthDocsRoot && normalizedPath.startsWith(`${truthDocsRoot}/`)) ||
@@ -116,15 +121,24 @@ export const inferTruthDocumentKindFromPath = (
     return "architecture";
   }
 
-  if (normalizedPath.startsWith("docs/workflows/") || normalizedPath.startsWith("docs/workflow/")) {
+  if (
+    normalizedPath.startsWith("docs/workflows/") ||
+    normalizedPath.startsWith("docs/workflow/")
+  ) {
     return "workflow";
   }
 
-  if (normalizedPath.startsWith("docs/operations/") || normalizedPath.startsWith("docs/platform/")) {
+  if (
+    normalizedPath.startsWith("docs/operations/") ||
+    normalizedPath.startsWith("docs/platform/")
+  ) {
     return "operations";
   }
 
-  if (normalizedPath.startsWith("docs/testing/") || normalizedPath.startsWith("docs/tests/")) {
+  if (
+    normalizedPath.startsWith("docs/testing/") ||
+    normalizedPath.startsWith("docs/tests/")
+  ) {
     return "test-behavior";
   }
 
@@ -146,7 +160,9 @@ const findTruthDocumentsYamlFenceRange = (
   sectionLines: string[],
 ): TruthDocumentsYamlFenceRange | null => {
   const trimmedLines = sectionLines.map((line) => line.trim());
-  const openingFenceIndex = trimmedLines.findIndex((line) => /^```(?:yaml|yml)?$/u.test(line));
+  const openingFenceIndex = trimmedLines.findIndex((line) =>
+    /^```(?:yaml|yml)?$/u.test(line),
+  );
 
   if (openingFenceIndex === -1) {
     return null;
@@ -228,7 +244,10 @@ const parseTruthDocumentsFromYaml = (
   try {
     parsedBlock = parse(
       sectionLines
-        .slice(yamlFenceRange.openingFenceIndex + 1, yamlFenceRange.closingFenceIndex)
+        .slice(
+          yamlFenceRange.openingFenceIndex + 1,
+          yamlFenceRange.closingFenceIndex,
+        )
         .join("\n"),
     );
   } catch (error: unknown) {
@@ -245,7 +264,9 @@ const parseTruthDocumentsFromYaml = (
   }
 
   const rawEntries =
-    parsedBlock && typeof parsedBlock === "object" && "truth_documents" in parsedBlock
+    parsedBlock &&
+    typeof parsedBlock === "object" &&
+    "truth_documents" in parsedBlock
       ? (parsedBlock as { truth_documents?: unknown }).truth_documents
       : null;
 
@@ -275,7 +296,11 @@ const parseTruthDocumentsFromYaml = (
         ? (rawEntry as { kind?: unknown }).kind
         : null;
 
-    if (typeof path !== "string" || path.trim().length === 0 || !isTruthDocumentKind(kind)) {
+    if (
+      typeof path !== "string" ||
+      path.trim().length === 0 ||
+      !isTruthDocumentKind(kind)
+    ) {
       diagnostics.push(
         createAreaDiagnostic(
           `Area ${areaName} truth_documents entries must include non-empty path and valid kind fields.`,
@@ -312,7 +337,10 @@ const parseTruthDocumentsSection = (
 
   const yamlResult = parseTruthDocumentsFromYaml(sectionLines, areaName);
 
-  if (yamlResult.diagnostics.length > 0 || yamlFenceRange.closingFenceIndex === null) {
+  if (
+    yamlResult.diagnostics.length > 0 ||
+    yamlFenceRange.closingFenceIndex === null
+  ) {
     return yamlResult;
   }
 
@@ -346,8 +374,12 @@ export const parseAreasMarkdown = (
     );
     const { truthDocuments, truthDocumentEntries } = truthDocumentResult;
     const areaFiles = parseListSection(currentSections.get("Area files") ?? []);
-    const codeSurface = parseListSection(currentSections.get("Code surface") ?? []);
-    const updateTruthWhen = parseListSection(currentSections.get("Update truth when") ?? []);
+    const codeSurface = parseListSection(
+      currentSections.get("Code surface") ?? [],
+    );
+    const updateTruthWhen = parseListSection(
+      currentSections.get("Update truth when") ?? [],
+    );
     const areaKey = slugify(currentAreaName);
     const areaId = areaKey.length > 0 ? areaKey : `area-${areaIndex}`;
     const hasTruthDocuments = truthDocuments.length > 0;
@@ -366,7 +398,11 @@ export const parseAreasMarkdown = (
       });
     }
 
-    if (hasTruthDocuments === hasAreaFiles || codeSurface.length === 0 || updateTruthWhen.length === 0) {
+    if (
+      hasTruthDocuments === hasAreaFiles ||
+      codeSurface.length === 0 ||
+      updateTruthWhen.length === 0
+    ) {
       diagnostics.push(
         createAreaDiagnostic(
           `Area ${currentAreaName} must define exactly one of Truth documents or Area files, plus Code surface and Update truth when sections.`,
@@ -412,7 +448,11 @@ export const parseAreasMarkdown = (
       continue;
     }
 
-    if (/^(Truth documents|Area files|Code surface|Update truth when):$/u.test(line.trim())) {
+    if (
+      /^(Truth documents|Area files|Code surface|Update truth when):$/u.test(
+        line.trim(),
+      )
+    ) {
       currentSectionName = line.trim().slice(0, -1);
       currentSections.set(currentSectionName, []);
       continue;

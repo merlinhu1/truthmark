@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-14
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../README.md
   - ../ai/repo-rules.md
@@ -75,7 +75,7 @@ Code surface:
 - src/realize/**
 - src/sync/**
 - src/templates/agents-block.ts
-- src/templates/codex-skills.ts
+- src/templates/workflow-surfaces.ts
 - src/templates/generated-surfaces.ts
 - src/truth/**
 - src/version.ts

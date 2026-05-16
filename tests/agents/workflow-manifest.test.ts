@@ -8,9 +8,10 @@ import {
 } from "../../src/agents/workflow-manifest.js";
 import { renderTruthCheckSkillBody } from "../../src/agents/truth-check.js";
 import { renderTruthDocumentSkillBody } from "../../src/agents/truth-document.js";
+import { renderTruthPreviewSkillBody } from "../../src/agents/truth-preview.js";
 import { renderTruthStructureSkillBody } from "../../src/agents/truth-structure.js";
 import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
-import { renderTruthmarkRealizeSkill } from "../../src/templates/codex-skills.js";
+import { renderTruthmarkRealizeSkill } from "../../src/templates/workflow-surfaces.js";
 
 const renderWorkflowSkill = (id: (typeof TRUTHMARK_WORKFLOW_IDS)[number]) => {
   switch (id) {
@@ -20,6 +21,8 @@ const renderWorkflowSkill = (id: (typeof TRUTHMARK_WORKFLOW_IDS)[number]) => {
       return renderTruthStructureSkillBody();
     case "truthmark-document":
       return renderTruthDocumentSkillBody();
+    case "truthmark-preview":
+      return renderTruthPreviewSkillBody();
     case "truthmark-realize":
       return renderTruthmarkRealizeSkill();
     case "truthmark-check":
@@ -33,7 +36,9 @@ describe("Truthmark workflow manifest", () => {
       const parsed = matter(renderWorkflowSkill(id));
 
       expect(parsed.data.name).toBe(id);
-      expect(parsed.data.description).toBe(getTruthmarkWorkflow(id).description);
+      expect(parsed.data.description).toBe(
+        getTruthmarkWorkflow(id).description,
+      );
     }
   });
 
@@ -48,6 +53,66 @@ describe("Truthmark workflow manifest", () => {
       expect(workflow.allowedWrites.length).toBeGreaterThan(0);
       expect(workflow.reportSections.length).toBeGreaterThan(0);
     }
+  });
+
+  it("defines read-only and write-capable subagent recommendations by workflow", () => {
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-preview"].subagents).toEqual([
+      "truth_route_auditor",
+    ]);
+    expect(
+      getTruthmarkWorkflow("truthmark-preview").writeSubagents,
+    ).toBeUndefined();
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-check"].subagents).toEqual([
+      "truth_route_auditor",
+      "truth_claim_verifier",
+      "truth_doc_reviewer",
+    ]);
+    expect(
+      getTruthmarkWorkflow("truthmark-check").writeSubagents,
+    ).toBeUndefined();
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-document"].subagents).toEqual(
+      ["truth_route_auditor", "truth_claim_verifier"],
+    );
+    expect(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-document"].writeSubagents,
+    ).toEqual(["truth_doc_writer"]);
+    expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].subagents).toEqual([
+      "truth_route_auditor",
+      "truth_claim_verifier",
+    ]);
+    expect(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].writeSubagents,
+    ).toEqual(["truth_doc_writer"]);
+    expect(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-structure"].subagents,
+    ).toEqual(["truth_route_auditor"]);
+    expect(
+      getTruthmarkWorkflow("truthmark-structure").writeSubagents,
+    ).toBeUndefined();
+    expect(getTruthmarkWorkflow("truthmark-realize").subagents).toBeUndefined();
+    expect(
+      getTruthmarkWorkflow("truthmark-realize").writeSubagents,
+    ).toBeUndefined();
+  });
+  it("defines Truth Preview as an explicit read-only planning surface", () => {
+    const workflow = getTruthmarkWorkflow(
+      "truthmark-preview" as (typeof TRUTHMARK_WORKFLOW_IDS)[number],
+    );
+
+    expect(workflow.displayName).toBe("Truthmark Preview");
+    expect(workflow.allowImplicitInvocation).toBe(false);
+    expect(workflow.allowedWrites).toEqual(["none by default"]);
+    expect(workflow.reportSections).toEqual([
+      "Requested outcome",
+      "Likely workflow",
+      "Why this workflow",
+      "Likely route owner",
+      "Expected write classes",
+      "Expected target files",
+      "Suggested subagent use",
+      "Blocking ambiguity",
+      "Handoff",
+    ]);
   });
 
   it("keeps routing descriptions focused on trigger selection", () => {

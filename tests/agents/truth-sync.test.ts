@@ -10,8 +10,11 @@ import {
 import {
   renderTruthmarkCopilotSyncPrompt,
   renderTruthmarkGeminiSyncCommand,
+  renderTruthmarkSyncClaudeSkill,
+  renderTruthmarkSyncLocalSkill,
+  renderTruthmarkSyncSkill,
   renderTruthmarkSyncSkillMetadata,
-} from "../../src/templates/codex-skills.js";
+} from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthSyncWorkerPrompt", () => {
@@ -20,6 +23,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
 
     expect(TRUTH_SYNC_EXPLICIT_INVOCATIONS).toContain("/truthmark:sync");
     expect(prompt).toContain("parent provides the task focus");
+    expect(prompt).toContain("explicit write lease");
     expect(prompt).toContain(
       "staged, unstaged, and untracked functional code directly",
     );
@@ -27,9 +31,11 @@ describe("renderTruthSyncWorkerPrompt", () => {
     expect(prompt).toContain("Code verification is parent-owned");
     expect(prompt).toContain("docs/truthmark/areas.md");
     expect(prompt).toContain("status: completed | blocked");
+    expect(prompt).toContain("filesChanged");
     expect(prompt).toContain("changedCodeReviewed");
     expect(prompt).toContain("truthDocsUpdated");
     expect(prompt).toContain("routingDocsUpdated");
+    expect(prompt).toContain("offLeaseChanges");
     expect(prompt).toContain("notes");
     expect(prompt).toContain("blockedReason");
     expect(prompt).toContain("manualReviewFiles");
@@ -76,7 +82,7 @@ describe("renderTruthSyncSkillBody", () => {
       "truthmark check --json --workflow truth-sync",
     );
     expect(skillBody).toContain(
-      "verify only truth docs and docs/truthmark/areas.md changed",
+      "verify only truth docs and leased truth routing files changed",
     );
     expect(skillBody).toContain(
       "Read .truthmark/config.yml, the configured root route index",
@@ -161,8 +167,10 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("Claim:");
     expect(skillBody).toContain("Result: supported");
     expect(skillBody).toContain("structured Truth Sync report contract");
-    expect(skillBody).toContain("ownershipReviewed: string[]");
-    expect(skillBody).toContain("truthDocsSplit?: string[]");
+    expect(skillBody).not.toContain("### Truth Sync Worker");
+    expect(skillBody).not.toContain(
+      "may write truth docs and docs/truthmark/areas.md only for Truth Sync alignment",
+    );
     expect(skillBody).toContain(
       "verify the final report records ownership review, structure requirement, split, restructure, or blocked reason",
     );
@@ -191,7 +199,9 @@ describe("renderTruthSyncSkillBody", () => {
 
     expect(skillBody).toContain("docs/truth/repository/overview.md");
     expect(skillBody).toContain("docs/routes/index.md:11");
-    expect(skillBody).toContain("verify only truth docs and docs/routes/index.md changed");
+    expect(skillBody).toContain(
+      "verify only truth docs and leased truth routing files changed",
+    );
   });
 });
 
@@ -209,5 +219,45 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
     );
+  });
+
+  it("adds host-specific subagent guidance without changing generic surfaces", () => {
+    expect(renderTruthmarkSyncSkill()).toContain("Codex subagent mode:");
+    expect(renderTruthmarkSyncSkill()).toContain(
+      "use automatically when this workflow runs in Codex",
+    );
+    expect(renderTruthmarkSyncSkill()).toContain("truth_route_auditor");
+    expect(renderTruthmarkSyncSkill()).toContain("truth_claim_verifier");
+    expect(renderTruthmarkSyncSkill()).toContain("truth_doc_writer");
+    expect(renderTruthmarkSyncSkill()).toContain(
+      "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+    );
+    expect(renderTruthmarkSyncSkill()).toContain(
+      "validate the worker report against the actual worker diff",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "Claude Code subagent mode:",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "use automatically when this workflow runs in Claude Code",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "truth-route-auditor subagent",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "truth-claim-verifier subagent",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "truth-doc-writer subagent",
+    );
+    expect(renderTruthmarkSyncClaudeSkill()).toContain(
+      "Parent agent owns Truth Sync acceptance, lease validation, and final report",
+    );
+    expect(renderTruthmarkSyncLocalSkill()).not.toContain("Codex subagent mode:");
+    expect(renderTruthmarkSyncLocalSkill()).not.toContain(
+      "Claude Code subagent mode:",
+    );
+    expect(renderTruthmarkGeminiSyncCommand()).not.toContain("Codex subagent mode:");
+    expect(renderTruthmarkCopilotSyncPrompt()).not.toContain("Codex subagent mode:");
   });
 });

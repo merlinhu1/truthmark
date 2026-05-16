@@ -2,10 +2,11 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-16
 source_of_truth:
   - ../../../src/agents/truth-structure.ts
   - ../../../src/agents/shared.ts
+  - ../../../src/templates/workflow-surfaces.ts
   - ../../../src/routing/**
 ---
 
@@ -18,6 +19,7 @@ Truth Structure designs or repairs repository truth topology.
 ## Scope
 
 Truth Structure owns area routing, child route-file structure, ownership splits, and starter truth-doc placement when topology is missing, stale, broad, overloaded, catch-all, unrouteable, or explicitly requested.
+Truth Structure also owns new area setup when a user asks to onboard a new code area into Truthmark, a new package/controller/domain lacks bounded truth ownership, or a new product area needs routing and starter truth docs.
 
 ## Triggers
 
@@ -36,6 +38,7 @@ Truth Structure owns area routing, child route-file structure, ownership splits,
 ## Execution Model
 
 Truth Structure inspects the checkout directly and defines areas by product or behavior ownership, not mechanical directory mirroring.
+For new area setup, Truth Structure inspects the named code area, infers bounded product or behavior ownership, chooses the owning route when ownership is clear, and otherwise proposes the route and blocks for review. It creates or updates the child route entry or file, creates starter truth docs only where current truth is missing, and reports the initial truth boundary.
 
 ## Current Behavior
 
@@ -45,17 +48,22 @@ Topology pressure includes broad code mappings, overloaded child route files, mu
 
 Truth Structure splits broad, overloaded, catch-all, or mixed-owner areas into behavior-owned route files and bounded leaf truth docs when safe. It updates routing so future Truth Sync can target small docs. If a split is unsafe or ambiguous, it blocks with manual-review files.
 
+In Codex, Claude Code, GitHub Copilot, and OpenCode, Truth Structure surfaces may reference the generated read-only route auditor when the parent agent chooses bounded validation fan-out. Codex exposes `truth_route_auditor`; Claude Code exposes the `truth-route-auditor` project subagent; GitHub Copilot and OpenCode expose the generated `@truth-route-auditor` custom agent. The route auditor gathers topology and ownership findings only, inspects only the parent-assigned shard plus required checkout evidence files, and does not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent workflow owns repo-policy interpretation, all route edits, starter truth-doc writes, topology decisions, and the final report.
+
 Before splitting or restructuring truth docs, Truth Structure inventories Product Decisions and Rationale in every source doc. It moves each current entry into the bounded owner doc it governs, removes or narrows entries only with checkout evidence, and blocks with manual-review files when ownership is unclear.
 
 Starter truth docs use closed YAML frontmatter with `status`, `doc_type`, `last_reviewed`, and `source_of_truth`, and include `Product Decisions` and `Rationale` sections.
+New area setup must not edit functional code, perform full behavior documentation unless evidence is inspected and the task explicitly asks for it, patch broad or mixed-owner docs in place, create generic catch-all docs, or treat README files as Sync targets.
 
-Completed reports include `Topology reviewed`, `Areas reviewed`, `Routing updated`, `Truth docs created`, `Truth docs split`, `Truth docs restructured`, `Evidence checked`, `Topology decisions`, and `Notes`.
+Completed reports include `Topology reviewed`, `Areas reviewed`, `Routing updated`, `Initial truth boundary`, `Truth docs created`, `Truth docs split`, `Truth docs restructured`, `Evidence checked`, `Topology decisions`, and `Notes`.
 
 ## Product Decisions
 
 - Decision (2026-05-15): Truth Structure owns ownership repair. Mixed-owner docs must be split/rerouted when safe, not repaired in place by Sync or Document.
 - Decision (2026-05-15): Truth Structure must satisfy canonical decision-section expectations for new starter docs and repaired routed docs.
 - Decision (2026-05-15): Truth Structure must preserve or explicitly account for Product Decisions and Rationale when splitting or restructuring truth docs.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode Truth Structure may use the generated read-only route auditor for bounded validation input without preloading repo-wide policy by default, while parent agents retain policy and topology write ownership.
+- Decision (2026-05-16): New area setup is a Truth Structure scenario, not a separate workflow surface. It may add routing and starter truth docs, but detailed behavior documentation remains bounded by evidence and explicit task scope.
 
 ## Rationale
 
@@ -65,7 +73,8 @@ Ownership repair needs a workflow that can change route topology and create boun
 
 - no mechanical directory mirroring when behavior ownership is clearer
 - no generic truth docs behind broad catch-all routing
+- no full behavior documentation during new area setup unless evidence is inspected and the task explicitly asks for it
 
 ## Maintenance Notes
 
-Update this doc when topology pressure signals, split behavior, starter-doc requirements, or Structure report shape changes.
+Update this doc when topology pressure signals, split behavior, starter-doc requirements, Structure subagent behavior, or Structure report shape changes.

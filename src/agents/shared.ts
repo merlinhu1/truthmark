@@ -111,6 +111,128 @@ export const renderAuditEvidenceGateSection = (): string => {
   ].join("\n");
 };
 
+export const renderCodexSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const writeAgentLines =
+    writeAgents.length > 0
+      ? [
+          `- dispatch write-capable project agents only with explicit write leases: ${writeAgents.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlyWorkerLabel = writeAgents.length > 0 ? "read-only workers" : "workers";
+
+  return [
+    "Codex subagent mode:",
+    "- use automatically when this workflow runs in Codex and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project agents ${readOnlyScope}: ${agents.join(", ")}`,
+    `- ${readOnlyWorkerLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlyWorkerLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderOpenCodeSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeAgentLines =
+    writeMentions.length > 0
+      ? [
+          `- dispatch write-capable project subagents only with explicit write leases: ${writeMentions.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlyWorkerLabel = writeAgents.length > 0 ? "read-only workers" : "workers";
+
+  return [
+    "OpenCode subagent mode:",
+    "- use automatically when this workflow runs in OpenCode and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project subagents ${readOnlyScope}: ${mentions.join(", ")}`,
+    `- ${readOnlyWorkerLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlyWorkerLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderClaudeSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const mentions = agents.map((agent) => `${agent.replace(/_/gu, "-")} subagent`);
+  const writeMentions = writeAgents.map(
+    (agent) => `${agent.replace(/_/gu, "-")} subagent`,
+  );
+  const writeAgentLines =
+    writeMentions.length > 0
+      ? [
+          `- dispatch write-capable project subagents only with explicit write leases: ${writeMentions.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlySubagentLabel =
+    writeAgents.length > 0 ? "read-only subagents" : "subagents";
+
+  return [
+    "Claude Code subagent mode:",
+    "- use automatically when this workflow runs in Claude Code and the parent agent chooses bounded subagent fan-out",
+    `- dispatch read-only project subagents ${readOnlyScope}: ${mentions.join(", ")}`,
+    `- ${readOnlySubagentLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlySubagentLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
+export const renderCopilotCustomAgentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeAgentLines =
+    writeMentions.length > 0
+      ? [
+          `- dispatch write-capable project custom agents only with explicit write leases: ${writeMentions.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlyCustomAgentLabel =
+    writeAgents.length > 0 ? "read-only custom agents" : "custom agents";
+
+  return [
+    "Copilot custom-agent mode:",
+    "- use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out",
+    `- dispatch read-only project custom agents ${readOnlyScope}: ${mentions.join(", ")}`,
+    `- ${readOnlyCustomAgentLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlyCustomAgentLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
 export const defaultAgentConfig = (): TruthmarkConfig => {
   return createDefaultConfig();
 };

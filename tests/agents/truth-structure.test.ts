@@ -8,10 +8,11 @@ import {
   renderTruthStructureSkillBody,
 } from "../../src/agents/truth-structure.js";
 import {
+  renderTruthmarkStructureClaudeSkill,
   renderTruthmarkStructureLocalSkill,
   renderTruthmarkStructureSkill,
   renderTruthmarkStructureSkillMetadata,
-} from "../../src/templates/codex-skills.js";
+} from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthStructureSkillBody", () => {
@@ -131,6 +132,29 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "README.md files are indexes, not Truth Sync targets",
     );
+    expect(skill).toContain("## New area setup");
+    expect(skill).toContain(
+      "Use when a user asks to onboard a new code area into Truthmark",
+    );
+    expect(skill).toContain(
+      "a new package, controller, domain, or product area lacks bounded truth ownership",
+    );
+    expect(skill).toContain("inspect the named code area");
+    expect(skill).toContain(
+      "infer bounded product or behavior ownership",
+    );
+    expect(skill).toContain(
+      "choose the owning route when ownership is clear; otherwise propose the route and block for review",
+    );
+    expect(skill).toContain(
+      "create starter truth docs only where current truth is missing",
+    );
+    expect(skill).toContain("report the initial truth boundary");
+    expect(skill).toContain("do not edit functional code");
+    expect(skill).toContain(
+      "do not perform full behavior documentation unless evidence is inspected and the task explicitly asks for it",
+    );
+    expect(skill).toContain("do not create generic catch-all docs");
     expect(skill).toContain(
       "split mixed-owner truth docs into bounded owner docs before adding new behavior claims",
     );
@@ -144,6 +168,7 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain("Truth Structure: completed");
     expect(skill).toContain("Areas reviewed");
     expect(skill).toContain("Routing updated");
+    expect(skill).toContain("Initial truth boundary");
     expect(skill).toContain("Truth docs created");
     expect(skill).toContain("Truth docs restructured");
     expect(skill).toContain("Evidence checked");
@@ -203,6 +228,21 @@ describe("Truth Structure generated surfaces", () => {
     );
     expect(renderTruthmarkStructureLocalSkill()).toContain(
       "/truthmark:structure",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "Claude Code subagent mode:",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "use automatically when this workflow runs in Claude Code",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "truth-route-auditor subagent",
+    );
+    expect(renderTruthmarkStructureClaudeSkill()).toContain(
+      "Parent agent owns all Truth Structure writes and final topology decisions",
+    );
+    expect(renderTruthmarkStructureLocalSkill()).not.toContain(
+      "Claude Code subagent mode:",
     );
     expect(renderTruthmarkStructureSkillMetadata()).toContain(
       'display_name: "Truthmark Structure"',

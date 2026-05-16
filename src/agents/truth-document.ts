@@ -7,6 +7,10 @@ import {
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderClaudeSubagentModeSection,
+  renderCodexSubagentModeSection,
+  renderCopilotCustomAgentModeSection,
+  renderOpenCodeSubagentModeSection,
   renderClaimEvidenceCheckedSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
@@ -63,8 +67,43 @@ Notes:
 
 export const renderTruthDocumentSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
+  const claudeSubagentMode = options.includeClaudeSubagentMode
+    ? `${renderClaudeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
+      )}\n`
+    : "";
+  const codexSubagentMode = options.includeCodexSubagentMode
+    ? `${renderCodexSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
+      )}\n`
+    : "";
+  const copilotCustomAgentMode = options.includeCopilotCustomAgentMode
+    ? `${renderCopilotCustomAgentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
+      )}\n`
+    : "";
+  const openCodeSubagentMode = options.includeOpenCodeSubagentMode
+    ? `${renderOpenCodeSubagentModeSection(
+        workflow.subagents ?? [],
+        "Parent agent owns Truth Document acceptance, lease validation, and final report",
+        workflow.writeSubagents ?? [],
+      )}\n`
+    : "";
+  const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
   return `---
 name: truthmark-document
@@ -103,7 +142,7 @@ ${renderRouteFirstEvidenceGateSection(
     "the documented behavior",
     "if no truth doc changed, report why current truth was already sufficient or why documentation was blocked",
   )}
-${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
+${subagentMode}${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
     "Truth Document may restructure only truth docs for the implemented behavior being documented.",
@@ -111,6 +150,11 @@ ${renderTruthDocRestructureGateSection(
 ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
+Parent post-document verification:
+- verify only truth docs and leased truth routing files changed during document work
+- block on functional code, generated host surfaces, or unrelated diffs caused by document work
+- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
+- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
 
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthDocumentReportExample(config))}`;

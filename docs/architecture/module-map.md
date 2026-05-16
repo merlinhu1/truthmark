@@ -39,7 +39,7 @@ This doc covers the current module grouping of the Truthmark codebase and the pr
 | `src/truth/` | Neutral helpers for truth root resolution and evidence report formatting shared by scaffold, checks, sync, and agent renderers |
 | `src/git/` | Git repository and worktree resolution plus change listing |
 | `src/sync/` | Truth Sync policy and completed, skipped, or blocked report rendering |
-| `src/agents/` | Installed Truth Structure, Truth Document, Truth Sync, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
+| `src/agents/` | Installed Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
 | `src/realize/` | Truth Realize report rendering |
 | `src/output/` | Diagnostic types plus human and JSON rendering shared by CLI and check flows |
 | `src/types/` | Local type shims |

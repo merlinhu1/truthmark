@@ -57,6 +57,10 @@ describe("discoverMarkdownDocuments", () => {
         ".github/prompts/truthmark-sync.prompt.md",
         "# Ignore me\n",
       );
+      await repo.writeFile(
+        ".github/agents/truth-route-auditor.agent.md",
+        "# Ignore me\n",
+      );
       await repo.writeFile("CLAUDE.md", "# Ignore me\n");
       await repo.writeFile("GEMINI.md", "# Ignore me\n");
       await repo.writeFile(
@@ -164,10 +168,10 @@ describe("init templates", () => {
     expect(agentsBlock).not.toContain("### Truth Structure");
     expect(agentsBlock).not.toContain("### Truth Check");
     expect(agentsBlock).toContain(
-      "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
+      "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check",
     );
     expect(agentsBlock).toContain(
-      "may write truth docs and docs/truthmark/areas.md only",
+      "Sync may write truth docs and truth routing files",
     );
     expect(agentsBlock).toContain(
       "Support new or changed behavior-bearing truth claims with checkout evidence",
