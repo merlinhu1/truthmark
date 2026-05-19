@@ -297,8 +297,12 @@ GEMINI.md
 .codex/skills/
 .claude/skills/
 .opencode/skills/
+.github/skills/
 .github/prompts/
+.github/agents/
+.gemini/skills/
 .gemini/commands/truthmark/
+.gemini/agents/
 ```
 
 生成的工作流表面包含 Truthmark 版本标记。升级 Truthmark 后，重新运行：
@@ -323,9 +327,9 @@ truthmark init
 | --- | --- | --- |
 | `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` 或 `$truthmark-*` |
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | 支持的 Copilot IDE 中使用 `/truthmark-*`；Copilot CLI 中使用 `@truth-*` custom agents |
+| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | 支持的 Copilot IDE 中使用 `/truthmark-*`；Copilot CLI 中使用 `@truth-*` custom agents |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/commands/truthmark/`, `GEMINI.md` | `/truthmark:*` |
+| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
 
 未知平台名是配置错误。
 
@@ -444,7 +448,7 @@ truthmark check
 | `truthmark init` | 从已审查配置安装或刷新已配置的工作流表面。 |
 | `truthmark check` | 验证配置、权限边界、路由、承载决策的文档、frontmatter、内部链接、分支范围、生成表面、freshness 和覆盖率诊断。 |
 
-可选的仓库情报辅助工具会为当前 checkout 生成派生审查上下文。
+可选的仓库情报辅助工具会为当前 checkout 生成派生审查上下文。生成的工作流 skill packages 也可以暴露 helper manifests 和 helper policies，用来调用已安装的 `truthmark validate ... --json` CLI validators；这些 helpers 是加速器，不是打包进仓库的本地脚本，也不是事实来源。独立的 Copilot prompts 和 Gemini commands 会把 helper packages 报告为不可用，除非正在使用匹配的生成 skill package。
 
 它们不是事实来源。
 
@@ -566,10 +570,13 @@ GEMINI.md
 .opencode/skills/truthmark-*/
 .opencode/agents/
 
+.github/skills/truthmark-*/
 .github/prompts/truthmark-*.prompt.md
 .github/agents/
 
+.gemini/skills/truthmark-*/
 .gemini/commands/truthmark/*.toml
+.gemini/agents/
 ```
 
 Truthmark 会保留受管说明块之外的手写内容。

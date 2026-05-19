@@ -10,6 +10,7 @@ truthmark-version: 1.4.0
 
 Use this skill to design or repair Truthmark area structure.
 
+
 Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
 
 Quick procedure:

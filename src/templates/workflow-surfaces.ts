@@ -6,6 +6,8 @@ import {
   defaultAgentConfig,
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
+  renderCopilotCustomAgentModeSection,
+  renderGeminiSubagentModeSection,
   renderHierarchySummary,
   renderOpenCodeSubagentModeSection,
   renderTruthDocOwnershipGateSection,
@@ -128,6 +130,17 @@ export const TRUTHMARK_GEMINI_CHECK_COMMAND_PATH =
 export const TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH =
   ".gemini/commands/truthmark/preview.toml";
 
+export const TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH =
+  ".gemini/agents/truth-route-auditor.md";
+
+export const TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH =
+  ".gemini/agents/truth-claim-verifier.md";
+
+export const TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH =
+  ".gemini/agents/truth-doc-reviewer.md";
+export const TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH =
+  ".gemini/agents/truth-doc-writer.md";
+
 export const TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH =
   ".github/prompts/truthmark-structure.prompt.md";
 
@@ -158,9 +171,11 @@ export const TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH =
   ".github/agents/truth-doc-writer.agent.md";
 
 const renderGeminiCommand = (description: string, prompt: string): string => {
+  const promptWithArgs = `${prompt.trimEnd()}\nUser focus or arguments: {{args}}`;
+
   return `description = "${description}"
 prompt = '''
-${prompt}
+${promptWithArgs}
 '''
 `;
 };
@@ -186,7 +201,12 @@ const renderTomlStringArray = (values: string[]): string => {
   return `[${values.map(renderTomlString).join(", ")}]`;
 };
 
-type TruthmarkSkillPackageHost = "codex" | "opencode" | "claude-code";
+type TruthmarkSkillPackageHost =
+  | "codex"
+  | "opencode"
+  | "claude-code"
+  | "github-copilot"
+  | "gemini-cli";
 
 type TruthmarkSkillPackageFile = {
   path: string;
@@ -387,19 +407,19 @@ const renderHelperPolicySupport = (
     .join("\n");
 
   return renderSkillSupportFile(
-    "Optional Helper Script Policy",
-    `Optional helper scripts may collect deterministic checkout facts or validate artifacts. If a helper's runner is unavailable, continue manually using this procedure and report which helper was skipped. Helper output is derived evidence; it does not override direct checkout inspection, workflow write boundaries, or parent acceptance.
+    "Optional Helper CLI Policy",
+    `Optional helper CLI commands may collect deterministic checkout facts or validate artifacts. If the Truthmark CLI is unavailable or too old for a declared helper, continue manually using this procedure and report which helper was skipped. Helper output is derived evidence; it does not override direct checkout inspection, workflow write boundaries, or parent acceptance.
 
 Runner detection:
-- Check the declared runner before invoking a helper.
-- Run helper commands from this skill package directory; do not run a repo-root scripts/* file with the same name.
-- If unavailable, treat the helper as skipped and use the manual fallback.
+- Check the declared Truthmark CLI runner before invoking a helper.
+- Invoke helpers through the installed \`truthmark validate ... --json\` CLI command using argv-style arguments from helper-manifest.yml.
+- If unavailable or version-mismatched, treat the helper as skipped and use the manual fallback.
 - Do not fail the workflow solely because a helper cannot run.
 
 Available helpers:
 ${helperLines}
 
-Final reports should include helper status when helpers are part of this skill package:
+Final reports should include helper status when helpers are declared for this workflow:
 
 \`\`\`md
 Helper scripts:
@@ -433,12 +453,19 @@ const renderWorkflowEntrypoint = (
   workflowId: TruthmarkWorkflowId,
   config: TruthmarkConfig,
   supportFiles: string[],
+  host: TruthmarkSkillPackageHost,
 ): string => {
   const workflow = getTruthmarkWorkflow(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const supportFileList = supportFiles
     .map((supportFile) => `- ${supportFile}`)
     .join("\n");
+  const hostUsage =
+    host === "github-copilot"
+      ? "Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs."
+      : host === "gemini-cli"
+        ? "Use as a Gemini CLI Agent Skill; commands remain available under `/truthmark:*` for command-first invocation."
+        : undefined;
 
   return `---
 name: ${workflowId}
@@ -451,6 +478,7 @@ truthmark-version: ${TRUTHMARK_VERSION}
 # ${definition.title}
 
 ${definition.use(config)}
+${hostUsage === undefined ? "" : `\n${hostUsage}\n`}
 
 Invocations: ${definition.invocations}
 
@@ -501,6 +529,18 @@ const renderWorkflowSubagentSupport = (
         definition.parentRule,
         writeAgents,
       );
+    case "github-copilot":
+      return renderCopilotCustomAgentModeSection(
+        readAgents,
+        definition.parentRule,
+        writeAgents,
+      );
+    case "gemini-cli":
+      return renderGeminiSubagentModeSection(
+        readAgents,
+        definition.parentRule,
+        writeAgents,
+      );
   }
 };
 
@@ -532,7 +572,7 @@ export const renderTruthmarkSkillPackage = ({
   const files: TruthmarkSkillPackageFile[] = [
     {
       path: skillPath,
-      content: renderWorkflowEntrypoint(workflowId, config, supportFiles),
+      content: renderWorkflowEntrypoint(workflowId, config, supportFiles, host),
     },
     {
       path: `${supportDirectory}/procedure.md`,
@@ -571,15 +611,6 @@ export const renderTruthmarkSkillPackage = ({
         content: renderHelperPolicySupport(helpers),
       },
     );
-
-    for (const helper of helpers) {
-      if (helper.script !== undefined) {
-        files.push({
-          path: `${skillDirectory}/${helper.script.relativePath}`,
-          content: helper.script.content,
-        });
-      }
-    }
   }
 
   return files;
@@ -788,6 +819,47 @@ ${instructions}
 `;
 };
 
+const renderGeminiReadOnlyAgent = ({
+  copilotName,
+  description,
+  instructions,
+}: TruthmarkSubagentProfile): string => {
+  const agentInstructions = renderReadOnlySubagentInstructions(instructions);
+
+  return `---
+name: ${copilotName}
+description: ${description}
+kind: local
+tools: [read_file, grep_search]
+---
+
+# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+
+Manual invocation: @${copilotName}
+
+${agentInstructions}
+`;
+};
+const renderGeminiWriteAgent = ({
+  copilotName,
+  description,
+  instructions,
+}: TruthmarkWriteSubagentProfile): string => {
+  return `---
+name: ${copilotName}
+description: ${description}
+kind: local
+tools: [read_file, grep_search, write_file]
+---
+
+# Generated by Truthmark ${TRUTHMARK_VERSION}. Rerun truthmark init after upgrades.
+
+Manual invocation: @${copilotName} with an explicit parent write lease.
+
+${instructions}
+`;
+};
+
 const renderClaudeReadOnlyAgent = ({
   copilotName,
   description,
@@ -895,6 +967,29 @@ export const renderTruthmarkCopilotDocReviewerAgent = (): string => {
 };
 export const renderTruthmarkCopilotDocWriterAgent = (): string => {
   return renderCopilotWriteAgent(
+    TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
+  );
+};
+
+export const renderTruthmarkGeminiRouteAuditorAgent = (): string => {
+  return renderGeminiReadOnlyAgent(
+    TRUTHMARK_SUBAGENT_PROFILES.truth_route_auditor,
+  );
+};
+
+export const renderTruthmarkGeminiClaimVerifierAgent = (): string => {
+  return renderGeminiReadOnlyAgent(
+    TRUTHMARK_SUBAGENT_PROFILES.truth_claim_verifier,
+  );
+};
+
+export const renderTruthmarkGeminiDocReviewerAgent = (): string => {
+  return renderGeminiReadOnlyAgent(
+    TRUTHMARK_SUBAGENT_PROFILES.truth_doc_reviewer,
+  );
+};
+export const renderTruthmarkGeminiDocWriterAgent = (): string => {
+  return renderGeminiWriteAgent(
     TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
   );
 };

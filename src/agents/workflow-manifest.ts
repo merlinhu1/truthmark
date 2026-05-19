@@ -1,8 +1,4 @@
-import {
-  VALIDATE_DOCUMENT_REPORT_SCRIPT,
-  VALIDATE_SYNC_REPORT_SCRIPT,
-  VALIDATE_WRITE_LEASE_SCRIPT,
-} from "./workflow-helper-scripts.js";
+import { TRUTHMARK_VERSION } from "../version.js";
 
 export type TruthmarkWorkflowId =
   | "truthmark-sync"
@@ -21,20 +17,20 @@ export type TruthmarkSubagentId =
   | TruthmarkReadOnlySubagentId
   | TruthmarkWriteSubagentId;
 
+export type TruthmarkWorkflowHelperCommand = {
+  argv: string[];
+};
+
 export type TruthmarkWorkflowHelper = {
   id: string;
   optional: boolean;
   runner: string;
-  command: string;
+  command: TruthmarkWorkflowHelperCommand;
   inputs: string[];
   output: "json";
   writes: boolean;
   allowedWrites?: string[];
   fallback: string;
-  script?: {
-    relativePath: string;
-    content: string;
-  };
 };
 
 export type TruthmarkWorkflowManifestEntry = {
@@ -55,53 +51,51 @@ export type TruthmarkWorkflowManifestEntry = {
   helpers?: TruthmarkWorkflowHelper[];
 };
 
+const TRUTHMARK_CLI_RUNNER = `truthmark>=${TRUTHMARK_VERSION}`;
+
 const VALIDATE_SYNC_REPORT_HELPER = {
   id: "validate-sync-report",
   optional: true,
-  runner: "node>=20",
-  command: "node scripts/validate-sync-report.mjs <report-file>",
+  runner: TRUTHMARK_CLI_RUNNER,
+  command: { argv: ["truthmark", "validate", "sync-report", "<report-file>", "--json"] },
   inputs: ["sync report file"],
   output: "json",
   writes: false,
   fallback:
     "manually validate support/report-template.md and check Evidence checked entries match Claim, indented Evidence, and Result: supported | narrowed | removed | blocked",
-  script: {
-    relativePath: "scripts/validate-sync-report.mjs",
-    content: VALIDATE_SYNC_REPORT_SCRIPT,
-  },
 } satisfies TruthmarkWorkflowHelper;
 
 const VALIDATE_DOCUMENT_REPORT_HELPER = {
   id: "validate-document-report",
   optional: true,
-  runner: "node>=20",
-  command: "node scripts/validate-document-report.mjs <report-file>",
+  runner: TRUTHMARK_CLI_RUNNER,
+  command: { argv: ["truthmark", "validate", "document-report", "<report-file>", "--json"] },
   inputs: ["document report file"],
   output: "json",
   writes: false,
   fallback:
     "manually validate support/report-template.md required sections and structured Evidence checked entries",
-  script: {
-    relativePath: "scripts/validate-document-report.mjs",
-    content: VALIDATE_DOCUMENT_REPORT_SCRIPT,
-  },
 } satisfies TruthmarkWorkflowHelper;
 
 const VALIDATE_WRITE_LEASE_HELPER = {
   id: "validate-write-lease",
   optional: true,
-  runner: "node>=20",
-  command:
-    "node scripts/validate-write-lease.mjs <lease-or-report-file> <changed-files-file>",
+  runner: TRUTHMARK_CLI_RUNNER,
+  command: {
+    argv: [
+      "truthmark",
+      "validate",
+      "write-lease",
+      "<lease-or-report-file>",
+      "<changed-files-file>",
+      "--json",
+    ],
+  },
   inputs: ["lease or worker report yaml", "changed file list"],
   output: "json",
   writes: false,
   fallback:
     "manually compare declared allowedWrites and forbiddenWrites with the actual changed files",
-  script: {
-    relativePath: "scripts/validate-write-lease.mjs",
-    content: VALIDATE_WRITE_LEASE_SCRIPT,
-  },
 } satisfies TruthmarkWorkflowHelper;
 
 export const TRUTHMARK_WORKFLOW_MANIFEST = {

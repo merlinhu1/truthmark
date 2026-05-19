@@ -10,6 +10,7 @@ truthmark-version: 1.4.0
 
 Use this skill to document existing implemented behavior when no functional-code changes are required for the task.
 
+
 Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
 
 Quick procedure:

@@ -20,9 +20,13 @@ import {
   renderTruthmarkDocReviewerAgent,
   renderTruthmarkDocWriterAgent,
   renderTruthmarkGeminiCheckCommand,
+  renderTruthmarkGeminiClaimVerifierAgent,
   renderTruthmarkGeminiDocumentCommand,
+  renderTruthmarkGeminiDocReviewerAgent,
+  renderTruthmarkGeminiDocWriterAgent,
   renderTruthmarkGeminiPreviewCommand,
   renderTruthmarkGeminiRealizeCommand,
+  renderTruthmarkGeminiRouteAuditorAgent,
   renderTruthmarkGeminiStructureCommand,
   renderTruthmarkGeminiSyncCommand,
   renderTruthmarkCheckSkillMetadata,
@@ -57,10 +61,14 @@ import {
   TRUTHMARK_DOCUMENT_SKILL_PATH,
   TRUTHMARK_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_DOC_WRITER_AGENT_PATH,
+  TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH,
+  TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH,
+  TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
   TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
   TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
+  TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
   TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
   TRUTHMARK_OPENCODE_CLAIM_VERIFIER_AGENT_PATH,
@@ -291,6 +299,42 @@ const copilotFiles = (
 ): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
     ...instructionBlockFiles([".github/copilot-instructions.md"], block),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-structure/SKILL.md",
+      workflowId: "truthmark-structure",
+      host: "github-copilot",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-document/SKILL.md",
+      workflowId: "truthmark-document",
+      host: "github-copilot",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "github-copilot",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-preview/SKILL.md",
+      workflowId: "truthmark-preview",
+      host: "github-copilot",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-check/SKILL.md",
+      workflowId: "truthmark-check",
+      host: "github-copilot",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".github/skills/truthmark-realize/SKILL.md",
+      workflowId: "truthmark-realize",
+      host: "github-copilot",
+      config,
+    }),
     {
       path: TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
       content: renderTruthmarkCopilotStructurePrompt(config),
@@ -336,6 +380,91 @@ const copilotFiles = (
   return files;
 };
 
+const geminiFiles = (
+  config: TruthmarkConfig,
+  block: string,
+): GeneratedSurface[] => {
+  return [
+    ...instructionBlockFiles(["GEMINI.md"], block),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-structure/SKILL.md",
+      workflowId: "truthmark-structure",
+      host: "gemini-cli",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-document/SKILL.md",
+      workflowId: "truthmark-document",
+      host: "gemini-cli",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "gemini-cli",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-preview/SKILL.md",
+      workflowId: "truthmark-preview",
+      host: "gemini-cli",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-check/SKILL.md",
+      workflowId: "truthmark-check",
+      host: "gemini-cli",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: ".gemini/skills/truthmark-realize/SKILL.md",
+      workflowId: "truthmark-realize",
+      host: "gemini-cli",
+      config,
+    }),
+    {
+      path: TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
+      content: renderTruthmarkGeminiStructureCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
+      content: renderTruthmarkGeminiDocumentCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
+      content: renderTruthmarkGeminiSyncCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
+      content: renderTruthmarkGeminiPreviewCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
+      content: renderTruthmarkGeminiCheckCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
+      content: renderTruthmarkGeminiRealizeCommand(config),
+    },
+    {
+      path: TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH,
+      content: renderTruthmarkGeminiRouteAuditorAgent(),
+    },
+    {
+      path: TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH,
+      content: renderTruthmarkGeminiClaimVerifierAgent(),
+    },
+    {
+      path: TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH,
+      content: renderTruthmarkGeminiDocReviewerAgent(),
+    },
+    {
+      path: TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH,
+      content: renderTruthmarkGeminiDocWriterAgent(),
+    },
+  ];
+};
+
 const instructionBlockFiles = (
   paths: string[],
   block: string,
@@ -362,33 +491,7 @@ const filesForPlatform = (
     case "github-copilot":
       return copilotFiles(config, block);
     case "gemini-cli":
-      return [
-        ...instructionBlockFiles(["GEMINI.md"], block),
-        {
-          path: TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
-          content: renderTruthmarkGeminiStructureCommand(config),
-        },
-        {
-          path: TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
-          content: renderTruthmarkGeminiDocumentCommand(config),
-        },
-        {
-          path: TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
-          content: renderTruthmarkGeminiSyncCommand(config),
-        },
-        {
-          path: TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
-          content: renderTruthmarkGeminiPreviewCommand(config),
-        },
-        {
-          path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
-          content: renderTruthmarkGeminiCheckCommand(config),
-        },
-        {
-          path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-          content: renderTruthmarkGeminiRealizeCommand(config),
-        },
-      ];
+      return geminiFiles(config, block);
   }
 };
 

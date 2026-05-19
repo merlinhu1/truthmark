@@ -1,8 +1,14 @@
 # Skill Helper Script Portability Design
 
-Status: proposed research draft
+Status: superseded research draft
 Date: 2026-05-18
-Scope: Optional helper scripts packaged alongside Truthmark workflow skills
+Scope: Historical notes for optional helper-script packaging; current implementation uses Truthmark CLI-owned helpers.
+
+> Superseded decision (2026-05-19): helper logic now lives in the installed
+> `truthmark` CLI. Generated helper manifests expose argv-style
+> `truthmark validate ... --json` commands and generated skill packages no longer
+> copy `.mjs` helper scripts. The manual workflow and helper fallback behavior
+> remain authoritative when the CLI is unavailable or version-mismatched.
 
 This is a research design, not canonical repository truth. If accepted, the
 behavior-bearing parts should move into the owning truth docs, manifest,

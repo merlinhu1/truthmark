@@ -297,8 +297,12 @@ GEMINI.md
 .codex/skills/
 .claude/skills/
 .opencode/skills/
+.github/skills/
 .github/prompts/
+.github/agents/
+.gemini/skills/
 .gemini/commands/truthmark/
+.gemini/agents/
 ```
 
 Generated workflow surfaces include Truthmark version markers. After upgrading Truthmark, rerun:
@@ -323,9 +327,9 @@ truthmark init
 | --- | --- | --- |
 | `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` or `$truthmark-*` |
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
+| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/commands/truthmark/`, `GEMINI.md` | `/truthmark:*` |
+| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
 
 Unknown platform names are config errors.
 
@@ -444,7 +448,7 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review context for the active checkout.
+Optional repository-intelligence helpers generate derived review context for the active checkout. Generated workflow skill packages may also expose helper manifests and helper policies that call installed `truthmark validate ... --json` CLI validators; those helpers are accelerators, not bundled repo-local scripts or sources of truth. Standalone Copilot prompts and Gemini commands report helper packages as unavailable unless the matching generated skill package is being used.
 
 They are not sources of truth.
 
@@ -566,10 +570,13 @@ GEMINI.md
 .opencode/skills/truthmark-*/
 .opencode/agents/
 
+.github/skills/truthmark-*/
 .github/prompts/truthmark-*.prompt.md
 .github/agents/
 
+.gemini/skills/truthmark-*/
 .gemini/commands/truthmark/*.toml
+.gemini/agents/
 ```
 
 Truthmark preserves manual content outside managed instruction blocks.

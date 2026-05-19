@@ -6,6 +6,14 @@ import { buildImpactSet } from "../impact/build.js";
 import { buildContextPack } from "../context-pack/build.js";
 import { renderContextPackMarkdown } from "../context-pack/render.js";
 import type { ContextPackWorkflow } from "../context-pack/types.js";
+import fs from "node:fs/promises";
+
+import {
+  validateTruthDocumentReportText,
+  validateTruthSyncReportText,
+  validateWriteLeaseText,
+  type WorkflowHelperValidationResult,
+} from "../agents/workflow-helper-validation.js";
 import { buildRepoIndex } from "../repo-index/build.js";
 
 export const runConfig = async (options: ConfigCommandOptions): Promise<CommandResult> => {
@@ -71,6 +79,46 @@ const isContextPackWorkflow = (value: unknown): value is ContextPackWorkflow => 
 
 const isContextPackFormat = (value: unknown): value is "json" | "markdown" | undefined => {
   return value === undefined || value === "json" || value === "markdown";
+};
+
+const readHelperFile = async (filePath: string, helper: string): Promise<string | WorkflowHelperValidationResult> => {
+  try {
+    return await fs.readFile(filePath, "utf8");
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { ok: false, helper, errors: [`could not read file: ${message}`] };
+  }
+};
+
+export const runValidateSyncReport = async (
+  reportFile: string,
+): Promise<WorkflowHelperValidationResult> => {
+  const text = await readHelperFile(reportFile, "validate-sync-report");
+  return typeof text === "string" ? validateTruthSyncReportText(text) : text;
+};
+
+export const runValidateDocumentReport = async (
+  reportFile: string,
+): Promise<WorkflowHelperValidationResult> => {
+  const text = await readHelperFile(reportFile, "validate-document-report");
+  return typeof text === "string" ? validateTruthDocumentReportText(text) : text;
+};
+
+export const runValidateWriteLease = async (
+  leaseFile: string,
+  changedFilesFile: string,
+): Promise<WorkflowHelperValidationResult> => {
+  const leaseText = await readHelperFile(leaseFile, "validate-write-lease");
+  if (typeof leaseText !== "string") {
+    return leaseText;
+  }
+
+  const changedText = await readHelperFile(changedFilesFile, "validate-write-lease");
+  if (typeof changedText !== "string") {
+    return changedText;
+  }
+
+  return validateWriteLeaseText(leaseText, changedText);
 };
 
 export const runContext = async (options: {

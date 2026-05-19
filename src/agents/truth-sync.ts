@@ -73,6 +73,10 @@ export const renderTruthSyncSkillBody = (
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-sync");
+  const helperScripts = [
+    "validate-sync-report: ran, passed",
+    "validate-write-lease: skipped, no write lease used",
+  ];
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
@@ -175,10 +179,7 @@ ${renderMarkdownExample(
           result: "supported",
         },
       ],
-      helperScripts: [
-        "validate-sync-report: ran, passed",
-        "validate-write-lease: skipped, no write lease used",
-      ],
+      helperScripts,
       notes: ["Updated session timeout behavior."],
     }),
   )}
