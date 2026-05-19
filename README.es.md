@@ -268,13 +268,17 @@ Las capas encajan así:
 
 ```mermaid
 flowchart LR
-  CLI["Truthmark CLI"] --> Config["Config y routing"]
-  Config --> Truth["Documentos truth canónicos"]
-  CLI --> Surfaces["Workflows de agente generados"]
+  Human["Human / CI"] --> CLI["Truthmark CLI"]
+  CLI --> Config["Config y routing"]
+  CLI --> Truth["Documentos truth canónicos"]
+  CLI --> Surfaces["Workflows host-native generados"]
   Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
   Hosts --> Worktree["Git worktree activo"]
+  Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
 ```
+
+Los agentes no hablan con un daemon de Truthmark, pero pueden ejecutar la CLI instalada de Truthmark cuando un workflow pide validación, indexing o helper checks.
 
 Truthmark es dueño de las superficies de workflow que genera, pero el contrato importante es arquitectónico: la config y el routing del repo apuntan a los agentes hacia los documentos truth canónicos, mientras que los workflows host-native dan a cada agente compatible una forma de ejecutar los mismos procedimientos de Truthmark.
 
