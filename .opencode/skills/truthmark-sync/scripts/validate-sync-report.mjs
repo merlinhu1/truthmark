@@ -98,11 +98,11 @@ const validateHelperScripts = (requiredHelpers) => {
   }
 
   const entries = section.split(/\n/u).map((entry) => entry.trim()).filter(Boolean);
-  const statusPattern = /^-\s*([a-z0-9-]+):\s*(?:ran,\s*(?:passed|failed)|skipped,\s*\S.*)$/iu;
+  const statusPattern = /^-\s*([a-z0-9-]+):\s*(?:ran,\s*passed|skipped,\s*\S.*)$/iu;
 
   for (const entry of entries) {
     if (!statusPattern.test(entry)) {
-      errors.push("Helper scripts entries must match '- helper-id: ran, passed' or '- helper-id: skipped, reason'");
+      errors.push("Helper scripts entries must match '- helper-id: ran, passed' or '- helper-id: skipped, reason'; ran, failed is not valid for completed reports");
     }
   }
 
