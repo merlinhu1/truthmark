@@ -58,6 +58,22 @@ const getSection = (label) => {
   return lines.slice(startIndex + 1, endIndex).join("\n").trim();
 };
 
+const requireBulletSection = (label) => {
+  const section = getSection(label);
+
+  if (section === null) {
+    errors.push("missing required section: " + label);
+    return;
+  }
+
+  if (!/^-\s+\S/mu.test(section)) {
+    errors.push(label + " must include at least one bullet");
+    return;
+  }
+
+  checks.push(label);
+};
+
 const validateEvidenceChecked = () => {
   const section = getSection("Evidence checked");
 
@@ -122,19 +138,30 @@ if (statusMatch[1].toLowerCase() === "completed") {
     "Changed code reviewed",
     "Ownership reviewed",
     "Truth docs updated",
-    "Evidence checked",
-    "Helper scripts",
     "Notes",
   ]) {
-    if (hasLabel(label)) {
-      checks.push(label);
-    } else {
-      errors.push("missing required section: " + label);
-    }
+    requireBulletSection(label);
+  }
+
+  if (hasLabel("Evidence checked")) {
+    checks.push("Evidence checked");
+  } else {
+    errors.push("missing required section: Evidence checked");
+  }
+
+  if (hasLabel("Helper scripts")) {
+    checks.push("Helper scripts");
+  } else {
+    errors.push("missing required section: Helper scripts");
   }
 
   validateEvidenceChecked();
   validateHelperScripts(["validate-sync-report", "validate-write-lease"]);
+} else if (statusMatch[1].toLowerCase() === "skipped") {
+  requireBulletSection("Reason");
+} else if (statusMatch[1].toLowerCase() === "blocked") {
+  requireBulletSection("Reason");
+  requireBulletSection("Next action");
 }
 
 if (errors.length > 0) {
@@ -204,6 +231,22 @@ const getSection = (label) => {
   return lines.slice(startIndex + 1, endIndex).join("\n").trim();
 };
 
+const requireBulletSection = (label) => {
+  const section = getSection(label);
+
+  if (section === null) {
+    errors.push("missing required section: " + label);
+    return;
+  }
+
+  if (!/^-\s+\S/mu.test(section)) {
+    errors.push(label + " must include at least one bullet");
+    return;
+  }
+
+  checks.push(label);
+};
+
 const validateEvidenceChecked = () => {
   const section = getSection("Evidence checked");
 
@@ -267,25 +310,39 @@ if (statusMatch[1].toLowerCase() === "completed") {
   for (const label of [
     "Implementation reviewed",
     "Ownership reviewed",
-    "Evidence checked",
-    "Helper scripts",
     "Notes",
   ]) {
-    if (hasLabel(label)) {
-      checks.push(label);
-    } else {
-      errors.push("missing required section: " + label);
-    }
+    requireBulletSection(label);
   }
 
-  if (hasLabel("Truth docs updated") || hasLabel("Truth docs created")) {
-    checks.push("Truth docs updated or created");
+  if (hasLabel("Evidence checked")) {
+    checks.push("Evidence checked");
   } else {
+    errors.push("missing required section: Evidence checked");
+  }
+
+  if (hasLabel("Helper scripts")) {
+    checks.push("Helper scripts");
+  } else {
+    errors.push("missing required section: Helper scripts");
+  }
+
+  const truthDocsUpdated = getSection("Truth docs updated");
+  const truthDocsCreated = getSection("Truth docs created");
+  if (truthDocsUpdated === null && truthDocsCreated === null) {
     errors.push("missing required section: Truth docs updated or Truth docs created");
+  } else if (
+    ![truthDocsUpdated, truthDocsCreated].some((section) => section !== null && /^-\s+\S/mu.test(section))
+  ) {
+    errors.push("Truth docs updated or Truth docs created must include at least one bullet");
+  } else {
+    checks.push("Truth docs updated or created");
   }
 
   validateEvidenceChecked();
   validateHelperScripts(["validate-document-report", "validate-write-lease"]);
+} else if (statusMatch[1].toLowerCase() === "blocked") {
+  requireBulletSection("Reason");
 }
 
 if (errors.length > 0) {
@@ -324,7 +381,13 @@ const readText = (filePath, label) => {
   }
 };
 
-const normalizePath = (value) => value.trim().replace(/^["']|["']$/g, "").replace(/^\.\//, "").replace(/^\//, "");
+const cleanPathValue = (value) => value.trim().replace(/^["']|["']$/g, "");
+const normalizePath = (value) => cleanPathValue(value).replace(/^\.\//, "");
+const isUnsafePathValue = (value) => {
+  const cleanValue = cleanPathValue(value);
+  const pathValue = cleanValue.endsWith("/**") ? cleanValue.slice(0, -3) : cleanValue;
+  return pathValue.startsWith("/") || pathValue.split(/[\\/]+/u).includes("..");
+};
 
 const parseListFields = (text) => {
   const lists = { allowedWrites: [], forbiddenWrites: [] };
@@ -375,11 +438,32 @@ const matchesPattern = (filePath, pattern) => {
 const leaseText = readText(args[0], "lease/report file");
 const changedText = readText(args[1], "changed-files file");
 const parsed = parseListFields(leaseText);
-const allowedWrites = parsed.allowedWrites.map(normalizePath).filter(Boolean);
-const forbiddenWrites = parsed.forbiddenWrites.map(normalizePath).filter(Boolean);
-const changedFiles = changedText.split(/\r?\n/).map(normalizePath).filter(Boolean);
+const rawAllowedWrites = parsed.allowedWrites.map(cleanPathValue).filter(Boolean);
+const rawForbiddenWrites = parsed.forbiddenWrites.map(cleanPathValue).filter(Boolean);
+const rawChangedFiles = changedText.split(/\r?\n/).map(cleanPathValue).filter(Boolean);
+const allowedWrites = rawAllowedWrites.map(normalizePath).filter(Boolean);
+const forbiddenWrites = rawForbiddenWrites.map(normalizePath).filter(Boolean);
+const changedFiles = rawChangedFiles.map(normalizePath).filter(Boolean);
 const checks = [];
 const errors = [];
+
+for (const pattern of rawAllowedWrites) {
+  if (isUnsafePathValue(pattern)) {
+    errors.push("invalid allowedWrites path: " + pattern);
+  }
+}
+
+for (const pattern of rawForbiddenWrites) {
+  if (isUnsafePathValue(pattern)) {
+    errors.push("invalid forbiddenWrites path: " + pattern);
+  }
+}
+
+for (const filePath of rawChangedFiles) {
+  if (isUnsafePathValue(filePath)) {
+    errors.push("invalid changed file path: " + filePath);
+  }
+}
 
 for (const pattern of [...allowedWrites, ...forbiddenWrites]) {
   if (!isSupportedPattern(pattern)) {

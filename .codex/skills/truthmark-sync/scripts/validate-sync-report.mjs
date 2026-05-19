@@ -58,6 +58,22 @@ const getSection = (label) => {
   return lines.slice(startIndex + 1, endIndex).join("\n").trim();
 };
 
+const requireBulletSection = (label) => {
+  const section = getSection(label);
+
+  if (section === null) {
+    errors.push("missing required section: " + label);
+    return;
+  }
+
+  if (!/^-\s+\S/mu.test(section)) {
+    errors.push(label + " must include at least one bullet");
+    return;
+  }
+
+  checks.push(label);
+};
+
 const validateEvidenceChecked = () => {
   const section = getSection("Evidence checked");
 
@@ -122,19 +138,30 @@ if (statusMatch[1].toLowerCase() === "completed") {
     "Changed code reviewed",
     "Ownership reviewed",
     "Truth docs updated",
-    "Evidence checked",
-    "Helper scripts",
     "Notes",
   ]) {
-    if (hasLabel(label)) {
-      checks.push(label);
-    } else {
-      errors.push("missing required section: " + label);
-    }
+    requireBulletSection(label);
+  }
+
+  if (hasLabel("Evidence checked")) {
+    checks.push("Evidence checked");
+  } else {
+    errors.push("missing required section: Evidence checked");
+  }
+
+  if (hasLabel("Helper scripts")) {
+    checks.push("Helper scripts");
+  } else {
+    errors.push("missing required section: Helper scripts");
   }
 
   validateEvidenceChecked();
   validateHelperScripts(["validate-sync-report", "validate-write-lease"]);
+} else if (statusMatch[1].toLowerCase() === "skipped") {
+  requireBulletSection("Reason");
+} else if (statusMatch[1].toLowerCase() === "blocked") {
+  requireBulletSection("Reason");
+  requireBulletSection("Next action");
 }
 
 if (errors.length > 0) {
