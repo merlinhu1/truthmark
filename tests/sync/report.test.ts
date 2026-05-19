@@ -63,6 +63,33 @@ Notes:
     });
   });
 
+  it("round-trips optional helper script statuses", () => {
+    const report = renderTruthSyncCompletedReport({
+      changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
+      truthDocsUpdated: ["docs/truth/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: ["src/auth/session.ts:12"],
+          result: "supported",
+        },
+      ],
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
+
+    expect(parseTruthSyncReport(report)).toMatchObject({
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
+    });
+  });
+
   it("renders skipped handoff notes in the README shape", () => {
     expect(
       renderTruthSyncSkippedReport({ reason: "documentation-only change" }),
