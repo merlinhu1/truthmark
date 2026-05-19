@@ -118,16 +118,22 @@ const validateHelperScripts = (
     .filter(Boolean);
   const statusPattern = /^-\s*([a-z0-9-]+):\s*(?:ran,\s*passed|skipped,\s*\S.*)$/iu;
 
+  const validHelperIds = new Set<string>();
+
   for (const entry of entries) {
-    if (!statusPattern.test(entry)) {
+    const match = entry.match(statusPattern);
+    if (match === null) {
       errors.push(
         "Helper scripts entries must match '- helper-id: ran, passed' or '- helper-id: skipped, reason'; ran, failed is not valid for completed reports",
       );
+      continue;
     }
+
+    validHelperIds.add(match[1].toLowerCase());
   }
 
   for (const helperId of requiredHelpers) {
-    if (!entries.some((entry) => entry.toLowerCase().startsWith(`- ${helperId}:`))) {
+    if (!validHelperIds.has(helperId.toLowerCase())) {
       errors.push(`missing Helper scripts status: ${helperId}`);
     }
   }

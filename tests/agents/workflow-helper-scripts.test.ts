@@ -324,6 +324,21 @@ Notes:
     expect(result.json.helper).toBe("validate-sync-report");
   });
 
+  it("accepts Truth Sync helper status bullets with flexible whitespace", async () => {
+    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+  Evidence: src/init/init.ts
+  Result: supported`)
+      .replace("- validate-sync-report: ran, passed", "-   validate-sync-report: ran, passed")
+      .replace(
+        "- validate-write-lease: skipped, no write lease used",
+        "-\tvalidate-write-lease: skipped, no write lease used",
+      );
+    const result = await runSyncReport(report);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
+  });
+
   it("accepts the generated Truth Sync report template example", async () => {
     const result = await runCliHelper({
       files: {
@@ -529,6 +544,24 @@ Notes:
     expect(result.exitCode).toBe(0);
     expect(result.json.ok).toBe(true);
     expect(result.json.helper).toBe("validate-document-report");
+  });
+
+  it("accepts Truth Document helper status bullets with flexible whitespace", async () => {
+    const report = documentReportWithEvidence(`- Claim: Helpers are optional.
+  Evidence: src/agents/workflow-manifest.ts
+  Result: supported`)
+      .replace(
+        "- validate-document-report: ran, passed",
+        "-   validate-document-report: ran, passed",
+      )
+      .replace(
+        "- validate-write-lease: skipped, no write lease used",
+        "-\tvalidate-write-lease: skipped, no write lease used",
+      );
+    const result = await runDocumentReport(report);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
   });
 
   it("accepts the generated Truth Document report template example", async () => {
