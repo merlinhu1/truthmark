@@ -437,6 +437,24 @@ Evidence: src/init/init.ts
     expect(result.json.errors?.join("\n")).toContain("Evidence checked");
   });
 
+  it.each([
+    ["validate-sync-report"],
+    ["validate-write-lease"],
+  ])("rejects a completed Truth Sync report when %s ran and failed", async (helperId) => {
+    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+  Evidence: src/init/init.ts
+  Result: supported`).replace(
+      `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
+      `- ${helperId}: ran, failed`,
+    );
+
+    const result = await runSyncReport(report);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain("ran, failed");
+  });
+
   it("accepts a valid completed Truth Document report", async () => {
     const result = await runMaterializedHelper({
       scriptName: "validate-document-report.mjs",
@@ -553,6 +571,24 @@ Evidence: src/agents/workflow-manifest.ts
     expect(result.exitCode).toBe(1);
     expect(result.json.ok).toBe(false);
     expect(result.json.errors?.join("\n")).toContain("Evidence checked");
+  });
+
+  it.each([
+    ["validate-document-report"],
+    ["validate-write-lease"],
+  ])("rejects a completed Truth Document report when %s ran and failed", async (helperId) => {
+    const report = documentReportWithEvidence(`- Claim: Helpers are optional.
+  Evidence: src/agents/workflow-manifest.ts
+  Result: supported`).replace(
+      `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
+      `- ${helperId}: ran, failed`,
+    );
+
+    const result = await runDocumentReport(report);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain("ran, failed");
   });
 
   it("rejects write-lease changes outside allowedWrites", async () => {
