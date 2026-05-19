@@ -61,14 +61,28 @@ describe("truthmark validate CLI helpers", () => {
         cwd: repo.rootDir,
       });
       const output = JSON.parse(result.stdout) as {
-        ok: boolean;
-        helper: string;
-        checks?: string[];
+        command: string;
+        summary: string;
+        diagnostics: unknown[];
+        data?: {
+          validation?: {
+            ok: boolean;
+            helper: string;
+            checks?: string[];
+          };
+        };
       };
 
       expect(result.exitCode).toBe(0);
-      expect(output).toMatchObject({ ok: true, helper: "validate-sync-report" });
-      expect(output.checks).toContain("status: completed");
+      expect(output).toMatchObject({
+        command: "validate sync-report",
+        summary: "Validation passed",
+        diagnostics: [],
+        data: {
+          validation: { ok: true, helper: "validate-sync-report" },
+        },
+      });
+      expect(output.data?.validation?.checks).toContain("status: completed");
     } finally {
       await repo.cleanup();
     }
@@ -82,10 +96,19 @@ describe("truthmark validate CLI helpers", () => {
       const result = await runCli(["validate", "document-report", "report.md", "--json"], {
         cwd: repo.rootDir,
       });
-      const output = JSON.parse(result.stdout) as { ok: boolean; helper: string };
+      const output = JSON.parse(result.stdout) as {
+        data?: { validation?: { ok: boolean; helper: string } };
+      };
 
       expect(result.exitCode).toBe(0);
-      expect(output).toMatchObject({ ok: true, helper: "validate-document-report" });
+      expect(output).toMatchObject({
+        command: "validate document-report",
+        summary: "Validation passed",
+        diagnostics: [],
+        data: {
+          validation: { ok: true, helper: "validate-document-report" },
+        },
+      });
     } finally {
       await repo.cleanup();
     }
@@ -102,11 +125,18 @@ describe("truthmark validate CLI helpers", () => {
       const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
         cwd: repo.rootDir,
       });
-      const output = JSON.parse(result.stdout) as { ok: boolean; errors?: string[] };
+      const output = JSON.parse(result.stdout) as {
+        data?: { validation?: { ok: boolean; errors?: string[] } };
+      };
 
       expect(result.exitCode).toBe(1);
-      expect(output.ok).toBe(false);
-      expect(output.errors?.join("\n")).toContain("ran, failed");
+      expect(output).toMatchObject({
+        command: "validate sync-report",
+        summary: "Validation failed",
+        diagnostics: [],
+        data: { validation: { ok: false } },
+      });
+      expect(output.data?.validation?.errors?.join("\n")).toContain("ran, failed");
     } finally {
       await repo.cleanup();
     }
@@ -122,11 +152,20 @@ describe("truthmark validate CLI helpers", () => {
         ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
         { cwd: repo.rootDir },
       );
-      const output = JSON.parse(result.stdout) as { ok: boolean; errors?: string[] };
+      const output = JSON.parse(result.stdout) as {
+        data?: { validation?: { ok: boolean; errors?: string[] } };
+      };
 
       expect(result.exitCode).toBe(1);
-      expect(output.ok).toBe(false);
-      expect(output.errors?.join("\n")).toContain("invalid changed file path");
+      expect(output).toMatchObject({
+        command: "validate write-lease",
+        summary: "Validation failed",
+        diagnostics: [],
+        data: { validation: { ok: false } },
+      });
+      expect(output.data?.validation?.errors?.join("\n")).toContain(
+        "invalid changed file path",
+      );
     } finally {
       await repo.cleanup();
     }

@@ -51,20 +51,34 @@ const writeContextResult = (result: CommandResult, options: ContextOptions): voi
 };
 
 const renderValidationHuman = (result: WorkflowHelperValidationResult): string => {
-  if (result.ok) {
+  if (result.ok === true) {
     return [`${result.helper}: ok`, ...result.checks.map((check) => `- ${check}`)].join("\n");
   }
 
   return [`${result.helper}: failed`, ...result.errors.map((error) => `- ${error}`)].join("\n");
 };
 
+const toValidationCommandResult = (
+  command: string,
+  result: WorkflowHelperValidationResult,
+): CommandResult => ({
+  command,
+  summary: result.ok ? "Validation passed" : "Validation failed",
+  diagnostics: [],
+  data: {
+    validation: result,
+  },
+});
+
 const writeValidationResult = (
+  command: string,
   result: WorkflowHelperValidationResult,
   options: OutputOptions,
 ): void => {
-  process.stdout.write(
-    `${options.json ? JSON.stringify(result, null, 2) : renderValidationHuman(result)}\n`,
-  );
+  const output = options.json
+    ? renderJson(toValidationCommandResult(command, result))
+    : renderValidationHuman(result);
+  process.stdout.write(`${output}\n`);
 
   if (!result.ok) {
     process.exitCode = 1;
@@ -153,7 +167,7 @@ export const buildProgram = (): Command => {
       .description("Validate a Truth Sync report file.")
       .argument("<report-file>", "Truth Sync report file"),
   ).action(async (reportFile: string, options: OutputOptions) => {
-    writeValidationResult(await runValidateSyncReport(reportFile), options);
+    writeValidationResult("validate sync-report", await runValidateSyncReport(reportFile), options);
   });
 
   addJsonOption(
@@ -162,7 +176,11 @@ export const buildProgram = (): Command => {
       .description("Validate a Truth Document report file.")
       .argument("<report-file>", "Truth Document report file"),
   ).action(async (reportFile: string, options: OutputOptions) => {
-    writeValidationResult(await runValidateDocumentReport(reportFile), options);
+    writeValidationResult(
+      "validate document-report",
+      await runValidateDocumentReport(reportFile),
+      options,
+    );
   });
 
   addJsonOption(
@@ -178,6 +196,7 @@ export const buildProgram = (): Command => {
       options: OutputOptions,
     ) => {
       writeValidationResult(
+        "validate write-lease",
         await runValidateWriteLease(leaseOrReportFile, changedFilesFile),
         options,
       );
