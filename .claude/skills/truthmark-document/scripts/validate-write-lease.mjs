@@ -27,7 +27,13 @@ const readText = (filePath, label) => {
   }
 };
 
-const normalizePath = (value) => value.trim().replace(/^["']|["']$/g, "").replace(/^\.\//, "").replace(/^\//, "");
+const cleanPathValue = (value) => value.trim().replace(/^["']|["']$/g, "");
+const normalizePath = (value) => cleanPathValue(value).replace(/^\.\//, "");
+const isUnsafePathValue = (value) => {
+  const cleanValue = cleanPathValue(value);
+  const pathValue = cleanValue.endsWith("/**") ? cleanValue.slice(0, -3) : cleanValue;
+  return pathValue.startsWith("/") || pathValue.split(/[\\/]+/u).includes("..");
+};
 
 const parseListFields = (text) => {
   const lists = { allowedWrites: [], forbiddenWrites: [] };
@@ -78,11 +84,32 @@ const matchesPattern = (filePath, pattern) => {
 const leaseText = readText(args[0], "lease/report file");
 const changedText = readText(args[1], "changed-files file");
 const parsed = parseListFields(leaseText);
-const allowedWrites = parsed.allowedWrites.map(normalizePath).filter(Boolean);
-const forbiddenWrites = parsed.forbiddenWrites.map(normalizePath).filter(Boolean);
-const changedFiles = changedText.split(/\r?\n/).map(normalizePath).filter(Boolean);
+const rawAllowedWrites = parsed.allowedWrites.map(cleanPathValue).filter(Boolean);
+const rawForbiddenWrites = parsed.forbiddenWrites.map(cleanPathValue).filter(Boolean);
+const rawChangedFiles = changedText.split(/\r?\n/).map(cleanPathValue).filter(Boolean);
+const allowedWrites = rawAllowedWrites.map(normalizePath).filter(Boolean);
+const forbiddenWrites = rawForbiddenWrites.map(normalizePath).filter(Boolean);
+const changedFiles = rawChangedFiles.map(normalizePath).filter(Boolean);
 const checks = [];
 const errors = [];
+
+for (const pattern of rawAllowedWrites) {
+  if (isUnsafePathValue(pattern)) {
+    errors.push("invalid allowedWrites path: " + pattern);
+  }
+}
+
+for (const pattern of rawForbiddenWrites) {
+  if (isUnsafePathValue(pattern)) {
+    errors.push("invalid forbiddenWrites path: " + pattern);
+  }
+}
+
+for (const filePath of rawChangedFiles) {
+  if (isUnsafePathValue(filePath)) {
+    errors.push("invalid changed file path: " + filePath);
+  }
+}
 
 for (const pattern of [...allowedWrites, ...forbiddenWrites]) {
   if (!isSupportedPattern(pattern)) {

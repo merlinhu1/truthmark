@@ -58,6 +58,22 @@ const getSection = (label) => {
   return lines.slice(startIndex + 1, endIndex).join("\n").trim();
 };
 
+const requireBulletSection = (label) => {
+  const section = getSection(label);
+
+  if (section === null) {
+    errors.push("missing required section: " + label);
+    return;
+  }
+
+  if (!/^-\s+\S/mu.test(section)) {
+    errors.push(label + " must include at least one bullet");
+    return;
+  }
+
+  checks.push(label);
+};
+
 const validateEvidenceChecked = () => {
   const section = getSection("Evidence checked");
 
@@ -121,25 +137,39 @@ if (statusMatch[1].toLowerCase() === "completed") {
   for (const label of [
     "Implementation reviewed",
     "Ownership reviewed",
-    "Evidence checked",
-    "Helper scripts",
     "Notes",
   ]) {
-    if (hasLabel(label)) {
-      checks.push(label);
-    } else {
-      errors.push("missing required section: " + label);
-    }
+    requireBulletSection(label);
   }
 
-  if (hasLabel("Truth docs updated") || hasLabel("Truth docs created")) {
-    checks.push("Truth docs updated or created");
+  if (hasLabel("Evidence checked")) {
+    checks.push("Evidence checked");
   } else {
+    errors.push("missing required section: Evidence checked");
+  }
+
+  if (hasLabel("Helper scripts")) {
+    checks.push("Helper scripts");
+  } else {
+    errors.push("missing required section: Helper scripts");
+  }
+
+  const truthDocsUpdated = getSection("Truth docs updated");
+  const truthDocsCreated = getSection("Truth docs created");
+  if (truthDocsUpdated === null && truthDocsCreated === null) {
     errors.push("missing required section: Truth docs updated or Truth docs created");
+  } else if (
+    ![truthDocsUpdated, truthDocsCreated].some((section) => section !== null && /^-\s+\S/mu.test(section))
+  ) {
+    errors.push("Truth docs updated or Truth docs created must include at least one bullet");
+  } else {
+    checks.push("Truth docs updated or created");
   }
 
   validateEvidenceChecked();
   validateHelperScripts(["validate-document-report", "validate-write-lease"]);
+} else if (statusMatch[1].toLowerCase() === "blocked") {
+  requireBulletSection("Reason");
 }
 
 if (errors.length > 0) {

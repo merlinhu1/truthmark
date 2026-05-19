@@ -183,6 +183,23 @@ const runDocumentReport = async (report: string): Promise<HelperResult> =>
     args: ["report.md"],
   });
 
+const runWriteLease = async ({
+  lease,
+  changedFiles,
+}: {
+  lease: string;
+  changedFiles: string;
+}): Promise<HelperResult> =>
+  runMaterializedHelper({
+    scriptName: "validate-write-lease.mjs",
+    scriptContent: VALIDATE_WRITE_LEASE_SCRIPT,
+    files: {
+      "lease.yml": lease,
+      "changed-files.txt": changedFiles,
+    },
+    args: ["lease.yml", "changed-files.txt"],
+  });
+
 afterEach(async () => {
   const repos = tempRepos.splice(0);
 
@@ -349,6 +366,33 @@ Notes:
     expect(result.json.errors?.join("\n")).toContain("Helper scripts");
   });
 
+  it.each([
+    ["blocked", "Reason"],
+    ["skipped", "Reason"],
+  ])("rejects a Truth Sync %s report with no required body", async (status, expectedError) => {
+    const result = await runSyncReport(`Truth Sync: ${status}\n`);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain(expectedError);
+  });
+
+  it.each([
+    ["Changed code reviewed"],
+    ["Ownership reviewed"],
+    ["Truth docs updated"],
+    ["Notes"],
+  ])("rejects a completed Truth Sync report with empty %s", async (label) => {
+    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+  Evidence: src/init/init.ts
+  Result: supported`).replace(new RegExp(`${label}:\\n- [^\\n]+`, "u"), `${label}:`);
+    const result = await runSyncReport(report);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain(label);
+  });
+
   it("rejects a completed Truth Sync report with evidence labels outside Evidence checked", async () => {
     const result = await runMaterializedHelper({
       scriptName: "validate-sync-report.mjs",
@@ -506,6 +550,30 @@ Notes:
     expect(result.json.ok).toBe(true);
   });
 
+  it("rejects a Truth Document blocked report with no required body", async () => {
+    const result = await runDocumentReport("Truth Document: blocked\n");
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain("Reason");
+  });
+
+  it.each([
+    ["Implementation reviewed"],
+    ["Ownership reviewed"],
+    ["Truth docs created"],
+    ["Notes"],
+  ])("rejects a completed Truth Document report with empty %s", async (label) => {
+    const report = documentReportWithEvidence(`- Claim: Helpers are optional.
+  Evidence: src/agents/workflow-manifest.ts
+  Result: supported`).replace(new RegExp(`${label}:\\n- [^\\n]+`, "u"), `${label}:`);
+    const result = await runDocumentReport(report);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain(label);
+  });
+
   it("rejects a completed Truth Document report with malformed Evidence checked entries", async () => {
     const result = await runMaterializedHelper({
       scriptName: "validate-document-report.mjs",
@@ -609,6 +677,43 @@ forbiddenWrites:
     expect(result.exitCode).toBe(1);
     expect(result.json.ok).toBe(false);
     expect(result.json.errors?.join("\n")).toContain("outside allowedWrites");
+  });
+
+  it.each([
+    ["parent-directory changed file", "../outside.md", "invalid changed file path"],
+    ["absolute changed file", "/docs/truth/workflows/overview.md", "invalid changed file path"],
+    ["normalized-outside changed file", "docs/truth/../../src/init.ts", "invalid changed file path"],
+  ])("rejects write-lease %s", async (_name, changedFiles, expectedError) => {
+    const result = await runWriteLease({
+      lease: `allowedWrites:
+  - docs/truth/**
+forbiddenWrites:
+  - src/**
+`,
+      changedFiles: `${changedFiles}\n`,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain(expectedError);
+  });
+
+  it.each([
+    ["parent-directory allowedWrites", "../docs/truth/**"],
+    ["absolute allowedWrites", "/docs/truth/**"],
+    ["normalized-outside allowedWrites", "docs/truth/../../src/**"],
+  ])("rejects write-lease %s", async (_name, allowedWrite) => {
+    const result = await runWriteLease({
+      lease: `allowedWrites:
+  - ${allowedWrite}
+forbiddenWrites: []
+`,
+      changedFiles: "docs/truth/workflows/overview.md\n",
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain("invalid allowedWrites path");
   });
 
   it("rejects unsupported write-lease glob patterns with manual-validation guidance", async () => {
