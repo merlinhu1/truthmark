@@ -219,6 +219,18 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
     );
+    for (const surface of [
+      renderTruthmarkGeminiSyncCommand(),
+      renderTruthmarkCopilotSyncPrompt(),
+    ]) {
+      expect(surface).toContain(
+        "Record `validate-sync-report: ran, passed` only after running `truthmark validate sync-report <report-file> --json` and seeing `data.validation.ok: true`.",
+      );
+      expect(surface).toContain(
+        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.",
+      );
+      expect(surface).not.toContain("helper package unavailable");
+    }
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {

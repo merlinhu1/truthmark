@@ -9,9 +9,11 @@ import {
 } from "../../src/agents/truth-document.js";
 import {
   renderTruthmarkDocumentClaudeSkill,
+  renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkDocumentLocalSkill,
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
+  renderTruthmarkGeminiDocumentCommand,
 } from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
@@ -199,5 +201,17 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       `version: "${TRUTHMARK_VERSION}"`,
     );
+    for (const surface of [
+      renderTruthmarkGeminiDocumentCommand(),
+      renderTruthmarkCopilotDocumentPrompt(),
+    ]) {
+      expect(surface).toContain(
+        "Record `validate-document-report: ran, passed` only after running `truthmark validate document-report <report-file> --json` and seeing `data.validation.ok: true`.",
+      );
+      expect(surface).toContain(
+        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.",
+      );
+      expect(surface).not.toContain("helper package unavailable");
+    }
   });
 });
