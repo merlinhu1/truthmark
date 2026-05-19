@@ -98,6 +98,9 @@ Truth Document: completed
 Implementation reviewed:
 - src/routing/area-resolver.ts
 
+Ownership reviewed:
+- docs/truthmark/areas.md
+
 Truth docs created:
 - docs/truth/contracts.md
 
@@ -114,6 +117,10 @@ Evidence checked:
 - Claim: Route resolution behavior is documented in the contracts truth doc.
   Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/areas.md:9
   Result: supported
+
+Helper scripts:
+- validate-document-report: ran, passed
+- validate-write-lease: skipped, no write lease used
 
 Notes:
 - Documented routing and behavior from route handlers and tests.

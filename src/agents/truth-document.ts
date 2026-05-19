@@ -38,6 +38,9 @@ export const renderTruthDocumentReportExample = (
 Implementation reviewed:
 - src/routing/area-resolver.ts
 
+Ownership reviewed:
+- ${config.docs.routing.rootIndex}
+
 Truth docs created:
 - ${truthDocsRoot}/contracts.md
 
@@ -60,6 +63,10 @@ ${renderClaimEvidenceCheckedSection([
       result: "supported",
     },
   ])}
+
+Helper scripts:
+- validate-document-report: ran, passed
+- validate-write-lease: skipped, no write lease used
 
 Notes:
 - Documented routing and behavior from route handlers and tests.`;

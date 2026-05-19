@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-18
 source_of_truth:
   - ../../src/config/defaults.ts
   - ../../src/fs/paths.ts
@@ -10,6 +10,8 @@ source_of_truth:
   - ../../src/init/hierarchy.ts
   - ../../src/templates/init-files.ts
   - ../../src/templates/agents-block.ts
+  - ../../src/agents/workflow-manifest.ts
+  - ../../src/agents/workflow-helper-scripts.ts
   - ../../src/templates/workflow-surfaces.ts
   - ../../src/templates/generated-surfaces.ts
 ---
@@ -72,6 +74,9 @@ Current scaffold targets:
 - `.codex/skills/truthmark-*/support/procedure.md`
 - `.codex/skills/truthmark-*/support/report-template.md`
 - `.codex/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.codex/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.codex/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
+- `.codex/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
 - `.codex/agents/truth-route-auditor.toml`
 - `.codex/agents/truth-claim-verifier.toml`
 - `.codex/agents/truth-doc-reviewer.toml`
@@ -84,6 +89,9 @@ Current scaffold targets:
 - `.opencode/skills/truthmark-*/support/procedure.md`
 - `.opencode/skills/truthmark-*/support/report-template.md`
 - `.opencode/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.opencode/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.opencode/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
+- `.opencode/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
 - `.opencode/agents/truth-route-auditor.md`
 - `.opencode/agents/truth-claim-verifier.md`
 - `.opencode/agents/truth-doc-reviewer.md`
@@ -96,6 +104,9 @@ Current scaffold targets:
 - `.claude/skills/truthmark-*/support/procedure.md`
 - `.claude/skills/truthmark-*/support/report-template.md`
 - `.claude/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.claude/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.claude/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
+- `.claude/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
 - `.github/copilot-instructions.md`
 - `.github/prompts/truthmark-structure.prompt.md`
 - `.github/prompts/truthmark-document.prompt.md`
@@ -119,7 +130,7 @@ Current scaffold targets:
 
 `ensureRepoFile` is intentionally conservative: existing non-empty files are left alone. The AGENTS managed block is the exception because Truthmark owns that block and may refresh it to match current template behavior.
 
-The generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, Claude Code project skills, GitHub Copilot prompt and custom-agent files, and OpenCode skills keep matching the installed workflow contract. Generated skill packages keep `SKILL.md` compact and write heavy procedure, report-template, and subagent or lease reference material into sibling `support/*.md` files. Generated skills, support files, Codex metadata, Copilot prompt files, Copilot custom-agent files, and managed instruction blocks include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+The generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, Claude Code project skills, GitHub Copilot prompt and custom-agent files, and OpenCode skills keep matching the installed workflow contract. Generated skill packages keep `SKILL.md` compact and write heavy procedure, report-template, and subagent or lease reference material into sibling `support/*.md` files. Optional helper manifests, helper policy files, and helper scripts are emitted only for workflows that declare them and only for configured skill-package platforms; helper manifest commands are local commands intended to run from the generated skill package directory named by the helper policy. GitHub Copilot prompts and Gemini commands do not receive sibling helper files. Generated skills, support files, Codex metadata, Copilot prompt files, Copilot custom-agent files, and managed instruction blocks include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
 ## AGENTS Management Rules
 
@@ -174,6 +185,7 @@ Important current defaults:
 - `truthmark check` is optional validation for agent workflows, not a required workflow preflight
 - Truth Realize is always installed as an explicit manual surface for configured platforms; it has no separate config toggle and no dedicated CLI subcommand
 - Gemini CLI support uses `GEMINI.md` for hierarchical memory and `.gemini/commands/truthmark/*.toml` for explicit workflow commands instead of introducing Truthmark-specific top-level CLI verbs
+- helper files are emitted only for workflows with declared helpers and configured skill-package platforms (`codex`, `opencode`, and `claude-code`); `scripts/*.mjs` files are emitted only for declared helpers with packaged scripts
 
 ## Init Diagnostics
 

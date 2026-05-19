@@ -2,11 +2,12 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-18
 source_of_truth:
   - ../../../.truthmark/config.yml
   - ../../../src/agents/instructions.ts
   - ../../../src/agents/workflow-manifest.ts
+  - ../../../src/agents/workflow-helper-scripts.ts
   - ../../../src/templates/workflow-surfaces.ts
   - ../../../src/templates/generated-surfaces.ts
 ---
@@ -54,6 +55,8 @@ The default platform list includes every supported platform. Teams should remove
 
 Generated skill files, Gemini command files, Codex metadata, Codex custom-agent files, Claude Code subagent files, GitHub Copilot custom-agent files, OpenCode subagent files, and managed instruction blocks include the package version from `package.json`. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
+Skill-package hosts (`codex`, `opencode`, and `claude-code`) may also include parseable YAML `helper-manifest.yml`, `support/helper-policy.md`, and `scripts/*.mjs` when a workflow declares optional helper scripts. Helpers are optional read-only accelerators and never workflow prerequisites. If the declared runner is unavailable, the workflow reports a visible helper skip and continues with the generated manual fallback. Helper output is derived evidence; direct checkout inspection, workflow write boundaries, and parent workflow validation remain authoritative.
+
 Codex, Claude Code, GitHub Copilot, and OpenCode platform generation include project-scoped read-only verifier agents for workflow-owned subagent dispatch plus a write-capable `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards. Codex exposes `truth_route_auditor`, `truth_claim_verifier`, `truth_doc_reviewer`, and `truth_doc_writer`. Claude Code exposes `truth-route-auditor`, `truth-claim-verifier`, `truth-doc-reviewer`, and `truth-doc-writer` project subagents. GitHub Copilot and OpenCode expose `@truth-route-auditor`, `@truth-claim-verifier`, `@truth-doc-reviewer`, and `@truth-doc-writer`. The parent workflow may use them automatically when the host supports subagents and bounded fan-out is useful; read-only verifier agents keep context bounded by avoiding host instruction files and repo-wide policy docs unless assigned as evidence, write workers require explicit leases, and the parent workflow owns final reports, repo-policy interpretation, diff validation, and acceptance.
 Read-only verifier agents include an explicit context boundary: they inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence.
 
@@ -78,10 +81,13 @@ Managed instruction blocks are compact automatic-Sync trigger and boundary index
 - Decision (2026-05-16): Coding and document-writing speed is not a priority over workflow simplicity and agent stability. Truthmark must not make document writing faster by adding project complexity, weaker leases, broader write authority, or less stable agent behavior.
 - Decision (2026-05-16): Truth Preview is generated as an explicit read-only workflow surface, not an automatic gate, validator, or Truth Check replacement.
 - Decision (2026-05-16): Generated skill packages use progressive disclosure: `SKILL.md` stays compact for routing and first-step execution, while heavy procedure detail, report examples, and subagent or lease reference material move to generated support files beside the skill.
+- Decision (2026-05-18): Workflow helper scripts are optional read-only accelerators packaged with skill-package hosts; generated manual procedures remain authoritative when a runner is unavailable.
 
 ## Rationale
 
 Keeping workflow execution agent-native makes installed repositories usable even when the Truthmark package is unavailable at execution time. Agents can read committed surfaces, inspect the checkout, and act without depending on a daemon, database, or mandatory generated payload.
+
+Optional helper scripts fit that model by accelerating deterministic validation without making Node or packaged scripts a workflow dependency.
 
 Compact managed instruction blocks and compact skill entrypoints protect ordinary model context while explicit support files, prompt files, and command files remain available when the agent needs a full procedure.
 

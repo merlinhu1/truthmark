@@ -25,3 +25,5 @@ Progressive disclosure:
 - support/procedure.md
 - support/report-template.md
 - support/subagents-and-leases.md
+- helper-manifest.yml
+- support/helper-policy.md

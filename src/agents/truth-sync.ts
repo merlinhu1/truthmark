@@ -158,7 +158,7 @@ Parent post-sync verification:
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
+- validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
@@ -166,6 +166,7 @@ Report completion in this shape:
 ${renderMarkdownExample(
     renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: [config.docs.routing.rootIndex],
       truthDocsUpdated: [`${truthDocsRoot}/repository/overview.md`],
       evidenceChecked: [
         {
@@ -173,6 +174,10 @@ ${renderMarkdownExample(
           evidence: ["src/auth/session.ts:12", `${config.docs.routing.rootIndex}:11`],
           result: "supported",
         },
+      ],
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
       ],
       notes: ["Updated session timeout behavior."],
     }),

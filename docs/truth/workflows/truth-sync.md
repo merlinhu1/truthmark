@@ -2,12 +2,14 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-18
 source_of_truth:
   - ../../../src/agents/truth-sync.ts
   - ../../../src/agents/write-lease.ts
   - ../../../src/sync/report.ts
   - ../../../src/agents/shared.ts
+  - ../../../src/agents/workflow-manifest.ts
+  - ../../../src/agents/workflow-helper-scripts.ts
   - ../../../src/templates/workflow-surfaces.ts
 ---
 
@@ -50,6 +52,8 @@ When Truth Sync restructures a bounded truth doc or runs Structure inline, it in
 Truth Sync updates architecture docs in the same sync when changed code alters architecture-level structure or ownership.
 
 ContextPack may be used to accelerate Truth Sync when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack or ImpactSet is unavailable, Truth Sync proceeds manually and reports that repository-intelligence artifacts were not generated.
+
+On skill-package hosts, Truth Sync packages optional read-only Node validators for the Sync report and write-lease checks. Agents may use `validate-sync-report` and `validate-write-lease` as accelerators, but must visibly skip them and continue manual validation when Node is unavailable or a helper cannot run. Helper output is derived evidence; parent validation against checkout evidence, report requirements, lease boundaries, and actual diffs remains authoritative.
 
 Completed reports include `Changed code reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs updated`, `Truth docs split` when Structure is run inline, `Evidence checked`, and `Notes`. Skipped reports include `Reason`. Blocked reports include `Reason`, `Files requiring manual review`, and `Next action`.
 When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent accepts a completed worker report only after validating the parsed report against the lease identity, required report fields, actual worker diff, `allowedWrites`, `forbiddenWrites`, reported `filesChanged`, reported `offLeaseChanges`, and reported `blockers`. Blocked worker reports remain blocked outcomes and must include blockers; off-lease or forbidden actual diffs are rejected rather than trusted from self-report.

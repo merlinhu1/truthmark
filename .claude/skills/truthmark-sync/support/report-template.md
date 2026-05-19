@@ -9,6 +9,9 @@ Truth Sync: completed
 Changed code reviewed:
 - src/auth/session.ts
 
+Ownership reviewed:
+- docs/truthmark/areas.md
+
 Truth docs updated:
 - docs/truth/repository/overview.md
 
@@ -16,6 +19,10 @@ Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.
   Evidence: src/auth/session.ts:12 / docs/truthmark/areas.md:11
   Result: supported
+
+Helper scripts:
+- validate-sync-report: ran, passed
+- validate-write-lease: skipped, no write lease used
 
 Notes:
 - Updated session timeout behavior.
