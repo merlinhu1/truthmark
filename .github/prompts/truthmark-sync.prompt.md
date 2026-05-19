@@ -82,6 +82,11 @@ Optional validation tooling:
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
 - update Product Decisions and Rationale when a behavior change comes from a decision change
+Helper status reporting:
+- Record `validate-sync-report: ran, passed` only after running `truthmark validate sync-report <report-file> --json` and seeing `data.validation.ok: true`.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.
+- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Truthmark hierarchy:
 - Config: .truthmark/config.yml
 - Root route index: docs/truthmark/areas.md

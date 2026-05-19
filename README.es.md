@@ -425,7 +425,7 @@ La mayoría de los mantenedores empieza con tres comandos.
 | `truthmark init` | Instala o refresca superficies de flujo configuradas desde la config revisada. |
 | `truthmark check` | Valida configuración, autoridad, rutas, documentos con decisiones, frontmatter, enlaces internos, alcance de rama, superficies generadas, frescura y diagnósticos de cobertura. |
 
-Los ayudantes opcionales de inteligencia del repositorio generan contexto derivado para revisión sobre el checkout activo. Los paquetes de skill de flujo generados también pueden exponer manifests y policies de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini informan que los paquetes de helpers no están disponibles salvo que se esté usando el paquete de skill generado correspondiente.
+Los ayudantes opcionales de inteligencia del repositorio generan contexto derivado para revisión sobre el checkout activo. Los paquetes de skill de flujo generados también pueden exponer manifests y policies de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado de helper omitido visible y hacen validación manual.
 
 No son fuentes de verdad.
 

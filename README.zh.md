@@ -427,7 +427,7 @@ truthmark check
 | `truthmark init` | 从已审查配置安装或刷新已配置的工作流表面。 |
 | `truthmark check` | 验证配置、权限边界、路由、承载决策的文档、frontmatter、内部链接、分支范围、生成表面、freshness 和覆盖率诊断。 |
 
-可选的仓库情报辅助工具会为当前 checkout 生成派生审查上下文。生成的工作流 skill packages 也可以暴露 helper manifests 和 helper policies，用来调用已安装的 `truthmark validate ... --json` CLI validators；这些 helpers 是加速器，不是打包进仓库的本地脚本，也不是事实来源。独立的 Copilot prompts 和 Gemini commands 会把 helper packages 报告为不可用，除非正在使用匹配的生成 skill package。
+可选的仓库情报辅助工具会为当前 checkout 生成派生审查上下文。生成的工作流 skill packages 也可以暴露 helper manifests 和 helper policies，用来调用已安装的 `truthmark validate ... --json` CLI validators；这些 helpers 是加速器，不是打包进仓库的本地脚本，也不是事实来源。独立的 Copilot prompts 和 Gemini commands 在已安装 runner 可用时使用同一 CLI validator contract；不可用时应报告可见的 skipped helper status，并进行 manual validation。
 
 它们不是事实来源。
 
