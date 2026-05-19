@@ -43,8 +43,12 @@ const parseBulletLines = (section: string): string[] => {
   return section
     .split("\n")
     .slice(1)
-    .filter((line) => line.startsWith("- "))
-    .map((line) => line.slice(2));
+    .map((line) => {
+      const match = line.match(/^-\s+(.*)$/);
+
+      return match?.[1];
+    })
+    .filter((line): line is string => line !== undefined);
 };
 
 const parseBulletSection = (source: string, title: string): string[] => {

@@ -1,5 +1,7 @@
 import { parse as parseYaml } from "yaml";
 
+import { parseTruthSyncReport } from "../sync/report.js";
+
 export type WorkflowHelperValidationResult =
   | {
       ok: true;
@@ -101,29 +103,22 @@ const validateEvidenceChecked = (text: string, errors: string[], checks: string[
   }
 };
 
-const validateHelperScripts = (
-  text: string,
+const validateHelperScriptEntries = (
+  entries: string[] | undefined,
   requiredHelpers: string[],
   errors: string[],
   checks: string[],
 ): void => {
-  const section = getSection(text, "Helper scripts");
-
-  if (section === null || section === "") {
+  if (entries === undefined || entries.length === 0) {
     errors.push("Helper scripts must include status for optional helpers");
     return;
   }
 
-  const entries = section
-    .split(/\n/u)
-    .map((entry) => entry.trim())
-    .filter(Boolean);
-  const statusPattern = /^-\s*([a-z0-9-]+):\s*(?:ran,\s*passed|skipped,\s*\S.*)$/iu;
-
+  const statusPattern = /^(?:-\s*)?([a-z0-9-]+):\s*(?:ran,\s*passed|skipped,\s*\S.*)$/iu;
   const validHelperIds = new Set<string>();
 
   for (const entry of entries) {
-    const match = entry.match(statusPattern);
+    const match = entry.trim().match(statusPattern);
     if (match === null) {
       errors.push(
         "Helper scripts entries must match '- helper-id: ran, passed' or '- helper-id: skipped, reason'; ran, failed is not valid for completed reports",
@@ -145,6 +140,21 @@ const validateHelperScripts = (
   }
 };
 
+const validateHelperScripts = (
+  text: string,
+  requiredHelpers: string[],
+  errors: string[],
+  checks: string[],
+): void => {
+  const section = getSection(text, "Helper scripts");
+  const entries = section
+    ?.split(/\n/u)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  validateHelperScriptEntries(entries, requiredHelpers, errors, checks);
+};
+
 export const validateTruthSyncReportText = (text: string): WorkflowHelperValidationResult => {
   const helper = "validate-sync-report";
   const statusMatch = text.match(/^\s*Truth Sync:\s*(completed|blocked|skipped)\b/imu);
@@ -161,33 +171,44 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
   const errors: string[] = [];
 
   if (status === "completed") {
-    for (const label of [
-      "Changed code reviewed",
-      "Ownership reviewed",
-      "Truth docs updated",
-      "Notes",
-    ]) {
-      requireBulletSection(text, label, errors, checks);
-    }
+    try {
+      const report = parseTruthSyncReport(text.trimStart());
 
-    if (hasLabel(text, "Evidence checked")) {
-      checks.push("Evidence checked");
-    } else {
-      errors.push("missing required section: Evidence checked");
-    }
+      for (const [label, items] of [
+        ["Changed code reviewed", report.changedCode],
+        ["Ownership reviewed", report.ownershipReviewed],
+        ["Truth docs updated", report.truthDocsUpdated],
+        ["Notes", report.notes],
+      ] as const) {
+        if (items.length === 0) {
+          errors.push(`${label} must include at least one bullet`);
+        } else {
+          checks.push(label);
+        }
+      }
 
-    if (hasLabel(text, "Helper scripts")) {
-      checks.push("Helper scripts");
-    } else {
-      errors.push("missing required section: Helper scripts");
-    }
+      if (report.evidenceChecked.length === 0) {
+        errors.push("Evidence checked must include at least one structured entry");
+      } else {
+        checks.push(
+          "Evidence checked entries include Claim:, Evidence:, and Result: supported | narrowed | removed | blocked",
+        );
+      }
 
-    validateEvidenceChecked(text, errors, checks);
-    validateHelperScripts(text, ["validate-sync-report", "validate-write-lease"], errors, checks);
+      validateHelperScriptEntries(
+        report.helperScripts,
+        ["validate-write-lease"],
+        errors,
+        checks,
+      );
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : "invalid Truth Sync report");
+    }
   } else if (status === "skipped") {
     requireBulletSection(text, "Reason", errors, checks);
   } else if (status === "blocked") {
     requireBulletSection(text, "Reason", errors, checks);
+    requireBulletSection(text, "Files requiring manual review", errors, checks);
     requireBulletSection(text, "Next action", errors, checks);
   }
 
@@ -241,7 +262,7 @@ export const validateTruthDocumentReportText = (text: string): WorkflowHelperVal
     }
 
     validateEvidenceChecked(text, errors, checks);
-    validateHelperScripts(text, ["validate-document-report", "validate-write-lease"], errors, checks);
+    validateHelperScripts(text, ["validate-write-lease"], errors, checks);
   } else if (status === "blocked") {
     requireBulletSection(text, "Reason", errors, checks);
   }

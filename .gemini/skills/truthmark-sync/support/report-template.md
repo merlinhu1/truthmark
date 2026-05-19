@@ -21,7 +21,6 @@ Evidence checked:
   Result: supported
 
 Helper scripts:
-- validate-sync-report: ran, passed
 - validate-write-lease: skipped, no write lease used
 
 Notes:

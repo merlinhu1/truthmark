@@ -224,7 +224,10 @@ describe("Truth Sync generated metadata", () => {
       renderTruthmarkCopilotSyncPrompt(),
     ]) {
       expect(surface).toContain(
-        "Record `validate-sync-report: ran, passed` only after running `truthmark validate sync-report <report-file> --json` and seeing `data.validation.ok: true`.",
+        "Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.",
+      );
+      expect(surface).toContain(
+        "After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.",
       );
       expect(surface).toContain(
         "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.",

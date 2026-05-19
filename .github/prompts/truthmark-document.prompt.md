@@ -86,7 +86,8 @@ Decision truth lives in the canonical doc it governs; date active decisions inli
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
 Helper status reporting:
-- Record `validate-document-report: ran, passed` only after running `truthmark validate document-report <report-file> --json` and seeing `data.validation.ok: true`.
+- Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
+- After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
 - If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.
 - Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
 - Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
@@ -124,7 +125,6 @@ Evidence checked:
   Result: supported
 
 Helper scripts:
-- validate-document-report: ran, passed
 - validate-write-lease: skipped, no write lease used
 
 Notes:

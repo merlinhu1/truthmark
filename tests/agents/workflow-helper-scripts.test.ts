@@ -324,6 +324,17 @@ Notes:
     expect(result.json.helper).toBe("validate-sync-report");
   });
 
+  it("accepts a completed Truth Sync report body before its own helper status is appended", async () => {
+    const result = await runSyncReport(
+      syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+  Evidence: src/init/init.ts
+  Result: supported`).replace("- validate-sync-report: ran, passed\n", ""),
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
+  });
+
   it("accepts Truth Sync helper status bullets with flexible whitespace", async () => {
     const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
@@ -391,6 +402,21 @@ Notes:
     expect(result.exitCode).toBe(1);
     expect(result.json.ok).toBe(false);
     expect(result.json.errors?.join("\n")).toContain(expectedError);
+  });
+
+  it("rejects a blocked Truth Sync report missing manual-review files", async () => {
+    const result = await runSyncReport(`Truth Sync: blocked
+
+Reason:
+- route ownership is ambiguous
+
+Next action:
+- run Truth Structure before rerunning Truth Sync
+`);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain("Files requiring manual review");
   });
 
   it.each([
@@ -544,6 +570,17 @@ Notes:
     expect(result.exitCode).toBe(0);
     expect(result.json.ok).toBe(true);
     expect(result.json.helper).toBe("validate-document-report");
+  });
+
+  it("accepts a completed Truth Document report body before its own helper status is appended", async () => {
+    const result = await runDocumentReport(
+      documentReportWithEvidence(`- Claim: Helpers are optional.
+  Evidence: src/agents/workflow-manifest.ts
+  Result: supported`).replace("- validate-document-report: ran, passed\n", ""),
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
   });
 
   it("accepts Truth Document helper status bullets with flexible whitespace", async () => {

@@ -32,10 +32,7 @@ export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
-  const helperScripts = [
-    "validate-document-report: ran, passed",
-    "validate-write-lease: skipped, no write lease used",
-  ];
+  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
 
   return `Truth Document: completed
 
@@ -161,7 +158,8 @@ ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
 Helper status reporting:
-- Record \`validate-document-report: ran, passed\` only after running \`truthmark validate document-report <report-file> --json\` and seeing \`data.validation.ok: true\`.
+- Validate the report body before adding this validator's own success status; the body may omit \`validate-document-report\` while validation is pending.
+- After \`truthmark validate document-report <report-file> --json\` returns \`data.validation.ok: true\`, append or update \`validate-document-report: ran, passed\` in the final report.
 - If the installed Truthmark CLI is unavailable or the helper is skipped, record \`validate-document-report: skipped, <reason>\` and manually validate the report shape.
 - Record \`validate-write-lease: ran, passed\` only after validating a concrete write lease; otherwise use a truthful skipped status such as \`skipped, no write lease used\`.
 - Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
