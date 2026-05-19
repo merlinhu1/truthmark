@@ -20,6 +20,26 @@ type HelperResult = {
   };
 };
 
+type ValidationEnvelope = {
+  command: string;
+  summary: string;
+  diagnostics: unknown[];
+  data?: {
+    validation?: HelperResult["json"];
+  };
+};
+
+const parseValidationEnvelope = (stdout: string): HelperResult["json"] => {
+  const parsed = JSON.parse(stdout) as ValidationEnvelope;
+  const validation = parsed.data?.validation;
+
+  if (validation === undefined) {
+    throw new Error(`missing data.validation in helper JSON\nstdout:\n${stdout}`);
+  }
+
+  return validation;
+};
+
 const tempRepos: Array<Awaited<ReturnType<typeof createTempRepo>>> = [];
 
 const snapshotFiles = async (rootDir: string): Promise<Record<string, string>> => {
@@ -71,7 +91,7 @@ const runCliHelper = async ({
     exitCode: result.exitCode ?? 1,
     stdout: result.stdout,
     stderr: result.stderr,
-    json: JSON.parse(result.stdout) as HelperResult["json"],
+    json: parseValidationEnvelope(result.stdout),
   };
 };
 
@@ -263,7 +283,9 @@ describe("workflow helper scripts", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(JSON.parse(result.stdout)).toMatchObject({ ok: true });
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      data: { validation: { ok: true } },
+    });
   });
 
   it("accepts a valid completed Truth Sync report", async () => {
