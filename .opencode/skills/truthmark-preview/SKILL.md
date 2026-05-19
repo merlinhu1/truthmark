@@ -10,6 +10,7 @@ truthmark-version: 1.4.0
 
 Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
+
 Invocations: OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.
 
 Quick procedure:

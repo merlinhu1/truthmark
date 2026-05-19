@@ -1,16 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { execa } from "execa";
 import { parse } from "yaml";
 import { afterEach, describe, expect, it } from "vitest";
 
-import {
-  VALIDATE_DOCUMENT_REPORT_SCRIPT,
-  VALIDATE_SYNC_REPORT_SCRIPT,
-  VALIDATE_WRITE_LEASE_SCRIPT,
-} from "../../src/agents/workflow-helper-scripts.js";
 import { renderTruthmarkSkillPackage } from "../../src/templates/workflow-surfaces.js";
+import { runCli } from "../helpers/run-cli.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 type HelperResult = {
@@ -48,34 +43,22 @@ const snapshotFiles = async (rootDir: string): Promise<Record<string, string>> =
   );
 };
 
-const runMaterializedHelper = async ({
-  scriptName,
-  scriptContent,
+const runCliHelper = async ({
   files,
   args,
 }: {
-  scriptName: string;
-  scriptContent: string;
   files: Record<string, string>;
   args: string[];
 }): Promise<HelperResult> => {
   const repo = await createTempRepo();
   tempRepos.push(repo);
-  await repo.writeFile(scriptName, scriptContent);
 
   for (const [filePath, content] of Object.entries(files)) {
     await repo.writeFile(filePath, content);
   }
 
   const before = await snapshotFiles(repo.rootDir);
-  const result = await execa(
-    process.execPath,
-    [scriptName, ...args],
-    {
-      cwd: repo.rootDir,
-      reject: false,
-    },
-  );
+  const result = await runCli(args, { cwd: repo.rootDir });
   const after = await snapshotFiles(repo.rootDir);
 
   expect(after).toEqual(before);
@@ -168,19 +151,15 @@ Notes:
 `;
 
 const runSyncReport = async (report: string): Promise<HelperResult> =>
-  runMaterializedHelper({
-    scriptName: "validate-sync-report.mjs",
-    scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+  runCliHelper({
     files: { "report.md": report },
-    args: ["report.md"],
+    args: ["validate", "sync-report", "report.md", "--json"],
   });
 
 const runDocumentReport = async (report: string): Promise<HelperResult> =>
-  runMaterializedHelper({
-    scriptName: "validate-document-report.mjs",
-    scriptContent: VALIDATE_DOCUMENT_REPORT_SCRIPT,
+  runCliHelper({
     files: { "report.md": report },
-    args: ["report.md"],
+    args: ["validate", "document-report", "report.md", "--json"],
   });
 
 const runWriteLease = async ({
@@ -190,14 +169,12 @@ const runWriteLease = async ({
   lease: string;
   changedFiles: string;
 }): Promise<HelperResult> =>
-  runMaterializedHelper({
-    scriptName: "validate-write-lease.mjs",
-    scriptContent: VALIDATE_WRITE_LEASE_SCRIPT,
+  runCliHelper({
     files: {
       "lease.yml": lease,
       "changed-files.txt": changedFiles,
     },
-    args: ["lease.yml", "changed-files.txt"],
+    args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
   });
 
 afterEach(async () => {
@@ -252,18 +229,28 @@ describe("workflow helper scripts", () => {
     }
   });
 
-  it("runs generated helper manifest commands from the documented skill package directory", async () => {
+  it("runs generated helper manifest argv through the Truthmark CLI", async () => {
     const repo = await materializeSkillPackage("truthmark-sync");
     const skillDirectory = path.join(repo.rootDir, ".codex/skills/truthmark-sync");
     const manifest = await fs.readFile(
       path.join(skillDirectory, "helper-manifest.yml"),
       "utf8",
     );
-    const commandMatch = manifest.match(/^\s+command:\s*(.+)$/mu);
+    const parsed = parse(manifest) as {
+      helpers?: Record<string, { command?: { argv?: string[] } }>;
+    };
+    const argv = parsed.helpers?.["validate-sync-report"]?.command?.argv;
 
-    if (commandMatch === null) {
-      throw new Error("missing helper manifest command");
-    }
+    expect(argv).toEqual([
+      "truthmark",
+      "validate",
+      "sync-report",
+      "<report-file>",
+      "--json",
+    ]);
+    await expect(
+      fs.access(path.join(skillDirectory, "scripts/validate-sync-report.mjs")),
+    ).rejects.toThrow();
 
     await fs.writeFile(
       path.join(skillDirectory, "report.md"),
@@ -271,10 +258,8 @@ describe("workflow helper scripts", () => {
       "utf8",
     );
 
-    const command = commandMatch[1].replace("<report-file>", "report.md");
-    const result = await execa("bash", ["-lc", command], {
+    const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
       cwd: skillDirectory,
-      reject: false,
     });
 
     expect(result.exitCode).toBe(0);
@@ -282,9 +267,7 @@ describe("workflow helper scripts", () => {
   });
 
   it("accepts a valid completed Truth Sync report", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-sync-report.mjs",
-      scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Sync: completed
 
@@ -310,7 +293,7 @@ Notes:
 - Complete.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "sync-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(0);
@@ -320,13 +303,11 @@ Notes:
   });
 
   it("accepts the generated Truth Sync report template example", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-sync-report.mjs",
-      scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": getGeneratedReportExample("truthmark-sync"),
       },
-      args: ["report.md"],
+      args: ["validate", "sync-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(0);
@@ -334,9 +315,7 @@ Notes:
   });
 
   it("rejects a completed Truth Sync report missing helper script statuses", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-sync-report.mjs",
-      scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Sync: completed
 
@@ -358,7 +337,7 @@ Notes:
 - Complete.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "sync-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(1);
@@ -394,9 +373,7 @@ Notes:
   });
 
   it("rejects a completed Truth Sync report with evidence labels outside Evidence checked", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-sync-report.mjs",
-      scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Sync: completed
 
@@ -418,7 +395,7 @@ Notes:
 - Result: appears outside the evidence section.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "sync-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(1);
@@ -427,9 +404,7 @@ Notes:
   });
 
   it("rejects a completed Truth Sync report missing Evidence checked", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-sync-report.mjs",
-      scriptContent: VALIDATE_SYNC_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Sync: completed
 
@@ -446,7 +421,7 @@ Notes:
 - Missing evidence.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "sync-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(1);
@@ -500,9 +475,7 @@ Evidence: src/init/init.ts
   });
 
   it("accepts a valid completed Truth Document report", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-document-report.mjs",
-      scriptContent: VALIDATE_DOCUMENT_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Document: completed
 
@@ -528,7 +501,7 @@ Notes:
 - Complete.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "document-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(0);
@@ -537,13 +510,11 @@ Notes:
   });
 
   it("accepts the generated Truth Document report template example", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-document-report.mjs",
-      scriptContent: VALIDATE_DOCUMENT_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": getGeneratedReportExample("truthmark-document"),
       },
-      args: ["report.md"],
+      args: ["validate", "document-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(0);
@@ -575,9 +546,7 @@ Notes:
   });
 
   it("rejects a completed Truth Document report with malformed Evidence checked entries", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-document-report.mjs",
-      scriptContent: VALIDATE_DOCUMENT_REPORT_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "report.md": `Truth Document: completed
 
@@ -597,7 +566,7 @@ Notes:
 - Complete.
 `,
       },
-      args: ["report.md"],
+      args: ["validate", "document-report", "report.md", "--json"],
     });
 
     expect(result.exitCode).toBe(1);
@@ -660,9 +629,7 @@ Evidence: src/agents/workflow-manifest.ts
   });
 
   it("rejects write-lease changes outside allowedWrites", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-write-lease.mjs",
-      scriptContent: VALIDATE_WRITE_LEASE_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "lease.yml": `allowedWrites:
   - docs/truth/**
@@ -671,7 +638,7 @@ forbiddenWrites:
 `,
         "changed-files.txt": "src/init/init.ts\n",
       },
-      args: ["lease.yml", "changed-files.txt"],
+      args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
     });
 
     expect(result.exitCode).toBe(1);
@@ -717,9 +684,7 @@ forbiddenWrites: []
   });
 
   it("rejects unsupported write-lease glob patterns with manual-validation guidance", async () => {
-    const result = await runMaterializedHelper({
-      scriptName: "validate-write-lease.mjs",
-      scriptContent: VALIDATE_WRITE_LEASE_SCRIPT,
+    const result = await runCliHelper({
       files: {
         "lease.yml": `allowedWrites:
   - docs/**/*.md
@@ -727,7 +692,7 @@ forbiddenWrites: []
 `,
         "changed-files.txt": "docs/truth/workflows/overview.md\n",
       },
-      args: ["lease.yml", "changed-files.txt"],
+      args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
     });
 
     expect(result.exitCode).toBe(1);

@@ -2,8 +2,14 @@
 helpers:
   validate-document-report:
     optional: true
-    runner: node>=20
-    command: node scripts/validate-document-report.mjs <report-file>
+    runner: truthmark>=1.4.0
+    command:
+      argv:
+        - truthmark
+        - validate
+        - document-report
+        - <report-file>
+        - --json
     inputs:
       - document report file
     output: json
@@ -11,8 +17,15 @@ helpers:
     fallback: manually validate support/report-template.md required sections and structured Evidence checked entries
   validate-write-lease:
     optional: true
-    runner: node>=20
-    command: node scripts/validate-write-lease.mjs <lease-or-report-file> <changed-files-file>
+    runner: truthmark>=1.4.0
+    command:
+      argv:
+        - truthmark
+        - validate
+        - write-lease
+        - <lease-or-report-file>
+        - <changed-files-file>
+        - --json
     inputs:
       - lease or worker report yaml
       - changed file list

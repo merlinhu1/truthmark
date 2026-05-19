@@ -297,8 +297,12 @@ GEMINI.md
 .codex/skills/
 .claude/skills/
 .opencode/skills/
+.github/skills/
 .github/prompts/
+.github/agents/
+.gemini/skills/
 .gemini/commands/truthmark/
+.gemini/agents/
 ```
 
 Generierte Workflow-Oberflächen enthalten Truthmark-Versionsmarker. Nach einem Upgrade von Truthmark erneut ausführen:
@@ -323,9 +327,9 @@ truthmark init
 | --- | --- | --- |
 | `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` oder `$truthmark-*` |
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in unterstützten Copilot-IDEs; `@truth-*` Custom Agents in Copilot CLI |
+| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in unterstützten Copilot-IDEs; `@truth-*` Custom Agents in Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/commands/truthmark/`, `GEMINI.md` | `/truthmark:*` |
+| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
 
 Unbekannte Plattformnamen sind Config-Fehler.
 
@@ -444,7 +448,7 @@ Die meisten Maintainer beginnen mit drei Befehlen.
 | `truthmark init` | Installiert oder aktualisiert konfigurierte Workflow-Oberflächen aus der geprüften Config. |
 | `truthmark check` | Validiert Config, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope, generierte Oberflächen, Freshness und Coverage-Diagnostik. |
 
-Optionale Repository-Intelligence-Helfer erzeugen abgeleiteten Review-Kontext für den aktiven Checkout.
+Optionale Repository-Intelligence-Helfer erzeugen abgeleiteten Review-Kontext für den aktiven Checkout. Generierte Workflow-Skill-Pakete können außerdem Helper-Manifeste und Helper-Policies bereitstellen, die installierte `truthmark validate ... --json` CLI-Validatoren aufrufen; diese Helpers sind Beschleuniger, keine im Repository gebündelten lokalen Skripte und keine Quellen der Wahrheit. Eigenständige Copilot-Prompts und Gemini-Commands melden Helper-Pakete als nicht verfügbar, sofern nicht das passende generierte Skill-Paket verwendet wird.
 
 Sie sind keine Quellen der Wahrheit.
 
@@ -566,10 +570,13 @@ GEMINI.md
 .opencode/skills/truthmark-*/
 .opencode/agents/
 
+.github/skills/truthmark-*/
 .github/prompts/truthmark-*.prompt.md
 .github/agents/
 
+.gemini/skills/truthmark-*/
 .gemini/commands/truthmark/*.toml
+.gemini/agents/
 ```
 
 Truthmark bewahrt manuellen Inhalt außerhalb verwalteter Instruktionsblöcke.

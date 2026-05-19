@@ -32,6 +32,10 @@ export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
+  const helperScripts = [
+    "validate-document-report: ran, passed",
+    "validate-write-lease: skipped, no write lease used",
+  ];
 
   return `Truth Document: completed
 
@@ -65,8 +69,7 @@ ${renderClaimEvidenceCheckedSection([
   ])}
 
 Helper scripts:
-- validate-document-report: ran, passed
-- validate-write-lease: skipped, no write lease used
+${helperScripts.map((helperScript) => `- ${helperScript}`).join("\n")}
 
 Notes:
 - Documented routing and behavior from route handlers and tests.`;

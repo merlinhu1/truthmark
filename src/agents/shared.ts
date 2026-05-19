@@ -233,6 +233,37 @@ export const renderCopilotCustomAgentModeSection = (
   ].join("\n");
 };
 
+export const renderGeminiSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeAgentLines =
+    writeMentions.length > 0
+      ? [
+          `- dispatch write-capable project subagents only with explicit write leases: ${writeMentions.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlySubagentLabel =
+    writeAgents.length > 0 ? "read-only subagents" : "subagents";
+
+  return [
+    "Gemini CLI subagent mode:",
+    "- use automatically when this workflow runs in Gemini CLI and the parent agent chooses bounded project subagent fan-out",
+    `- dispatch read-only project subagents ${readOnlyScope}: ${mentions.join(", ")}`,
+    `- ${readOnlySubagentLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlySubagentLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
 export const defaultAgentConfig = (): TruthmarkConfig => {
   return createDefaultConfig();
 };

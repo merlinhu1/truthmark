@@ -73,8 +73,11 @@ describe("Truthmark workflow manifest", () => {
 
       for (const helper of workflow.helpers ?? []) {
         expect(helper.optional).toBe(true);
-        expect(helper.runner).toBe("node>=20");
-        expect(helper.command).toContain("node scripts/");
+        expect(helper.runner).toMatch(/^truthmark>=/u);
+        expect(helper.command.argv).toEqual(
+          expect.arrayContaining(["truthmark", "validate", "--json"]),
+        );
+        expect(helper.command.argv.join(" ")).not.toContain("node scripts/");
         expect(helper.inputs.length).toBeGreaterThan(0);
         expect(helper.output).toBe("json");
         expect(helper.writes).toBe(false);

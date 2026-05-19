@@ -147,7 +147,7 @@ Truth docs updated:
 - docs/truth/authentication.md
 
 Evidence checked:
-- Claim:   
+- Claim:${"   "}
   Evidence: src/auth/session.ts:12
   Result: supported
 
@@ -166,7 +166,7 @@ Truth docs updated:
 
 Evidence checked:
 - Claim: Session timeout behavior is documented.
-  Evidence:   
+  Evidence:${"   "}
   Result: supported
 
 Notes:

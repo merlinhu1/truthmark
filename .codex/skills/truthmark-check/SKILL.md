@@ -10,6 +10,7 @@ truthmark-version: 1.4.0
 
 Use this skill to audit repository truth health.
 
+
 Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
 
 Quick procedure:

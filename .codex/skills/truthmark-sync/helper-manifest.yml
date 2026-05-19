@@ -2,8 +2,14 @@
 helpers:
   validate-sync-report:
     optional: true
-    runner: node>=20
-    command: node scripts/validate-sync-report.mjs <report-file>
+    runner: truthmark>=1.4.0
+    command:
+      argv:
+        - truthmark
+        - validate
+        - sync-report
+        - <report-file>
+        - --json
     inputs:
       - sync report file
     output: json
@@ -11,8 +17,15 @@ helpers:
     fallback: "manually validate support/report-template.md and check Evidence checked entries match Claim, indented Evidence, and Result: supported | narrowed | removed | blocked"
   validate-write-lease:
     optional: true
-    runner: node>=20
-    command: node scripts/validate-write-lease.mjs <lease-or-report-file> <changed-files-file>
+    runner: truthmark>=1.4.0
+    command:
+      argv:
+        - truthmark
+        - validate
+        - write-lease
+        - <lease-or-report-file>
+        - <changed-files-file>
+        - --json
     inputs:
       - lease or worker report yaml
       - changed file list

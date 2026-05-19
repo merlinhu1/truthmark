@@ -34,7 +34,7 @@ Truth Check owns agent-led truth-health review. It reports issues and suggested 
 
 ## Execution Model
 
-Truth Check inspects the checkout directly and may optionally run `truthmark check` when local tooling is available. Installed workflows must not depend on the binary being present. In Codex, Claude Code, GitHub Copilot, or OpenCode, Truth Check may automatically use generated read-only verifier subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
+Truth Check inspects the checkout directly and may optionally run `truthmark check` when local tooling is available. Installed workflows must not depend on the binary being present. In Codex, Claude Code, GitHub Copilot, Gemini CLI, or OpenCode, Truth Check may automatically use generated read-only verifier subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
 ## Current Behavior
 
@@ -44,7 +44,7 @@ Truth Check supports each finding and suggested fix with evidence from config, r
 
 If follow-up docs edits are needed for mixed-owner docs, Truth Check runs or recommends Truth Structure before editing.
 
-When subagent mode is available, the parent agent may dispatch read-only route, claim, and doc-shape verifier workers across bounded shards. Codex exposes `truth_route_auditor`, `truth_claim_verifier`, and `truth_doc_reviewer`; Claude Code exposes `truth-route-auditor`, `truth-claim-verifier`, and `truth-doc-reviewer` project subagents; GitHub Copilot and OpenCode expose `@truth-route-auditor`, `@truth-claim-verifier`, and `@truth-doc-reviewer`. Workers return structured findings only and must not edit files. They inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent agent deduplicates findings, spot-checks evidence, optionally runs validation, and owns repo-policy interpretation and the final Truth Check report.
+When subagent mode is available, the parent agent may dispatch read-only route, claim, and doc-shape verifier workers across bounded shards. Codex exposes `truth_route_auditor`, `truth_claim_verifier`, and `truth_doc_reviewer`; Claude Code exposes `truth-route-auditor`, `truth-claim-verifier`, and `truth-doc-reviewer` project subagents; GitHub Copilot, Gemini CLI, and OpenCode expose `@truth-route-auditor`, `@truth-claim-verifier`, and `@truth-doc-reviewer`. Workers return structured findings only and must not edit files. They inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent agent deduplicates findings, spot-checks evidence, optionally runs validation, and owns repo-policy interpretation and the final Truth Check report.
 
 Completed reports include `Files reviewed`, `Issues found`, `Fixes suggested`, `Evidence checked`, and `Validation`.
 
@@ -52,7 +52,7 @@ Completed reports include `Files reviewed`, `Issues found`, `Fixes suggested`, `
 
 - Decision (2026-05-15): Truth Check is an audit workflow, not a substitute for lint, tests, typecheck, code review, or Truth Sync.
 - Decision (2026-05-15): Truth Check reports mixed-owner truth docs as topology issues and does not silently repair them outside the proper workflow.
-- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode subagent mode is read-only, automatic when host-supported, parent-owned, and context-bounded; verifier agents may gather evidence but never write docs, preload repo-wide policy unless assigned, or replace the final audit report.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode subagent mode is read-only, automatic when host-supported, parent-owned, and context-bounded; verifier agents may gather evidence but never write docs, preload repo-wide policy unless assigned, or replace the final audit report.
 
 ## Rationale
 
