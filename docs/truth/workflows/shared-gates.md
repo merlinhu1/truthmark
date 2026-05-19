@@ -61,7 +61,7 @@ Primary checkout evidence includes implementation, config, routing, generated-su
 
 Truth Check uses an audit-shaped gate: findings and suggested fixes need evidence from config, route files, canonical docs, implementation, templates, or tests. Unsupported findings are removed or marked as open questions with confidence. If an audit edits docs, changed claims pass through the claim-level gate before completion.
 
-Truth Sync completed reports have a deterministic structured parser for Markdown reports with `Evidence checked` entries containing `Claim`, `Evidence`, and `Result` fields.
+Truth Sync and Truth Document completed reports have deterministic structured parsers for Markdown reports with `Evidence checked` entries shaped as `- Claim: ...`, indented `Evidence: ...`, and indented `Result: supported | narrowed | removed | blocked`.
 
 ## Repository Intelligence Boundary
 

@@ -2,11 +2,13 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-18
 source_of_truth:
   - ../../../src/agents/truth-document.ts
   - ../../../src/agents/write-lease.ts
   - ../../../src/agents/shared.ts
+  - ../../../src/agents/workflow-manifest.ts
+  - ../../../src/agents/workflow-helper-scripts.ts
   - ../../../src/templates/workflow-surfaces.ts
 ---
 
@@ -47,6 +49,8 @@ When ownership is bounded, Truth Document creates or updates leaf truth docs, ke
 When Truth Document restructures a bounded truth doc or runs Structure first, it inventories Product Decisions and Rationale before editing. Existing entries must be preserved in or moved to their bounded owner docs, narrowed or removed only with checkout evidence, or blocked for manual review when ownership is unclear.
 
 ContextPack may be used to gather bounded source context when available. It does not replace checkout inspection, does not create write permission, and cannot be cited as evidence unless it points to real checkout files, tests, route files, truth docs, schemas, or explicit evidence blocks. If ContextPack is unavailable, Truth Document proceeds manually and reports that repository-intelligence artifacts were not generated.
+
+On skill-package hosts, Truth Document packages optional read-only Node validators for the Document report and write-lease checks. Agents may use `validate-document-report` and `validate-write-lease` as accelerators, but must visibly skip them and continue manual validation when Node is unavailable or a helper cannot run. Helper output is derived evidence; parent validation against checkout evidence, report requirements, lease boundaries, and actual diffs remains authoritative.
 
 When subagent mode is available, the parent agent may dispatch read-only route and claim verifier workers to gather route and evidence findings. Codex exposes `truth_route_auditor` and `truth_claim_verifier`; Claude Code exposes `truth-route-auditor` and `truth-claim-verifier` project subagents; GitHub Copilot and OpenCode expose `@truth-route-auditor` and `@truth-claim-verifier`. Read-only verifier workers inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The same hosts expose `truth_doc_writer` or `@truth-doc-writer` for leased truth-doc shards. The parent agent creates each lease, requires allowedWrites and forbiddenWrites, validates the actual checkout diff against the lease, and owns repo-policy interpretation, final acceptance, routing decisions, shape repair scope, and the final report.
 

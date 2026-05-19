@@ -11,6 +11,7 @@ describe("Truth Sync reporting", () => {
   it("renders completed handoff notes in the README shape", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
       truthDocsUpdated: ["docs/truth/authentication.md"],
       evidenceChecked: [
         {
@@ -30,6 +31,9 @@ describe("Truth Sync reporting", () => {
 Changed code reviewed:
 - src/auth/session.ts
 
+Ownership reviewed:
+- docs/truthmark/areas/repository.md
+
 Truth docs updated:
 - docs/truth/authentication.md
 
@@ -43,6 +47,7 @@ Notes:
     expect(parseTruthSyncReport(report)).toEqual({
       status: "completed",
       changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
       truthDocsUpdated: ["docs/truth/authentication.md"],
       evidenceChecked: [
         {
@@ -102,6 +107,44 @@ Evidence checked:
 Notes:
 - Updated session timeout behavior.`),
     ).toThrow("Evidence checked");
+  });
+
+  it("rejects completed reports with empty claim or evidence content", () => {
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Truth docs updated:
+- docs/truth/authentication.md
+
+Evidence checked:
+- Claim:   
+  Evidence: src/auth/session.ts:12
+  Result: supported
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("claim is required");
+
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Truth docs updated:
+- docs/truth/authentication.md
+
+Evidence checked:
+- Claim: Session timeout behavior is documented.
+  Evidence:   
+  Result: supported
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("evidence is required");
   });
 
   it("omits the manual review section when the file list is empty", () => {

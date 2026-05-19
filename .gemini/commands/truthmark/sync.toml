@@ -82,7 +82,7 @@ Parent post-sync verification:
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
+- validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
@@ -93,6 +93,9 @@ Truth Sync: completed
 Changed code reviewed:
 - src/auth/session.ts
 
+Ownership reviewed:
+- docs/truthmark/areas.md
+
 Truth docs updated:
 - docs/truth/repository/overview.md
 
@@ -100,6 +103,10 @@ Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.
   Evidence: src/auth/session.ts:12 / docs/truthmark/areas.md:11
   Result: supported
+
+Helper scripts:
+- validate-sync-report: ran, passed
+- validate-write-lease: skipped, no write lease used
 
 Notes:
 - Updated session timeout behavior.

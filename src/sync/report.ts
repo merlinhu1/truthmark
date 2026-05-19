@@ -8,8 +8,10 @@ import type { TruthSyncSkipReason } from "./policy.js";
 
 export type TruthSyncCompletedReportInput = {
   changedCode: string[];
+  ownershipReviewed: string[];
   truthDocsUpdated: string[];
   evidenceChecked: ClaimEvidenceItem[];
+  helperScripts?: string[];
   notes: string[];
 };
 
@@ -51,6 +53,8 @@ const isClaimEvidenceResult = (value: string): value is ClaimEvidenceResult => {
   return ["supported", "narrowed", "removed", "blocked"].includes(value);
 };
 
+const hasContent = (value: string): boolean => value.trim().length > 0;
+
 const parseEvidenceCheckedSection = (source: string): ClaimEvidenceItem[] => {
   const section = source
     .split("\n\n")
@@ -77,14 +81,27 @@ const parseEvidenceCheckedSection = (source: string): ClaimEvidenceItem[] => {
     }
 
     const result = resultLine.slice("  Result: ".length);
+    const claim = claimLine.slice("- Claim: ".length).trim();
+    const evidence = evidenceLine
+      .slice("  Evidence: ".length)
+      .split(" / ")
+      .map((value) => value.trim());
+
+    if (!hasContent(claim)) {
+      throw new Error("Evidence checked claim is required.");
+    }
+
+    if (evidence.length === 0 || evidence.some((value) => !hasContent(value))) {
+      throw new Error("Evidence checked evidence is required.");
+    }
 
     if (!isClaimEvidenceResult(result)) {
       throw new Error("Evidence checked result is invalid.");
     }
 
     items.push({
-      claim: claimLine.slice("- Claim: ".length),
-      evidence: evidenceLine.slice("  Evidence: ".length).split(" / "),
+      claim,
+      evidence,
       result,
     });
   }
@@ -98,8 +115,12 @@ export const renderTruthSyncCompletedReport = (
   return [
     "Truth Sync: completed",
     renderBulletSection("Changed code reviewed", input.changedCode),
+    renderBulletSection("Ownership reviewed", input.ownershipReviewed),
     renderBulletSection("Truth docs updated", input.truthDocsUpdated),
     renderClaimEvidenceCheckedSection(input.evidenceChecked),
+    ...(input.helperScripts === undefined
+      ? []
+      : [renderBulletSection("Helper scripts", input.helperScripts)]),
     renderBulletSection("Notes", input.notes),
   ].join("\n\n");
 };
@@ -112,6 +133,7 @@ export const parseTruthSyncReport = (source: string): TruthSyncCompletedReport =
   return {
     status: "completed",
     changedCode: parseBulletSection(source, "Changed code reviewed"),
+    ownershipReviewed: parseBulletSection(source, "Ownership reviewed"),
     truthDocsUpdated: parseBulletSection(source, "Truth docs updated"),
     evidenceChecked: parseEvidenceCheckedSection(source),
     notes: parseBulletSection(source, "Notes"),
