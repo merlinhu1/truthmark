@@ -69,6 +69,8 @@ describe("Truthmark workflow manifest", () => {
     ]);
 
     for (const workflow of [sync, document]) {
+      expect(workflow.reportSections).toContain("Helper scripts");
+
       for (const helper of workflow.helpers ?? []) {
         expect(helper.optional).toBe(true);
         expect(helper.runner).toBe("node>=20");
