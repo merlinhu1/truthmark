@@ -206,7 +206,10 @@ describe("Truth Document generated surfaces", () => {
       renderTruthmarkCopilotDocumentPrompt(),
     ]) {
       expect(surface).toContain(
-        "Record `validate-document-report: ran, passed` only after running `truthmark validate document-report <report-file> --json` and seeing `data.validation.ok: true`.",
+        "Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.",
+      );
+      expect(surface).toContain(
+        "After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.",
       );
       expect(surface).toContain(
         "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.",
