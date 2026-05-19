@@ -683,6 +683,91 @@ Evidence: src/agents/workflow-manifest.ts
     expect(result.json.errors?.join("\n")).toContain("ran, failed");
   });
 
+  it.each([
+    [
+      "block list",
+      `allowedWrites:
+  - docs/truth/**
+forbiddenWrites:
+  - src/**
+`,
+    ],
+    ["flow list", "allowedWrites: [docs/truth/**]\nforbiddenWrites: []\n"],
+    [
+      "quoted paths and comments",
+      `# parent-issued lease
+allowedWrites:
+  - "docs/truth/**" # canonical truth docs
+forbiddenWrites:
+  - 'src/**' # functional code
+`,
+    ],
+    [
+      "worker report with nested lease",
+      `status: completed
+worker: truth_doc_writer
+workflow: truthmark-sync
+writeLease:
+  allowedWrites: [docs/truth/**]
+  forbiddenWrites:
+    - src/**
+filesChanged:
+  - docs/truth/workflows/overview.md
+`,
+    ],
+  ])("accepts write-lease %s YAML", async (_name, lease) => {
+    const result = await runWriteLease({
+      lease,
+      changedFiles: "docs/truth/workflows/overview.md\n",
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
+  });
+
+  it.each([
+    [
+      "invalid YAML",
+      `allowedWrites:
+  - docs/truth/**
+forbiddenWrites: [src/**
+`,
+      "invalid write lease YAML",
+    ],
+    [
+      "non-list allowedWrites",
+      `allowedWrites: docs/truth/**
+forbiddenWrites: []
+`,
+      "allowedWrites must be an array of strings",
+    ],
+    [
+      "non-list forbiddenWrites",
+      `allowedWrites: [docs/truth/**]
+forbiddenWrites: src/**
+`,
+      "forbiddenWrites must be an array of strings",
+    ],
+    [
+      "non-string allowedWrites item",
+      `allowedWrites:
+  - docs/truth/**
+  - 42
+forbiddenWrites: []
+`,
+      "allowedWrites must be an array of strings",
+    ],
+  ])("rejects write-lease %s", async (_name, lease, expectedError) => {
+    const result = await runWriteLease({
+      lease,
+      changedFiles: "docs/truth/workflows/overview.md\n",
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.json.ok).toBe(false);
+    expect(result.json.errors?.join("\n")).toContain(expectedError);
+  });
+
   it("rejects write-lease changes outside allowedWrites", async () => {
     const result = await runCliHelper({
       files: {

@@ -1,3 +1,5 @@
+import { parse as parseYaml } from "yaml";
+
 export type WorkflowHelperValidationResult =
   | {
       ok: true;
@@ -264,36 +266,84 @@ const isUnsafePathValue = (value: string): boolean => {
   );
 };
 
-const parseListFields = (text: string): { allowedWrites: string[]; forbiddenWrites: string[] } => {
-  const lists = { allowedWrites: [] as string[], forbiddenWrites: [] as string[] };
-  let current: keyof typeof lists | null = null;
+type WriteLeaseListFields = {
+  allowedWrites: string[];
+  forbiddenWrites: string[];
+  errors: string[];
+};
 
-  for (const rawLine of text.split(/\r?\n/u)) {
-    const sectionMatch = rawLine.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*)$/u);
-    if (sectionMatch !== null) {
-      current = Object.prototype.hasOwnProperty.call(lists, sectionMatch[1])
-        ? (sectionMatch[1] as keyof typeof lists)
-        : null;
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
-      const inlineValue = sectionMatch[2].trim();
-      if (current !== null && inlineValue !== "" && inlineValue !== "[]") {
-        lists[current].push(inlineValue);
-      }
-      continue;
-    }
+const findWriteLeaseRecord = (value: unknown): Record<string, unknown> | null => {
+  if (!isRecord(value)) {
+    return null;
+  }
 
-    const itemMatch = rawLine.match(/^\s*-\s+(.+)\s*$/u);
-    if (current !== null && itemMatch !== null) {
-      lists[current].push(itemMatch[1].trim());
-      continue;
-    }
+  if (
+    Object.prototype.hasOwnProperty.call(value, "allowedWrites") ||
+    Object.prototype.hasOwnProperty.call(value, "forbiddenWrites")
+  ) {
+    return value;
+  }
 
-    if (rawLine.trim() !== "" && !rawLine.startsWith(" ") && !rawLine.startsWith("\t")) {
-      current = null;
+  for (const nestedKey of ["writeLease", "lease"] as const) {
+    const nested = value[nestedKey];
+    if (isRecord(nested)) {
+      return nested;
     }
   }
 
-  return lists;
+  return value;
+};
+
+const readStringArray = (
+  record: Record<string, unknown>,
+  field: "allowedWrites" | "forbiddenWrites",
+  errors: string[],
+): string[] => {
+  const value = record[field];
+
+  if (!Array.isArray(value) || !value.every((item) => typeof item === "string")) {
+    errors.push(`${field} must be an array of strings`);
+    return [];
+  }
+
+  return value;
+};
+
+const parseListFields = (text: string): WriteLeaseListFields => {
+  const errors: string[] = [];
+  let parsed: unknown;
+
+  try {
+    parsed = parseYaml(text);
+  } catch (error: unknown) {
+    return {
+      allowedWrites: [],
+      forbiddenWrites: [],
+      errors: [
+        `manual-validation required: invalid write lease YAML${
+          error instanceof Error ? `: ${error.message}` : ""
+        }`,
+      ],
+    };
+  }
+
+  const record = findWriteLeaseRecord(parsed);
+  if (record === null) {
+    return {
+      allowedWrites: [],
+      forbiddenWrites: [],
+      errors: ["write lease YAML must be an object"],
+    };
+  }
+
+  return {
+    allowedWrites: readStringArray(record, "allowedWrites", errors),
+    forbiddenWrites: readStringArray(record, "forbiddenWrites", errors),
+    errors,
+  };
 };
 
 const isSupportedPattern = (pattern: string): boolean => {
@@ -326,7 +376,7 @@ export const validateWriteLeaseText = (
   const forbiddenWrites = rawForbiddenWrites.map(normalizePath).filter(Boolean);
   const changedFiles = rawChangedFiles.map(normalizePath).filter(Boolean);
   const checks: string[] = [];
-  const errors: string[] = [];
+  const errors: string[] = [...parsed.errors];
 
   for (const pattern of rawAllowedWrites) {
     if (isUnsafePathValue(pattern)) {
