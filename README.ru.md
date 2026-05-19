@@ -163,26 +163,7 @@ truthmark check
 
 Затем проверьте сгенерированные файлы перед коммитом.
 
-Типичные файлы:
-
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/repository.md
-docs/templates/
-docs/truth/
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/
-.claude/
-.opencode/
-.github/
-.gemini/
-```
-
-Точный набор файлов зависит от `.truthmark/config.yml`.
+Точный набор файлов зависит от `.truthmark/config.yml`, но форма установки всегда одна: routing, truth scaffolding, компактные managed instructions и host-native workflow surfaces для включённых платформ.
 
 ## Первое реальное использование
 
@@ -283,27 +264,19 @@ CLI для людей читает и записывает файлы репоз
 
 Поверхности рабочих процессов для ИИ — это зафиксированные файлы, которые agent hosts могут загрузить позже. Поэтому агенты могут следовать установленному workflow из состояния репозитория, не завися от фонового процесса Truthmark.
 
-Долговечные поверхности — обычные файлы repo:
+Эти слои связаны так:
 
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-docs/**/*
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/skills/
-.claude/skills/
-.opencode/skills/
-.github/skills/
-.github/prompts/
-.github/agents/
-.gemini/skills/
-.gemini/commands/truthmark/
-.gemini/agents/
+```mermaid
+flowchart LR
+  CLI["Truthmark CLI"] --> Config["Config и routing"]
+  Config --> Truth["Канонические truth docs"]
+  CLI --> Surfaces["Сгенерированные agent workflows"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Hosts --> Worktree["Активный Git worktree"]
+  Worktree --> Truth
 ```
+
+Truthmark владеет сгенерированными workflow surfaces, но главный контракт архитектурный: repo-local config и routing направляют agents к каноническим truth docs, а host-native workflows дают каждому поддерживаемому agent способ выполнять одни и те же процедуры Truthmark.
 
 Сгенерированные поверхности workflow включают маркеры версии Truthmark. После обновления Truthmark снова выполните:
 
@@ -534,50 +507,12 @@ docs/truthmark/areas/**/*.md
 
 Truthmark устанавливает компактный, встроенный в репозиторий слой истины.
 
-Типичные scaffolded и generated файлы:
+Он устанавливает четыре слоя:
 
-```text
-.truthmark/config.yml
-
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-
-docs/templates/behavior-doc.md
-docs/templates/contract-doc.md
-docs/templates/architecture-doc.md
-docs/templates/workflow-doc.md
-docs/templates/operations-doc.md
-docs/templates/test-behavior-doc.md
-
-docs/truth/README.md
-docs/truth/repository/README.md
-docs/truth/repository/overview.md
-
-docs/standards/default-principles.md
-docs/standards/documentation-governance.md
-
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-
-.codex/skills/truthmark-*/
-.codex/agents/
-
-.claude/skills/truthmark-*/
-.claude/agents/
-
-.opencode/skills/truthmark-*/
-.opencode/agents/
-
-.github/skills/truthmark-*/
-.github/prompts/truthmark-*.prompt.md
-.github/agents/
-
-.gemini/skills/truthmark-*/
-.gemini/commands/truthmark/*.toml
-.gemini/agents/
-```
+- config и routing для границ владения
+- канонические truth docs и стартовые шаблоны
+- компактные управляемые instruction blocks для repo-wide agent context
+- host-native workflow packages, commands, prompts и verifier agents для платформ, включённых в config
 
 Truthmark сохраняет ручной контент вне управляемых блоков инструкций.
 

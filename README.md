@@ -163,26 +163,7 @@ truthmark check
 
 Then review the generated files before committing.
 
-Typical files include:
-
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/repository.md
-docs/templates/
-docs/truth/
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/
-.claude/
-.opencode/
-.github/
-.gemini/
-```
-
-The exact files depend on `.truthmark/config.yml`.
+The exact files depend on `.truthmark/config.yml`, but the install always has the same shape: routing, truth scaffolding, compact managed instructions, and host-native workflow surfaces for the enabled platforms.
 
 ## First real use
 
@@ -283,27 +264,19 @@ The human-facing CLI reads and writes repository files, then exits.
 
 The AI-facing workflow surfaces are committed files that agent hosts can load later. That means agents can follow the installed workflow from repository state instead of depending on a background Truthmark process.
 
-The durable surfaces are ordinary repo files:
+The layers fit together like this:
 
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-docs/**/*
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/skills/
-.claude/skills/
-.opencode/skills/
-.github/skills/
-.github/prompts/
-.github/agents/
-.gemini/skills/
-.gemini/commands/truthmark/
-.gemini/agents/
+```mermaid
+flowchart LR
+  CLI["Truthmark CLI"] --> Config["Config and route map"]
+  Config --> Truth["Canonical truth docs"]
+  CLI --> Surfaces["Generated agent workflows"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Hosts --> Worktree["Active Git worktree"]
+  Worktree --> Truth
 ```
+
+Truthmark owns the generated workflow surfaces it creates, but the important contract is architectural: repo-local config and routing point agents at canonical truth docs, while host-native workflows give each supported agent a way to run the same Truthmark procedures.
 
 Generated workflow surfaces include Truthmark version markers. After upgrading Truthmark, rerun:
 
@@ -325,11 +298,11 @@ truthmark init
 
 | Platform config name | Generated surface | Invocation shape |
 | --- | --- | --- |
-| `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` or `$truthmark-*` |
-| `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
-| `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
+| `codex` | Skill packages and verifier agents | `/truthmark-*` or `$truthmark-*` |
+| `claude-code` | Project skills, verifier agents, and managed instructions | `/truthmark-*` |
+| `github-copilot` | Agent skills, prompt commands, custom agents, and managed instructions | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
+| `opencode` | Skill packages and verifier agents | `/skill truthmark-*` |
+| `gemini-cli` | Agent skills, slash commands, subagents, and managed instructions | `/truthmark:*` |
 
 Unknown platform names are config errors.
 
@@ -534,50 +507,12 @@ Bad routing makes agents guess.
 
 Truthmark installs a compact repository-native truth layer.
 
-Typical scaffolded and generated files include:
+It does this in four layers:
 
-```text
-.truthmark/config.yml
-
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-
-docs/templates/behavior-doc.md
-docs/templates/contract-doc.md
-docs/templates/architecture-doc.md
-docs/templates/workflow-doc.md
-docs/templates/operations-doc.md
-docs/templates/test-behavior-doc.md
-
-docs/truth/README.md
-docs/truth/repository/README.md
-docs/truth/repository/overview.md
-
-docs/standards/default-principles.md
-docs/standards/documentation-governance.md
-
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-
-.codex/skills/truthmark-*/
-.codex/agents/
-
-.claude/skills/truthmark-*/
-.claude/agents/
-
-.opencode/skills/truthmark-*/
-.opencode/agents/
-
-.github/skills/truthmark-*/
-.github/prompts/truthmark-*.prompt.md
-.github/agents/
-
-.gemini/skills/truthmark-*/
-.gemini/commands/truthmark/*.toml
-.gemini/agents/
-```
+- configuration and routing for ownership boundaries
+- canonical truth docs and starter templates
+- compact managed instruction blocks for repository-wide agent context
+- host-native workflow packages, commands, prompts, and verifier agents for the platforms enabled in config
 
 Truthmark preserves manual content outside managed instruction blocks.
 

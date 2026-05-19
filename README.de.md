@@ -163,26 +163,7 @@ truthmark check
 
 Prüfe danach die generierten Dateien, bevor du committest.
 
-Typische Dateien sind:
-
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/repository.md
-docs/templates/
-docs/truth/
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/
-.claude/
-.opencode/
-.github/
-.gemini/
-```
-
-Die genauen Dateien hängen von `.truthmark/config.yml` ab.
+Die konkreten Dateien hängen von `.truthmark/config.yml` ab, aber die Installation hat immer dieselbe Form: Routing, Truth-Scaffolding, kompakte verwaltete Instructions und host-native Workflow-Oberflächen für die aktivierten Plattformen.
 
 ## Erste echte Nutzung
 
@@ -283,27 +264,19 @@ Die menschenorientierte CLI liest und schreibt Repository-Dateien und beendet si
 
 Die KI-orientierten Workflow-Oberflächen sind festgeschriebene Dateien, die Agenten-Hosts später laden können. Dadurch können Agenten dem installierten Workflow aus dem Repository-Zustand folgen, statt von einem Hintergrundprozess von Truthmark abzuhängen.
 
-Die dauerhaften Oberflächen sind normale Repo-Dateien:
+Die Schichten greifen so ineinander:
 
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-docs/**/*
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/skills/
-.claude/skills/
-.opencode/skills/
-.github/skills/
-.github/prompts/
-.github/agents/
-.gemini/skills/
-.gemini/commands/truthmark/
-.gemini/agents/
+```mermaid
+flowchart LR
+  CLI["Truthmark CLI"] --> Config["Config und Routing"]
+  Config --> Truth["Kanonische Truth-Dokumente"]
+  CLI --> Surfaces["Generierte Agent-Workflows"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Hosts --> Worktree["Aktiver Git-Worktree"]
+  Worktree --> Truth
 ```
+
+Truthmark besitzt die generierten Workflow-Oberflächen, aber der wichtige Vertrag ist architektonisch: repo-lokale Config und Routing zeigen Agents auf kanonische Truth-Dokumente, während host-native Workflows jedem unterstützten Agent einen eigenen Weg geben, dieselben Truthmark-Prozeduren auszuführen.
 
 Generierte Workflow-Oberflächen enthalten Truthmark-Versionsmarker. Nach einem Upgrade von Truthmark erneut ausführen:
 
@@ -534,50 +507,12 @@ Schlechtes Routing zwingt Agenten zum Raten.
 
 Truthmark installiert eine kompakte, repository-native Truth-Schicht.
 
-Typische Scaffold- und generierte Dateien sind:
+Das geschieht in vier Schichten:
 
-```text
-.truthmark/config.yml
-
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-
-docs/templates/behavior-doc.md
-docs/templates/contract-doc.md
-docs/templates/architecture-doc.md
-docs/templates/workflow-doc.md
-docs/templates/operations-doc.md
-docs/templates/test-behavior-doc.md
-
-docs/truth/README.md
-docs/truth/repository/README.md
-docs/truth/repository/overview.md
-
-docs/standards/default-principles.md
-docs/standards/documentation-governance.md
-
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-
-.codex/skills/truthmark-*/
-.codex/agents/
-
-.claude/skills/truthmark-*/
-.claude/agents/
-
-.opencode/skills/truthmark-*/
-.opencode/agents/
-
-.github/skills/truthmark-*/
-.github/prompts/truthmark-*.prompt.md
-.github/agents/
-
-.gemini/skills/truthmark-*/
-.gemini/commands/truthmark/*.toml
-.gemini/agents/
-```
+- Config und Routing für Ownership-Grenzen
+- kanonische Truth-Dokumente und Starter-Templates
+- kompakte verwaltete Instruction-Blöcke für repositoryweiten Agent-Kontext
+- host-native Workflow-Pakete, Commands, Prompts und Verifier-Agents für die in der Config aktivierten Plattformen
 
 Truthmark bewahrt manuellen Inhalt außerhalb verwalteter Instruktionsblöcke.
 

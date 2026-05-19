@@ -163,24 +163,7 @@ truthmark check
 
 然后在提交前审查生成的文件。
 
-典型文件包括：
-
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/repository.md
-docs/templates/
-docs/truth/
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/
-.claude/
-.opencode/
-.github/
-.gemini/
-```
+具体文件取决于 `.truthmark/config.yml`，但安装形态始终相同：路由、truth scaffolding、紧凑的受管说明，以及为启用平台生成的 host-native 工作流表面。
 
 确切文件取决于 `.truthmark/config.yml`。
 
@@ -283,27 +266,19 @@ Truthmark 在本地针对当前 Git worktree 运行。
 
 面向 AI 的工作流表面是已提交文件，代理宿主之后可以加载它们。这意味着代理可以从仓库状态遵循已安装工作流，而不依赖后台 Truthmark 进程。
 
-持久表面都是普通 repo 文件：
+这些层的关系如下：
 
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-docs/**/*
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/skills/
-.claude/skills/
-.opencode/skills/
-.github/skills/
-.github/prompts/
-.github/agents/
-.gemini/skills/
-.gemini/commands/truthmark/
-.gemini/agents/
+```mermaid
+flowchart LR
+  CLI["Truthmark CLI"] --> Config["配置与路由图"]
+  Config --> Truth["规范 truth 文档"]
+  CLI --> Surfaces["生成的 agent 工作流"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Hosts --> Worktree["当前 Git worktree"]
+  Worktree --> Truth
 ```
+
+Truthmark 拥有它生成的工作流表面，但关键契约是架构层面的：仓库内配置和路由把 agent 指向规范 truth 文档，host-native 工作流则让每个受支持的 agent 用自己的方式运行同一套 Truthmark 流程。
 
 生成的工作流表面包含 Truthmark 版本标记。升级 Truthmark 后，重新运行：
 
@@ -325,11 +300,11 @@ truthmark init
 
 | 平台配置名 | 生成表面 | 调用形式 |
 | --- | --- | --- |
-| `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` 或 `$truthmark-*` |
-| `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | 支持的 Copilot IDE 中使用 `/truthmark-*`；Copilot CLI 中使用 `@truth-*` custom agents |
-| `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
+| `codex` | Skill packages 和 verifier agents | `/truthmark-*` 或 `$truthmark-*` |
+| `claude-code` | Project skills、verifier agents 和受管说明 | `/truthmark-*` |
+| `github-copilot` | Agent skills、prompt commands、custom agents 和受管说明 | 支持的 Copilot IDE 中使用 `/truthmark-*`；Copilot CLI 中使用 `@truth-*` custom agents |
+| `opencode` | Skill packages 和 verifier agents | `/skill truthmark-*` |
+| `gemini-cli` | Agent skills、slash commands、subagents 和受管说明 | `/truthmark:*` |
 
 未知平台名是配置错误。
 
@@ -534,50 +509,12 @@ docs/truthmark/areas/**/*.md
 
 Truthmark 安装一个紧凑、仓库原生的事实层。
 
-典型脚手架和生成文件包括：
+它分为四层安装：
 
-```text
-.truthmark/config.yml
-
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-
-docs/templates/behavior-doc.md
-docs/templates/contract-doc.md
-docs/templates/architecture-doc.md
-docs/templates/workflow-doc.md
-docs/templates/operations-doc.md
-docs/templates/test-behavior-doc.md
-
-docs/truth/README.md
-docs/truth/repository/README.md
-docs/truth/repository/overview.md
-
-docs/standards/default-principles.md
-docs/standards/documentation-governance.md
-
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-
-.codex/skills/truthmark-*/
-.codex/agents/
-
-.claude/skills/truthmark-*/
-.claude/agents/
-
-.opencode/skills/truthmark-*/
-.opencode/agents/
-
-.github/skills/truthmark-*/
-.github/prompts/truthmark-*.prompt.md
-.github/agents/
-
-.gemini/skills/truthmark-*/
-.gemini/commands/truthmark/*.toml
-.gemini/agents/
-```
+- 用于所有权边界的配置和路由
+- 规范 truth 文档和起始模板
+- 用于仓库级 agent 上下文的紧凑受管说明块
+- 为配置中启用的平台生成 host-native 工作流包、命令、prompts 和 verifier agents
 
 Truthmark 会保留受管说明块之外的手写内容。
 
