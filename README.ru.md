@@ -268,13 +268,17 @@ CLI для людей читает и записывает файлы репоз
 
 ```mermaid
 flowchart LR
-  CLI["Truthmark CLI"] --> Config["Config и routing"]
-  Config --> Truth["Канонические truth docs"]
-  CLI --> Surfaces["Сгенерированные agent workflows"]
+  Human["Human / CI"] --> CLI["Truthmark CLI"]
+  CLI --> Config["Config и routing"]
+  CLI --> Truth["Канонические truth docs"]
+  CLI --> Surfaces["Сгенерированные host-native workflows"]
   Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
   Hosts --> Worktree["Активный Git worktree"]
+  Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
 ```
+
+Agents не подключаются к daemon Truthmark, но могут запускать установленный Truthmark CLI, когда workflow требует validation, indexing или helper checks.
 
 Truthmark владеет сгенерированными workflow surfaces, но главный контракт архитектурный: repo-local config и routing направляют agents к каноническим truth docs, а host-native workflows дают каждому поддерживаемому agent способ выполнять одни и те же процедуры Truthmark.
 

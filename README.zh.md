@@ -270,13 +270,17 @@ Truthmark 在本地针对当前 Git worktree 运行。
 
 ```mermaid
 flowchart LR
-  CLI["Truthmark CLI"] --> Config["配置与路由图"]
-  Config --> Truth["规范 truth 文档"]
-  CLI --> Surfaces["生成的 agent 工作流"]
+  Human["Human / CI"] --> CLI["Truthmark CLI"]
+  CLI --> Config["配置与路由图"]
+  CLI --> Truth["规范 truth 文档"]
+  CLI --> Surfaces["生成的 host-native 工作流"]
   Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
   Hosts --> Worktree["当前 Git worktree"]
+  Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
 ```
+
+Agent 不会连接 Truthmark daemon，但工作流需要验证、索引或 helper checks 时，它们可以运行已安装的 Truthmark CLI。
 
 Truthmark 拥有它生成的工作流表面，但关键契约是架构层面的：仓库内配置和路由把 agent 指向规范 truth 文档，host-native 工作流则让每个受支持的 agent 用自己的方式运行同一套 Truthmark 流程。
 
