@@ -133,6 +133,8 @@ Current helper validator commands:
 - `truthmark validate document-report <report-file> --json`
 - `truthmark validate write-lease <lease-or-report-file> <changed-files-file> --json`
 
+`truthmark validate write-lease` parses the lease/report file as YAML before validation. The accepted YAML shape is either a top-level write-lease object or a worker report with a nested `writeLease` or `lease` object. The selected object must provide `allowedWrites` and `forbiddenWrites` as arrays of strings. After structural parsing, the validator applies the same path-safety, supported-pattern, allowed-write, and forbidden-write checks to parsed values and changed files.
+
 Each validator returns `data.validation` as one of:
 
 - `{ ok: true, helper: string, checks: string[] }`
