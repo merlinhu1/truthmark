@@ -59,7 +59,7 @@ Return result in this shape:
 - offLeaseChanges: string[]
 - notes: string[]
 - blockedReason?: string
-- manualReviewFiles?: string[]`;
+- manualReviewFiles: string[] required when status is blocked; at least one file`;
 };
 
 export const renderTruthSyncSkillBody = (
