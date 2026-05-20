@@ -11,6 +11,7 @@ describe("Truth Sync reporting", () => {
   it("renders completed handoff notes in the README shape", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
       truthDocsUpdated: ["docs/truth/authentication.md"],
       evidenceChecked: [
         {
@@ -30,6 +31,9 @@ describe("Truth Sync reporting", () => {
 Changed code reviewed:
 - src/auth/session.ts
 
+Ownership reviewed:
+- docs/truthmark/areas/repository.md
+
 Truth docs updated:
 - docs/truth/authentication.md
 
@@ -43,6 +47,7 @@ Notes:
     expect(parseTruthSyncReport(report)).toEqual({
       status: "completed",
       changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
       truthDocsUpdated: ["docs/truth/authentication.md"],
       evidenceChecked: [
         {
@@ -55,6 +60,33 @@ Notes:
         },
       ],
       notes: ["Updated session timeout behavior."],
+    });
+  });
+
+  it("round-trips optional helper script statuses", () => {
+    const report = renderTruthSyncCompletedReport({
+      changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
+      truthDocsUpdated: ["docs/truth/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: ["src/auth/session.ts:12"],
+          result: "supported",
+        },
+      ],
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
+
+    expect(parseTruthSyncReport(report)).toMatchObject({
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
     });
   });
 
@@ -104,19 +136,51 @@ Notes:
     ).toThrow("Evidence checked");
   });
 
-  it("omits the manual review section when the file list is empty", () => {
-    expect(
+  it("rejects completed reports with empty claim or evidence content", () => {
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Truth docs updated:
+- docs/truth/authentication.md
+
+Evidence checked:
+- Claim:${"   "}
+  Evidence: src/auth/session.ts:12
+  Result: supported
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("claim is required");
+
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Truth docs updated:
+- docs/truth/authentication.md
+
+Evidence checked:
+- Claim: Session timeout behavior is documented.
+  Evidence:${"   "}
+  Result: supported
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("evidence is required");
+  });
+
+  it("rejects blocked reports without manual-review files", () => {
+    expect(() =>
       renderTruthSyncBlockedReport({
         reason: "routing repair is not allowed",
         manualReviewFiles: [],
         nextAction: "update routing metadata and rerun Truth Sync",
       }),
-    ).toBe(`Truth Sync: blocked
-
-Reason:
-- routing repair is not allowed
-
-Next action:
-- update routing metadata and rerun Truth Sync`);
+    ).toThrow("Files requiring manual review must include at least one file");
   });
 });

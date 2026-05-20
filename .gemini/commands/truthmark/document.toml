@@ -5,7 +5,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.5.0
 ---
 
 # Truthmark Document
@@ -72,6 +72,12 @@ Truthmark hierarchy:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
+Helper status reporting:
+- Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
+- After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.
+- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
 - block on functional code, generated host surfaces, or unrelated diffs caused by document work
@@ -84,6 +90,9 @@ Truth Document: completed
 
 Implementation reviewed:
 - src/routing/area-resolver.ts
+
+Ownership reviewed:
+- docs/truthmark/areas.md
 
 Truth docs created:
 - docs/truth/contracts.md
@@ -102,7 +111,11 @@ Evidence checked:
   Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/areas.md:9
   Result: supported
 
+Helper scripts:
+- validate-write-lease: skipped, no write lease used
+
 Notes:
 - Documented routing and behavior from route handlers and tests.
 ```
+User focus or arguments: {{args}}
 '''

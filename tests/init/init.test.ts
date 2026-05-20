@@ -185,8 +185,17 @@ describe("runInit", () => {
       const documentOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-document/SKILL.md",
       );
+      const documentHelperManifest = await repo.readFile(
+        ".codex/skills/truthmark-document/helper-manifest.yml",
+      );
       const syncSkill = await repo.readFile(
         ".codex/skills/truthmark-sync/SKILL.md",
+      );
+      const syncHelperManifest = await repo.readFile(
+        ".codex/skills/truthmark-sync/helper-manifest.yml",
+      );
+      const syncHelperPolicy = await repo.readFile(
+        ".codex/skills/truthmark-sync/support/helper-policy.md",
       );
       const syncProcedure = await repo.readFile(
         ".codex/skills/truthmark-sync/support/procedure.md",
@@ -361,7 +370,9 @@ describe("runInit", () => {
       expect(documentSkill).not.toContain("Truth Document: completed");
       expect(documentSkill).toContain("must not write functional code");
       expect(documentSkill).not.toContain("truth_doc_writer");
+      expect(documentSkill).toContain("support/helper-policy.md");
       expect(documentSkill.split("\n").length).toBeLessThanOrEqual(55);
+      expect(documentHelperManifest).toContain("validate-document-report:");
       expect(documentSubagents).toContain("truth_doc_writer");
       expect(documentSubagents).toContain("write lease");
       expect(documentReportTemplate).toContain("Truth Document: completed");
@@ -388,10 +399,31 @@ describe("runInit", () => {
       expect(syncSkill).toContain("support/procedure.md");
       expect(syncSkill).toContain("support/report-template.md");
       expect(syncSkill).toContain("support/subagents-and-leases.md");
+      expect(syncSkill).toContain("support/helper-policy.md");
+      expect(syncSkill).not.toContain("validate-sync-report.mjs report.md");
       expect(syncSkill).not.toContain("host supports subagent dispatch");
       expect(syncSkill).not.toContain("truth_doc_writer");
       expect(syncSkill).not.toContain("Truth Sync: completed");
       expect(syncSkill.split("\n").length).toBeLessThanOrEqual(55);
+      expect(syncHelperManifest).toContain("validate-sync-report:");
+      expect(syncHelperManifest).toContain("optional: true");
+      expect(syncHelperManifest).toContain("runner: truthmark>=");
+      expect(syncHelperManifest).toContain("command:");
+      expect(syncHelperManifest).toContain("argv:");
+      expect(syncHelperManifest).toContain("- truthmark");
+      expect(syncHelperManifest).toContain("- validate");
+      expect(syncHelperManifest).toContain("- sync-report");
+      expect(syncHelperManifest).toContain("- <report-file>");
+      expect(syncHelperManifest).toContain("- --json");
+      expect(syncHelperManifest).not.toContain("cd .codex/skills/truthmark-sync");
+      expect(syncHelperManifest).not.toContain("node scripts/");
+      expect(syncHelperManifest).toContain("writes: false");
+      expect(syncHelperPolicy).toContain("Optional helper CLI commands");
+      expect(syncHelperPolicy).toContain("manual fallback");
+      expect(syncHelperPolicy).toContain("Helper scripts:");
+      await expect(
+        repo.readFile(".codex/skills/truthmark-sync/scripts/validate-sync-report.mjs"),
+      ).rejects.toThrow();
       expect(syncProcedure).toContain("host supports subagent dispatch");
       expect(syncSubagents).toContain("truth_doc_writer");
       expect(syncSubagents).toContain("write lease");
@@ -420,10 +452,14 @@ describe("runInit", () => {
       expect(syncOpenCodeSubagents).toContain("@truth-route-auditor");
       expect(syncOpenCodeSubagents).toContain("@truth-claim-verifier");
       expect(syncOpenCodeSubagents).toContain("@truth-doc-writer");
+      expect(
+        await repo.readFile(".opencode/skills/truthmark-sync/helper-manifest.yml"),
+      ).toContain("validate-sync-report:");
       expect(syncCopilotPrompt).toContain("Copilot custom-agent mode:");
       expect(syncCopilotPrompt).toContain("@truth-route-auditor");
       expect(syncCopilotPrompt).toContain("@truth-claim-verifier");
       expect(syncCopilotPrompt).toContain("@truth-doc-writer");
+      expect(syncCopilotPrompt).not.toContain("scripts/validate-sync-report.mjs");
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
@@ -434,6 +470,9 @@ describe("runInit", () => {
       expect(syncClaudeSubagents).toContain("truth-route-auditor subagent");
       expect(syncClaudeSubagents).toContain("truth-claim-verifier subagent");
       expect(syncClaudeSubagents).toContain("truth-doc-writer subagent");
+      expect(
+        await repo.readFile(".claude/skills/truthmark-sync/helper-manifest.yml"),
+      ).toContain("validate-sync-report:");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain("user-invocable: true");
       expect(realizeSkill).toContain("may write functional code only");
@@ -474,6 +513,7 @@ describe("runInit", () => {
       expect(previewClaudeSkill).toContain("name: truthmark-preview");
       expect(previewCopilotPrompt).toContain("Truth Preview: completed");
       expect(previewGeminiCommand).toContain("/truthmark:preview");
+      expect(previewGeminiCommand).not.toContain("helper-manifest.yml");
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/procedure.md");
       expect(checkSkill).toContain("support/report-template.md");
@@ -742,6 +782,24 @@ Agent-specific:
       expect(
         await repo.readFile(".github/prompts/truthmark-document.prompt.md"),
       ).toContain("GitHub Copilot /truthmark-document");
+      await expect(
+        fs.stat(`${repo.rootDir}/.github/skills/truthmark-sync/SKILL.md`),
+      ).resolves.toBeTruthy();
+      expect(
+        await repo.readFile(".github/skills/truthmark-sync/SKILL.md"),
+      ).toContain("Use as a Copilot agent skill.");
+      expect(
+        await repo.readFile(".github/skills/truthmark-sync/SKILL.md"),
+      ).toContain("helper-manifest.yml");
+      expect(
+        await repo.readFile(".github/skills/truthmark-sync/support/subagents-and-leases.md"),
+      ).toContain("@truth-doc-writer");
+      expect(
+        await repo.readFile(".github/skills/truthmark-document/helper-manifest.yml"),
+      ).toContain("validate-document-report:");
+      expect(
+        await repo.readFile(".github/skills/truthmark-document/support/helper-policy.md"),
+      ).not.toContain("scripts/validate-document-report.mjs");
       await expect(fs.stat(`${repo.rootDir}/GEMINI.md`)).resolves.toBeTruthy();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/structure.toml`),
@@ -774,6 +832,27 @@ Agent-specific:
       ).toContain(
         `description = "${getTruthmarkWorkflow("truthmark-realize").description}"`,
       );
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/skills/truthmark-sync/SKILL.md`),
+      ).resolves.toBeTruthy();
+      expect(
+        await repo.readFile(".gemini/skills/truthmark-sync/SKILL.md"),
+      ).toContain("Use as a Gemini CLI Agent Skill");
+      expect(
+        await repo.readFile(".gemini/skills/truthmark-sync/SKILL.md"),
+      ).toContain("helper-manifest.yml");
+      expect(
+        await repo.readFile(".gemini/skills/truthmark-document/helper-manifest.yml"),
+      ).toContain("validate-document-report:");
+      expect(
+        await repo.readFile(".gemini/skills/truthmark-sync/support/subagents-and-leases.md"),
+      ).toContain("@truth-doc-writer");
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/agents/truth-route-auditor.md`),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/agents/truth-doc-writer.md`),
+      ).resolves.toBeTruthy();
       const geminiInstructions = await repo.readFile("GEMINI.md");
       expect(geminiInstructions).not.toContain("/truthmark:sync");
       expect(geminiInstructions).toContain(
@@ -856,66 +935,6 @@ ignore: []
       expect(
         await repo.readFile(".claude/skills/truthmark-realize/SKILL.md"),
       ).toContain("Claude Code /truthmark-realize");
-      await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
-      ).rejects.toThrow();
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("installs GitHub Copilot prompt files when only github-copilot is configured", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-platforms:
-  - github-copilot
-authority:
-  - docs/truthmark/areas.md
-instruction_targets:
-  - AGENTS.md
-frontmatter:
-  required: []
-  recommended: []
-ignore: []
-`,
-      );
-
-      await runInit(repo.rootDir);
-
-      expect(await repo.readFile(".github/copilot-instructions.md")).toContain(
-        "Truthmark Workflow",
-      );
-      expect(
-        await repo.readFile(".github/prompts/truthmark-sync.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-sync");
-      expect(
-        await repo.readFile(".github/agents/truth-route-auditor.agent.md"),
-      ).toContain("tools: [read, search]");
-      expect(
-        await repo.readFile(".github/agents/truth-claim-verifier.agent.md"),
-      ).toContain("unsupportedClaims");
-      expect(
-        await repo.readFile(".github/prompts/truthmark-structure.prompt.md"),
-      ).toContain("name: truthmark-structure");
-      expect(
-        await repo.readFile(".github/prompts/truthmark-structure.prompt.md"),
-      ).toContain("@truth-route-auditor");
-      expect(
-        await repo.readFile(".github/prompts/truthmark-document.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-document");
-      expect(
-        await repo.readFile(".github/prompts/truthmark-check.prompt.md"),
-      ).toContain("name: truthmark-check");
-      expect(
-        await repo.readFile(".github/prompts/truthmark-realize.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-realize");
-      expect(
-        await repo.readFile(".github/agents/truth-doc-reviewer.agent.md"),
-      ).toContain("recommendedWorkflow");
       await expect(
         fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
       ).rejects.toThrow();

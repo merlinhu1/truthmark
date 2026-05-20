@@ -3,12 +3,13 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.5.0
 ---
 
 # Truthmark Check
 
 Use this skill to audit repository truth health.
+
 
 Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
 

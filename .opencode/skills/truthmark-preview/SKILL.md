@@ -3,12 +3,13 @@ name: truthmark-preview
 description: Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.
 argument-hint: Optional requested outcome, code area, doc path, or routing question
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.5.0
 ---
 
 # Truthmark Preview
 
 Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
+
 
 Invocations: OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.
 

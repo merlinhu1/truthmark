@@ -2,7 +2,18 @@ import { Command } from "commander";
 
 import type { CommandResult } from "../output/diagnostic.js";
 import { renderHuman, renderJson } from "../output/render.js";
-import { runCheck, runConfig, runContext, runImpact, runIndex, runInit } from "./handlers.js";
+import {
+  runCheck,
+  runConfig,
+  runContext,
+  runImpact,
+  runIndex,
+  runInit,
+  runValidateDocumentReport,
+  runValidateSyncReport,
+  runValidateWriteLease,
+} from "./handlers.js";
+import type { WorkflowHelperValidationResult } from "../agents/workflow-helper-validation.js";
 
 type OutputOptions = {
   json?: boolean;
@@ -37,6 +48,41 @@ const writeContextResult = (result: CommandResult, options: ContextOptions): voi
     return;
   }
   writeResult(result, options);
+};
+
+const renderValidationHuman = (result: WorkflowHelperValidationResult): string => {
+  if (result.ok === true) {
+    return [`${result.helper}: ok`, ...result.checks.map((check) => `- ${check}`)].join("\n");
+  }
+
+  return [`${result.helper}: failed`, ...result.errors.map((error) => `- ${error}`)].join("\n");
+};
+
+const toValidationCommandResult = (
+  command: string,
+  result: WorkflowHelperValidationResult,
+): CommandResult => ({
+  command,
+  summary: result.ok ? "Validation passed" : "Validation failed",
+  diagnostics: [],
+  data: {
+    validation: result,
+  },
+});
+
+const writeValidationResult = (
+  command: string,
+  result: WorkflowHelperValidationResult,
+  options: OutputOptions,
+): void => {
+  const output = options.json
+    ? renderJson(toValidationCommandResult(command, result))
+    : renderValidationHuman(result);
+  process.stdout.write(`${output}\n`);
+
+  if (!result.ok) {
+    process.exitCode = 1;
+  }
 };
 
 const addJsonOption = (command: Command): Command => {
@@ -110,6 +156,52 @@ export const buildProgram = (): Command => {
       options,
     );
   });
+
+  const validate = program
+    .command("validate")
+    .description("Run optional Truthmark workflow helper validators from the installed CLI.");
+
+  addJsonOption(
+    validate
+      .command("sync-report")
+      .description("Validate a Truth Sync report file.")
+      .argument("<report-file>", "Truth Sync report file"),
+  ).action(async (reportFile: string, options: OutputOptions) => {
+    writeValidationResult("validate sync-report", await runValidateSyncReport(reportFile), options);
+  });
+
+  addJsonOption(
+    validate
+      .command("document-report")
+      .description("Validate a Truth Document report file.")
+      .argument("<report-file>", "Truth Document report file"),
+  ).action(async (reportFile: string, options: OutputOptions) => {
+    writeValidationResult(
+      "validate document-report",
+      await runValidateDocumentReport(reportFile),
+      options,
+    );
+  });
+
+  addJsonOption(
+    validate
+      .command("write-lease")
+      .description("Validate a workflow write lease or worker report against changed files.")
+      .argument("<lease-or-report-file>", "Lease or worker report file")
+      .argument("<changed-files-file>", "Newline-separated changed file list"),
+  ).action(
+    async (
+      leaseOrReportFile: string,
+      changedFilesFile: string,
+      options: OutputOptions,
+    ) => {
+      writeValidationResult(
+        "validate write-lease",
+        await runValidateWriteLease(leaseOrReportFile, changedFilesFile),
+        options,
+      );
+    },
+  );
 
   return program;
 };

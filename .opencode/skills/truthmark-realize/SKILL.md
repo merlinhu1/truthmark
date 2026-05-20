@@ -3,12 +3,13 @@ name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.5.0
 ---
 
 # Truthmark Realize
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
+
 
 Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 

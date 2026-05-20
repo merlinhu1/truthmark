@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: agent-rules
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-19
 source_of_truth:
   - ../../AGENTS.md
   - ../README.md
@@ -28,7 +28,7 @@ Code is the implementation. On code/doc conflict, inspect code, decide whether c
 
 ## Product Boundary
 
-Truthmark public CLI commands are `config`, `init`, `check`, `index`, `impact`, and `context`. Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check are installed workflow surfaces, not CLI commands.
+Truthmark public CLI commands are `config`, `init`, `check`, `index`, `impact`, `context`, and `validate`. The `validate` subcommands are optional CLI-owned workflow helper validators; they validate reports or write leases but do not run Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, or Truth Check. Those named workflows are installed workflow surfaces, not top-level CLI commands.
 
 Agents inspect the active checkout directly. There is no daemon, database, remote service, or V1 MCP server.
 

@@ -8,8 +8,10 @@ import type { TruthSyncSkipReason } from "./policy.js";
 
 export type TruthSyncCompletedReportInput = {
   changedCode: string[];
+  ownershipReviewed: string[];
   truthDocsUpdated: string[];
   evidenceChecked: ClaimEvidenceItem[];
+  helperScripts?: string[];
   notes: string[];
 };
 
@@ -23,7 +25,7 @@ export type TruthSyncSkippedReportInput = {
 
 export type TruthSyncBlockedReportInput = {
   reason: string;
-  manualReviewFiles?: string[];
+  manualReviewFiles: string[];
   nextAction: string;
 };
 
@@ -31,25 +33,49 @@ const renderBulletSection = (title: string, items: string[]): string => {
   return `${title}:\n${items.map((item) => `- ${item}`).join("\n")}`;
 };
 
-const parseBulletSection = (source: string, title: string): string[] => {
-  const section = source
+const findSection = (source: string, title: string): string | undefined => {
+  return source
     .split("\n\n")
     .find((candidate) => candidate.startsWith(`${title}:\n`));
+};
+
+const parseBulletLines = (section: string): string[] => {
+  return section
+    .split("\n")
+    .slice(1)
+    .map((line) => {
+      const match = line.match(/^-\s+(.*)$/);
+
+      return match?.[1];
+    })
+    .filter((line): line is string => line !== undefined);
+};
+
+const parseBulletSection = (source: string, title: string): string[] => {
+  const section = findSection(source, title);
 
   if (!section) {
     return [];
   }
 
-  return section
-    .split("\n")
-    .slice(1)
-    .filter((line) => line.startsWith("- "))
-    .map((line) => line.slice(2));
+  return parseBulletLines(section);
+};
+
+const parseOptionalBulletSection = (source: string, title: string): string[] | undefined => {
+  const section = findSection(source, title);
+
+  if (!section) {
+    return undefined;
+  }
+
+  return parseBulletLines(section);
 };
 
 const isClaimEvidenceResult = (value: string): value is ClaimEvidenceResult => {
   return ["supported", "narrowed", "removed", "blocked"].includes(value);
 };
+
+const hasContent = (value: string): boolean => value.trim().length > 0;
 
 const parseEvidenceCheckedSection = (source: string): ClaimEvidenceItem[] => {
   const section = source
@@ -77,14 +103,27 @@ const parseEvidenceCheckedSection = (source: string): ClaimEvidenceItem[] => {
     }
 
     const result = resultLine.slice("  Result: ".length);
+    const claim = claimLine.slice("- Claim: ".length).trim();
+    const evidence = evidenceLine
+      .slice("  Evidence: ".length)
+      .split(" / ")
+      .map((value) => value.trim());
+
+    if (!hasContent(claim)) {
+      throw new Error("Evidence checked claim is required.");
+    }
+
+    if (evidence.length === 0 || evidence.some((value) => !hasContent(value))) {
+      throw new Error("Evidence checked evidence is required.");
+    }
 
     if (!isClaimEvidenceResult(result)) {
       throw new Error("Evidence checked result is invalid.");
     }
 
     items.push({
-      claim: claimLine.slice("- Claim: ".length),
-      evidence: evidenceLine.slice("  Evidence: ".length).split(" / "),
+      claim,
+      evidence,
       result,
     });
   }
@@ -98,8 +137,12 @@ export const renderTruthSyncCompletedReport = (
   return [
     "Truth Sync: completed",
     renderBulletSection("Changed code reviewed", input.changedCode),
+    renderBulletSection("Ownership reviewed", input.ownershipReviewed),
     renderBulletSection("Truth docs updated", input.truthDocsUpdated),
     renderClaimEvidenceCheckedSection(input.evidenceChecked),
+    ...(input.helperScripts === undefined
+      ? []
+      : [renderBulletSection("Helper scripts", input.helperScripts)]),
     renderBulletSection("Notes", input.notes),
   ].join("\n\n");
 };
@@ -109,11 +152,15 @@ export const parseTruthSyncReport = (source: string): TruthSyncCompletedReport =
     throw new Error("Only completed Truth Sync reports can be parsed.");
   }
 
+  const helperScripts = parseOptionalBulletSection(source, "Helper scripts");
+
   return {
     status: "completed",
     changedCode: parseBulletSection(source, "Changed code reviewed"),
+    ownershipReviewed: parseBulletSection(source, "Ownership reviewed"),
     truthDocsUpdated: parseBulletSection(source, "Truth docs updated"),
     evidenceChecked: parseEvidenceCheckedSection(source),
+    ...(helperScripts === undefined ? {} : { helperScripts }),
     notes: parseBulletSection(source, "Notes"),
   };
 };
@@ -127,16 +174,18 @@ export const renderTruthSyncSkippedReport = (
 export const renderTruthSyncBlockedReport = (
   input: TruthSyncBlockedReportInput,
 ): string => {
+  const manualReviewFiles = input.manualReviewFiles.filter((file) => file.trim().length > 0);
+
+  if (manualReviewFiles.length === 0) {
+    throw new Error("Files requiring manual review must include at least one file.");
+  }
+
   const sections = [
     "Truth Sync: blocked",
     renderBulletSection("Reason", [input.reason]),
+    renderBulletSection("Files requiring manual review", manualReviewFiles),
+    renderBulletSection("Next action", [input.nextAction]),
   ];
-
-  if ((input.manualReviewFiles?.length ?? 0) > 0) {
-    sections.push(renderBulletSection("Files requiring manual review", input.manualReviewFiles!));
-  }
-
-  sections.push(renderBulletSection("Next action", [input.nextAction]));
 
   return [
     ...sections,

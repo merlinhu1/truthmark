@@ -8,7 +8,7 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.5.0
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -82,6 +82,12 @@ Optional validation tooling:
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
 - update Product Decisions and Rationale when a behavior change comes from a decision change
+Helper status reporting:
+- Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.
+- After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.
+- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Truthmark hierarchy:
 - Config: .truthmark/config.yml
 - Root route index: docs/truthmark/areas.md
@@ -95,7 +101,7 @@ Parent post-sync verification:
 - block on any unrelated diff caused by the sync step
 - block if functional code changed during sync
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- validate the final report against the structured Truth Sync report contract, including Claim, Evidence, and Result entries under Evidence checked
+- validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
@@ -106,6 +112,9 @@ Truth Sync: completed
 Changed code reviewed:
 - src/auth/session.ts
 
+Ownership reviewed:
+- docs/truthmark/areas.md
+
 Truth docs updated:
 - docs/truth/repository/overview.md
 
@@ -113,6 +122,9 @@ Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.
   Evidence: src/auth/session.ts:12 / docs/truthmark/areas.md:11
   Result: supported
+
+Helper scripts:
+- validate-write-lease: skipped, no write lease used
 
 Notes:
 - Updated session timeout behavior.

@@ -163,26 +163,7 @@ truthmark check
 
 Después revisa los archivos generados antes de confirmar.
 
-Los archivos típicos incluyen:
-
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/repository.md
-docs/templates/
-docs/truth/
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/
-.claude/
-.opencode/
-.github/
-.gemini/
-```
-
-Los archivos exactos dependen de `.truthmark/config.yml`.
+Los archivos exactos dependen de `.truthmark/config.yml`, pero la instalación siempre tiene la misma forma: routing, truth scaffolding, instrucciones administradas compactas y superficies de workflow host-native para las plataformas habilitadas.
 
 ## Primer uso real
 
@@ -283,23 +264,23 @@ La CLI orientada a personas lee y escribe archivos del repositorio, y luego term
 
 Las superficies de flujo orientadas a IA son archivos confirmados que los hosts de agentes pueden cargar después. Eso permite que los agentes sigan el flujo instalado desde el estado del repositorio, sin depender de un proceso de Truthmark en segundo plano.
 
-Las superficies duraderas son archivos ordinarios del repo:
+Las capas encajan así:
 
-```text
-.truthmark/config.yml
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-docs/**/*
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-.codex/skills/
-.claude/skills/
-.opencode/skills/
-.github/prompts/
-.gemini/commands/truthmark/
+```mermaid
+flowchart LR
+  Human["Human / CI"] --> CLI["Truthmark CLI"]
+  CLI --> Config["Config y routing"]
+  CLI --> Truth["Documentos truth canónicos"]
+  CLI --> Surfaces["Workflows host-native generados"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Hosts --> Worktree["Git worktree activo"]
+  Hosts -->|"helper checks / validate / index"| CLI
+  Worktree --> Truth
 ```
+
+Los agentes no hablan con un daemon de Truthmark, pero pueden ejecutar la CLI instalada de Truthmark cuando un workflow pide validación, indexing o helper checks.
+
+Truthmark es dueño de las superficies de workflow que genera, pero el contrato importante es arquitectónico: la config y el routing del repo apuntan a los agentes hacia los documentos truth canónicos, mientras que los workflows host-native dan a cada agente compatible una forma de ejecutar los mismos procedimientos de Truthmark.
 
 Las superficies de flujo generadas incluyen marcadores de versión de Truthmark. Después de actualizar Truthmark, vuelve a ejecutar:
 
@@ -323,9 +304,9 @@ truthmark init
 | --- | --- | --- |
 | `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` o `$truthmark-*` |
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` en IDEs de Copilot compatibles; agentes personalizados `@truth-*` en Copilot CLI |
+| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` en IDEs de Copilot compatibles; agentes personalizados `@truth-*` en Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/commands/truthmark/`, `GEMINI.md` | `/truthmark:*` |
+| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
 
 Los nombres de plataforma desconocidos son errores de configuración.
 
@@ -444,7 +425,7 @@ La mayoría de los mantenedores empieza con tres comandos.
 | `truthmark init` | Instala o refresca superficies de flujo configuradas desde la config revisada. |
 | `truthmark check` | Valida configuración, autoridad, rutas, documentos con decisiones, frontmatter, enlaces internos, alcance de rama, superficies generadas, frescura y diagnósticos de cobertura. |
 
-Los ayudantes opcionales de inteligencia del repositorio generan contexto derivado para revisión sobre el checkout activo.
+Los ayudantes opcionales de inteligencia del repositorio generan contexto derivado para revisión sobre el checkout activo. Los paquetes de skill de flujo generados también pueden exponer manifests y policies de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado de helper omitido visible y hacen validación manual.
 
 No son fuentes de verdad.
 
@@ -530,47 +511,12 @@ Un mal routing hace que los agentes adivinen.
 
 Truthmark instala una capa compacta de verdad nativa del repositorio.
 
-Los archivos típicos generados y de scaffold incluyen:
+Lo instala en cuatro capas:
 
-```text
-.truthmark/config.yml
-
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
-
-docs/templates/behavior-doc.md
-docs/templates/contract-doc.md
-docs/templates/architecture-doc.md
-docs/templates/workflow-doc.md
-docs/templates/operations-doc.md
-docs/templates/test-behavior-doc.md
-
-docs/truth/README.md
-docs/truth/repository/README.md
-docs/truth/repository/overview.md
-
-docs/standards/default-principles.md
-docs/standards/documentation-governance.md
-
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-.github/copilot-instructions.md
-
-.codex/skills/truthmark-*/
-.codex/agents/
-
-.claude/skills/truthmark-*/
-.claude/agents/
-
-.opencode/skills/truthmark-*/
-.opencode/agents/
-
-.github/prompts/truthmark-*.prompt.md
-.github/agents/
-
-.gemini/commands/truthmark/*.toml
-```
+- config y routing para límites de ownership
+- documentos truth canónicos y plantillas iniciales
+- bloques de instrucciones administrados y compactos para contexto de agente en todo el repo
+- paquetes de workflow, comandos, prompts y agentes verificadores host-native para las plataformas habilitadas en la config
 
 Truthmark conserva el contenido manual fuera de los bloques de instrucciones administrados.
 

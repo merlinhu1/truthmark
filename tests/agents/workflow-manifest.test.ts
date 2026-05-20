@@ -55,6 +55,39 @@ describe("Truthmark workflow manifest", () => {
     }
   });
 
+  it("declares optional helper metadata with manual fallbacks", () => {
+    const sync = getTruthmarkWorkflow("truthmark-sync");
+    const document = getTruthmarkWorkflow("truthmark-document");
+
+    expect(sync.helpers?.map((helper) => helper.id)).toEqual([
+      "validate-sync-report",
+      "validate-write-lease",
+    ]);
+    expect(document.helpers?.map((helper) => helper.id)).toEqual([
+      "validate-document-report",
+      "validate-write-lease",
+    ]);
+
+    for (const workflow of [sync, document]) {
+      expect(workflow.reportSections).toContain("Helper scripts");
+
+      for (const helper of workflow.helpers ?? []) {
+        expect(helper.optional).toBe(true);
+        expect(helper.runner).toMatch(/^truthmark>=/u);
+        expect(helper.command.argv).toEqual(
+          expect.arrayContaining(["truthmark", "validate", "--json"]),
+        );
+        expect(helper.command.argv.join(" ")).not.toContain("node scripts/");
+        expect(helper.inputs.length).toBeGreaterThan(0);
+        expect(helper.output).toBe("json");
+        expect(helper.writes).toBe(false);
+        expect(helper.fallback).toMatch(/manual/i);
+      }
+    }
+
+    expect(getTruthmarkWorkflow("truthmark-preview").helpers).toBeUndefined();
+  });
+
   it("defines read-only and write-capable subagent recommendations by workflow", () => {
     expect(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-preview"].subagents).toEqual([
       "truth_route_auditor",
