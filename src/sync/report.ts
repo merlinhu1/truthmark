@@ -25,7 +25,7 @@ export type TruthSyncSkippedReportInput = {
 
 export type TruthSyncBlockedReportInput = {
   reason: string;
-  manualReviewFiles?: string[];
+  manualReviewFiles: string[];
   nextAction: string;
 };
 
@@ -174,16 +174,18 @@ export const renderTruthSyncSkippedReport = (
 export const renderTruthSyncBlockedReport = (
   input: TruthSyncBlockedReportInput,
 ): string => {
+  const manualReviewFiles = input.manualReviewFiles.filter((file) => file.trim().length > 0);
+
+  if (manualReviewFiles.length === 0) {
+    throw new Error("Files requiring manual review must include at least one file.");
+  }
+
   const sections = [
     "Truth Sync: blocked",
     renderBulletSection("Reason", [input.reason]),
+    renderBulletSection("Files requiring manual review", manualReviewFiles),
+    renderBulletSection("Next action", [input.nextAction]),
   ];
-
-  if ((input.manualReviewFiles?.length ?? 0) > 0) {
-    sections.push(renderBulletSection("Files requiring manual review", input.manualReviewFiles!));
-  }
-
-  sections.push(renderBulletSection("Next action", [input.nextAction]));
 
   return [
     ...sections,
