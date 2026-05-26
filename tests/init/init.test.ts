@@ -331,7 +331,7 @@ describe("runInit", () => {
         "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check",
       );
       expect(agents).toContain("load the installed skill for details");
-      expect(agents).toContain("Hierarchy: config .truthmark/config.yml");
+      expect(agents).toContain("Hierarchy hints: config .truthmark/config.yml");
       expect(agents).toContain("routes docs/truthmark/areas.md");
       expect(agents).toContain("docs/truthmark/areas/**/*.md");
       expect(agents).toContain("Truth docs: docs/truth/**/*.md");
@@ -351,7 +351,7 @@ describe("runInit", () => {
       expect(agents).toContain("code changed -> tests -> Sync -> report");
       expect(agents).not.toContain("Truth Sync: completed");
       expect(agents).not.toContain("Truth Realize: completed");
-      expect(agents.match(/Hierarchy: config/g)).toHaveLength(1);
+      expect(agents.match(/Hierarchy hints: config/g)).toHaveLength(1);
       expect(agents.match(/Decisions live/g)).toHaveLength(1);
       expect(structureSkill).toContain("name: truthmark-structure");
       expect(structureSkill).toContain("support/procedure.md");
@@ -430,9 +430,9 @@ describe("runInit", () => {
       expect(syncReportTemplate).toContain("Truth Sync: completed");
       expect(syncReportTemplate).toContain("Truth Sync: blocked");
       expect(syncSkill).toContain(
-        "Read .truthmark/config.yml, the configured root route index",
+        "Inspect .truthmark/config.yml and configured route files",
       );
-      expect(syncSkill).toContain("relevant child route files");
+      expect(syncSkill).toContain("then inspect relevant canonical docs directly");
       expect(syncSkill).not.toContain(".truthmark/local.yml");
       expect(syncSkill).not.toContain("truth_sync.sync_agent");
       expect(syncSkill).not.toContain(
@@ -657,6 +657,18 @@ describe("runInit", () => {
             diagnostic.file === ".opencode/agents/truth-route-auditor.md",
         ),
       ).toBe(true);
+      const diagnosticCategoriesByFile = new Map(
+        result.diagnostics.map((diagnostic) => [diagnostic.file, diagnostic.category]),
+      );
+      for (const file of [
+        ".github/prompts/truthmark-realize.prompt.md",
+        ".github/skills/truthmark-realize/SKILL.md",
+        ".claude/skills/truthmark-realize/SKILL.md",
+        ".opencode/skills/truthmark-realize/SKILL.md",
+        ".gemini/skills/truthmark-realize/SKILL.md",
+      ]) {
+        expect(diagnosticCategoriesByFile.get(file)).toBe("realization");
+      }
       expect(
         result.diagnostics.some((diagnostic) =>
           diagnostic.message.includes("Created"),
@@ -856,14 +868,14 @@ Agent-specific:
       const geminiInstructions = await repo.readFile("GEMINI.md");
       expect(geminiInstructions).not.toContain("/truthmark:sync");
       expect(geminiInstructions).toContain(
-        "Use that file as the primary repository instruction source for this agent.",
+        "Use explicitly configured repository policy docs only when they exist in this checkout.",
       );
       expect(geminiInstructions).toContain("Agent-specific:");
       expect(geminiInstructions).toContain(
-        "Read `docs/README.md` only when choosing or updating canonical docs.",
+        "Read the configured Truthmark routing files when choosing or updating canonical docs.",
       );
       expect(geminiInstructions).toContain(
-        "Use `docs/ai/agent-onboarding.md` only when task routing is unclear or cross-area.",
+        "Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
       );
       expect(geminiInstructions).not.toContain("for Codex");
       expect(geminiInstructions).not.toContain("Codex-specific");

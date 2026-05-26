@@ -44,7 +44,7 @@ describe("renderTruthCheckSkillBody", () => {
     );
     expect(skill).toContain("audit repository truth health");
     expect(skill).toContain(
-      "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+      "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
     expect(skill).toContain(
       "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
@@ -60,7 +60,7 @@ describe("renderTruthCheckSkillBody", () => {
     expect(skill).toContain(
       "remove unsupported findings or mark open questions",
     );
-    expect(skill).toContain("Truthmark hierarchy:");
+    expect(skill).toContain("Truthmark hierarchy hints:");
     expect(skill).toContain("Product Decisions");
     expect(skill).toContain("Rationale");
     expect(skill).toContain("Truth Check: completed");

@@ -22,7 +22,7 @@ export const renderTruthRealizePrompt = (
 Only run when the user explicitly asks to realize truth docs into code. This is a manual installed instruction or skill, not a dedicated CLI command.
 Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 Doc first:
-- read the updated truth docs plus .truthmark/config.yml, route files, relevant code, and tests
+- read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - ${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 ${renderTruthDocOwnershipGateSection(

@@ -39,7 +39,7 @@ Fixes suggested:
 ${renderAuditEvidenceCheckedSection([
     {
       finding: "The root route index is present and maps repository truth owners.",
-      evidence: [".truthmark/config.yml:1", `${rootRouteIndex}:1`],
+      evidence: [`${rootRouteIndex}:1`],
       suggestedFix: "none",
       confidence: "high",
     },
@@ -101,11 +101,11 @@ Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
 
 Truth Check is agent-led:
 
-- inspect .truthmark/config.yml, ${config.docs.routing.rootIndex}, canonical docs, and relevant implementation directly
+- inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
+- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/ when they exist
 - check that current docs describe current code rather than historical plans
-- check that ${config.docs.routing.rootIndex} routes code surfaces to canonical truth docs
+- check that route files map code surfaces to canonical truth docs when route files exist
 - check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure
 - check that canonical behavior docs keep active Product Decisions and Rationale sections
 - optionally run truthmark check when local tooling is available

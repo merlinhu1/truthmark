@@ -194,6 +194,7 @@ When the agent changes functional code, Truth Sync acts as the finish-time guard
 | Local-first operation | Requires no hosted service, daemon, database, or MCP server. |
 | Safer write boundaries | Separates code-first, doc-first, read-only, and doc-only workflows. |
 | Validation | Reports routing, authority, frontmatter, link, generated-surface, branch-scope, freshness, and coverage issues. |
+| Optional Portal | Generates a committed static HTML presentation site from Markdown truth docs when explicitly enabled and requested. |
 
 ## Visual overview
 
@@ -326,6 +327,7 @@ They are used by agents or agent hosts during repository work. They are not top-
 | Truth Preview | read-only | The agent needs to preview likely routing before edits. | Reads only. Does not authorize writes. |
 | Truth Realize | doc-first | Product or architecture truth docs lead and code should be updated to match. | Updates code only. The agent must not edit the truth docs it is realizing. |
 | Truth Check | audit-first | A reviewer or agent needs to audit repository truth health. | Audits and reports. |
+| Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the configured Portal output directory. |
 
 ### Important distinction
 
@@ -437,6 +439,35 @@ They are not sources of truth.
 
 Structured output is available with `--json` where supported.
 
+## Truthmark Portal
+
+Truthmark Portal is an optional presentation workflow for teams that want a human-readable site over their committed truth docs.
+
+It is deliberately separate from the core truth workflow:
+
+- Markdown truth docs remain canonical.
+- Generated Portal HTML is presentation only.
+- Portal is manual-only; it does not run as a completion gate, Truth Sync step, `truthmark check` step, or automatic post-change hook.
+- Portal writes stay inside the configured output directory unless the user explicitly changes scope.
+- Generated pages should use local assets, source provenance, and a visible Markdown-canonical disclaimer.
+
+Enable it with the namespaced config block:
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+Then rerun:
+
+```bash
+truthmark init
+```
+
+When enabled, Truthmark installs host-native Portal workflow surfaces for the configured platforms, such as `/truthmark-portal` or `/truthmark:portal` depending on the agent host.
+
 ## Configuration
 
 Truthmark is config-first.
@@ -471,6 +502,7 @@ Important config areas include:
 | `docs.routing.area_files_root` | Directory for delegated child route files. |
 | `docs.routing.default_area` | Initial scaffolded child route basename. |
 | `docs.routing.max_delegation_depth` | Current maximum route delegation depth. |
+| `truthmark-portal` | Optional manual presentation workflow settings: `enabled`, `output`, and `template`. |
 | `authority` | Ordered canonical docs and globs used as repository truth authority. |
 | `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
 | `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
@@ -632,6 +664,21 @@ truthmark impact --base main
 truthmark context --workflow truth-sync --base main --format markdown
 ```
 
+### Enable the optional Portal workflow
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+```bash
+truthmark init
+```
+
+Then explicitly ask the agent host to run the installed Portal workflow when you want the static presentation site generated or refreshed.
+
 ## Project status
 
 Truthmark V1 currently provides:
@@ -650,6 +697,7 @@ Truthmark V1 currently provides:
 - generated Truth Preview workflow surfaces
 - generated Truth Realize workflow surfaces
 - generated Truth Check workflow surfaces
+- optional generated Truthmark Portal workflow surfaces
 - route, authority, decision-structure, frontmatter, link, freshness, generated-surface, and coverage diagnostics
 - derived RepoIndex, RouteMap, ImpactSet, and ContextPack artifacts
 - host-specific surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI
@@ -712,7 +760,7 @@ It is not:
 - a hosted service
 - an MCP server
 - a vector database
-- a documentation website generator
+- a canonical documentation website generator or hosted docs platform
 - a CI or PR enforcement product
 - a replacement for tests, code review, or technical leadership
 - an autonomous code rewrite engine

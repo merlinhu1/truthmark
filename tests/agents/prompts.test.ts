@@ -11,7 +11,7 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain("### Manual Truth Realize");
     expect(prompt).toContain("Only run when the user explicitly asks");
     expect(prompt).toContain(
-      "read the updated truth docs plus .truthmark/config.yml, route files, relevant code, and tests",
+      "read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests",
     );
     expect(prompt).toContain("Truth-doc ownership gate");
     expect(prompt).toContain(

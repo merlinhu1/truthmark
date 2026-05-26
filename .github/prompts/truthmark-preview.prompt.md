@@ -8,7 +8,7 @@ name: truthmark-preview
 description: Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.
 argument-hint: Optional requested outcome, code area, doc path, or routing question
 user-invocable: true
-truthmark-version: 1.5.0
+truthmark-version: 1.6.0
 ---
 
 Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
@@ -23,11 +23,11 @@ Purpose:
 - keep the selector thin so agents can avoid loading or acting through heavier workflows prematurely
 
 Read:
-- .truthmark/config.yml
-- docs/truthmark/areas.md
-- relevant child route files under docs/truthmark/areas/
+- .truthmark/config.yml, only when present
+- docs/truthmark/areas.md, only when present
+- relevant child route files under docs/truthmark/areas/, only when present
 - relevant truth docs and implementation files needed to preview ownership
-- Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 
 Do not:
@@ -45,11 +45,11 @@ Suggested subagent use:
 - write workers: none
 - leases needed: none
 
-Truthmark hierarchy:
-- Config: .truthmark/config.yml
-- Root route index: docs/truthmark/areas.md
-- Area route files: docs/truthmark/areas/**/*.md
-- Truth docs: docs/truth/**/*.md
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/areas.md
+- Area route files, when present: docs/truthmark/areas/**/*.md
+- Truth docs, when present: docs/truth/**/*.md
 
 Report completion in this shape:
 ```md

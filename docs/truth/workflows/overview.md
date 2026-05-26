@@ -30,6 +30,7 @@ This document owns the shared installed-workflow runtime model and generated hos
 - Explicit host invocations run manual workflows.
 - Truth Sync is the only automatic finish-time workflow trigger.
 - Truth Preview is an explicit read-only selector for likely workflow routing before edits; it is intended, not authorized.
+- Truthmark Portal is an opt-in manual-only presentation workflow; it is not a completion gate or Sync/check substitute.
 
 ## Inputs
 
@@ -66,6 +67,8 @@ Generated workflow descriptions are routing triggers. They use short positive tr
 
 The typed workflow manifest owns generated description text, Codex-facing short descriptions and default prompts, implicit-invocation policy, positive and negative routing examples, forbidden-adjacent cases, required gates, write boundaries, and report-section expectations. Generated host surfaces and deterministic routing tests should consume that manifest rather than duplicating workflow metadata in renderer code.
 
+Truthmark Portal surfaces are generated only when `truthmark-portal.enabled` normalizes to `true`. When enabled, configured platforms receive the `truthmark-portal` skill package, GitHub Copilot receives `.github/prompts/truthmark-portal.prompt.md`, Gemini receives `.gemini/commands/truthmark/portal.toml`, and managed instruction blocks mention Portal with manual-only wording. Portal installs no dedicated subagents in V1.
+
 Truthmark-owned workflow surfaces are generated under host-specific directories. Repo-root `skills/` files are not generated V1 workflow surfaces.
 
 Managed instruction blocks are compact automatic-Sync trigger and boundary indexes. They intentionally omit platform-specific invocation strings, non-automatic workflow procedures, report examples, and long checklists. Detailed invocations and procedures live in generated skills, skill support files, prompts, and command files.
@@ -84,6 +87,7 @@ Managed instruction blocks are compact automatic-Sync trigger and boundary index
 - Decision (2026-05-16): Truth Preview is generated as an explicit read-only workflow surface, not an automatic gate, validator, or Truth Check replacement.
 - Decision (2026-05-16): Generated skill packages use progressive disclosure: `SKILL.md` stays compact for routing and first-step execution, while heavy procedure detail, report examples, and subagent or lease reference material move to generated support files beside the skill.
 - Decision (2026-05-18): Workflow helpers are optional read-only accelerators declared in generated helper manifests; current helpers are owned by the installed `truthmark` CLI and use argv-style `truthmark validate ... --json` commands rather than packaged script copies.
+- Decision (2026-05-25): Truthmark Portal is opt-in and manual-only; generated Portal HTML is a non-canonical human presentation surface and Markdown remains canonical.
 
 ## Rationale
 

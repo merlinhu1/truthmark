@@ -88,7 +88,7 @@ describe("renderTruthDocumentSkillBody", () => {
       "block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary",
     );
     expect(skill).toContain(
-      "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+      "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
     expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
     expect(skill).toContain("repository-intelligence artifacts were not generated");

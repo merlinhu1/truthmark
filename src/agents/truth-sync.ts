@@ -39,7 +39,7 @@ The parent provides the task focus, explicit write lease, and any repository con
 Worker rules:
 - require a write lease with workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields before editing
 - inspect relevant staged, unstaged, and untracked functional code directly
-- read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and canonical truth docs directly
+- inspect .truthmark/config.yml and configured route files (${config.docs.routing.rootIndex}; ${config.docs.routing.areaFilesRoot}/) only when they exist; then inspect canonical truth docs directly
 - Code verification is parent-owned; report what was run or why it was not run
 - may write only leased truth docs and leased truth routing files for Truth Sync alignment
 - must not rewrite functional code or generated host surfaces
@@ -118,7 +118,7 @@ Explicit invocation runs immediately. Later functional-code changes reopen the f
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.
-2. Read .truthmark/config.yml, the configured root route index at ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, and relevant canonical docs.
+2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
 4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
