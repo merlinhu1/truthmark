@@ -142,6 +142,19 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
     source: "manifest-positive",
   },
   {
+    id: "portal-explicit-refresh",
+    userPrompt:
+      "Refresh the committed Truthmark Portal static HTML docs site under docs/truthmark-portal.",
+    expectedWorkflow: "truthmark-portal",
+    expectedReason: "generate or refresh the committed static HTML Portal",
+    expectedManifestSignals: [
+      "generate, refresh, or update the Truthmark Portal static HTML site",
+      "update docs/truthmark-portal",
+    ],
+    forbiddenWorkflows: ["truthmark-sync", "truthmark-check"],
+    source: "manifest-positive",
+  },
+  {
     id: "adjacent-sync-not-realize",
     userPrompt:
       "I changed functional code and need the docs synced afterward, not a doc-first realization.",

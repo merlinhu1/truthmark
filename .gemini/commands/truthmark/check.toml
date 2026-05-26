@@ -5,7 +5,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.6.0
 ---
 
 # Truthmark Check
@@ -16,12 +16,12 @@ Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthma
 
 Truth Check is agent-led:
 
-- inspect .truthmark/config.yml, docs/truthmark/areas.md, canonical docs, and relevant implementation directly
-- Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+- inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
+- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
-- inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/
+- inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/ when they exist
 - check that current docs describe current code rather than historical plans
-- check that docs/truthmark/areas.md routes code surfaces to canonical truth docs
+- check that route files map code surfaces to canonical truth docs when route files exist
 - check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure
 - check that canonical behavior docs keep active Product Decisions and Rationale sections
 - optionally run truthmark check when local tooling is available
@@ -33,11 +33,11 @@ Evidence Gate:
 - canonical docs are context, not sole proof when implementation conflicts
 - remove unsupported findings or mark open questions; validate changed claims if you edit docs
 
-Truthmark hierarchy:
-- Config: .truthmark/config.yml
-- Root route index: docs/truthmark/areas.md
-- Area route files: docs/truthmark/areas/**/*.md
-- Truth docs: docs/truth/**/*.md
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/areas.md
+- Area route files, when present: docs/truthmark/areas/**/*.md
+- Truth docs, when present: docs/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
@@ -58,11 +58,12 @@ Fixes suggested:
 
 Evidence checked:
 - Finding: The root route index is present and maps repository truth owners.
-  Evidence: .truthmark/config.yml:1 / docs/truthmark/areas.md:1
+  Evidence: docs/truthmark/areas.md:1
   Suggested fix: none
   Confidence: high
 
 Validation:
 - truthmark check
 ```
+User focus or arguments: {{args}}
 '''

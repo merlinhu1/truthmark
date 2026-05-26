@@ -78,10 +78,14 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("Truth Sync: completed");
       expect(agents).not.toContain("Truth Realize: completed");
       expect(structureSkill).toContain("name: truthmark-structure");
-      expect(structureSkill).toContain("docs/ai/repo-rules.md");
+      expect(structureSkill).toContain(
+        "Follow repository instruction files that exist in this checkout",
+      );
       expect(structureSkill).toContain("docs/truthmark/areas.md");
       expect(syncSkill).toContain("name: truthmark-sync");
-      expect(syncSkill).toContain("docs/ai/repo-rules.md");
+      expect(syncSkill).toContain(
+        "Follow repository instruction files that exist in this checkout",
+      );
       expect(syncSkill).toContain(
         "Use this skill automatically before finishing",
       );

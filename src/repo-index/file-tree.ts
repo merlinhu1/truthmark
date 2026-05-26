@@ -126,6 +126,20 @@ export const discoverRepoFiles = async (
   const tests: RepoTestEntry[] = [];
 
   for (const filePath of discoveredFiles.filter((entry) => !isIgnoredPath(entry, ignore)).sort()) {
+    let stat: Awaited<ReturnType<typeof fs.stat>>;
+    try {
+      stat = await fs.stat(path.join(rootDir, filePath));
+    } catch (error: unknown) {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+        continue;
+      }
+      throw error;
+    }
+
+    if (!stat.isFile()) {
+      continue;
+    }
+
     const extension = path.posix.extname(filePath);
     const kind = fileKind(filePath, ignore);
 

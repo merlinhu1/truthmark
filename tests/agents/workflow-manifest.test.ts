@@ -11,7 +11,10 @@ import { renderTruthDocumentSkillBody } from "../../src/agents/truth-document.js
 import { renderTruthPreviewSkillBody } from "../../src/agents/truth-preview.js";
 import { renderTruthStructureSkillBody } from "../../src/agents/truth-structure.js";
 import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
-import { renderTruthmarkRealizeSkill } from "../../src/templates/workflow-surfaces.js";
+import {
+  renderTruthmarkPortalSkill,
+  renderTruthmarkRealizeSkill,
+} from "../../src/templates/workflow-surfaces.js";
 
 const renderWorkflowSkill = (id: (typeof TRUTHMARK_WORKFLOW_IDS)[number]) => {
   switch (id) {
@@ -27,6 +30,8 @@ const renderWorkflowSkill = (id: (typeof TRUTHMARK_WORKFLOW_IDS)[number]) => {
       return renderTruthmarkRealizeSkill();
     case "truthmark-check":
       return renderTruthCheckSkillBody();
+    case "truthmark-portal":
+      return renderTruthmarkPortalSkill();
   }
 };
 
@@ -69,10 +74,15 @@ describe("Truthmark workflow manifest", () => {
     ]);
 
     for (const workflow of [sync, document]) {
+      expect(workflow.reportSections).toContain("Helper scripts");
+
       for (const helper of workflow.helpers ?? []) {
         expect(helper.optional).toBe(true);
-        expect(helper.runner).toBe("node>=20");
-        expect(helper.command).toContain("node scripts/");
+        expect(helper.runner).toMatch(/^truthmark>=/u);
+        expect(helper.command.argv).toEqual(
+          expect.arrayContaining(["truthmark", "validate", "--json"]),
+        );
+        expect(helper.command.argv.join(" ")).not.toContain("node scripts/");
         expect(helper.inputs.length).toBeGreaterThan(0);
         expect(helper.output).toBe("json");
         expect(helper.writes).toBe(false);
@@ -141,6 +151,40 @@ describe("Truthmark workflow manifest", () => {
       "Blocking ambiguity",
       "Handoff",
     ]);
+  });
+
+  it("defines Truthmark Portal as a manual-only presentation workflow", () => {
+    const workflow = getTruthmarkWorkflow("truthmark-portal");
+
+    expect(workflow.displayName).toBe("Truthmark Portal");
+    expect(workflow.allowImplicitInvocation).toBe(false);
+    expect(workflow.positiveTriggers).toEqual(
+      expect.arrayContaining([
+        "generate the Truthmark Portal",
+        "refresh the committed HTML docs site",
+        "update docs/truthmark-portal",
+      ]),
+    );
+    expect(workflow.negativeTriggers).toEqual(
+      expect.arrayContaining([
+        "code change sync",
+        "route ownership repair",
+        "truth validation or checking",
+        "machine-readable agent context",
+      ]),
+    );
+    expect(workflow.allowedWrites).toEqual(["configured Portal output directory only"]);
+    expect(workflow.reportSections).toEqual([
+      "Output path",
+      "Page count",
+      "Diagrams/assets",
+      "Source docs reviewed",
+      "Skipped/ambiguous docs",
+      "Validation",
+      "Markdown canonical statement",
+    ]);
+    expect(workflow.subagents).toBeUndefined();
+    expect(workflow.writeSubagents).toBeUndefined();
   });
 
   it("keeps routing descriptions focused on trigger selection", () => {

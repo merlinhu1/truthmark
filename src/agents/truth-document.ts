@@ -32,6 +32,7 @@ export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
+  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
 
   return `Truth Document: completed
 
@@ -65,8 +66,7 @@ ${renderClaimEvidenceCheckedSection([
   ])}
 
 Helper scripts:
-- validate-document-report: ran, passed
-- validate-write-lease: skipped, no write lease used
+${helperScripts.map((helperScript) => `- ${helperScript}`).join("\n")}
 
 Notes:
 - Documented routing and behavior from route handlers and tests.`;
@@ -128,7 +128,7 @@ Invocations: ${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
 Truth Document is manual and implementation-first:
 
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
-- inspect .truthmark/config.yml, ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, existing canonical docs, implementation code, and tests directly
+- inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and ${config.docs.routing.rootIndex} or relevant child route files only
@@ -157,6 +157,12 @@ ${renderTruthDocRestructureGateSection(
 ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
+Helper status reporting:
+- Validate the report body before adding this validator's own success status; the body may omit \`validate-document-report\` while validation is pending.
+- After \`truthmark validate document-report <report-file> --json\` returns \`data.validation.ok: true\`, append or update \`validate-document-report: ran, passed\` in the final report.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record \`validate-document-report: skipped, <reason>\` and manually validate the report shape.
+- Record \`validate-write-lease: ran, passed\` only after validating a concrete write lease; otherwise use a truthful skipped status such as \`skipped, no write lease used\`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
 - block on functional code, generated host surfaces, or unrelated diffs caused by document work

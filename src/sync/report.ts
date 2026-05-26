@@ -25,7 +25,7 @@ export type TruthSyncSkippedReportInput = {
 
 export type TruthSyncBlockedReportInput = {
   reason: string;
-  manualReviewFiles?: string[];
+  manualReviewFiles: string[];
   nextAction: string;
 };
 
@@ -33,20 +33,42 @@ const renderBulletSection = (title: string, items: string[]): string => {
   return `${title}:\n${items.map((item) => `- ${item}`).join("\n")}`;
 };
 
-const parseBulletSection = (source: string, title: string): string[] => {
-  const section = source
+const findSection = (source: string, title: string): string | undefined => {
+  return source
     .split("\n\n")
     .find((candidate) => candidate.startsWith(`${title}:\n`));
+};
+
+const parseBulletLines = (section: string): string[] => {
+  return section
+    .split("\n")
+    .slice(1)
+    .map((line) => {
+      const match = line.match(/^-\s+(.*)$/);
+
+      return match?.[1];
+    })
+    .filter((line): line is string => line !== undefined);
+};
+
+const parseBulletSection = (source: string, title: string): string[] => {
+  const section = findSection(source, title);
 
   if (!section) {
     return [];
   }
 
-  return section
-    .split("\n")
-    .slice(1)
-    .filter((line) => line.startsWith("- "))
-    .map((line) => line.slice(2));
+  return parseBulletLines(section);
+};
+
+const parseOptionalBulletSection = (source: string, title: string): string[] | undefined => {
+  const section = findSection(source, title);
+
+  if (!section) {
+    return undefined;
+  }
+
+  return parseBulletLines(section);
 };
 
 const isClaimEvidenceResult = (value: string): value is ClaimEvidenceResult => {
@@ -130,12 +152,15 @@ export const parseTruthSyncReport = (source: string): TruthSyncCompletedReport =
     throw new Error("Only completed Truth Sync reports can be parsed.");
   }
 
+  const helperScripts = parseOptionalBulletSection(source, "Helper scripts");
+
   return {
     status: "completed",
     changedCode: parseBulletSection(source, "Changed code reviewed"),
     ownershipReviewed: parseBulletSection(source, "Ownership reviewed"),
     truthDocsUpdated: parseBulletSection(source, "Truth docs updated"),
     evidenceChecked: parseEvidenceCheckedSection(source),
+    ...(helperScripts === undefined ? {} : { helperScripts }),
     notes: parseBulletSection(source, "Notes"),
   };
 };
@@ -149,16 +174,18 @@ export const renderTruthSyncSkippedReport = (
 export const renderTruthSyncBlockedReport = (
   input: TruthSyncBlockedReportInput,
 ): string => {
+  const manualReviewFiles = input.manualReviewFiles.filter((file) => file.trim().length > 0);
+
+  if (manualReviewFiles.length === 0) {
+    throw new Error("Files requiring manual review must include at least one file.");
+  }
+
   const sections = [
     "Truth Sync: blocked",
     renderBulletSection("Reason", [input.reason]),
+    renderBulletSection("Files requiring manual review", manualReviewFiles),
+    renderBulletSection("Next action", [input.nextAction]),
   ];
-
-  if ((input.manualReviewFiles?.length ?? 0) > 0) {
-    sections.push(renderBulletSection("Files requiring manual review", input.manualReviewFiles!));
-  }
-
-  sections.push(renderBulletSection("Next action", [input.nextAction]));
 
   return [
     ...sections,

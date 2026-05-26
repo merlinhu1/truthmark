@@ -11,7 +11,9 @@ source_of_truth:
   - ../../src/templates/init-files.ts
   - ../../src/templates/agents-block.ts
   - ../../src/agents/workflow-manifest.ts
-  - ../../src/agents/workflow-helper-scripts.ts
+  - ../../src/agents/workflow-helper-validation.ts
+  - ../../src/cli/program.ts
+  - ../../src/cli/handlers.ts
   - ../../src/templates/workflow-surfaces.ts
   - ../../src/templates/generated-surfaces.ts
 ---
@@ -76,7 +78,6 @@ Current scaffold targets:
 - `.codex/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
 - `.codex/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
 - `.codex/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
-- `.codex/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
 - `.codex/agents/truth-route-auditor.toml`
 - `.codex/agents/truth-claim-verifier.toml`
 - `.codex/agents/truth-doc-reviewer.toml`
@@ -91,10 +92,10 @@ Current scaffold targets:
 - `.opencode/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
 - `.opencode/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
 - `.opencode/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
-- `.opencode/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
 - `.opencode/agents/truth-route-auditor.md`
 - `.opencode/agents/truth-claim-verifier.md`
 - `.opencode/agents/truth-doc-reviewer.md`
+- `.opencode/agents/truth-doc-writer.md`
 - `.claude/skills/truthmark-structure/SKILL.md`
 - `.claude/skills/truthmark-document/SKILL.md`
 - `.claude/skills/truthmark-sync/SKILL.md`
@@ -106,8 +107,22 @@ Current scaffold targets:
 - `.claude/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
 - `.claude/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
 - `.claude/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
-- `.claude/skills/truthmark-*/scripts/*.mjs` when the workflow declares helper scripts
+- `.claude/agents/truth-route-auditor.md`
+- `.claude/agents/truth-claim-verifier.md`
+- `.claude/agents/truth-doc-reviewer.md`
+- `.claude/agents/truth-doc-writer.md`
 - `.github/copilot-instructions.md`
+- `.github/skills/truthmark-structure/SKILL.md`
+- `.github/skills/truthmark-document/SKILL.md`
+- `.github/skills/truthmark-sync/SKILL.md`
+- `.github/skills/truthmark-realize/SKILL.md`
+- `.github/skills/truthmark-check/SKILL.md`
+- `.github/skills/truthmark-preview/SKILL.md`
+- `.github/skills/truthmark-*/support/procedure.md`
+- `.github/skills/truthmark-*/support/report-template.md`
+- `.github/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.github/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.github/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
 - `.github/prompts/truthmark-structure.prompt.md`
 - `.github/prompts/truthmark-document.prompt.md`
 - `.github/prompts/truthmark-sync.prompt.md`
@@ -117,20 +132,39 @@ Current scaffold targets:
 - `.github/agents/truth-route-auditor.agent.md`
 - `.github/agents/truth-claim-verifier.agent.md`
 - `.github/agents/truth-doc-reviewer.agent.md`
+- `.github/agents/truth-doc-writer.agent.md`
 - `GEMINI.md`
+- `.gemini/skills/truthmark-structure/SKILL.md`
+- `.gemini/skills/truthmark-document/SKILL.md`
+- `.gemini/skills/truthmark-sync/SKILL.md`
+- `.gemini/skills/truthmark-realize/SKILL.md`
+- `.gemini/skills/truthmark-check/SKILL.md`
+- `.gemini/skills/truthmark-preview/SKILL.md`
+- `.gemini/skills/truthmark-*/support/procedure.md`
+- `.gemini/skills/truthmark-*/support/report-template.md`
+- `.gemini/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.gemini/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.gemini/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
 - `.gemini/commands/truthmark/structure.toml`
 - `.gemini/commands/truthmark/document.toml`
 - `.gemini/commands/truthmark/sync.toml`
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 - `.gemini/commands/truthmark/preview.toml`
+- `.gemini/commands/truthmark/portal.toml` when Truthmark Portal is enabled
+- `.gemini/agents/truth-route-auditor.md`
+- `.gemini/agents/truth-claim-verifier.md`
+- `.gemini/agents/truth-doc-reviewer.md`
+- `.gemini/agents/truth-doc-writer.md`
 
 `instruction_targets` controls shared managed-instruction files such as `AGENTS.md`. These targets are written or refreshed whenever `truthmark init` runs with a valid config, independent of the configured platform list.
-`platforms` controls which platform-specific surfaces are written or refreshed. Defaults include all supported platforms: `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`. Claude Code installs `CLAUDE.md`, project skills under `.claude/skills/`, and verifier plus leased doc-writer subagents under `.claude/agents/`; skills surface as `/truthmark-structure`, `/truthmark-document`, `/truthmark-sync`, `/truthmark-preview`, `/truthmark-realize`, and `/truthmark-check`, while the generated project subagents provide bounded evidence checks and parent-leased truth-doc writes. GitHub Copilot installs `.github/copilot-instructions.md`, prompt files under `.github/prompts/`, and verifier plus leased doc-writer custom agents under `.github/agents/`; prompts surface as `/truthmark-structure`, `/truthmark-document`, `/truthmark-sync`, `/truthmark-preview`, `/truthmark-realize`, and `/truthmark-check` in supported Copilot IDEs, while Copilot CLI can dispatch the generated `@truth-*` custom agents for bounded evidence checks or parent-leased doc shards. Gemini installs both `GEMINI.md` and project-scoped TOML commands under `.gemini/commands/truthmark/`, which surface as `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:preview`, `/truthmark:realize`, and `/truthmark:check` in Gemini CLI. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
+`platforms` controls which platform-specific surfaces are written or refreshed. Defaults include all supported platforms: `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`. Claude Code installs `CLAUDE.md`, project skills under `.claude/skills/`, and verifier plus leased doc-writer subagents under `.claude/agents/`; skills surface as `/truthmark-structure`, `/truthmark-document`, `/truthmark-sync`, `/truthmark-preview`, `/truthmark-realize`, and `/truthmark-check`, plus `/truthmark-portal` when Portal is enabled, while the generated project subagents provide bounded evidence checks and parent-leased truth-doc writes. GitHub Copilot installs `.github/copilot-instructions.md`, agent skills under `.github/skills/`, prompt files under `.github/prompts/`, and verifier plus leased doc-writer custom agents under `.github/agents/`; prompts and skills surface as `/truthmark-structure`, `/truthmark-document`, `/truthmark-sync`, `/truthmark-preview`, `/truthmark-realize`, and `/truthmark-check`, plus `/truthmark-portal` when Portal is enabled, in supported Copilot IDEs, while Copilot CLI can dispatch the generated `@truth-*` custom agents for bounded evidence checks or parent-leased doc shards. Gemini installs `GEMINI.md`, Agent Skills under `.gemini/skills/`, project-scoped TOML commands under `.gemini/commands/truthmark/`, and project subagents under `.gemini/agents/`; commands surface as `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:preview`, `/truthmark:realize`, and `/truthmark:check`, plus `/truthmark:portal` when Portal is enabled, in Gemini CLI and append `User focus or arguments: {{args}}` near the end of each TOML prompt. Unknown platform names are config errors. Removing a platform stops future refreshes for that platform, but `init` does not delete previously generated files.
 
 `ensureRepoFile` is intentionally conservative: existing non-empty files are left alone. The AGENTS managed block is the exception because Truthmark owns that block and may refresh it to match current template behavior.
 
-The generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, Claude Code project skills, GitHub Copilot prompt and custom-agent files, and OpenCode skills keep matching the installed workflow contract. Generated skill packages keep `SKILL.md` compact and write heavy procedure, report-template, and subagent or lease reference material into sibling `support/*.md` files. Optional helper manifests, helper policy files, and helper scripts are emitted only for workflows that declare them and only for configured skill-package platforms; helper manifest commands are local commands intended to run from the generated skill package directory named by the helper policy. GitHub Copilot prompts and Gemini commands do not receive sibling helper files. Generated skills, support files, Codex metadata, Copilot prompt files, Copilot custom-agent files, and managed instruction blocks include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+The generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check explicit surfaces are also managed by Truthmark and may be refreshed on rerun so the Codex skills, metadata, Claude Code project skills, GitHub Copilot skills/prompts/custom agents, Gemini skills/commands/subagents, and OpenCode skills keep matching the installed workflow contract. Generated skill packages keep `SKILL.md` compact and write heavy procedure, report-template, and subagent or lease reference material into sibling `support/*.md` files. Optional helper manifests and helper policy files are emitted only for workflows that declare helpers and only for configured skill-package platforms; helper manifests invoke installed Truthmark CLI validators such as `truthmark validate sync-report <report-file> --json`, `truthmark validate document-report <report-file> --json`, and `truthmark validate write-lease <lease-or-report-file> <changed-files-file> --json`. Generated packages do not bundle repo-local `scripts/*.mjs` helper copies. GitHub Copilot prompts and Gemini commands remain standalone entrypoints; their report examples mark helper packages unavailable unless the matching generated skill package is being used. Generated skills, support files, Codex metadata, Copilot prompt files, Copilot custom-agent files, Gemini command files, Gemini subagent files, and managed instruction blocks include the Truthmark package version that rendered them; `package.json` is the single maintained version source. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+
+Truthmark Portal surfaces are managed by the same renderer only when normalized `truthmarkPortal.enabled` is `true`. When disabled or omitted, init emits no Portal skills, prompts, commands, or managed-instruction mention.
 
 ## AGENTS Management Rules
 
@@ -176,16 +210,17 @@ Important current defaults:
 - default platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`
 - shared instruction targets are refreshed independently of platform-specific surfaces
 - explicit Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check surfaces are installed only for configured platforms
+- Truthmark Portal defaults to disabled; when enabled, Portal surfaces are installed only for configured platforms and use configured output/template values in generated guidance
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
-- Codex platform generation includes `.codex/agents/*.toml`, Claude Code platform generation includes `.claude/agents/*.md`, GitHub Copilot platform generation includes `.github/agents/*.agent.md`, and OpenCode platform generation includes `.opencode/agents/*.md` read-only verifier agents plus `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards; the acting parent agent may use them automatically when the host supports subagent dispatch, and read-only verifier agents are context-bounded so they do not preload repo-wide instruction or policy docs unless assigned as evidence
+- Codex platform generation includes `.codex/agents/*.toml`, Claude Code platform generation includes `.claude/agents/*.md`, GitHub Copilot platform generation includes `.github/agents/*.agent.md`, Gemini CLI platform generation includes `.gemini/agents/*.md`, and OpenCode platform generation includes `.opencode/agents/*.md` read-only verifier agents plus `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards; the acting parent agent may use them automatically when the host supports subagent dispatch, and read-only verifier agents are context-bounded so they do not preload repo-wide instruction or policy docs unless assigned as evidence
 - managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skill entrypoints carry invocation strings and link to support files for detailed workflow bodies
-- generated workflow surfaces must not demote repository instruction docs such as [docs/ai/repo-rules.md](../ai/repo-rules.md) when warning agents that product truth cannot override workflow write boundaries
+- generated workflow surfaces must not demote configured repository instruction docs or optional project-local policy docs when warning agents that product truth cannot override workflow write boundaries; project-local policy docs are not universal Truthmark product files and generated wording must stay generic and config-driven
 - scaffolded default standards include AI-native topology repair guidance and an architecture-vs-behavior boundary so new repositories do not rely on human folder discipline
 - Truth Sync is the only generated skill with implicit invocation enabled because it is the automatic finish-time workflow
 - `truthmark check` is optional validation for agent workflows, not a required workflow preflight
 - Truth Realize is always installed as an explicit manual surface for configured platforms; it has no separate config toggle and no dedicated CLI subcommand
-- Gemini CLI support uses `GEMINI.md` for hierarchical memory and `.gemini/commands/truthmark/*.toml` for explicit workflow commands instead of introducing Truthmark-specific top-level CLI verbs
-- helper files are emitted only for workflows with declared helpers and configured skill-package platforms (`codex`, `opencode`, and `claude-code`); `scripts/*.mjs` files are emitted only for declared helpers with packaged scripts
+- Gemini CLI support uses `GEMINI.md` for hierarchical memory, `.gemini/commands/truthmark/*.toml` for explicit workflow commands with `{{args}}` focus forwarding, `.gemini/skills/truthmark-*/` for Agent Skills, and `.gemini/agents/*.md` for project subagents instead of introducing Truthmark-specific top-level CLI verbs or Gemini extensions
+- helper files are emitted only for workflows with declared helpers and configured skill-package platforms (`codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`); helper manifests call installed Truthmark CLI validators and generated packages do not bundle repo-local `scripts/*.mjs` helper copies
 
 ## Init Diagnostics
 

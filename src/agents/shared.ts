@@ -21,14 +21,14 @@ export const DECISION_TRUTH_INSTRUCTIONS = [
 ].join("\n");
 
 export const EVIDENCE_AUTHORITY_INSTRUCTIONS = [
-  "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+  "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
   "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
 ].join("\n");
 
 export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
   "Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.",
   "They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.",
-  "If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
+  "If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
 ].join("\n");
 
 export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
@@ -233,6 +233,37 @@ export const renderCopilotCustomAgentModeSection = (
   ].join("\n");
 };
 
+export const renderGeminiSubagentModeSection = (
+  agents: string[],
+  parentRule: string,
+  writeAgents: string[] = [],
+): string => {
+  const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeAgentLines =
+    writeMentions.length > 0
+      ? [
+          `- dispatch write-capable project subagents only with explicit write leases: ${writeMentions.join(", ")}`,
+          "- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields",
+          "- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes",
+          "- parent must inspect the actual checkout diff against each lease before accepting a worker report",
+        ]
+      : [];
+  const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
+  const readOnlySubagentLabel =
+    writeAgents.length > 0 ? "read-only subagents" : "subagents";
+
+  return [
+    "Gemini CLI subagent mode:",
+    "- use automatically when this workflow runs in Gemini CLI and the parent agent chooses bounded project subagent fan-out",
+    `- dispatch read-only project subagents ${readOnlyScope}: ${mentions.join(", ")}`,
+    `- ${readOnlySubagentLabel} inspect checkout evidence directly, return structured findings, and must not edit files`,
+    `- parent supplies bounded evidence shards; ${readOnlySubagentLabel} must not preload host instruction files or repo-wide policy docs unless assigned as evidence`,
+    ...writeAgentLines,
+    `- ${parentRule}`,
+  ].join("\n");
+};
+
 export const defaultAgentConfig = (): TruthmarkConfig => {
   return createDefaultConfig();
 };
@@ -241,10 +272,10 @@ export const renderHierarchySummary = (config: TruthmarkConfig): string => {
   const truthRoot = resolveTruthDocsRoot(config);
 
   return [
-    "Truthmark hierarchy:",
-    "- Config: .truthmark/config.yml",
-    `- Root route index: ${config.docs.routing.rootIndex}`,
-    `- Area route files: ${config.docs.routing.areaFilesRoot}/**/*.md`,
-    `- Truth docs: ${truthRoot}/**/*.md`,
+    "Truthmark hierarchy hints:",
+    "- Config, when present: .truthmark/config.yml",
+    `- Root route index, when present: ${config.docs.routing.rootIndex}`,
+    `- Area route files, when present: ${config.docs.routing.areaFilesRoot}/**/*.md`,
+    `- Truth docs, when present: ${truthRoot}/**/*.md`,
   ].join("\n");
 };

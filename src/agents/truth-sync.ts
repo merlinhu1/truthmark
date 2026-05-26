@@ -39,7 +39,7 @@ The parent provides the task focus, explicit write lease, and any repository con
 Worker rules:
 - require a write lease with workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields before editing
 - inspect relevant staged, unstaged, and untracked functional code directly
-- read .truthmark/config.yml, ${config.docs.routing.rootIndex}, and canonical truth docs directly
+- inspect .truthmark/config.yml and configured route files (${config.docs.routing.rootIndex}; ${config.docs.routing.areaFilesRoot}/) only when they exist; then inspect canonical truth docs directly
 - Code verification is parent-owned; report what was run or why it was not run
 - may write only leased truth docs and leased truth routing files for Truth Sync alignment
 - must not rewrite functional code or generated host surfaces
@@ -59,7 +59,7 @@ Return result in this shape:
 - offLeaseChanges: string[]
 - notes: string[]
 - blockedReason?: string
-- manualReviewFiles?: string[]`;
+- manualReviewFiles: string[] required when status is blocked; at least one file`;
 };
 
 export const renderTruthSyncSkillBody = (
@@ -73,6 +73,7 @@ export const renderTruthSyncSkillBody = (
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-sync");
+  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
@@ -117,7 +118,7 @@ Explicit invocation runs immediately. Later functional-code changes reopen the f
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.
-2. Read .truthmark/config.yml, the configured root route index at ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, and relevant canonical docs.
+2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
 4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
@@ -151,6 +152,12 @@ Optional validation tooling:
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
 - update Product Decisions and Rationale when a behavior change comes from a decision change
+Helper status reporting:
+- Validate the report body before adding this validator's own success status; the body may omit \`validate-sync-report\` while validation is pending.
+- After \`truthmark validate sync-report <report-file> --json\` returns \`data.validation.ok: true\`, append or update \`validate-sync-report: ran, passed\` in the final report.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record \`validate-sync-report: skipped, <reason>\` and manually validate the report shape.
+- Record \`validate-write-lease: ran, passed\` only after validating a concrete write lease; otherwise use a truthful skipped status such as \`skipped, no write lease used\`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}
 Parent post-sync verification:
@@ -175,10 +182,7 @@ ${renderMarkdownExample(
           result: "supported",
         },
       ],
-      helperScripts: [
-        "validate-sync-report: ran, passed",
-        "validate-write-lease: skipped, no write lease used",
-      ],
+      helperScripts,
       notes: ["Updated session timeout behavior."],
     }),
   )}

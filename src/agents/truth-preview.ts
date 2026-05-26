@@ -81,9 +81,9 @@ Purpose:
 - keep the selector thin so agents can avoid loading or acting through heavier workflows prematurely
 
 Read:
-- .truthmark/config.yml
-- ${config.docs.routing.rootIndex}
-- relevant child route files under ${config.docs.routing.areaFilesRoot}/
+- .truthmark/config.yml, only when present
+- ${config.docs.routing.rootIndex}, only when present
+- relevant child route files under ${config.docs.routing.areaFilesRoot}/, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 

@@ -97,9 +97,9 @@ truthmark-version: ${TRUTHMARK_VERSION}
 Use this skill to design or repair Truthmark area structure.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
-- inspect repository layout, current docs, .truthmark/config.yml, ${config.docs.routing.rootIndex}, and relevant code directly
+- inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/
+- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair ${config.docs.routing.rootIndex}
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
@@ -170,7 +170,7 @@ ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 Portable fallback:
 - If this skill surface is unavailable, perform the same workflow directly from committed repository files.
 - Do not require the truthmark CLI.
-- Read .truthmark/config.yml, ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, canonical docs, and representative implementation code.
+- Inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and representative implementation code.
 - Use a subagent only when the host supports that pattern; otherwise perform the topology repair inline.
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

@@ -4,6 +4,19 @@ import { createTempRepo } from "../helpers/temp-repo.js";
 import { loadConfig } from "../../src/config/load.js";
 
 describe("loadConfig", () => {
+  const writeConfig = async (
+    repo: Awaited<ReturnType<typeof createTempRepo>>,
+    extraConfig = "",
+  ) => {
+    await repo.writeFile(
+      ".truthmark/config.yml",
+      `version: 1
+authority:
+  - docs/truthmark/areas.md
+${extraConfig}`,
+    );
+  };
+
   it("loads a valid config and applies defaults for optional frontmatter and ignore fields", async () => {
     const repo = await createTempRepo();
 
@@ -284,6 +297,143 @@ outputs:
       expect(
         result.diagnostics.some((diagnostic) => diagnostic.message.includes("outputs")),
       ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("defaults omitted Portal config", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await writeConfig(repo);
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.diagnostics).toEqual([]);
+      expect(result.config?.truthmarkPortal).toEqual({
+        enabled: false,
+        output: "docs/truthmark-portal",
+        template: "default",
+      });
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("loads enabled Portal config", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await writeConfig(
+        repo,
+        `truthmark-portal:
+  enabled: true
+  output: docs/portal
+  template: docs/templates/portal.md
+`,
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.diagnostics).toEqual([]);
+      expect(result.config?.truthmarkPortal).toEqual({
+        enabled: true,
+        output: "docs/portal",
+        template: "docs/templates/portal.md",
+      });
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("defaults omitted Portal enabled when nested Portal config is present", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await writeConfig(
+        repo,
+        `truthmark-portal:
+  output: docs/portal
+`,
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.config?.truthmarkPortal).toEqual({
+        enabled: false,
+        output: "docs/portal",
+        template: "default",
+      });
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it.each([
+    ["/tmp/truthmark-portal", "absolute output path"],
+    ["../truthmark-portal", "parent output traversal"],
+    ["docs/truth", "canonical truth root overlap"],
+    ["docs/truthmark/areas", "routing files root overlap"],
+    ["AGENTS.md/portal", "instruction target overlap"],
+  ])("rejects unsafe Portal output for %s (%s)", async (output) => {
+    const repo = await createTempRepo();
+
+    try {
+      await writeConfig(
+        repo,
+        `truthmark-portal:
+  enabled: true
+  output: ${output}
+`,
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("invalid");
+      expect(result.config).toBeNull();
+      expect(result.diagnostics).toEqual([
+        expect.objectContaining({
+          category: "config",
+          severity: "error",
+          message: expect.stringContaining("truthmark-portal.output"),
+        }),
+      ]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it.each([
+    ["/tmp/portal-template.md", "absolute template path"],
+    ["docs/templates/../portal.md", "parent template traversal"],
+  ])("rejects unsafe Portal template for %s (%s)", async (template) => {
+    const repo = await createTempRepo();
+
+    try {
+      await writeConfig(
+        repo,
+        `truthmark-portal:
+  enabled: true
+  output: docs/portal
+  template: ${template}
+`,
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("invalid");
+      expect(result.config).toBeNull();
+      expect(result.diagnostics).toEqual([
+        expect.objectContaining({
+          category: "config",
+          severity: "error",
+          message: expect.stringContaining("truthmark-portal.template"),
+        }),
+      ]);
     } finally {
       await repo.cleanup();
     }

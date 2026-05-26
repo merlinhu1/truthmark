@@ -8,7 +8,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.6.0
 ---
 
 # Truthmark Document
@@ -19,8 +19,8 @@ Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $t
 Truth Document is manual and implementation-first:
 
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
-- inspect .truthmark/config.yml, docs/truthmark/areas.md, relevant child route files under docs/truthmark/areas/, existing canonical docs, implementation code, and tests directly
-- Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+- inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
+- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and docs/truthmark/areas.md or relevant child route files only
@@ -62,7 +62,7 @@ Copilot custom-agent mode:
 - Parent agent owns Truth Document acceptance, lease validation, and final report
 Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
-If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
+If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
 When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
 Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
 Align existing docs to that template while preserving accurate authored content.
@@ -77,14 +77,20 @@ Truth-doc shape repair gate:
 - report docs restructured and why a narrow edit was not sufficient
 Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
 Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
-Truthmark hierarchy:
-- Config: .truthmark/config.yml
-- Root route index: docs/truthmark/areas.md
-- Area route files: docs/truthmark/areas/**/*.md
-- Truth docs: docs/truth/**/*.md
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/areas.md
+- Area route files, when present: docs/truthmark/areas/**/*.md
+- Truth docs, when present: docs/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
+Helper status reporting:
+- Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
+- After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
+- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.
+- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
+- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
 - block on functional code, generated host surfaces, or unrelated diffs caused by document work
@@ -119,7 +125,6 @@ Evidence checked:
   Result: supported
 
 Helper scripts:
-- validate-document-report: ran, passed
 - validate-write-lease: skipped, no write lease used
 
 Notes:

@@ -34,6 +34,8 @@ truth_documents:
     kind: workflow
   - path: docs/truth/workflows/truth-check.md
     kind: workflow
+  - path: docs/truth/workflows/truthmark-portal.md
+    kind: workflow
   - path: docs/truth/workflows/content-generation.md
     kind: workflow
 ```

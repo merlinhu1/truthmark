@@ -7,7 +7,9 @@ source_of_truth:
   - ../../../.truthmark/config.yml
   - ../../../src/agents/instructions.ts
   - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/agents/workflow-helper-scripts.ts
+  - ../../../src/agents/workflow-helper-validation.ts
+  - ../../../src/cli/program.ts
+  - ../../../src/cli/handlers.ts
   - ../../../src/templates/workflow-surfaces.ts
   - ../../../src/templates/generated-surfaces.ts
 ---
@@ -28,6 +30,7 @@ This document owns the shared installed-workflow runtime model and generated hos
 - Explicit host invocations run manual workflows.
 - Truth Sync is the only automatic finish-time workflow trigger.
 - Truth Preview is an explicit read-only selector for likely workflow routing before edits; it is intended, not authorized.
+- Truthmark Portal is an opt-in manual-only presentation workflow; it is not a completion gate or Sync/check substitute.
 
 ## Inputs
 
@@ -50,19 +53,21 @@ The default platform list includes every supported platform. Teams should remove
 | `codex`          | `.codex/skills/truthmark-*/SKILL.md`, `.codex/skills/truthmark-*/support/*.md`, Codex metadata, and `.codex/agents/*.toml` verifier and leased doc-writer agents | `/truthmark-*` or `$truthmark-*`                                                  |
 | `opencode`       | `.opencode/skills/truthmark-*/SKILL.md`, `.opencode/skills/truthmark-*/support/*.md`, and `.opencode/agents/*.md` verifier and leased doc-writer subagents       | `/skill truthmark-*`                                                              |
 | `claude-code`    | `.claude/skills/truthmark-*/SKILL.md`, `.claude/skills/truthmark-*/support/*.md`, and `.claude/agents/*.md` verifier and leased doc-writer subagents             | `/truthmark-*`; named subagents such as `truth-route-auditor`                     |
-| `github-copilot` | `.github/prompts/truthmark-*.prompt.md` and `.github/agents/*.agent.md` verifier and leased doc-writer agents                                                    | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
-| `gemini-cli`     | `.gemini/commands/truthmark/*.toml`                                                                                                                              | `/truthmark:*`                                                                    |
+| `github-copilot` | `.github/skills/truthmark-*/SKILL.md`, `.github/skills/truthmark-*/support/*.md`, `.github/prompts/truthmark-*.prompt.md`, and `.github/agents/*.agent.md` verifier and leased doc-writer agents | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
+| `gemini-cli`     | `.gemini/skills/truthmark-*/SKILL.md`, `.gemini/skills/truthmark-*/support/*.md`, `.gemini/commands/truthmark/*.toml`, and `.gemini/agents/*.md` verifier and leased doc-writer agents | `/truthmark:*`                                                                    |
 
-Generated skill files, Gemini command files, Codex metadata, Codex custom-agent files, Claude Code subagent files, GitHub Copilot custom-agent files, OpenCode subagent files, and managed instruction blocks include the package version from `package.json`. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
+Generated skill files, Gemini command files, Codex metadata, Codex custom-agent files, Claude Code subagent files, GitHub Copilot custom-agent files, Gemini subagent files, OpenCode subagent files, and managed instruction blocks include the package version from `package.json`. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
-Skill-package hosts (`codex`, `opencode`, and `claude-code`) may also include parseable YAML `helper-manifest.yml`, `support/helper-policy.md`, and `scripts/*.mjs` when a workflow declares optional helper scripts. Helpers are optional read-only accelerators and never workflow prerequisites. If the declared runner is unavailable, the workflow reports a visible helper skip and continues with the generated manual fallback. Helper output is derived evidence; direct checkout inspection, workflow write boundaries, and parent workflow validation remain authoritative.
+Skill-package hosts (`codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`) may also include parseable YAML `helper-manifest.yml` and `support/helper-policy.md` when a workflow declares optional helper commands. Helpers are CLI-owned read-only accelerators invoked through argv-style `truthmark validate ... --json` commands and never workflow prerequisites. If the declared `truthmark` runner is unavailable or version-mismatched, the workflow reports a visible helper skip and continues with the generated manual fallback. Helper output is derived evidence; direct checkout inspection, workflow write boundaries, and parent workflow validation remain authoritative. Standalone Copilot prompt files and Gemini TOML command files use the same installed-CLI validator contract even though their helper manifests live in matching generated skill packages; when the runner is unavailable or skipped, their reports must show a visible skipped helper status plus manual validation.
 
-Codex, Claude Code, GitHub Copilot, and OpenCode platform generation include project-scoped read-only verifier agents for workflow-owned subagent dispatch plus a write-capable `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards. Codex exposes `truth_route_auditor`, `truth_claim_verifier`, `truth_doc_reviewer`, and `truth_doc_writer`. Claude Code exposes `truth-route-auditor`, `truth-claim-verifier`, `truth-doc-reviewer`, and `truth-doc-writer` project subagents. GitHub Copilot and OpenCode expose `@truth-route-auditor`, `@truth-claim-verifier`, `@truth-doc-reviewer`, and `@truth-doc-writer`. The parent workflow may use them automatically when the host supports subagents and bounded fan-out is useful; read-only verifier agents keep context bounded by avoiding host instruction files and repo-wide policy docs unless assigned as evidence, write workers require explicit leases, and the parent workflow owns final reports, repo-policy interpretation, diff validation, and acceptance.
+Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode platform generation include project-scoped read-only verifier agents for workflow-owned subagent dispatch plus a write-capable `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards. Codex exposes `truth_route_auditor`, `truth_claim_verifier`, `truth_doc_reviewer`, and `truth_doc_writer`. Claude Code exposes `truth-route-auditor`, `truth-claim-verifier`, `truth-doc-reviewer`, and `truth-doc-writer` project subagents. GitHub Copilot, Gemini CLI, and OpenCode expose `@truth-route-auditor`, `@truth-claim-verifier`, `@truth-doc-reviewer`, and `@truth-doc-writer`. The parent workflow may use them automatically when the host supports subagents and bounded fan-out is useful; read-only verifier agents keep context bounded by avoiding host instruction files and repo-wide policy docs unless assigned as evidence, write workers require explicit leases, and the parent workflow owns final reports, repo-policy interpretation, diff validation, and acceptance.
 Read-only verifier agents include an explicit context boundary: they inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence.
 
 Generated workflow descriptions are routing triggers. They use short positive trigger language plus adjacent-workflow exclusions. Skill-package hosts keep `SKILL.md` as the compact routing and quick-procedure entrypoint, then put detailed procedure, report templates, and subagent or lease instructions in generated `support/*.md` files. Standalone prompt and command hosts keep the full workflow body inline because they do not load skill-package support files.
 
 The typed workflow manifest owns generated description text, Codex-facing short descriptions and default prompts, implicit-invocation policy, positive and negative routing examples, forbidden-adjacent cases, required gates, write boundaries, and report-section expectations. Generated host surfaces and deterministic routing tests should consume that manifest rather than duplicating workflow metadata in renderer code.
+
+Truthmark Portal surfaces are generated only when `truthmark-portal.enabled` normalizes to `true`. When enabled, configured platforms receive the `truthmark-portal` skill package, GitHub Copilot receives `.github/prompts/truthmark-portal.prompt.md`, Gemini receives `.gemini/commands/truthmark/portal.toml`, and managed instruction blocks mention Portal with manual-only wording. Portal installs no dedicated subagents in V1.
 
 Truthmark-owned workflow surfaces are generated under host-specific directories. Repo-root `skills/` files are not generated V1 workflow surfaces.
 
@@ -73,21 +78,22 @@ Managed instruction blocks are compact automatic-Sync trigger and boundary index
 - Decision (2026-05-15): Installed skills, prompts, commands, and managed instruction blocks are the workflow runtime. The CLI installs and validates those surfaces but does not orchestrate Truth Sync or require helper payloads before agents can act.
 - Decision (2026-05-15): Managed instruction blocks stay compact enough for ordinary agent context. Non-automatic workflow procedure belongs in generated skills, prompts, and command files.
 - Decision (2026-05-15): Managed instruction blocks omit platform-specific invocation strings; host-specific generated workflow files remain the canonical place for invocation detail.
-- Decision (2026-05-15): Truthmark follows current host discovery paths for generated workflow files: Codex uses `.codex/skills/`, Claude Code uses `.claude/skills/` and `.claude/agents/`, GitHub Copilot uses `.github/prompts/` and `.github/agents/`, OpenCode uses `.opencode/skills/`, Gemini CLI uses `.gemini/commands/`, and repo-root `skills/` is not a generated V1 target.
+- Decision (2026-05-15): Truthmark follows current host discovery paths for generated workflow files: Codex uses `.codex/skills/`, Claude Code uses `.claude/skills/` and `.claude/agents/`, GitHub Copilot uses `.github/skills/`, `.github/prompts/`, and `.github/agents/`, OpenCode uses `.opencode/skills/`, Gemini CLI uses `.gemini/skills/`, `.gemini/commands/`, and `.gemini/agents/`, and repo-root `skills/` is not a generated V1 target.
 - Decision (2026-05-15): Workflow descriptions are routing triggers rather than workflow summaries; adjacent-workflow exclusions belong in metadata when they prevent wrong workflow loading.
 - Decision (2026-05-15): Workflow metadata and routing-eval expectations live in a typed manifest so generated descriptions, host metadata, and deterministic routing tests share one structural source.
-- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, and OpenCode may install project-scoped read-only verifier agents plus a leased `truth-doc-writer`; parent workflows keep acceptance and diff validation ownership and do not require users to request subagents per task.
+- Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode may install project-scoped read-only verifier agents plus a leased `truth-doc-writer`; parent workflows keep acceptance and diff validation ownership and do not require users to request subagents per task.
 - Decision (2026-05-16): Read-only verifier agents do not preload host instruction files or repo-wide policy docs by default; parent workflows keep that policy context and pass only bounded evidence shards to verifier agents.
 - Decision (2026-05-16): Coding and document-writing speed is not a priority over workflow simplicity and agent stability. Truthmark must not make document writing faster by adding project complexity, weaker leases, broader write authority, or less stable agent behavior.
 - Decision (2026-05-16): Truth Preview is generated as an explicit read-only workflow surface, not an automatic gate, validator, or Truth Check replacement.
 - Decision (2026-05-16): Generated skill packages use progressive disclosure: `SKILL.md` stays compact for routing and first-step execution, while heavy procedure detail, report examples, and subagent or lease reference material move to generated support files beside the skill.
-- Decision (2026-05-18): Workflow helper scripts are optional read-only accelerators packaged with skill-package hosts; generated manual procedures remain authoritative when a runner is unavailable.
+- Decision (2026-05-18): Workflow helpers are optional read-only accelerators declared in generated helper manifests; current helpers are owned by the installed `truthmark` CLI and use argv-style `truthmark validate ... --json` commands rather than packaged script copies.
+- Decision (2026-05-25): Truthmark Portal is opt-in and manual-only; generated Portal HTML is a non-canonical human presentation surface and Markdown remains canonical.
 
 ## Rationale
 
 Keeping workflow execution agent-native makes installed repositories usable even when the Truthmark package is unavailable at execution time. Agents can read committed surfaces, inspect the checkout, and act without depending on a daemon, database, or mandatory generated payload.
 
-Optional helper scripts fit that model by accelerating deterministic validation without making Node or packaged scripts a workflow dependency.
+Optional CLI-owned helpers fit that model by accelerating deterministic validation without requiring generated repositories to carry executable helper-script copies.
 
 Compact managed instruction blocks and compact skill entrypoints protect ordinary model context while explicit support files, prompt files, and command files remain available when the agent needs a full procedure.
 

@@ -21,6 +21,7 @@ Code surface:
 - src/cli/**
 - src/config/command.ts
 - src/config/defaults.ts
+- src/config/load.ts
 - src/config/schema.ts
 - src/output/**
 

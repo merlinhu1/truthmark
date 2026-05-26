@@ -29,7 +29,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
     );
     expect(prompt).toContain(".truthmark/config.yml");
     expect(prompt).toContain("Code verification is parent-owned");
-    expect(prompt).toContain("docs/truthmark/areas.md");
+    expect(prompt).toContain("configured route files");
     expect(prompt).toContain("status: completed | blocked");
     expect(prompt).toContain("filesChanged");
     expect(prompt).toContain("changedCodeReviewed");
@@ -66,7 +66,7 @@ describe("renderTruthSyncSkillBody", () => {
       "direct checkout inspection is the canonical path",
     );
     expect(skillBody).toContain(
-      "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+      "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
     expect(skillBody).toContain(
       "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
@@ -85,9 +85,9 @@ describe("renderTruthSyncSkillBody", () => {
       "verify only truth docs and leased truth routing files changed",
     );
     expect(skillBody).toContain(
-      "Read .truthmark/config.yml, the configured root route index",
+      "Inspect .truthmark/config.yml and configured route files only when they exist",
     );
-    expect(skillBody).toContain("relevant child route files");
+    expect(skillBody).toContain("configured route files");
     expect(skillBody).toContain("Topology quality gate");
     expect(skillBody).toContain(
       "missing, stale, broad, overloaded, catch-all route only",
@@ -219,6 +219,21 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
     );
+    for (const surface of [
+      renderTruthmarkGeminiSyncCommand(),
+      renderTruthmarkCopilotSyncPrompt(),
+    ]) {
+      expect(surface).toContain(
+        "Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.",
+      );
+      expect(surface).toContain(
+        "After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.",
+      );
+      expect(surface).toContain(
+        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.",
+      );
+      expect(surface).not.toContain("helper package unavailable");
+    }
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {

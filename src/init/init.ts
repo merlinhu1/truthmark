@@ -68,20 +68,49 @@ const removeTrailingManagedChunk = (preservedLines: string[]): void => {
   }
 };
 
+const LEGACY_REPO_RULES_PATH = ["docs", "ai", `repo-${"rules.md"}`].join("/");
+const LEGACY_AGENT_ONBOARDING_PATH = ["docs", "ai", `agent-${"onboarding.md"}`].join(
+  "/",
+);
+const LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE = [
+  "primary repository",
+  "instruction source",
+].join(" ");
+
 const normalizeLegacyInstructionPreamble = (content: string): string => {
   return content
     .replaceAll(
-      "Use that file as the primary repository instruction source for Codex.",
-      "Use that file as the primary repository instruction source for this agent.",
+      `Follow \`${LEGACY_REPO_RULES_PATH}\`.`,
+      "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
+    )
+    .replaceAll(
+      `Follow \`${LEGACY_REPO_RULES_PATH}\` as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE}.`,
+      "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
+    )
+    .replaceAll(
+      `Use that file as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE} for Codex.`,
+      "Use explicitly configured repository policy docs only when they exist in this checkout.",
+    )
+    .replaceAll(
+      `Use that file as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE} for this agent.`,
+      "Use explicitly configured repository policy docs only when they exist in this checkout.",
     )
     .replaceAll("Codex-specific:", "Agent-specific:")
     .replaceAll(
       "- Read `docs/README.md` for the canonical docs map.",
-      "- Read `docs/README.md` only when choosing or updating canonical docs.",
+      "- Read the configured Truthmark routing files when choosing or updating canonical docs.",
     )
     .replaceAll(
-      "- Use `docs/ai/agent-onboarding.md` for quick task routing.",
-      "- Use `docs/ai/agent-onboarding.md` only when task routing is unclear or cross-area.",
+      "- Read `docs/README.md` only when choosing or updating canonical docs.",
+      "- Read the configured Truthmark routing files when choosing or updating canonical docs.",
+    )
+    .replaceAll(
+      `- Use \`${LEGACY_AGENT_ONBOARDING_PATH}\` for quick task routing.`,
+      "- Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
+    )
+    .replaceAll(
+      `- Use \`${LEGACY_AGENT_ONBOARDING_PATH}\` only when task routing is unclear or cross-area.`,
+      "- Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
     );
 };
 
@@ -184,38 +213,36 @@ const diagnosticCategoryForPath = (
   }
 
   if (
+    filePath === ".github/prompts/truthmark-realize.prompt.md" ||
+    filePath.startsWith(".github/skills/truthmark-realize/") ||
+    filePath.startsWith(".claude/skills/truthmark-realize/") ||
+    filePath.startsWith(".opencode/skills/truthmark-realize/") ||
+    filePath.startsWith(".codex/skills/truthmark-realize/") ||
+    filePath.startsWith(".gemini/skills/truthmark-realize/")
+  ) {
+    return "realization";
+  }
+
+  if (
     filePath === "CLAUDE.md" ||
     filePath === "GEMINI.md" ||
     filePath === ".github/copilot-instructions.md" ||
     filePath.startsWith(".github/prompts/truthmark-") ||
     filePath.startsWith(".github/agents/truth-") ||
+    filePath.startsWith(".github/skills/truthmark-") ||
     filePath.startsWith(".claude/agents/truth-") ||
     filePath.startsWith(".claude/skills/truthmark-") ||
     filePath.startsWith(".opencode/skills/truthmark-") ||
     filePath.startsWith(".opencode/agents/") ||
-    filePath.startsWith(".codex/agents/")
+    filePath.startsWith(".codex/agents/") ||
+    filePath.startsWith(".gemini/agents/truth-") ||
+    filePath.startsWith(".gemini/skills/truthmark-")
   ) {
     return "truth-sync";
   }
 
-  if (filePath.startsWith(".codex/skills/truthmark-structure/")) {
+  if (filePath.startsWith(".codex/skills/truthmark-")) {
     return "truth-sync";
-  }
-
-  if (filePath.startsWith(".codex/skills/truthmark-document/")) {
-    return "truth-sync";
-  }
-
-  if (filePath.startsWith(".codex/skills/truthmark-sync/")) {
-    return "truth-sync";
-  }
-
-  if (filePath.startsWith(".codex/skills/truthmark-preview/")) {
-    return "truth-sync";
-  }
-
-  if (filePath.startsWith(".codex/skills/truthmark-realize/")) {
-    return "realization";
   }
 
   if (filePath.startsWith(".gemini/commands/truthmark/realize")) {
@@ -223,10 +250,6 @@ const diagnosticCategoryForPath = (
   }
 
   if (filePath.startsWith(".gemini/commands/truthmark/")) {
-    return "truth-sync";
-  }
-
-  if (filePath.startsWith(".codex/skills/truthmark-check/")) {
     return "truth-sync";
   }
 

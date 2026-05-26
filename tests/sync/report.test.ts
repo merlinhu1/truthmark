@@ -63,6 +63,33 @@ Notes:
     });
   });
 
+  it("round-trips optional helper script statuses", () => {
+    const report = renderTruthSyncCompletedReport({
+      changedCode: ["src/auth/session.ts"],
+      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
+      truthDocsUpdated: ["docs/truth/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: ["src/auth/session.ts:12"],
+          result: "supported",
+        },
+      ],
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
+
+    expect(parseTruthSyncReport(report)).toMatchObject({
+      helperScripts: [
+        "validate-sync-report: ran, passed",
+        "validate-write-lease: skipped, no write lease used",
+      ],
+    });
+  });
+
   it("renders skipped handoff notes in the README shape", () => {
     expect(
       renderTruthSyncSkippedReport({ reason: "documentation-only change" }),
@@ -120,7 +147,7 @@ Truth docs updated:
 - docs/truth/authentication.md
 
 Evidence checked:
-- Claim:   
+- Claim:${"   "}
   Evidence: src/auth/session.ts:12
   Result: supported
 
@@ -139,7 +166,7 @@ Truth docs updated:
 
 Evidence checked:
 - Claim: Session timeout behavior is documented.
-  Evidence:   
+  Evidence:${"   "}
   Result: supported
 
 Notes:
@@ -147,19 +174,13 @@ Notes:
     ).toThrow("evidence is required");
   });
 
-  it("omits the manual review section when the file list is empty", () => {
-    expect(
+  it("rejects blocked reports without manual-review files", () => {
+    expect(() =>
       renderTruthSyncBlockedReport({
         reason: "routing repair is not allowed",
         manualReviewFiles: [],
         nextAction: "update routing metadata and rerun Truth Sync",
       }),
-    ).toBe(`Truth Sync: blocked
-
-Reason:
-- routing repair is not allowed
-
-Next action:
-- update routing metadata and rerun Truth Sync`);
+    ).toThrow("Files requiring manual review must include at least one file");
   });
 });

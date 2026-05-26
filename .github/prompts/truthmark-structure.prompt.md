@@ -8,16 +8,16 @@ name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 1.4.0
+truthmark-version: 1.6.0
 ---
 
 Use this skill to design or repair Truthmark area structure.
 Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
 Truth Structure is agent-native:
-- inspect repository layout, current docs, .truthmark/config.yml, docs/truthmark/areas.md, and relevant code directly
-- Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+- inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
+- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
-- inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/
+- inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair docs/truthmark/areas.md
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
@@ -112,13 +112,13 @@ Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in b
 Portable fallback:
 - If this skill surface is unavailable, perform the same workflow directly from committed repository files.
 - Do not require the truthmark CLI.
-- Read .truthmark/config.yml, docs/truthmark/areas.md, relevant child route files under docs/truthmark/areas/, canonical docs, and representative implementation code.
+- Inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and representative implementation code.
 - Use a subagent only when the host supports that pattern; otherwise perform the topology repair inline.
-Truthmark hierarchy:
-- Config: .truthmark/config.yml
-- Root route index: docs/truthmark/areas.md
-- Area route files: docs/truthmark/areas/**/*.md
-- Truth docs: docs/truth/**/*.md
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/areas.md
+- Area route files, when present: docs/truthmark/areas/**/*.md
+- Truth docs, when present: docs/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.

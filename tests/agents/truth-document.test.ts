@@ -9,9 +9,11 @@ import {
 } from "../../src/agents/truth-document.js";
 import {
   renderTruthmarkDocumentClaudeSkill,
+  renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkDocumentLocalSkill,
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
+  renderTruthmarkGeminiDocumentCommand,
 } from "../../src/templates/workflow-surfaces.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 
@@ -86,7 +88,7 @@ describe("renderTruthDocumentSkillBody", () => {
       "block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary",
     );
     expect(skill).toContain(
-      "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+      "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
     expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
     expect(skill).toContain("repository-intelligence artifacts were not generated");
@@ -199,5 +201,20 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       `version: "${TRUTHMARK_VERSION}"`,
     );
+    for (const surface of [
+      renderTruthmarkGeminiDocumentCommand(),
+      renderTruthmarkCopilotDocumentPrompt(),
+    ]) {
+      expect(surface).toContain(
+        "Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.",
+      );
+      expect(surface).toContain(
+        "After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.",
+      );
+      expect(surface).toContain(
+        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.",
+      );
+      expect(surface).not.toContain("helper package unavailable");
+    }
   });
 });

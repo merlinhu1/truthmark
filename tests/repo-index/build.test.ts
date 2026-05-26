@@ -1,3 +1,5 @@
+import fs from "node:fs/promises";
+
 import { afterEach, describe, expect, it } from "vitest";
 
 import { runConfig } from "../../src/config/command.js";
@@ -44,6 +46,20 @@ describe("buildRepoIndex", () => {
     expect(result.exports).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
     expect(result.publicSymbols).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
     expect(result.routeMap.routes.some((route) => route.truthDocs.length > 0)).toBe(true);
+  });
+
+  it("skips tracked files that are deleted from the worktree", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+    await repo.writeFile("src/deleted.ts", "export const deleted = true;\n");
+    await repo.runGit(["add", "src/deleted.ts"]);
+    await repo.runGit(["commit", "-m", "track deleted fixture"]);
+    await fs.rm(`${repo.rootDir}/src/deleted.ts`);
+
+    const result = await buildRepoIndex(repo.rootDir);
+
+    expect(result.files.map((file) => file.path)).not.toContain("src/deleted.ts");
+    expect(result.exports.map((entry) => entry.path)).not.toContain("src/deleted.ts");
   });
 
   it("excludes files ignored by gitignore", async () => {
