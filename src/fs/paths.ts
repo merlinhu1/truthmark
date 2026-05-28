@@ -2,7 +2,7 @@ import path from "node:path";
 
 import fs from "node:fs/promises";
 
-export type FileWriteStatus = "created" | "updated" | "unchanged";
+type FileWriteStatus = "created" | "updated" | "unchanged";
 
 export type FileWriteResult = {
   path: string;

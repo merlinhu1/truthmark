@@ -5,14 +5,6 @@ import { TRUTHMARK_VERSION } from "../version.js";
 export const TRUTHMARK_BLOCK_START = "<!-- truthmark:start -->";
 export const TRUTHMARK_BLOCK_END = "<!-- truthmark:end -->";
 
-export const renderInstructionPreamble = (): string => {
-  return [
-    "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
-    "Read the configured Truthmark routing files when choosing or updating canonical docs.",
-    "Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
-  ].join("\n");
-};
-
 const renderCompactHierarchySummary = (config: TruthmarkConfig): string => {
   const truthRoot = resolveTruthDocsRoot(config);
   return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.docs.routing.rootIndex} and ${config.docs.routing.areaFilesRoot}/**/*.md when present; Truth docs: ${truthRoot}/**/*.md when present.`;

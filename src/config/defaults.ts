@@ -16,7 +16,7 @@ export const DEFAULT_DOCS_HIERARCHY = {
   },
 } as const;
 
-export const DEFAULT_AUTHORITY = [
+const DEFAULT_AUTHORITY = [
   DEFAULT_DOCS_HIERARCHY.routing.root_index,
   `${DEFAULT_DOCS_HIERARCHY.routing.area_files_root}/**/*.md`,
   `${DEFAULT_DOCS_HIERARCHY.roots.ai}/**/*.md`,

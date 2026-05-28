@@ -196,6 +196,7 @@ truthmark check
 | 本地优先运行 | 不需要托管服务、守护进程、数据库或 MCP 服务器。 |
 | 更安全的写入边界 | 区分 code-first、doc-first、read-only 和 doc-only 工作流。 |
 | 验证 | 报告路由、权限边界、frontmatter、链接、生成表面、分支范围、freshness 和覆盖率问题。 |
+| 可选 Portal | 在明确启用并请求时，从 Markdown 事实文档生成已提交的静态 HTML 展示站点。 |
 
 ## 视觉概览
 
@@ -328,6 +329,7 @@ truthmark init
 | Truth Preview | read-only | 代理需要在编辑前预览可能的路由。 | 只读。不授权写入。 |
 | Truth Realize | doc-first | 产品或架构事实文档在前，代码应更新以匹配它们。 | 只更新代码。代理不能编辑它正在实现的事实文档。 |
 | Truth Check | audit-first | 审查者或代理需要审计仓库事实健康状况。 | 审计并报告。 |
+| Truthmark Portal | presentation-only | 人类明确要求为仓库事实文档生成可浏览的静态 HTML Portal。 | 只在配置的 Portal 输出目录下写入生成的非规范静态文件。 |
 
 ### 重要区别
 
@@ -439,6 +441,35 @@ truthmark check
 
 受支持位置可使用 `--json` 获取结构化输出。
 
+## Truthmark Portal
+
+Truthmark Portal 是一个可选的展示工作流，适合想要基于已提交 truth 文档生成面向人的可读站点的团队。
+
+它有意与核心 truth 工作流分离：
+
+- Markdown truth 文档仍然是规范来源。
+- 生成的 Portal HTML 仅用于展示。
+- Portal 只能手动运行；它不会作为完成门禁、Truth Sync 步骤、`truthmark check` 步骤或自动 post-change hook 运行。
+- 除非用户明确改变范围，Portal 写入必须留在配置的输出目录内。
+- 生成页面应使用本地 assets、来源 provenance，并显示 Markdown 规范来源免责声明。
+
+用这个命名空间配置块启用它：
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+然后重新运行：
+
+```bash
+truthmark init
+```
+
+启用后，Truthmark 会为已配置平台安装宿主原生 Portal 工作流表面，例如 `/truthmark-portal` 或 `/truthmark:portal`，具体取决于代理宿主。
+
 ## 配置
 
 Truthmark 是 config-first。
@@ -473,6 +504,7 @@ truthmark init
 | `docs.routing.area_files_root` | 委托子路由文件目录。 |
 | `docs.routing.default_area` | 初始脚手架子路由 basename。 |
 | `docs.routing.max_delegation_depth` | 当前最大路由委托深度。 |
+| `truthmark-portal` | 可选手动展示工作流设置：`enabled`、`output` 和 `template`。 |
 | `authority` | 用作仓库事实权威的有序规范文档和 glob。 |
 | `instruction_targets` | 接收共享受管说明块的文件，例如 `AGENTS.md`。 |
 | `frontmatter.required` | 缺失时产生错误诊断的元数据字段。 |
@@ -634,6 +666,21 @@ truthmark impact --base main
 truthmark context --workflow truth-sync --base main --format markdown
 ```
 
+### 启用可选 Portal 工作流
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+```bash
+truthmark init
+```
+
+当你想生成或刷新静态展示站点时，再明确要求代理宿主运行已安装的 Portal 工作流。
+
 ## 项目状态
 
 Truthmark V1 目前提供：
@@ -652,6 +699,7 @@ Truthmark V1 目前提供：
 - 生成的 Truth Preview 工作流表面
 - 生成的 Truth Realize 工作流表面
 - 生成的 Truth Check 工作流表面
+- 可选生成的 Truthmark Portal 工作流表面
 - 路由、权限边界、决策结构、frontmatter、链接、freshness、生成表面和覆盖率诊断
 - 派生的 RepoIndex、RouteMap、ImpactSet 和 ContextPack 产物
 - 面向 Codex、Claude Code、GitHub Copilot、OpenCode 和 Gemini CLI 的宿主专属表面
@@ -714,7 +762,7 @@ Truthmark 有意保持小而清晰。
 - 托管服务
 - MCP 服务器
 - 向量数据库
-- 文档网站生成器
+- 规范文档网站生成器或托管文档平台
 - CI 或 PR 强制执行产品
 - 测试、代码审查或技术领导力的替代品
 - 自主代码重写引擎

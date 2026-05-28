@@ -6,7 +6,7 @@ import type { UncommittedChange } from "../git/changes.js";
 import { getGitRepository, resolveWorktreePath } from "../git/repository.js";
 import { classifyPath } from "./classify.js";
 
-export type ChangedSurfaceSegment = {
+type ChangedSurfaceSegment = {
   startLine: number;
   endLine: number;
   content: string;

@@ -10,7 +10,7 @@ type GitCommandResult = {
   exitCode: number;
 };
 
-export type WorktreeCheckout = {
+type WorktreeCheckout = {
   rootDir: string;
   runGit: (args: string[]) => Promise<GitCommandResult>;
   writeFile: (relativePath: string, content: string) => Promise<void>;

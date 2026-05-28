@@ -14,12 +14,6 @@ export const TRUTH_SYNC_REPORT_TEMPLATE = {
   blocked: ["Reason", "Files requiring manual review", "Next action"],
 } as const;
 
-export type TruthSyncReportTemplate = typeof TRUTH_SYNC_REPORT_TEMPLATE;
-
-export const TRUTH_SYNC_CONTEXT_NOTES = [
-  "Code verification is parent-owned; optional validation commands do not select verification for the agent.",
-] as const;
-
 export const TRUTH_SYNC_BOUNDARIES = {
   read: [
     "changed functional code files",

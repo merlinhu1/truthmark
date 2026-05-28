@@ -194,6 +194,7 @@ truthmark check
 | Local-first работа | Не требует размещенного сервиса, daemon, базы данных или MCP-сервера. |
 | Более безопасные границы записи | Разделяет code-first, doc-first, read-only и doc-only workflows. |
 | Валидация | Сообщает о проблемах маршрутизации, authority, frontmatter, ссылок, generated surfaces, branch scope, freshness и coverage. |
+| Опциональный Portal | Генерирует зафиксированный статический HTML-сайт презентации из Markdown-документов истины, когда он явно включен и запрошен. |
 
 ## Визуальный обзор
 
@@ -326,6 +327,7 @@ truthmark init
 | Truth Preview | read-only | Агенту нужно предварительно понять вероятный routing перед правками. | Только чтение. Не авторизует записи. |
 | Truth Realize | doc-first | Продуктовые или архитектурные документы истины ведут, и код нужно обновить под них. | Обновляет только код. Агент не должен редактировать документы истины, которые реализует. |
 | Truth Check | audit-first | Ревьюеру или агенту нужно проверить здоровье истины репозитория. | Аудитирует и сообщает. |
+| Truthmark Portal | presentation-only | Человек явно просит доступный для просмотра статический HTML Portal по документам истины репозитория. | Пишет только сгенерированные неканонические статические файлы в настроенную директорию вывода Portal. |
 
 ### Важное различие
 
@@ -437,6 +439,35 @@ truthmark check
 
 Структурированный вывод доступен с `--json` там, где поддерживается.
 
+## Truthmark Portal
+
+Truthmark Portal — опциональный презентационный workflow для команд, которым нужен человекочитаемый сайт поверх зафиксированных документов истины.
+
+Он намеренно отделен от основного workflow истины:
+
+- Markdown-документы истины остаются каноническими.
+- Сгенерированный HTML Portal предназначен только для презентации.
+- Portal запускается только вручную; он не выполняется как completion gate, шаг Truth Sync, шаг `truthmark check` или автоматический post-change hook.
+- Записи Portal остаются внутри настроенной директории вывода, если пользователь явно не меняет scope.
+- Сгенерированные страницы должны использовать локальные assets, provenance источников и видимое уведомление, что Markdown является каноническим источником.
+
+Включите его namespaced config-блоком:
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+Затем запустите снова:
+
+```bash
+truthmark init
+```
+
+Когда Portal включен, Truthmark устанавливает host-native Portal workflow surfaces для настроенных платформ, например `/truthmark-portal` или `/truthmark:portal` в зависимости от agent host.
+
 ## Конфигурация
 
 Truthmark работает config-first.
@@ -471,6 +502,7 @@ truthmark init
 | `docs.routing.area_files_root` | Директория для делегированных дочерних файлов маршрутов. |
 | `docs.routing.default_area` | Базовое имя начального scaffolded дочернего маршрута. |
 | `docs.routing.max_delegation_depth` | Текущая максимальная глубина делегирования routing. |
+| `truthmark-portal` | Опциональные настройки ручного презентационного workflow: `enabled`, `output` и `template`. |
 | `authority` | Упорядоченные канонические docs и globs, используемые как authority истины репозитория. |
 | `instruction_targets` | Файлы, которые получают общие управляемые блоки инструкций, например `AGENTS.md`. |
 | `frontmatter.required` | Поля metadata, которые создают error diagnostics при отсутствии. |
@@ -632,6 +664,21 @@ truthmark impact --base main
 truthmark context --workflow truth-sync --base main --format markdown
 ```
 
+### Включить опциональный Portal workflow
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+```bash
+truthmark init
+```
+
+Затем явно попросите agent host выполнить установленный Portal workflow, когда нужно сгенерировать или обновить статический презентационный сайт.
+
 ## Статус проекта
 
 Truthmark V1 сейчас предоставляет:
@@ -650,6 +697,7 @@ Truthmark V1 сейчас предоставляет:
 - сгенерированные поверхности workflow Truth Preview
 - сгенерированные поверхности workflow Truth Realize
 - сгенерированные поверхности workflow Truth Check
+- опциональные сгенерированные поверхности workflow Truthmark Portal
 - diagnostics для route, authority, decision-structure, frontmatter, links, freshness, generated-surface и coverage
 - производные артефакты RepoIndex, RouteMap, ImpactSet и ContextPack
 - host-specific поверхности для Codex, Claude Code, GitHub Copilot, OpenCode и Gemini CLI
@@ -712,7 +760,7 @@ Truthmark намеренно небольшой.
 - размещенным сервисом
 - MCP-сервером
 - векторной базой данных
-- генератором сайтов документации
+- каноническим генератором сайтов документации или hosted docs platform
 - CI- или PR-enforcement продуктом
 - заменой tests, code review или technical leadership
 - автономным движком переписывания кода

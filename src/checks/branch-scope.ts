@@ -16,7 +16,7 @@ export type BranchScopeData = {
   relevantFileHashes: Record<string, string>;
 };
 
-export class BranchScopeFileError extends Error {
+class BranchScopeFileError extends Error {
   file: string;
 
   constructor(file: string, message: string) {
@@ -40,7 +40,7 @@ const toBranchIdentity = (branchName: string | null, headSha: string | null): st
   return headSha ? `detached:${headSha}` : "detached:unknown";
 };
 
-export const createBranchScopeData = (
+const createBranchScopeData = (
   repository: {
     repositoryRoot: string;
     worktreePath: string;
