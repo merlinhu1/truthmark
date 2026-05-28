@@ -6,7 +6,8 @@ export type TruthmarkWorkflowId =
   | "truthmark-document"
   | "truthmark-preview"
   | "truthmark-realize"
-  | "truthmark-check";
+  | "truthmark-check"
+  | "truthmark-portal";
 
 export type TruthmarkReadOnlySubagentId =
   | "truth_route_auditor"
@@ -336,6 +337,52 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "truth_route_auditor",
       "truth_claim_verifier",
       "truth_doc_reviewer",
+    ],
+  },
+  "truthmark-portal": {
+    id: "truthmark-portal",
+    displayName: "Truthmark Portal",
+    description:
+      "Use when the user explicitly asks to generate, refresh, or update the Truthmark Portal static HTML site. Not for code change sync, route repair, truth validation/checking, documenting behavior, realizing docs into code, or machine-readable agent context.",
+    shortDescription: "Generate a committed static HTML Truthmark Portal",
+    defaultPrompt:
+      "Use $truthmark-portal only when explicitly asked to generate or refresh the committed static HTML Portal.",
+    allowImplicitInvocation: false,
+    positiveTriggers: [
+      "generate the Truthmark Portal",
+      "refresh the committed HTML docs site",
+      "create a browsable project map from Truthmark docs",
+      "update docs/truthmark-portal",
+      "make a human-readable static site from the truth docs",
+    ],
+    negativeTriggers: [
+      "code change sync",
+      "route ownership repair",
+      "truth validation or checking",
+      "document implemented behavior",
+      "realize docs into code",
+      "machine-readable agent context",
+    ],
+    forbiddenAdjacency: [
+      "must not run as a completion gate",
+      "must not replace Truth Sync, Truth Check, Truth Document, Truth Realize, or Truth Structure",
+      "must not write outside the configured Portal output directory unless the user changes scope",
+    ],
+    requiredGates: [
+      "manual-only invocation",
+      "Portal output containment",
+      "Markdown canonical statement",
+      "source provenance",
+    ],
+    allowedWrites: ["configured Portal output directory only"],
+    reportSections: [
+      "Output path",
+      "Page count",
+      "Diagrams/assets",
+      "Source docs reviewed",
+      "Skipped/ambiguous docs",
+      "Validation",
+      "Markdown canonical statement",
     ],
   },
 } satisfies Record<TruthmarkWorkflowId, TruthmarkWorkflowManifestEntry>;

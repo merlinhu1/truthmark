@@ -41,12 +41,25 @@ export type DocsHierarchyConfig = {
   };
 };
 
+export type RawTruthmarkPortalConfig = {
+  enabled?: boolean;
+  output?: string;
+  template?: string;
+};
+
+export type TruthmarkPortalConfig = {
+  enabled: boolean;
+  output: string;
+  template: string;
+};
+
 export type RawTruthmarkConfig = {
   version: 1;
   platforms?: TruthmarkPlatform[];
   docs?: RawDocsHierarchyConfig;
   authority: string[];
   instruction_targets?: string[];
+  "truthmark-portal"?: RawTruthmarkPortalConfig;
   frontmatter?: {
     required?: string[];
     recommended?: string[];
@@ -60,6 +73,7 @@ export type TruthmarkConfig = {
   docs: DocsHierarchyConfig;
   authority: string[];
   instructionTargets: string[];
+  truthmarkPortal: TruthmarkPortalConfig;
   frontmatter: {
     required: string[];
     recommended: string[];
@@ -67,7 +81,7 @@ export type TruthmarkConfig = {
   ignore: string[];
 };
 
-export const truthmarkConfigSchema: JSONSchemaType<RawTruthmarkConfig> = {
+export const truthmarkConfigSchema = {
   type: "object",
   additionalProperties: false,
   required: ["version", "authority"],
@@ -138,6 +152,22 @@ export const truthmarkConfigSchema: JSONSchemaType<RawTruthmarkConfig> = {
         type: "string",
       },
     },
+    "truthmark-portal": {
+      type: "object",
+      additionalProperties: false,
+      required: [],
+      properties: {
+        enabled: {
+          type: "boolean",
+        },
+        output: {
+          type: "string",
+        },
+        template: {
+          type: "string",
+        },
+      },
+    },
     frontmatter: {
       type: "object",
       nullable: true,
@@ -168,4 +198,4 @@ export const truthmarkConfigSchema: JSONSchemaType<RawTruthmarkConfig> = {
       },
     },
   },
-};
+} as unknown as JSONSchemaType<RawTruthmarkConfig>;

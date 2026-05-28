@@ -21,14 +21,14 @@ export const DECISION_TRUTH_INSTRUCTIONS = [
 ].join("\n");
 
 export const EVIDENCE_AUTHORITY_INSTRUCTIONS = [
-  "Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.",
+  "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
   "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
 ].join("\n");
 
 export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
   "Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.",
   "They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.",
-  "If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
+  "If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
 ].join("\n");
 
 export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
@@ -272,10 +272,10 @@ export const renderHierarchySummary = (config: TruthmarkConfig): string => {
   const truthRoot = resolveTruthDocsRoot(config);
 
   return [
-    "Truthmark hierarchy:",
-    "- Config: .truthmark/config.yml",
-    `- Root route index: ${config.docs.routing.rootIndex}`,
-    `- Area route files: ${config.docs.routing.areaFilesRoot}/**/*.md`,
-    `- Truth docs: ${truthRoot}/**/*.md`,
+    "Truthmark hierarchy hints:",
+    "- Config, when present: .truthmark/config.yml",
+    `- Root route index, when present: ${config.docs.routing.rootIndex}`,
+    `- Area route files, when present: ${config.docs.routing.areaFilesRoot}/**/*.md`,
+    `- Truth docs, when present: ${truthRoot}/**/*.md`,
   ].join("\n");
 };

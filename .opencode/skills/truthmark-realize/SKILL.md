@@ -3,7 +3,7 @@ name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 1.5.0
+truthmark-version: 1.6.0
 ---
 
 # Truthmark Realize
@@ -14,8 +14,8 @@ Use this skill only when the user explicitly asks to realize truth docs into cod
 Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 
 Quick procedure:
-- Follow docs/ai/repo-rules.md as the repository instruction authority.
-- Read the source truth docs, .truthmark/config.yml, docs/truthmark/areas.md, relevant child route files, tests, and relevant functional code directly.
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Read the source truth docs, inspect .truthmark/config.yml and configured route files (docs/truthmark/areas.md; docs/truthmark/areas/) only when they exist, then inspect tests and relevant functional code directly.
 - Truth docs lead; code follows.
 - may write functional code only; must not edit truth docs or truth routing while realizing those docs.
 - Read support/procedure.md before changing code.

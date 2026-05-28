@@ -8,7 +8,7 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.5.0
+truthmark-version: 1.6.0
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -17,9 +17,9 @@ Explicit invocation runs immediately. Later functional-code changes reopen the f
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.
-2. Read .truthmark/config.yml, the configured root route index at docs/truthmark/areas.md, relevant child route files under docs/truthmark/areas/, and relevant canonical docs.
+2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
-4. Repository instruction docs such as docs/ai/repo-rules.md remain instruction authority.
+4. Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
@@ -76,7 +76,7 @@ Evidence Gate:
 - if no impacted doc changed, report why truth was already current or why sync was skipped
 Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
-If unavailable, inspect .truthmark/config.yml, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
+If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
 Optional validation tooling:
 - you may run truthmark check when local tooling is available
 - do not require the truthmark binary; direct checkout inspection is the canonical path
@@ -88,11 +88,11 @@ Helper status reporting:
 - If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.
 - Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
 - Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
-Truthmark hierarchy:
-- Config: .truthmark/config.yml
-- Root route index: docs/truthmark/areas.md
-- Area route files: docs/truthmark/areas/**/*.md
-- Truth docs: docs/truth/**/*.md
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/areas.md
+- Area route files, when present: docs/truthmark/areas/**/*.md
+- Truth docs, when present: docs/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.

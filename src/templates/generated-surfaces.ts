@@ -6,6 +6,7 @@ import {
   renderTruthmarkCopilotDocumentPrompt,
   renderTruthmarkCopilotDocReviewerAgent,
   renderTruthmarkCopilotDocWriterAgent,
+  renderTruthmarkCopilotPortalPrompt,
   renderTruthmarkCopilotPreviewPrompt,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotRouteAuditorAgent,
@@ -24,6 +25,7 @@ import {
   renderTruthmarkGeminiDocumentCommand,
   renderTruthmarkGeminiDocReviewerAgent,
   renderTruthmarkGeminiDocWriterAgent,
+  renderTruthmarkGeminiPortalCommand,
   renderTruthmarkGeminiPreviewCommand,
   renderTruthmarkGeminiRealizeCommand,
   renderTruthmarkGeminiRouteAuditorAgent,
@@ -34,6 +36,7 @@ import {
   renderTruthmarkOpenCodeDocReviewerAgent,
   renderTruthmarkOpenCodeDocWriterAgent,
   renderTruthmarkOpenCodeRouteAuditorAgent,
+  renderTruthmarkPortalSkillMetadata,
   renderTruthmarkPreviewSkillMetadata,
   renderTruthmarkRealizeSkillMetadata,
   renderTruthmarkRouteAuditorAgent,
@@ -52,6 +55,7 @@ import {
   TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH,
+  TRUTHMARK_COPILOT_PORTAL_PROMPT_PATH,
   TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_ROUTE_AUDITOR_AGENT_PATH,
@@ -66,6 +70,7 @@ import {
   TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
   TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
+  TRUTHMARK_GEMINI_PORTAL_COMMAND_PATH,
   TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
   TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
   TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH,
@@ -75,6 +80,8 @@ import {
   TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH,
+  TRUTHMARK_PORTAL_SKILL_METADATA_PATH,
+  TRUTHMARK_PORTAL_SKILL_PATH,
   TRUTHMARK_PREVIEW_SKILL_METADATA_PATH,
   TRUTHMARK_PREVIEW_SKILL_PATH,
   TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
@@ -172,11 +179,26 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     },
   ];
 
+  if (config.truthmarkPortal.enabled) {
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: TRUTHMARK_PORTAL_SKILL_PATH,
+        workflowId: "truthmark-portal",
+        host: "codex",
+        config,
+      }),
+      {
+        path: TRUTHMARK_PORTAL_SKILL_METADATA_PATH,
+        content: renderTruthmarkPortalSkillMetadata(),
+      },
+    );
+  }
+
   return files;
 };
 
 const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
-  return [
+  const files: GeneratedSurface[] = [
     ...renderTruthmarkSkillPackage({
       skillPath: ".opencode/skills/truthmark-structure/SKILL.md",
       workflowId: "truthmark-structure",
@@ -230,13 +252,26 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
       content: renderTruthmarkOpenCodeDocWriterAgent(config),
     },
   ];
+
+  if (config.truthmarkPortal.enabled) {
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: ".opencode/skills/truthmark-portal/SKILL.md",
+        workflowId: "truthmark-portal",
+        host: "opencode",
+        config,
+      }),
+    );
+  }
+
+  return files;
 };
 
 const claudeFiles = (
   config: TruthmarkConfig,
   block: string,
 ): GeneratedSurface[] => {
-  return [
+  const files: GeneratedSurface[] = [
     ...instructionBlockFiles(["CLAUDE.md"], block),
     ...renderTruthmarkSkillPackage({
       skillPath: ".claude/skills/truthmark-structure/SKILL.md",
@@ -291,6 +326,19 @@ const claudeFiles = (
       content: renderTruthmarkClaudeDocWriterAgent(),
     },
   ];
+
+  if (config.truthmarkPortal.enabled) {
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: ".claude/skills/truthmark-portal/SKILL.md",
+        workflowId: "truthmark-portal",
+        host: "claude-code",
+        config,
+      }),
+    );
+  }
+
+  return files;
 };
 
 const copilotFiles = (
@@ -377,6 +425,21 @@ const copilotFiles = (
     },
   ];
 
+  if (config.truthmarkPortal.enabled) {
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: ".github/skills/truthmark-portal/SKILL.md",
+        workflowId: "truthmark-portal",
+        host: "github-copilot",
+        config,
+      }),
+      {
+        path: TRUTHMARK_COPILOT_PORTAL_PROMPT_PATH,
+        content: renderTruthmarkCopilotPortalPrompt(config),
+      },
+    );
+  }
+
   return files;
 };
 
@@ -384,7 +447,7 @@ const geminiFiles = (
   config: TruthmarkConfig,
   block: string,
 ): GeneratedSurface[] => {
-  return [
+  const files: GeneratedSurface[] = [
     ...instructionBlockFiles(["GEMINI.md"], block),
     ...renderTruthmarkSkillPackage({
       skillPath: ".gemini/skills/truthmark-structure/SKILL.md",
@@ -463,6 +526,23 @@ const geminiFiles = (
       content: renderTruthmarkGeminiDocWriterAgent(),
     },
   ];
+
+  if (config.truthmarkPortal.enabled) {
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: ".gemini/skills/truthmark-portal/SKILL.md",
+        workflowId: "truthmark-portal",
+        host: "gemini-cli",
+        config,
+      }),
+      {
+        path: TRUTHMARK_GEMINI_PORTAL_COMMAND_PATH,
+        content: renderTruthmarkGeminiPortalCommand(config),
+      },
+    );
+  }
+
+  return files;
 };
 
 const instructionBlockFiles = (

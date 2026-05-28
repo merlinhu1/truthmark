@@ -65,16 +65,16 @@ describe("renderTruthSyncInstructions", () => {
 
     const instructions = renderTruthSyncInstructions(config);
 
-    expect(instructions).toContain("May write truth docs and docs/routes/index.md only");
-    expect(instructions).toContain("Read docs/routes/index.md and only relevant child route files under docs/routes/areas/");
-    expect(instructions).not.toContain("May write truth docs and docs/truthmark/areas.md only");
+    expect(instructions).toContain("docs/routes/index.md; docs/routes/areas/");
+    expect(instructions).toContain("only when present");
+    expect(instructions).not.toContain("docs/truthmark/areas.md; docs/truthmark/areas/");
   });
 });
 
 describe("agent-native workflow instructions", () => {
   it("renders Truth Structure and Truth Check summaries", () => {
     expect(renderTruthStructureInstructions()).toContain("truthmark-structure");
-    expect(renderTruthStructureInstructions()).toContain("docs/truthmark/areas.md");
+    expect(renderTruthStructureInstructions()).toContain("configured route files when present");
     expect(renderTruthStructureInstructions()).toContain("missing, stale, broad, overloaded, catch-all, unrouteable");
     expect(renderTruthStructureInstructions()).toContain("canonical current-truth destinations");
     expect(renderTruthStructureInstructions()).toContain("topology pressure");

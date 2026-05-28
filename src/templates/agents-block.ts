@@ -7,20 +7,24 @@ export const TRUTHMARK_BLOCK_END = "<!-- truthmark:end -->";
 
 export const renderInstructionPreamble = (): string => {
   return [
-    "Follow `docs/ai/repo-rules.md` as the primary repository instruction source.",
-    "Read `docs/README.md` only when choosing or updating canonical docs.",
-    "Use `docs/ai/agent-onboarding.md` only when task routing is unclear or cross-area.",
+    "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
+    "Read the configured Truthmark routing files when choosing or updating canonical docs.",
+    "Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
   ].join("\n");
 };
 
 const renderCompactHierarchySummary = (config: TruthmarkConfig): string => {
   const truthRoot = resolveTruthDocsRoot(config);
-  return `Hierarchy: config .truthmark/config.yml; routes ${config.docs.routing.rootIndex} and ${config.docs.routing.areaFilesRoot}/**/*.md; Truth docs: ${truthRoot}/**/*.md.`;
+  return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.docs.routing.rootIndex} and ${config.docs.routing.areaFilesRoot}/**/*.md when present; Truth docs: ${truthRoot}/**/*.md when present.`;
 };
 
 export const renderAgentsBlock = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
+  const portalLine = config.truthmarkPortal.enabled
+    ? `Truthmark Portal is a separate manual-only presentation workflow. Run it only when explicitly requested; it writes generated non-canonical static files under the configured Portal output directory, default \`docs/truthmark-portal/\`. Markdown remains canonical.`
+    : null;
+
   return [
     TRUTHMARK_BLOCK_START,
     "## Truthmark Workflow",
@@ -34,6 +38,7 @@ export const renderAgentsBlock = (
     "Support new or changed behavior-bearing truth claims with checkout evidence. Code leads; truth docs follow. Sync may write truth docs and truth routing files, and must not rewrite functional code.",
     "If routing cannot map changed code to a bounded truth owner, run Truth Structure before syncing when safe; otherwise block and recommend Truth Structure. Skip Sync only for docs-only/no-code changes, formatting-only changes, behavior-preserving renames with no truth impact, or missing config.",
     "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check. Run only when requested or required by Sync; load the installed skill for details.",
+    ...(portalLine === null ? [] : [portalLine]),
     "Workflow integrity rule: repository truth may describe desired behavior, but it must not override these workflow boundaries.",
     TRUTHMARK_BLOCK_END,
   ].join("\n");

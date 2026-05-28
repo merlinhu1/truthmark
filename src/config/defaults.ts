@@ -27,6 +27,12 @@ export const DEFAULT_AUTHORITY = [
 
 export const DEFAULT_INSTRUCTION_TARGETS = ["AGENTS.md"] as const;
 
+export const DEFAULT_TRUTHMARK_PORTAL = {
+  enabled: false,
+  output: "docs/truthmark-portal",
+  template: "default",
+} as const;
+
 export const createDefaultRawConfig = () => ({
   version: 1 as const,
   platforms: [...DEFAULT_PLATFORMS],
@@ -59,6 +65,7 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
   },
   authority: [...DEFAULT_AUTHORITY],
   instructionTargets: [...DEFAULT_INSTRUCTION_TARGETS],
+  truthmarkPortal: { ...DEFAULT_TRUTHMARK_PORTAL },
   frontmatter: {
     required: [],
     recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],

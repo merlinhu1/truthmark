@@ -150,6 +150,8 @@ RepoIndex, RouteMap, ImpactSet, and ContextPack are derived from the active chec
 - `docs.roots.truth` is the configured root for behavior truth docs.
 - Repositories refresh generated workflow surfaces through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
 - Truth Realize has no config switch; selected platforms receive its explicit manual workflow surface.
+- `truthmark-portal` is an optional namespaced config block. When omitted, normalized `truthmarkPortal` is `{ enabled: false, output: "docs/truthmark-portal", template: "default" }`; an existing block with omitted `enabled` also remains disabled.
+- `truthmark-portal.output` and `truthmark-portal.template` must be strings when present. Output must be a non-empty repository-relative directory without absolute or parent traversal segments and must not overlap source roots, instruction targets, `.truthmark/config.yml`, route files, or canonical Markdown roots. Template must be `default` or a non-empty repository-relative path without absolute or parent traversal segments.
 - There is no `.truthmark/local.yml` compatibility surface in the current implementation.
 
 ## Config Result Data
@@ -200,6 +202,8 @@ Current agent-native scaffold targets include:
 - `.codex/skills/truthmark-check/agents/openai.yaml`
 - `.codex/skills/truthmark-preview/SKILL.md`
 - `.codex/skills/truthmark-preview/agents/openai.yaml`
+- `.codex/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
+- `.codex/skills/truthmark-portal/agents/openai.yaml` when Truthmark Portal is enabled
 - `.codex/skills/truthmark-*/support/procedure.md`
 - `.codex/skills/truthmark-*/support/report-template.md`
 - `.codex/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
@@ -215,6 +219,7 @@ Current agent-native scaffold targets include:
 - `.claude/skills/truthmark-realize/SKILL.md`
 - `.claude/skills/truthmark-check/SKILL.md`
 - `.claude/skills/truthmark-preview/SKILL.md`
+- `.claude/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
 - `.claude/skills/truthmark-*/support/procedure.md`
 - `.claude/skills/truthmark-*/support/report-template.md`
 - `.claude/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
@@ -230,6 +235,7 @@ Current agent-native scaffold targets include:
 - `.opencode/skills/truthmark-realize/SKILL.md`
 - `.opencode/skills/truthmark-check/SKILL.md`
 - `.opencode/skills/truthmark-preview/SKILL.md`
+- `.opencode/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
 - `.opencode/skills/truthmark-*/support/procedure.md`
 - `.opencode/skills/truthmark-*/support/report-template.md`
 - `.opencode/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
@@ -248,6 +254,7 @@ Current agent-native scaffold targets include:
 - `.github/skills/truthmark-realize/SKILL.md`
 - `.github/skills/truthmark-check/SKILL.md`
 - `.github/skills/truthmark-preview/SKILL.md`
+- `.github/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
 - `.github/skills/truthmark-*/support/procedure.md`
 - `.github/skills/truthmark-*/support/report-template.md`
 - `.github/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
@@ -259,6 +266,7 @@ Current agent-native scaffold targets include:
 - `.github/prompts/truthmark-realize.prompt.md`
 - `.github/prompts/truthmark-check.prompt.md`
 - `.github/prompts/truthmark-preview.prompt.md`
+- `.github/prompts/truthmark-portal.prompt.md` when Truthmark Portal is enabled
 - `.github/agents/truth-route-auditor.agent.md`
 - `.github/agents/truth-claim-verifier.agent.md`
 - `.github/agents/truth-doc-reviewer.agent.md`
@@ -270,6 +278,7 @@ Current agent-native scaffold targets include:
 - `.gemini/skills/truthmark-realize/SKILL.md`
 - `.gemini/skills/truthmark-check/SKILL.md`
 - `.gemini/skills/truthmark-preview/SKILL.md`
+- `.gemini/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
 - `.gemini/skills/truthmark-*/support/procedure.md`
 - `.gemini/skills/truthmark-*/support/report-template.md`
 - `.gemini/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
@@ -281,6 +290,7 @@ Current agent-native scaffold targets include:
 - `.gemini/commands/truthmark/realize.toml`
 - `.gemini/commands/truthmark/check.toml`
 - `.gemini/commands/truthmark/preview.toml`
+- `.gemini/commands/truthmark/portal.toml` when Truthmark Portal is enabled
 - `.gemini/agents/truth-route-auditor.md`
 - `.gemini/agents/truth-claim-verifier.md`
 - `.gemini/agents/truth-doc-reviewer.md`

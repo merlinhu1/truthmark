@@ -128,7 +128,7 @@ Invocations: ${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
 Truth Document is manual and implementation-first:
 
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
-- inspect .truthmark/config.yml, ${config.docs.routing.rootIndex}, relevant child route files under ${config.docs.routing.areaFilesRoot}/, existing canonical docs, implementation code, and tests directly
+- inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and ${config.docs.routing.rootIndex} or relevant child route files only

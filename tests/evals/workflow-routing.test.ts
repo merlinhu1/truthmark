@@ -16,6 +16,7 @@ const WORKFLOW_COMMAND_PATHS: Record<TruthmarkWorkflowId, string> = {
   "truthmark-preview": ".gemini/commands/truthmark/preview.toml",
   "truthmark-realize": ".gemini/commands/truthmark/realize.toml",
   "truthmark-check": ".gemini/commands/truthmark/check.toml",
+  "truthmark-portal": ".gemini/commands/truthmark/portal.toml",
 };
 
 const WORKFLOW_SURFACE_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
@@ -108,6 +109,14 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
     "Files reviewed:",
     "Validation:",
   ],
+  "truthmark-portal": [
+    "manual-only presentation workflow",
+    "configured Portal output directory only",
+    "Markdown remains canonical",
+    "Truthmark Portal: completed",
+    "Output path:",
+    "Markdown canonical statement:",
+  ],
 };
 
 const manifestRoutingText = (id: TruthmarkWorkflowId): string => {
@@ -136,6 +145,7 @@ const candidateManifestText = (
 
 const buildGeneratedSurfaceMap = (): Map<string, string> => {
   const config = createDefaultConfig();
+  config.truthmarkPortal.enabled = true;
   return new Map(
     renderGeneratedSurfaces(config).map((surface) => [
       surface.path,
