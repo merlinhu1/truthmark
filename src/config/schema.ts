@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from "ajv";
 
-export const SUPPORTED_PLATFORMS = [
+const SUPPORTED_PLATFORMS = [
   "codex",
   "opencode",
   "claude-code",
@@ -19,7 +19,7 @@ export const DEFAULT_PLATFORMS = [
 ] as const satisfies
   readonly TruthmarkPlatform[];
 
-export type RawDocsHierarchyConfig = {
+type RawDocsHierarchyConfig = {
   layout: "hierarchical";
   roots: Record<string, string>;
   routing: {
@@ -30,7 +30,7 @@ export type RawDocsHierarchyConfig = {
   };
 };
 
-export type DocsHierarchyConfig = {
+type DocsHierarchyConfig = {
   layout: "hierarchical";
   roots: Record<string, string>;
   routing: {
@@ -41,13 +41,13 @@ export type DocsHierarchyConfig = {
   };
 };
 
-export type RawTruthmarkPortalConfig = {
+type RawTruthmarkPortalConfig = {
   enabled?: boolean;
   output?: string;
   template?: string;
 };
 
-export type TruthmarkPortalConfig = {
+type TruthmarkPortalConfig = {
   enabled: boolean;
   output: string;
   template: string;

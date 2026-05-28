@@ -17,7 +17,7 @@ export const DIAGNOSTIC_CATEGORIES = [
 
 export type DiagnosticCategory = (typeof DIAGNOSTIC_CATEGORIES)[number];
 
-export type DiagnosticSeverity = "info" | "action" | "review" | "error";
+type DiagnosticSeverity = "info" | "action" | "review" | "error";
 
 export type Diagnostic = {
   category: DiagnosticCategory;

@@ -42,11 +42,3 @@ ${renderMarkdownExample(
     }),
   )}`;
 };
-
-export const renderTruthRealizeInstructions = (): string => {
-  return `### Manual Truth Realize
-Only run when the user explicitly asks to realize truth docs into code. This is a manual installed instruction or skill, not a dedicated CLI command.
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
-Doc first: read truth docs, routing, and relevant code; repository-intelligence artifacts are optional derived context and never grant write scope; block before writing code if source truth is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence; write functional code only; do not edit truth docs or truth routing.
-Report truth docs used, code updated, and verification.`;
-};

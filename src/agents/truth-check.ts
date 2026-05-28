@@ -21,7 +21,7 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.";
 
-export const renderTruthCheckReportExample = (
+const renderTruthCheckReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const rootRouteIndex = config.docs.routing.rootIndex;

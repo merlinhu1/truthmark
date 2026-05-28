@@ -2,9 +2,9 @@ export const CONTENT_PROMPT_IDS = ["truth-doc-update"] as const;
 
 export type ContentPromptId = (typeof CONTENT_PROMPT_IDS)[number];
 
-export type OutputSchemaId = "truth-doc-update-draft";
+type OutputSchemaId = "truth-doc-update-draft";
 
-export type EvidenceSnippet = {
+type EvidenceSnippet = {
   id: string;
   path: string;
   startLine: number;

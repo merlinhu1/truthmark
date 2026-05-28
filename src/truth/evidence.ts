@@ -6,9 +6,9 @@ export type ClaimEvidenceItem = {
   result: ClaimEvidenceResult;
 };
 
-export type AuditEvidenceConfidence = "high" | "medium" | "low";
+type AuditEvidenceConfidence = "high" | "medium" | "low";
 
-export type AuditEvidenceItem = {
+type AuditEvidenceItem = {
   finding: string;
   evidence: string[];
   suggestedFix: string;

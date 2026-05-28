@@ -17,7 +17,7 @@ export type AreaRoutingConfig = {
   truthDocsRoot?: string;
 };
 
-export type ResolvedTruthArea = TruthArea & {
+type ResolvedTruthArea = TruthArea & {
   sourcePath: string;
   parentName?: string;
 };

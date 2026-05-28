@@ -19,9 +19,6 @@ export const TRUTHMARK_WRITE_WORKER_REPORT_FIELDS = [
   "notes",
 ] as const;
 
-export type TruthmarkWriteWorkerReportField =
-  (typeof TRUTHMARK_WRITE_WORKER_REPORT_FIELDS)[number];
-
 export type TruthmarkWriteLease = {
   workflow: TruthmarkWorkflowId;
   worker: TruthmarkWriteSubagentId;
@@ -44,7 +41,7 @@ export type TruthmarkWriteLeaseChangeValidation = {
 
 export type TruthmarkWriteWorkerReport = Record<string, unknown>;
 
-export type TruthmarkWriteWorkerAcceptanceReasonCode =
+type TruthmarkWriteWorkerAcceptanceReasonCode =
   | "missing-report-field"
   | "invalid-report-field"
   | "invalid-report-status"
@@ -56,7 +53,7 @@ export type TruthmarkWriteWorkerAcceptanceReasonCode =
   | "completed-with-blockers"
   | "blocked-without-blockers";
 
-export type TruthmarkWriteWorkerAcceptanceReason = {
+type TruthmarkWriteWorkerAcceptanceReason = {
   code: TruthmarkWriteWorkerAcceptanceReasonCode;
   message: string;
   field?: string;

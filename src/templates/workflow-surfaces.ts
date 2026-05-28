@@ -1236,14 +1236,6 @@ export const renderTruthmarkDocumentClaudeSkill = (
   });
 };
 
-export const renderTruthmarkDocumentOpenCodeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthDocumentSkillBody(config, {
-    includeOpenCodeSubagentMode: true,
-  });
-};
-
 export const renderTruthmarkDocumentSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
 
@@ -1277,14 +1269,6 @@ export const renderTruthmarkSyncClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true });
-};
-
-export const renderTruthmarkSyncOpenCodeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthSyncSkillBody(config, {
-    includeOpenCodeSubagentMode: true,
-  });
 };
 
 export const renderTruthmarkSyncSkillMetadata = (): string => {
@@ -1374,12 +1358,6 @@ export const renderTruthmarkRealizeSkill = (
   return renderTruthmarkRealizeSkillBody(config);
 };
 
-export const renderTruthmarkRealizeLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthmarkRealizeSkillBody(config);
-};
-
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-realize");
 
@@ -1404,18 +1382,6 @@ export const renderTruthmarkPreviewSkill = (
 };
 
 export const renderTruthmarkPreviewLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthPreviewSkillBody(config);
-};
-
-export const renderTruthmarkPreviewClaudeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthPreviewSkillBody(config);
-};
-
-export const renderTruthmarkPreviewOpenCodeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderTruthPreviewSkillBody(config);
@@ -1454,14 +1420,6 @@ export const renderTruthmarkCheckClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true });
-};
-
-export const renderTruthmarkCheckOpenCodeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthCheckSkillBody(config, {
-    includeOpenCodeSubagentMode: true,
-  });
 };
 
 export const renderTruthmarkCheckSkillMetadata = (): string => {

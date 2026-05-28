@@ -37,7 +37,7 @@ export type TruthAreaReference = {
   truthDocumentEntries: TruthDocumentEntry[];
 };
 
-export type TruthAreaFileReference = {
+type TruthAreaFileReference = {
   id: string;
   name: string;
   key: string;

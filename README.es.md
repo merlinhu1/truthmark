@@ -194,6 +194,7 @@ Cuando el agente cambia código funcional, Truth Sync actúa como guarda de cier
 | Operación local-first | No requiere servicio alojado, demonio, base de datos ni servidor MCP. |
 | Límites de escritura más seguros | Separa flujos code-first, doc-first, read-only y doc-only. |
 | Validación | Reporta problemas de rutas, autoridad, frontmatter, enlaces, superficies generadas, alcance de rama, frescura y cobertura. |
+| Portal opcional | Genera un sitio HTML estático confirmado desde documentos de verdad Markdown cuando se habilita y solicita explícitamente. |
 
 ## Resumen visual
 
@@ -326,6 +327,7 @@ Los usan agentes o hosts de agentes durante el trabajo en el repositorio. No son
 | Truth Preview | read-only | El agente necesita previsualizar rutas probables antes de editar. | Solo lee. No autoriza escrituras. |
 | Truth Realize | doc-first | Documentos de verdad de producto o arquitectura lideran y el código debe actualizarse para coincidir. | Actualiza solo código. El agente no debe editar los documentos de verdad que está realizando. |
 | Truth Check | audit-first | Un revisor o agente necesita auditar la salud de la verdad del repositorio. | Audita e informa. |
+| Truthmark Portal | presentation-only | Una persona pide explícitamente un Portal HTML estático navegable sobre los documentos de verdad del repositorio. | Escribe solo archivos estáticos generados no canónicos bajo el directorio de salida Portal configurado. |
 
 ### Distinción importante
 
@@ -437,6 +439,35 @@ No son fuentes de verdad.
 
 La salida estructurada está disponible con `--json` donde se admite.
 
+## Truthmark Portal
+
+Truthmark Portal es un flujo opcional de presentación para equipos que quieren un sitio legible por personas sobre sus documentos de verdad confirmados.
+
+Está separado deliberadamente del flujo central de verdad:
+
+- Los documentos de verdad Markdown siguen siendo canónicos.
+- El HTML Portal generado es solo presentación.
+- Portal se ejecuta solo manualmente; no se ejecuta como puerta de finalización, paso de Truth Sync, paso de `truthmark check` ni hook automático post-change.
+- Las escrituras de Portal permanecen dentro del directorio de salida configurado salvo que la persona cambie el alcance explícitamente.
+- Las páginas generadas deben usar assets locales, procedencia de fuentes y un aviso visible de que Markdown es canónico.
+
+Habilítalo con el bloque de configuración con espacio de nombres:
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+Luego vuelve a ejecutar:
+
+```bash
+truthmark init
+```
+
+Cuando está habilitado, Truthmark instala superficies Portal host-native para las plataformas configuradas, como `/truthmark-portal` o `/truthmark:portal` según el host de agente.
+
 ## Configuración
 
 Truthmark es config-first.
@@ -471,6 +502,7 @@ Las áreas importantes de configuración incluyen:
 | `docs.routing.area_files_root` | Directorio para archivos de rutas secundarias delegadas. |
 | `docs.routing.default_area` | Nombre base de la ruta secundaria inicial generada. |
 | `docs.routing.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
+| `truthmark-portal` | Ajustes opcionales del flujo manual de presentación: `enabled`, `output` y `template`. |
 | `authority` | Documentos canónicos y globs ordenados usados como autoridad de verdad del repositorio. |
 | `instruction_targets` | Archivos que reciben bloques de instrucciones administrados compartidos, como `AGENTS.md`. |
 | `frontmatter.required` | Campos de metadatos que producen diagnósticos de error cuando faltan. |
@@ -632,6 +664,21 @@ truthmark impact --base main
 truthmark context --workflow truth-sync --base main --format markdown
 ```
 
+### Habilitar el flujo Portal opcional
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+```bash
+truthmark init
+```
+
+Luego pide explícitamente al host de agente que ejecute el flujo Portal instalado cuando quieras generar o refrescar el sitio estático de presentación.
+
 ## Estado del proyecto
 
 Truthmark V1 actualmente proporciona:
@@ -650,6 +697,7 @@ Truthmark V1 actualmente proporciona:
 - superficies generadas de flujo Truth Preview
 - superficies generadas de flujo Truth Realize
 - superficies generadas de flujo Truth Check
+- superficies generadas opcionales de flujo Truthmark Portal
 - diagnósticos de rutas, autoridad, estructura de decisiones, frontmatter, enlaces, frescura, superficies generadas y cobertura
 - artefactos derivados RepoIndex, RouteMap, ImpactSet y ContextPack
 - superficies específicas de host para Codex, Claude Code, GitHub Copilot, OpenCode y Gemini CLI
@@ -712,7 +760,7 @@ No es:
 - un servicio alojado
 - un servidor MCP
 - una base de datos vectorial
-- un generador de sitios de documentación
+- un generador canónico de sitios de documentación o plataforma de docs alojada
 - un producto de enforcement para CI o PR
 - un reemplazo de pruebas, revisión de código o liderazgo técnico
 - un motor autónomo de reescritura de código

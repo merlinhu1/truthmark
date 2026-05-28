@@ -14,11 +14,7 @@ export type TruthmarkReadOnlySubagentId =
   | "truth_claim_verifier"
   | "truth_doc_reviewer";
 export type TruthmarkWriteSubagentId = "truth_doc_writer";
-export type TruthmarkSubagentId =
-  | TruthmarkReadOnlySubagentId
-  | TruthmarkWriteSubagentId;
-
-export type TruthmarkWorkflowHelperCommand = {
+type TruthmarkWorkflowHelperCommand = {
   argv: string[];
 };
 

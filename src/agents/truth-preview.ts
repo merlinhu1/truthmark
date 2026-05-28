@@ -15,7 +15,7 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_PREVIEW_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.";
 
-export const renderTruthPreviewReportExample = (
+const renderTruthPreviewReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const truthDocsRoot = resolveTruthDocsRoot(config);

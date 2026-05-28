@@ -3,12 +3,6 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import { resolveTruthDocsRoot } from "../truth/docs.js";
 
 export { resolveTruthDocsRoot } from "../truth/docs.js";
-export type {
-  AuditEvidenceConfidence,
-  AuditEvidenceItem,
-  ClaimEvidenceItem,
-  ClaimEvidenceResult,
-} from "../truth/evidence.js";
 export {
   renderAuditEvidenceCheckedSection,
   renderClaimEvidenceCheckedSection,

@@ -194,6 +194,7 @@ Wenn der Agent funktionalen Code ändert, wirkt Truth Sync als Abschlusskontroll
 | Local-first-Betrieb | Benötigt keinen gehosteten Dienst, Daemon, keine Datenbank und keinen MCP-Server. |
 | Sicherere Schreibgrenzen | Trennt code-first, doc-first, read-only und doc-only Workflows. |
 | Validierung | Meldet Probleme bei Routing, Autorität, Frontmatter, Links, generierten Oberflächen, Branch-Scope, Freshness und Coverage. |
+| Optionales Portal | Erzeugt eine festgeschriebene statische HTML-Präsentationssite aus Markdown-Truth-Dokumenten, wenn es ausdrücklich aktiviert und angefragt wird. |
 
 ## Visueller Überblick
 
@@ -326,6 +327,7 @@ Sie werden von Agenten oder Agenten-Hosts während der Repository-Arbeit genutzt
 | Truth Preview | read-only | Der Agent vor Änderungen wahrscheinliches Routing einschätzen muss. | Liest nur. Autorisiert keine Schreibzugriffe. |
 | Truth Realize | doc-first | Produkt- oder Architektur-Truth-Dokumente führen und Code daran angepasst werden soll. | Aktualisiert nur Code. Der Agent darf die Truth-Dokumente, die er realisiert, nicht bearbeiten. |
 | Truth Check | audit-first | Ein Reviewer oder Agent die Gesundheit der Repository-Wahrheit auditieren muss. | Auditiert und berichtet. |
+| Truthmark Portal | presentation-only | Ein Mensch ausdrücklich eine durchsuchbare statische HTML-Portalansicht über Repository-Truth-Dokumente anfordert. | Schreibt generierte nicht-kanonische statische Dateien nur unter dem konfigurierten Portal-Ausgabeverzeichnis. |
 
 ### Wichtige Unterscheidung
 
@@ -437,6 +439,35 @@ Sie sind keine Quellen der Wahrheit.
 
 Strukturierte Ausgabe ist mit `--json` verfügbar, wo sie unterstützt wird.
 
+## Truthmark Portal
+
+Truthmark Portal ist ein optionaler Präsentations-Workflow für Teams, die eine menschenlesbare Site über ihren festgeschriebenen Truth-Dokumenten möchten.
+
+Er ist bewusst vom Kern-Truth-Workflow getrennt:
+
+- Markdown-Truth-Dokumente bleiben kanonisch.
+- Generiertes Portal-HTML dient nur der Präsentation.
+- Portal wird nur manuell ausgeführt; es läuft nicht als Completion-Gate, Truth-Sync-Schritt, `truthmark check`-Schritt oder automatischer Post-Change-Hook.
+- Portal-Schreibzugriffe bleiben im konfigurierten Ausgabeverzeichnis, sofern der Nutzer den Scope nicht ausdrücklich ändert.
+- Generierte Seiten sollten lokale Assets, Quellen-Provenance und einen sichtbaren Markdown-ist-kanonisch-Hinweis verwenden.
+
+Aktiviere es mit dem namespaced Config-Block:
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+Dann erneut ausführen:
+
+```bash
+truthmark init
+```
+
+Wenn aktiviert, installiert Truthmark host-native Portal-Workflow-Oberflächen für die konfigurierten Plattformen, etwa `/truthmark-portal` oder `/truthmark:portal` je nach Agenten-Host.
+
 ## Konfiguration
 
 Truthmark ist config-first.
@@ -471,6 +502,7 @@ Wichtige Config-Bereiche sind:
 | `docs.routing.area_files_root` | Verzeichnis für delegierte untergeordnete Routendateien. |
 | `docs.routing.default_area` | Dateiname des initial erzeugten untergeordneten Routings ohne Erweiterung. |
 | `docs.routing.max_delegation_depth` | Aktuelle maximale Routing-Delegationstiefe. |
+| `truthmark-portal` | Optionale manuelle Präsentations-Workflow-Einstellungen: `enabled`, `output` und `template`. |
 | `authority` | Geordnete kanonische Dokumente und Globs, die als Repository-Truth-Autorität dienen. |
 | `instruction_targets` | Dateien, die gemeinsam verwaltete Instruktionsblöcke erhalten, etwa `AGENTS.md`. |
 | `frontmatter.required` | Metadatenfelder, die bei Fehlen Error-Diagnostik erzeugen. |
@@ -632,6 +664,21 @@ truthmark impact --base main
 truthmark context --workflow truth-sync --base main --format markdown
 ```
 
+### Optionalen Portal-Workflow aktivieren
+
+```yaml
+truthmark-portal:
+  enabled: true
+  output: docs/truthmark-portal
+  template: default
+```
+
+```bash
+truthmark init
+```
+
+Bitte den Agenten-Host anschließend ausdrücklich, den installierten Portal-Workflow auszuführen, wenn die statische Präsentationssite erzeugt oder aktualisiert werden soll.
+
 ## Projektstatus
 
 Truthmark V1 bietet derzeit:
@@ -650,6 +697,7 @@ Truthmark V1 bietet derzeit:
 - generierte Truth-Preview-Workflow-Oberflächen
 - generierte Truth-Realize-Workflow-Oberflächen
 - generierte Truth-Check-Workflow-Oberflächen
+- optionale generierte Truthmark-Portal-Workflow-Oberflächen
 - Diagnostik für Route, Autorität, Entscheidungsstruktur, Frontmatter, Links, Freshness, generierte Oberflächen und Coverage
 - abgeleitete RepoIndex-, RouteMap-, ImpactSet- und ContextPack-Artefakte
 - host-spezifische Oberflächen für Codex, Claude Code, GitHub Copilot, OpenCode und Gemini CLI
@@ -712,7 +760,7 @@ Es ist nicht:
 - ein gehosteter Dienst
 - ein MCP-Server
 - eine Vektordatenbank
-- ein Generator für Dokumentations-Websites
+- ein kanonischer Dokumentations-Website-Generator oder eine gehostete Docs-Plattform
 - ein CI- oder PR-Enforcement-Produkt
 - ein Ersatz für Tests, Code Review oder technische Führung
 - eine autonome Code-Rewrite-Engine
