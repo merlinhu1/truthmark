@@ -117,7 +117,7 @@ Diagnostic fields:
 - `area`: optional area name from `docs/truthmark/areas.md`
 - `data`: optional machine-readable extras
 
-Human-rendered output is intended for people. JSON output is the machine-facing contract.
+Human-rendered output is intended for people. JSON output is the machine-facing contract. CLI invocations that render a `CommandResult` set a non-zero process exit code when any diagnostic has `severity: "error"`; `info`, `action`, and `review` diagnostics do not make the process fail.
 
 `truthmark index --json` returns `data.repoIndex` with `schemaVersion: repo-index/v0` and `data.routeMap` with `schemaVersion: route-map/v0`.
 
