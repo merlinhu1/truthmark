@@ -42,10 +42,13 @@ Every default template includes the same governance foundation:
 - frontmatter status and review metadata
 - a declared source-of-truth list
 - purpose and scope
+- evidence-oriented guidance for default sections
 - explicit current-state content rather than roadmap content
 - active decisions and rationale
 - non-goals to prevent scope creep
 - maintenance notes for future reviewers and agents
+
+`truthmark init` may refresh these Truthmark-owned default template sections as the baseline improves. Repository-specific custom `##` sections are not part of the default baseline; init preserves them and keeps their authored order relative to the next default section that followed them.
 
 This foundation follows Truthmark's repository-truth model: current implementation, reusable standards, architecture, and future proposals must not compete as parallel sources of authority.
 

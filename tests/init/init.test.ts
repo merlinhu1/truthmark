@@ -105,7 +105,10 @@ describe("runInit", () => {
         "## Current Behavior",
       );
       expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
-        "## Scope\n\n{{scope}}",
+        "## Scope",
+      );
+      expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
+        "{{scope}}",
       );
       expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
         "## Core Rules",
@@ -1035,6 +1038,95 @@ Custom template for {{area}}.
       expect(
         await repo.readFile("docs/truth/repository/overview.md"),
       ).not.toContain("{{");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("updates default truth doc template sections while preserving custom section order", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        "docs/templates/behavior-doc.md",
+        `---
+status: active
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-12
+source_of_truth:
+  - {{source_of_truth}}
+---
+
+# {{title}}
+
+## Purpose
+
+Old local purpose copy that should be replaced.
+
+## Team Notes Before Scope
+
+Keep this project-specific section before Scope.
+
+## Scope
+
+Old local scope copy that should be replaced.
+
+## Current Behavior
+
+Old current-behavior copy that should be replaced.
+
+## Domain Vocabulary
+
+Keep this project-specific section before Core Rules.
+
+## Core Rules
+
+Old core-rules copy that should be replaced.
+
+## Maintenance Notes
+
+Old maintenance copy that should be replaced.
+
+## Local Appendices
+
+Keep this project-specific trailing section.
+`,
+      );
+
+      await runInit(repo.rootDir);
+
+      const updatedTemplate = await repo.readFile("docs/templates/behavior-doc.md");
+
+      expect(updatedTemplate).toContain(
+        "State the user/system outcome this behavior protects and why it exists.",
+      );
+      expect(updatedTemplate).toContain(
+        "Split into another leaf doc when content introduces a distinct outcome",
+      );
+      expect(updatedTemplate).not.toContain("Old local purpose copy");
+      expect(updatedTemplate).not.toContain("Old local scope copy");
+      expect(updatedTemplate).not.toContain("Old current-behavior copy");
+      expect(updatedTemplate).not.toContain("Old core-rules copy");
+      expect(updatedTemplate).not.toContain("Old maintenance copy");
+      expect(updatedTemplate).toContain("## Team Notes Before Scope");
+      expect(updatedTemplate).toContain("## Domain Vocabulary");
+      expect(updatedTemplate).toContain("## Local Appendices");
+
+      const headingOrder = [
+        "## Purpose",
+        "## Team Notes Before Scope",
+        "## Scope",
+        "## Current Behavior",
+        "## Domain Vocabulary",
+        "## Core Rules",
+        "## Maintenance Notes",
+        "## Local Appendices",
+      ].map((heading) => updatedTemplate.indexOf(heading));
+
+      expect(headingOrder.every((index) => index >= 0)).toBe(true);
+      expect(headingOrder).toEqual([...headingOrder].sort((left, right) => left - right));
     } finally {
       await repo.cleanup();
     }
