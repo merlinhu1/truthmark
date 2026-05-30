@@ -244,20 +244,57 @@ const titleToPlaceholder = (title: string): string => {
     .replace(/^_+|_+$/g, "");
 };
 
+const findTemplateSectionHeadings = (template: string): Array<{ heading: string; index: number }> => {
+  const matches: Array<{ heading: string; index: number }> = [];
+  let fencedCodeMarker: "`" | "~" | null = null;
+  let fencedCodeLength = 0;
+
+  for (const lineMatch of template.matchAll(/^.*(?:\r?\n|$)/gm)) {
+    const rawLine = lineMatch[0];
+    if (rawLine.length === 0) {
+      continue;
+    }
+
+    const line = rawLine.replace(/\r?\n$/u, "");
+    const fenceMatch = /^(?: {0,3})(`{3,}|~{3,})/u.exec(line);
+
+    if (fenceMatch) {
+      const marker = fenceMatch[1]?.[0] as "`" | "~";
+      const length = fenceMatch[1]?.length ?? 0;
+
+      if (fencedCodeMarker === null) {
+        fencedCodeMarker = marker;
+        fencedCodeLength = length;
+      } else if (marker === fencedCodeMarker && length >= fencedCodeLength) {
+        fencedCodeMarker = null;
+        fencedCodeLength = 0;
+      }
+
+      continue;
+    }
+
+    if (fencedCodeMarker === null && /^## .+$/u.test(line)) {
+      matches.push({ heading: line.trim(), index: lineMatch.index });
+    }
+  }
+
+  return matches;
+};
+
 const parseTemplateSections = (template: string): { preamble: string; sections: ParsedTemplateSection[] } => {
-  const matches = [...template.matchAll(/^## .+$/gm)];
+  const matches = findTemplateSectionHeadings(template);
 
   if (matches.length === 0) {
     return { preamble: template.trimEnd(), sections: [] };
   }
 
   const sections = matches.map((match, index) => {
-    const start = match.index ?? 0;
+    const start = match.index;
     const next = matches[index + 1];
     const end = next?.index ?? template.length;
 
     return {
-      heading: match[0].trim(),
+      heading: match.heading,
       block: template.slice(start, end).trimEnd(),
     };
   });
@@ -304,7 +341,7 @@ export const mergeTruthDocTemplate = (existingTemplate: string, defaultTemplate:
   ]);
 
   return [
-    defaultParsed.preamble,
+    existingParsed.preamble,
     ...mergedSections.map((section) => section.block),
     ...trailingCustomSections.map((section) => section.block),
     "",
