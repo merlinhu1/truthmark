@@ -114,6 +114,7 @@ describe("repository intelligence CLI commands", () => {
         diagnostics: Array<{ category: string; severity: string; message: string }>;
       };
 
+      expect(result.exitCode).toBe(1);
       expect(output.diagnostics).toContainEqual(
         expect.objectContaining({
           category: "context-pack",

@@ -38,13 +38,21 @@ type ContextOptions = OutputOptions & {
   format?: string;
 };
 
+const markFailedWhenErrorDiagnosticsExist = (result: CommandResult): void => {
+  if (result.diagnostics.some((diagnostic) => diagnostic.severity === "error")) {
+    process.exitCode = 1;
+  }
+};
+
 const writeResult = (result: CommandResult, options: OutputOptions): void => {
   const output = options.json ? renderJson(result) : renderHuman(result);
   process.stdout.write(`${output}\n`);
+  markFailedWhenErrorDiagnosticsExist(result);
 };
 const writeContextResult = (result: CommandResult, options: ContextOptions): void => {
   if (!options.json && options.format === "markdown" && typeof result.data?.markdown === "string") {
     process.stdout.write(result.data.markdown);
+    markFailedWhenErrorDiagnosticsExist(result);
     return;
   }
   writeResult(result, options);

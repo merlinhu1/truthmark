@@ -155,6 +155,8 @@ This installs or refreshes:
 - managed instruction blocks
 - AI-facing workflow surfaces for configured platforms
 
+Default truth-doc templates are justified in [Template Standards](docs/standards/template-standards.md), which maps them to recognized software engineering references such as ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE, and Diátaxis.
+
 ### Validate the setup
 
 ```bash

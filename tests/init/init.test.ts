@@ -105,7 +105,10 @@ describe("runInit", () => {
         "## Current Behavior",
       );
       expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
-        "## Scope\n\n{{scope}}",
+        "## Scope",
+      );
+      expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
+        "{{scope}}",
       );
       expect(await repo.readFile("docs/templates/behavior-doc.md")).toContain(
         "## Core Rules",
@@ -1035,6 +1038,162 @@ Custom template for {{area}}.
       expect(
         await repo.readFile("docs/truth/repository/overview.md"),
       ).not.toContain("{{");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("updates default truth doc template sections while preserving custom preamble and section order", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        "docs/templates/behavior-doc.md",
+        `---
+status: active
+doc_type: behavior
+truth_kind: behavior
+last_reviewed: 2026-05-12
+owner: local-platform
+source_of_truth:
+  - docs/local-source.md
+---
+
+# Custom {{title}} Template
+
+Local introduction that should remain before managed sections.
+
+## Purpose
+
+Old local purpose copy that should be replaced.
+
+## Team Notes Before Scope
+
+Keep this project-specific section before Scope.
+
+\`\`\`markdown
+## Contracts
+\`\`\`
+
+This fenced heading example should remain part of the custom section.
+
+## Scope
+
+Old local scope copy that should be replaced.
+
+## Current Behavior
+
+Old current-behavior copy that should be replaced.
+
+## Domain Vocabulary
+
+Keep this project-specific section before Core Rules.
+
+## Core Rules
+
+Old core-rules copy that should be replaced.
+
+## Maintenance Notes
+
+Old maintenance copy that should be replaced.
+
+## Local Appendices
+
+Keep this project-specific trailing section.
+`,
+      );
+
+      await runInit(repo.rootDir);
+
+      const updatedTemplate = await repo.readFile("docs/templates/behavior-doc.md");
+
+      expect(updatedTemplate).toContain(
+        "State the user/system outcome this behavior protects and why it exists.",
+      );
+      expect(updatedTemplate).toContain("owner: local-platform");
+      expect(updatedTemplate).toContain("  - docs/local-source.md");
+      expect(updatedTemplate).toContain("# Custom {{title}} Template");
+      expect(updatedTemplate).toContain(
+        "Local introduction that should remain before managed sections.",
+      );
+      expect(updatedTemplate).toContain(
+        "Split into another leaf doc when content introduces a distinct outcome",
+      );
+      expect(updatedTemplate).not.toContain("Old local purpose copy");
+      expect(updatedTemplate).not.toContain("Old local scope copy");
+      expect(updatedTemplate).not.toContain("Old current-behavior copy");
+      expect(updatedTemplate).not.toContain("Old core-rules copy");
+      expect(updatedTemplate).not.toContain("Old maintenance copy");
+      expect(updatedTemplate).toContain("## Team Notes Before Scope");
+      expect(updatedTemplate).toContain("```markdown\n## Contracts\n```");
+      expect(updatedTemplate).toContain(
+        "This fenced heading example should remain part of the custom section.",
+      );
+      expect(updatedTemplate).toContain("## Domain Vocabulary");
+      expect(updatedTemplate).toContain("## Local Appendices");
+
+      const headingOrder = [
+        "## Purpose",
+        "## Team Notes Before Scope",
+        "## Scope",
+        "## Current Behavior",
+        "## Domain Vocabulary",
+        "## Core Rules",
+        "## Maintenance Notes",
+        "## Local Appendices",
+      ].map((heading) => updatedTemplate.indexOf(heading));
+
+      expect(headingOrder.every((index) => index >= 0)).toBe(true);
+      expect(headingOrder).toEqual([...headingOrder].sort((left, right) => left - right));
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("preserves custom preambles across every truth doc template on rerun", async () => {
+    const repo = await createTempRepo();
+    const templatePaths = [
+      "docs/templates/behavior-doc.md",
+      "docs/templates/contract-doc.md",
+      "docs/templates/architecture-doc.md",
+      "docs/templates/workflow-doc.md",
+      "docs/templates/operations-doc.md",
+      "docs/templates/test-behavior-doc.md",
+    ];
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await runInit(repo.rootDir);
+
+      for (const templatePath of templatePaths) {
+        const template = await repo.readFile(templatePath);
+        const customPreamble = [
+          "---",
+          "status: active",
+          "owner: local-platform",
+          `template_path: ${templatePath}`,
+          "---",
+          "",
+          `# Local Template For ${templatePath}`,
+          "",
+          "Repository-specific introductory guidance.",
+          "",
+        ].join("\n");
+        await repo.writeFile(
+          templatePath,
+          template.replace(/^[\s\S]*?(?=^## )/mu, customPreamble),
+        );
+      }
+
+      await runInit(repo.rootDir);
+
+      for (const templatePath of templatePaths) {
+        const updatedTemplate = await repo.readFile(templatePath);
+        expect(updatedTemplate).toContain(`template_path: ${templatePath}`);
+        expect(updatedTemplate).toContain(`# Local Template For ${templatePath}`);
+        expect(updatedTemplate).toContain("Repository-specific introductory guidance.");
+      }
     } finally {
       await repo.cleanup();
     }

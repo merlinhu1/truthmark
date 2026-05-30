@@ -100,6 +100,8 @@ When a repository has no explicit standards yet, a small default baseline is rea
 
 Truthmark can bootstrap only part of that baseline automatically today. Repositories may need to add richer standards after initialization.
 
+The default truth-document template rationale lives in [template-standards.md](template-standards.md); it maps Truthmark's template shapes to recognized software engineering references without claiming external certification.
+
 Projects may keep that baseline, replace it, or extend it with their own standards.
 
 ## Override Model

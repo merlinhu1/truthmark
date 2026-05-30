@@ -3,7 +3,7 @@ import fg from "fast-glob";
 import { DEFAULT_DOCS_HIERARCHY } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { FileWriteResult } from "../fs/paths.js";
-import { ensureRepoFile, resolveRepoPath } from "../fs/paths.js";
+import { ensureRepoFile, resolveRepoPath, writeRepoFile } from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import { parseAreasMarkdown } from "../routing/areas.js";
 import { resolveTruthDocsRoot } from "../truth/docs.js";
@@ -15,6 +15,7 @@ import {
   TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
   WORKFLOW_DOC_TEMPLATE_PATH,
   renderChildAreaTemplate,
+  mergeTruthDocTemplate,
   renderArchitectureDocTemplateFile,
   renderBehaviorDocTemplateFile,
   renderContractDocTemplateFile,
@@ -70,6 +71,23 @@ const readBehaviorDocTemplate = async (rootDir: string): Promise<string> => {
   }
 };
 
+const ensureOrUpdateTruthDocTemplate = async (
+  rootDir: string,
+  templatePath: string,
+  defaultTemplate: string,
+): Promise<FileWriteResult> => {
+  const seededResult = await ensureRepoFile(rootDir, templatePath, defaultTemplate);
+
+  if (seededResult.status !== "unchanged") {
+    return seededResult;
+  }
+
+  const existingTemplate = await fs.readFile(resolveRepoPath(rootDir, templatePath), "utf8");
+  const mergedTemplate = mergeTruthDocTemplate(existingTemplate, defaultTemplate);
+
+  return writeRepoFile(rootDir, templatePath, mergedTemplate);
+};
+
 export const scaffoldHierarchy = async (
   rootDir: string,
   config: TruthmarkConfig,
@@ -106,26 +124,42 @@ export const scaffoldHierarchy = async (
     ),
   );
   results.push(
-    await ensureRepoFile(rootDir, BEHAVIOR_DOC_TEMPLATE_PATH, renderBehaviorDocTemplateFile()),
+    await ensureOrUpdateTruthDocTemplate(
+      rootDir,
+      BEHAVIOR_DOC_TEMPLATE_PATH,
+      renderBehaviorDocTemplateFile(),
+    ),
   );
   results.push(
-    await ensureRepoFile(rootDir, CONTRACT_DOC_TEMPLATE_PATH, renderContractDocTemplateFile()),
+    await ensureOrUpdateTruthDocTemplate(
+      rootDir,
+      CONTRACT_DOC_TEMPLATE_PATH,
+      renderContractDocTemplateFile(),
+    ),
   );
   results.push(
-    await ensureRepoFile(
+    await ensureOrUpdateTruthDocTemplate(
       rootDir,
       ARCHITECTURE_DOC_TEMPLATE_PATH,
       renderArchitectureDocTemplateFile(),
     ),
   );
   results.push(
-    await ensureRepoFile(rootDir, WORKFLOW_DOC_TEMPLATE_PATH, renderWorkflowDocTemplateFile()),
+    await ensureOrUpdateTruthDocTemplate(
+      rootDir,
+      WORKFLOW_DOC_TEMPLATE_PATH,
+      renderWorkflowDocTemplateFile(),
+    ),
   );
   results.push(
-    await ensureRepoFile(rootDir, OPERATIONS_DOC_TEMPLATE_PATH, renderOperationsDocTemplateFile()),
+    await ensureOrUpdateTruthDocTemplate(
+      rootDir,
+      OPERATIONS_DOC_TEMPLATE_PATH,
+      renderOperationsDocTemplateFile(),
+    ),
   );
   results.push(
-    await ensureRepoFile(
+    await ensureOrUpdateTruthDocTemplate(
       rootDir,
       TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
       renderTestBehaviorDocTemplateFile(),

@@ -155,6 +155,8 @@ truthmark init
 - 受管说明块
 - 已配置平台的面向 AI 工作流表面
 
+默认事实文档模板的依据见 [Template Standards](docs/standards/template-standards.md)。该文档说明这些模板如何对齐 ISO/IEC/IEEE 42010、ISO/IEC/IEEE 29148、ISO/IEC/IEEE 12207、ISO/IEC 25010、C4、arc42、OpenAPI、SemVer、Google SRE 和 Diátaxis 等公认软件工程参考。
+
 ### 验证设置
 
 ```bash

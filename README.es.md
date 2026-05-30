@@ -155,6 +155,8 @@ Esto instala o refresca:
 - bloques de instrucciones administrados
 - superficies de flujo orientadas a IA para las plataformas configuradas
 
+Las plantillas predeterminadas de documentos de verdad se justifican en [Template Standards](docs/standards/template-standards.md), que las mapea a referencias reconocidas de ingeniería de software como ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE y Diátaxis.
+
 ### Validar la configuración
 
 ```bash
