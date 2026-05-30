@@ -155,6 +155,8 @@ truthmark init
 - управляемые блоки инструкций
 - поверхности рабочих процессов для ИИ для настроенных платформ
 
+Обоснование стандартных шаблонов документов истины находится в [Template Standards](docs/standards/template-standards.md). В документе показано, как они соотносятся с признанными источниками по инженерии ПО, включая ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE и Diátaxis.
+
 ### Проверить настройку
 
 ```bash

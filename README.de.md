@@ -155,6 +155,8 @@ Das installiert oder aktualisiert:
 - verwaltete Instruktionsblöcke
 - KI-orientierte Workflow-Oberflächen für konfigurierte Plattformen
 
+Die Standardvorlagen für Truth-Dokumente werden in [Template Standards](docs/standards/template-standards.md) begründet. Dort werden sie anerkannten Software-Engineering-Referenzen wie ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE und Diátaxis zugeordnet.
+
 ### Das Setup validieren
 
 ```bash
