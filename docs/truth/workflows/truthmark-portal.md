@@ -27,11 +27,24 @@ This document owns the installed Portal workflow boundary, config toggle, genera
 
 Portal runs only from an explicit user request to generate, refresh, or update the committed static HTML presentation site. It is not triggered by Truth Sync, `truthmark check`, `truthmark init`, repository indexing, or normal completion workflows.
 
+## Inputs
+
+- configured repository files
+- relevant checkout evidence
+
 ## Execution Model
 
 Portal is an agent-executed workflow that reads Markdown truth sources from the checkout and writes presentation output under the configured Portal output directory. The generated HTML, assets, and metadata are non-canonical; Markdown truth documents remain authoritative.
 
-## Current Behavior
+## Steps
+
+1. Confirm the user explicitly requested Portal generation or refresh.
+2. Read the namespaced `truthmark-portal` config block and normalize defaults.
+3. Inspect Markdown truth sources from the checkout.
+4. Write presentation output only under the configured Portal output directory.
+5. Keep generated HTML, assets, and metadata non-canonical and report what was refreshed.
+
+Current behavior notes:
 
 `.truthmark/config.yml` may contain a namespaced `truthmark-portal` block. The raw YAML key is exactly `truthmark-portal`; normalized config exposes `truthmarkPortal`.
 
@@ -58,6 +71,14 @@ The workflow reads Markdown directly from the checkout and does not require the 
 Portal writes generated non-canonical static files only under the configured output directory unless the user explicitly changes scope. The selected output directory may be replaced entirely during generation.
 
 Generated output should be a committed multi-page static HTML site with local CSS, JavaScript, assets, and search metadata. Generated pages must include source provenance and a visible statement that Markdown remains canonical and generated HTML is presentation only. Manifest and search metadata stay under `<output>/assets`. No remote scripts, analytics, fonts, CSS, or CDN dependencies are used by default. Pictures and screenshots require an explicit user or template request.
+
+## State, Retry, And Failure Behavior
+
+Portal remains disabled when the config block is omitted or `enabled` is omitted/false. Portal is manual-only and is not triggered by Truth Sync, `truthmark check`, `truthmark init`, repository indexing, or normal completion workflows. Generated output is replaceable presentation state, not repository truth.
+
+## Outputs
+
+Portal outputs committed static HTML presentation files, supporting assets, optional metadata under the configured output directory, and a completion report. Markdown truth docs remain authoritative.
 
 ## Product Decisions
 

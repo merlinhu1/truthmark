@@ -40,7 +40,16 @@ Truth Structure also owns new area setup when a user asks to onboard a new code 
 Truth Structure inspects the checkout directly and defines areas by product or behavior ownership, not mechanical directory mirroring.
 For new area setup, Truth Structure inspects the named code area, infers bounded product or behavior ownership, chooses the owning route when ownership is clear, and otherwise proposes the route and blocks for review. It creates or updates the child route entry or file, creates starter truth docs only where current truth is missing, and reports the initial truth boundary.
 
-## Current Behavior
+## Steps
+
+1. Inspect repository layout, config, root and child route files, current canonical docs, representative implementation boundaries, and tests.
+2. Identify topology pressure such as broad code mappings, overloaded child route files, mixed-owner docs, catch-all routing, or unrouteable changed code.
+3. Design bounded behavior or product ownership areas rather than mechanical directory mirrors.
+4. Update route files and create or move starter truth docs where ownership is clear and current-state evidence supports them.
+5. Preserve or explicitly account for Product Decisions and Rationale when splitting or restructuring truth docs.
+6. Verify route and truth health with Truthmark checks when available.
+
+Current behavior notes:
 
 When topology pressure exists, Truth Structure repairs structure before creating or extending truth docs.
 
@@ -56,6 +65,14 @@ Starter truth docs use closed YAML frontmatter with `status`, `doc_type`, `last_
 New area setup must not edit functional code, perform full behavior documentation unless evidence is inspected and the task explicitly asks for it, patch broad or mixed-owner docs in place, create generic catch-all docs, or treat README files as Sync targets.
 
 Completed reports include `Topology reviewed`, `Areas reviewed`, `Routing updated`, `Initial truth boundary`, `Truth docs created`, `Truth docs split`, `Truth docs restructured`, `Evidence checked`, `Topology decisions`, and `Notes`.
+
+## State, Retry, And Failure Behavior
+
+Truth Structure may block instead of writing when ownership is ambiguous, route repair is outside task scope, or evidence is insufficient. It performs topology repair before claim expansion.
+
+## Outputs
+
+Truth Structure outputs route topology changes, bounded starter truth docs when supported, and a report explaining ownership decisions, preserved decisions/rationale, verification, and any blocked ambiguities.
 
 ## Product Decisions
 

@@ -44,6 +44,12 @@ The repository also ships `examples/github-actions/truthmark-impact.yml` as a co
 - The `Publish` workflow runs when a GitHub release is published.
 - The `publish` job checks out the repository, installs Node 24 with the npm registry configured, runs `npm ci`, runs `npm run release:check`, and then runs `npm publish`.
 
+Core automation rules:
+
+- Pull request and main-branch automation must verify linting, types, tests, build output, and package-file integrity through the existing npm scripts.
+- Publish automation must re-run the full release verification before publishing.
+- Publishing is triggered from a GitHub release event, not from branch pushes alone.
+
 ## State, Retry, And Failure Behavior
 
 - Failed verification or release-check steps stop the current job and prevent later publish steps from running.
@@ -55,18 +61,6 @@ The repository also ships `examples/github-actions/truthmark-impact.yml` as a co
 
 - CI verification results for pushes and pull requests
 - npm publication after a successful release-triggered publish job
-
-## Core Rules
-
-- Pull request and main-branch automation must verify linting, types, tests, build output, and package-file integrity through the existing npm scripts.
-- Publish automation must re-run the full release verification before publishing.
-- Publishing is triggered from a GitHub release event, not from branch pushes alone.
-
-## Contracts
-
-- Both workflows currently run on `ubuntu-latest`.
-- Both workflows install Node 24 through `actions/setup-node@v4`.
-- The publish workflow requires npm registry access through the configured GitHub Actions environment.
 
 ## Product Decisions
 
@@ -85,3 +79,10 @@ Keeping workflow steps thin makes repository automation follow the same verifica
 
 - Update this doc when workflow triggers, Node versions, or verification commands change.
 - Keep this doc aligned with `package.json` scripts used by the workflows.
+
+Workflow contracts:
+
+- Both workflows currently run on `ubuntu-latest`.
+- Both workflows install Node 24 through `actions/setup-node@v6`.
+- The CI workflow constrains `GITHUB_TOKEN` to `contents: read`.
+- The publish workflow requires `contents: read`, `id-token: write`, and npm registry access through the configured GitHub Actions environment.

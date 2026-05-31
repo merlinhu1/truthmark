@@ -33,9 +33,24 @@ Workflow prompts grant permissions and set write boundaries. Content-generation 
 
 Generated draft content remains advisory until a workflow-authorized agent applies it to canonical docs.
 
-## Current Behavior
+## Steps
+
+1. Source workflow code gathers evidence context and target-doc boundaries.
+2. Content-generation prompt contracts render that context for draft generation.
+3. Structured output schemas validate draft shape where applicable.
+4. A workflow-authorized agent decides whether and how to apply the draft to canonical docs under the installed workflow write boundary.
+
+Current behavior notes:
 
 Truthmark keeps content-generation contracts separate from installed workflow authority. Agents still inspect the checkout directly and use installed workflow surfaces for permissions, boundaries, and reporting.
+
+## State, Retry, And Failure Behavior
+
+Draft prompt output is advisory state only. If generation fails, schema validation fails, or evidence is insufficient, the owning workflow must fall back to direct checkout inspection and either write a supported truth-doc update or report why it blocked.
+
+## Outputs
+
+Generated draft content may become proposed truth-doc prose only after a workflow-authorized agent validates it against checkout evidence and applies it within allowed write paths. The prompt contracts themselves do not produce authoritative repository truth.
 
 ## Product Decisions
 

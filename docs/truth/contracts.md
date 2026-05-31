@@ -18,6 +18,10 @@ source_of_truth:
 
 # Contracts
 
+## Purpose
+
+This document protects Truthmark machine-facing contracts: configuration, route metadata, CLI JSON envelopes, command result data, diagnostics, compatibility, and migration behavior.
+
 ## Scope
 
 This document defines the current machine-facing contracts exposed by Truthmark: the config file shape, route metadata, repository-intelligence artifacts, and the CLI result envelope.
@@ -33,8 +37,6 @@ This document defines the current machine-facing contracts exposed by Truthmark:
 - Committed config fields under `.truthmark/config.yml`.
 - Routed truth-document metadata from `docs/truthmark/areas.md` and `docs/truthmark/areas/**/*.md`.
 - CLI options such as `--json`, `--stdout`, and command-specific flags.
-
-## Config Contract
 
 Truthmark loads `.truthmark/config.yml` and validates it against the current schema.
 
@@ -62,8 +64,6 @@ The default scaffolded authority list includes:
 - `docs/standards/**/*.md`
 - `docs/architecture/**/*.md`
 - `docs/truth/**/*.md`
-
-## Route Metadata Contract
 
 Route files may express `Truth documents` in either of these forms:
 
@@ -97,7 +97,7 @@ Supported `platforms` values are:
 
 There is no `.truthmark/local.yml` contract in the current implementation. User preferences that affect generated repository behavior must be expressed through committed config or the generated surfaces cannot be reproduced by another checkout.
 
-## Command Result Envelope
+## Outputs
 
 `truthmark config`, `truthmark init`, `truthmark check`, and `truthmark validate ...` commands return the same JSON envelope when run with `--json`.
 
@@ -144,18 +144,6 @@ The command summary is `Validation passed` when `ok` is true and `Validation fai
 
 RepoIndex, RouteMap, ImpactSet, and ContextPack are derived from the active checkout. They do not override route files, source files, truth docs, or installed workflow write boundaries.
 
-## Compatibility Rules
-
-- `version` remains `1` in the committed config contract.
-- `docs.roots.truth` is the configured root for behavior truth docs.
-- Repositories refresh generated workflow surfaces through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
-- Truth Realize has no config switch; selected platforms receive its explicit manual workflow surface.
-- `truthmark-portal` is an optional namespaced config block. When omitted, normalized `truthmarkPortal` is `{ enabled: false, output: "docs/truthmark-portal", template: "default" }`; an existing block with omitted `enabled` also remains disabled.
-- `truthmark-portal.output` and `truthmark-portal.template` must be strings when present. Output must be a non-empty repository-relative directory without absolute or parent traversal segments and must not overlap source roots, instruction targets, `.truthmark/config.yml`, route files, or canonical Markdown roots. Template must be `default` or a non-empty repository-relative path without absolute or parent traversal segments.
-- There is no `.truthmark/local.yml` compatibility surface in the current implementation.
-
-## Config Result Data
-
 `truthmark config --json` writes only `.truthmark/config.yml` unless `--stdout` is used.
 
 Current config result data fields include:
@@ -170,8 +158,6 @@ When `--stdout` is used, `data` also includes:
 
 - `path`
 - `content`
-
-## Init Result Data
 
 `truthmark init --json` currently returns these data fields:
 
@@ -300,8 +286,6 @@ Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description
 
 The OpenCode `truth-doc-writer` edit allow-list is rendered from the active `docs.roots.truth`, `docs.routing.root_index`, and `docs.routing.area_files_root` config paths so valid leases remain writable in non-default documentation layouts.
 
-## Check Result Data
-
 `truthmark check --json` returns:
 
 - `branchScope`
@@ -333,7 +317,7 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - `syncCompletenessIssueCount`
 - `topologyPressureCount`
 
-## Current Diagnostic Emission Notes
+## Errors And Diagnostics
 
 - ordinary `truthmark check` emits `config`, `authority`, `frontmatter`, `links`, `area-index`, `coverage`, `doc-structure`, and `generated-surface` diagnostics.
 - `truth-sync` and `realization` categories exist for init and generated workflow reporting, but ordinary `check` does not emit workflow payloads.
@@ -343,6 +327,24 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - Coverage diagnostics discover unmapped functional code across common code roots with the same path classifier used by Truth Sync. V1 coverage must include Go, Python, C#, Java, JavaScript, TypeScript, frontend roots, monorepo app or package roots, Terraform, Kubernetes manifests, CI workflows, OpenAPI or Swagger, GraphQL, and protobuf surfaces within those roots.
 - `frontmatter` emits `error` diagnostics when `truth_kind` is invalid or present and disagrees with routed truth-kind metadata.
 - `doc-structure` emits `review` diagnostics when configured architecture or routed truth docs are missing `Scope`, active `Product Decisions`, active `Rationale`, or the kind-specific required headings for their routed truth kind.
+
+## Compatibility Rules
+
+- `version` remains `1` in the committed config contract.
+- `docs.roots.truth` is the configured root for behavior truth docs.
+- Repositories refresh generated workflow surfaces through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
+- Truth Realize has no config switch; selected platforms receive its explicit manual workflow surface.
+- `truthmark-portal` is an optional namespaced config block. When omitted, normalized `truthmarkPortal` is `{ enabled: false, output: "docs/truthmark-portal", template: "default" }`; an existing block with omitted `enabled` also remains disabled.
+- `truthmark-portal.output` and `truthmark-portal.template` must be strings when present. Output must be a non-empty repository-relative directory without absolute or parent traversal segments and must not overlap source roots, instruction targets, `.truthmark/config.yml`, route files, or canonical Markdown roots. Template must be `default` or a non-empty repository-relative path without absolute or parent traversal segments.
+- There is no `.truthmark/local.yml` compatibility surface in the current implementation.
+
+## Versioning And Migration
+
+- The committed config contract remains `version: 1` until an intentional schema-version migration is implemented.
+- Route metadata accepts both legacy Markdown truth-document lists and fenced YAML `truth_documents` arrays for compatibility with existing repositories.
+- Repositories refresh generated workflow surfaces and templates through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
+- New command data fields should be additive where possible and remain nested under the shared command envelope.
+- Helper validators must keep helper-specific data under `data.validation` rather than returning raw validator payloads at the top level.
 
 ## Product Decisions
 
@@ -358,3 +360,13 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 Separating config from init keeps repository layout reviewable and predictable. Keeping decisions with the owning behavior, contract, or architecture doc prevents agents from having to infer which historical note is still active.
 
 Keeping workflow verbs out of the CLI preserves the agent-native model: installed skills and instruction blocks run the workflows, while the CLI installs and validates repository artifacts.
+
+## Non-Goals
+
+- This doc does not define human prose style for truth docs; templates and standards own that.
+- This doc does not make installed agent workflows CLI subcommands.
+- This doc does not define every generated host file path except where those paths are part of command, validator, or generated-surface contracts.
+
+## Maintenance Notes
+
+Update this doc when `.truthmark/config.yml` schema, route metadata forms, command names/options, JSON envelopes, command-specific `data` payloads, diagnostic categories/severities, helper validator envelopes, or compatibility guarantees change.

@@ -18,6 +18,10 @@ source_of_truth:
 
 # Check Diagnostics
 
+## Purpose
+
+This document protects the user-facing truth-health contract for `truthmark check`: what it validates, what its diagnostics mean, and how maintainers should interpret command output.
+
 ## Scope
 
 This document describes the current behavior of `truthmark check`.
@@ -43,7 +47,7 @@ The command reports repository truth health for the active checkout. It does not
 
 Topology repair remains an installed workflow responsibility. `truthmark check` may expose routing or coverage symptoms, but AI agents must be able to perform Truth Structure directly from committed config, route files, docs, and implementation when the Truthmark binary is unavailable.
 
-## Validation Passes
+## Core Rules
 
 ### Authority
 
@@ -182,7 +186,19 @@ Current severity behavior:
 - missing evidence symbol, invalid evidence span, or stale evidence hash: `error`
 - evidence line spans are validated even when the evidence block does not include a content hash
 
-## Result Shape
+## Flows And States
+
+`truthmark check` follows this validation flow:
+
+1. Resolve the active repository and worktree.
+2. Load `.truthmark/config.yml` and configured authority roots.
+3. Build branch-scope metadata and relevant-file hashes for the current checkout.
+4. Run configured authority, area, frontmatter, link, generated-surface, coverage, decision-structure, and topology diagnostics.
+5. Render either human-readable output or the shared JSON command envelope.
+
+The command does not run Truth Sync, Truth Preview, Truth Realize, Truth Structure, or Truth Check workflows. It only reports the current repository-truth health it can derive from local checkout state.
+
+## Contracts
 
 - human output reports the number of `error` and `review` diagnostics
 - JSON output returns the shared command envelope
@@ -197,8 +213,6 @@ Branch scope identifies the active checkout:
 - detached checkouts use the commit SHA
 - worktree path is reported separately for parallel worktrees
 - relevant file hashes track `.truthmark/config.yml`, the configured root route index, and configured child route files
-
-## Practical Meaning
 
 - `error` means the current routing or contract is invalid and should be fixed before relying on the docs tree.
 - `review` means the tree is usable, but maintainers should decide whether the reported gap is intentional.
@@ -220,7 +234,16 @@ Keeping check non-orchestrating means repositories can use it in local audits or
 
 Keeping topology repair in generated agent workflows preserves portability: a repository with committed Truthmark surfaces remains usable in AI environments that cannot run the Truthmark CLI.
 
-## Primary Code Files
+## Non-Goals
+
+- `truthmark check` is not a workflow orchestrator.
+- `truthmark check` is not the runtime for installed agent skills, prompts, or commands.
+- `truthmark check` does not rewrite truth docs, route files, generated surfaces, or functional code.
+- Passing `truthmark check` does not prove every truth doc already matches the latest template taxonomy.
+
+## Maintenance Notes
+
+Primary implementation files:
 
 - `src/checks/check.ts`
 - `src/checks/authority.ts`
@@ -228,3 +251,5 @@ Keeping topology repair in generated agent workflows preserves portability: a re
 - `src/checks/frontmatter.ts`
 - `src/checks/links.ts`
 - `src/checks/branch-scope.ts`
+
+Update this doc when check diagnostics, JSON data shape, branch-scope behavior, generated-surface diagnostics, topology diagnostics, or severity rules change.

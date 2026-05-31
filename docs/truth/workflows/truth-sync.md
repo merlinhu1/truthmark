@@ -41,7 +41,16 @@ Truth Sync is code-first. Code leads, truth docs follow, and functional code mus
 
 Truth Sync may update routed truth docs and routing when routing repair is needed. It may create missing canonical truth docs when routeable implementation would otherwise remain undocumented. In Codex, Claude Code, GitHub Copilot, Gemini CLI, or OpenCode, Truth Sync may automatically use generated read-only verifier subagents and explicit-lease `truth-doc-writer` subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
-## Current Behavior
+## Steps
+
+1. Determine whether functional code changed since the last successful Sync or whether the user explicitly invoked Sync.
+2. Inspect changed code, config, route files, impacted truth docs, nearby implementation, and tests.
+3. Apply topology and ownership gates before changing truth docs.
+4. Update only routed truth docs and routing needed to keep canonical truth aligned with changed code.
+5. Preserve active Product Decisions and Rationale during bounded shape repair or Structure handoff.
+6. Report changed truth files, evidence, skipped cases, verification, and any blocked topology repair.
+
+Current behavior notes:
 
 Before updating truth docs, Truth Sync applies the topology and ownership gates. If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, it must not create another generic truth doc. It runs Truth Structure first when repair is safe and in scope, or blocks and recommends Truth Structure when topology repair is unsafe, ambiguous, or outside the task boundary.
 
@@ -71,6 +80,14 @@ Current skip reasons are:
 Truth Sync's generated frontmatter description and Codex metadata carry those skip cases because skill metadata is the host-visible routing boundary before the full workflow body is loaded.
 
 Truth Sync delegation is host-owned. Generated workflow surfaces may describe when delegation is allowed, but must not create unrestricted writable helpers or a project-local subagent preference file. Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode generated surfaces may name project-scoped read-only verifier agents for workflow-owned automatic verification and `truth-doc-writer` for leased truth-doc shards. Read-only verifier agents inspect only the parent-assigned shard plus required checkout evidence files and do not preload repo-wide instruction or policy docs unless the parent assigns those files as evidence. The parent workflow creates each lease, requires allowedWrites and forbiddenWrites, validates the actual checkout diff against the lease, and owns repo-policy interpretation and final acceptance.
+
+## State, Retry, And Failure Behavior
+
+Truth Sync is skipped for docs-only, formatting-only, behavior-preserving rename, missing-config, or no-code changes. It blocks or hands off to Truth Structure when routing is missing, stale, broad, overloaded, catch-all, or unrouteable. It must not rewrite functional code during sync.
+
+## Outputs
+
+Truth Sync outputs truth-doc and route-file updates plus a completion report. It does not output functional-code rewrites or generic docs behind weak routing.
 
 ## Product Decisions
 

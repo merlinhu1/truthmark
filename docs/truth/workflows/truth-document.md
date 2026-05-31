@@ -40,7 +40,16 @@ Truth Document owns manual missing-truth generation for implemented behavior. It
 
 Truth Document is implementation-first and never writes functional code. It documents current implemented behavior only and does not invent future behavior or planned endpoints. In Codex, Claude Code, GitHub Copilot, Gemini CLI, or OpenCode, Truth Document may automatically use generated read-only verifier subagents and explicit-lease `truth-doc-writer` subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
-## Current Behavior
+## Steps
+
+1. Confirm the user is asking to document existing implemented behavior rather than change functional code.
+2. Inspect implementation, tests, config, route files, and existing canonical docs.
+3. Apply the ownership gate and run Truth Structure first when routing or truth ownership is unsafe and repair is in scope.
+4. Create or update only routed canonical truth docs and route files needed for the documented behavior.
+5. Preserve active Product Decisions and Rationale during bounded shape repair or Structure handoff.
+6. Report evidence, written docs, routing changes, and blocked ambiguities.
+
+Current behavior notes:
 
 Truth Document applies the ownership gate before writing. If routing is missing, stale, broad, overloaded, catch-all, or cannot map behavior to a bounded truth owner, it runs Truth Structure first when repair is safe and in scope. If repair is unsafe, ambiguous, or outside the task boundary, it blocks and recommends Truth Structure.
 
@@ -58,6 +67,14 @@ When subagent mode is available, the parent agent may dispatch read-only route a
 
 Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs created`, `Truth docs updated`, `Truth docs restructured`, `Routing updated`, `Evidence checked`, `Helper scripts`, and `Notes`. Required completed-report sections must contain at least one bullet entry, `Evidence checked` must use structured `Claim`, indented `Evidence`, and `Result` entries, and blocked reports must include `Reason` for helper validation to accept them.
 When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent accepts a completed worker report only after validating the parsed report against the lease identity, required report fields, actual worker diff, `allowedWrites`, `forbiddenWrites`, reported `filesChanged`, reported `offLeaseChanges`, and reported `blockers`. Blocked worker reports remain blocked outcomes and must include blockers; off-lease or forbidden actual diffs are rejected rather than trusted from self-report.
+
+## State, Retry, And Failure Behavior
+
+If routing is missing, stale, broad, overloaded, catch-all, or cannot map behavior to a bounded owner, Truth Document either runs Truth Structure when safe and in scope or blocks and recommends it. If helper/subagent support is unavailable, the parent agent performs the same checks manually.
+
+## Outputs
+
+Truth Document outputs canonical truth-doc and route-file changes plus a completion report. It does not output functional-code changes or planned-behavior docs.
 
 ## Product Decisions
 

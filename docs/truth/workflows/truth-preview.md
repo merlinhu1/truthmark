@@ -12,6 +12,10 @@ source_of_truth:
 
 # Truth Preview
 
+## Purpose
+
+Truth Preview protects a read-only, explicit planning surface for previewing likely Truthmark routing, workflow choice, write classes, target files, and handoff before edits.
+
 ## Scope
 
 Truth Preview previews likely Truthmark routing before edits.
@@ -22,6 +26,14 @@ It is an explicit read-only planning surface. It is intended, not authorized, an
 
 - explicit user invocation through the installed host surface
 - questions about likely workflow routing, route ownership, target files, write classes, or subagent use before edits
+
+## Inputs
+
+- `.truthmark/config.yml`
+- root and child route files
+- relevant canonical docs
+- relevant implementation files
+- the user's requested focus or proposed change
 
 ## Execution Model
 
@@ -39,6 +51,21 @@ Truth Preview may suggest the read-only route auditor when bounded verifier inpu
 Truth Preview must not edit files, create truth docs, update routing, run Truth Sync automatically, replace Truth Check, claim final correctness, issue write leases, or mutate code.
 
 Completed reports include `Requested outcome`, `Likely workflow`, `Why this workflow`, `Likely route owner`, `Expected write classes`, `Expected target files`, `Suggested subagent use`, `Blocking ambiguity`, and `Handoff`.
+
+## Steps
+
+1. Read only the config, routes, canonical docs, and implementation needed to preview ownership.
+2. Identify the likely Truthmark workflow, route owner, write classes, target files, and useful subagent mode.
+3. Report ambiguity or blocking ownership risk instead of mutating files.
+4. Hand off to the selected workflow only after user approval or explicit follow-up.
+
+## State, Retry, And Failure Behavior
+
+Truth Preview is read-only and has no retry state beyond re-running the preview with more specific context. If ownership is ambiguous, the output states the ambiguity and recommends the next workflow instead of authorizing edits.
+
+## Outputs
+
+Truth Preview outputs a planning report: likely workflow, selection rationale, likely route owner, expected write classes, expected target files, suggested subagent use, blocking ambiguity, and handoff. It does not create, update, or validate repository files.
 
 ## Product Decisions
 

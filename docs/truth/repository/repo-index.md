@@ -12,6 +12,10 @@ source_of_truth:
 
 # RepoIndex
 
+## Purpose
+
+This document protects RepoIndex v0 and RouteMap v0 as deterministic, local repository-intelligence artifacts derived from the active checkout.
+
 ## Scope
 
 This document owns RepoIndex v0 and RouteMap v0 behavior. RepoIndex describes the current checkout's files, docs, packages, tests, JavaScript/TypeScript imports and exports, public symbols, and Truthmark route ownership.
@@ -32,11 +36,13 @@ RepoIndex output includes `schemaVersion: repo-index/v0`. RouteMap output includ
 - Route ownership comes from Truthmark area files, not from package structure or import graphs.
 - RepoIndex and RouteMap are derived artifacts. They speed up routing and review, but they do not override source files, route files, or truth docs.
 
-## Runtime Dependency Boundary
+## Flows And States
 
-RepoIndex requires the Truthmark CLI or an equivalent local runner to compute. If the CLI is unavailable, agents must inspect `.truthmark/config.yml`, route files, changed source files, and routed truth docs directly. Workflows may proceed manually, but completion reports must say RepoIndex and RouteMap were not generated.
+`truthmark index --json` reads local files, Git metadata, config, route files, Markdown docs, package metadata, tests, JavaScript/TypeScript imports and exports, public symbols, and route ownership. It does not start a daemon, call a model, call a remote service, or write generated artifacts by default.
 
-If a RepoIndex or RouteMap artifact conflicts with the current checkout, the checkout wins. Agents must rerun the CLI when available or ignore the stale artifact when it cannot be regenerated.
+## Contracts
+
+`truthmark index --json` returns the shared command envelope with `schemaVersion: repo-index/v0` data. RouteMap output uses `schemaVersion: route-map/v0`. Paths are repository-relative POSIX paths, arrays are sorted lexicographically unless source order is contractual, and file discovery honors Git ignore rules plus Truthmark config ignores.
 
 ## Product Decisions
 
@@ -47,9 +53,23 @@ If a RepoIndex or RouteMap artifact conflicts with the current checkout, the che
 
 Keeping repository intelligence derived preserves Truthmark's branch-local review boundary. Teams can use fast machine-readable context when the CLI is available without making installed workflows unusable in constrained agent environments.
 
-## Primary Code Files
+## Non-Goals
+
+- RepoIndex is not a source of truth.
+- RepoIndex does not grant workflow write permissions.
+- RepoIndex does not replace direct inspection when the CLI is unavailable or stale.
+
+## Maintenance Notes
+
+RepoIndex requires the Truthmark CLI or an equivalent local runner to compute. If the CLI is unavailable, agents must inspect `.truthmark/config.yml`, route files, changed source files, and routed truth docs directly. Workflows may proceed manually, but completion reports must say RepoIndex and RouteMap were not generated.
+
+If a RepoIndex or RouteMap artifact conflicts with the current checkout, the checkout wins. Agents must rerun the CLI when available or ignore the stale artifact when it cannot be regenerated.
+
+Primary implementation files:
 
 - `src/repo-index/build.ts`
 - `src/repo-index/file-tree.ts`
 - `src/repo-index/route-map.ts`
 - `src/repo-index/types.ts`
+
+Update this doc when the command output, schema version, derived inputs, fallback behavior, or workflow relationship changes.

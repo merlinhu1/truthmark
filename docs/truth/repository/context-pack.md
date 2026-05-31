@@ -11,6 +11,10 @@ source_of_truth:
 
 # ContextPack
 
+## Purpose
+
+This document protects ContextPack v0 as a bounded, derived workflow-context artifact for Truth Sync, Truth Document, and Truth Realize.
+
 ## Scope
 
 This document owns ContextPack v0 behavior for Truth Sync, Truth Document, and Truth Realize workflows.
@@ -31,9 +35,13 @@ ContextPack output includes `schemaVersion: context-pack/v0`. It is generated fr
 - ContextPack-only text is not evidence. Generated docs must cite checkout files, route files, truth docs, tests, schemas, or explicit evidence blocks.
 - If ContextPack conflicts with the current checkout, the checkout wins.
 
-## Runtime Dependency Boundary
+## Flows And States
 
-ContextPack requires the Truthmark CLI or an equivalent local runner. If unavailable, agents must follow the installed workflow manually by reading route files, truth docs, source files, and tests directly. Completion reports must say ContextPack was not generated.
+`truthmark context` resolves route ownership, affected truth docs, selected source files, related tests, and write-boundary guidance from the active checkout, then renders JSON or deterministic Markdown for the selected workflow. Agents use the artifact as reviewable context and still inspect the checkout directly before acting.
+
+## Contracts
+
+`truthmark context --workflow <workflow> [--base <ref>] --json` returns the shared command envelope with ContextPack data. `--format markdown` renders deterministic Markdown, and `--json --format markdown` includes rendered Markdown in `data.markdown`. Unsupported formats produce a `context-pack` error diagnostic.
 
 ## Product Decisions
 
@@ -44,8 +52,20 @@ ContextPack requires the Truthmark CLI or an equivalent local runner. If unavail
 
 ContextPack makes agent context auditable without making hidden retrieval or stale generated artifacts authoritative. Keeping it derived prevents a fast path from changing ownership or write behavior.
 
-## Primary Code Files
+## Non-Goals
+
+- ContextPack is not repository authority.
+- ContextPack does not grant permissions beyond installed workflow boundaries.
+- ContextPack does not replace direct checkout inspection.
+
+## Maintenance Notes
+
+ContextPack requires the Truthmark CLI or an equivalent local runner. If unavailable, agents must follow the installed workflow manually by reading route files, truth docs, source files, and tests directly. Completion reports must say ContextPack was not generated.
+
+Primary implementation files:
 
 - `src/context-pack/build.ts`
 - `src/context-pack/render.ts`
 - `src/impact/build.ts`
+
+Update this doc when the command output, schema version, derived inputs, fallback behavior, or workflow relationship changes.
