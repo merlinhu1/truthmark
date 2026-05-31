@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-18
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truth-sync.ts
   - ../../../src/agents/write-lease.ts
@@ -19,7 +19,7 @@ source_of_truth:
 
 ## Purpose
 
-Truth Sync aligns canonical truth docs with functional-code changes.
+Truth Sync protects the completion-time contract that changed functional code is reflected in bounded canonical truth docs and truth routing without letting documentation-only updates or topology repair blur workflow ownership.
 
 ## Scope
 
@@ -46,7 +46,7 @@ Truth Sync may update routed truth docs and routing when routing repair is neede
 1. Determine whether functional code changed since the last successful Sync or whether the user explicitly invoked Sync.
 2. Inspect changed code, config, route files, impacted truth docs, nearby implementation, and tests.
 3. Apply topology and ownership gates before changing truth docs.
-4. Update only routed truth docs and routing needed to keep canonical truth aligned with changed code.
+4. Update only routed truth docs and routing needed to keep canonical truth aligned with changed code, using the routed truth kind's template and its section-comment guidance for touched truth-doc content.
 5. Preserve active Product Decisions and Rationale during bounded shape repair or Structure handoff.
 6. Report changed truth files, evidence, skipped cases, verification, and any blocked topology repair.
 
@@ -59,6 +59,8 @@ If an impacted truth doc is broad, mixed-owner, index-like, or the code change s
 Truth Sync updates active decisions and rationale in the routed canonical doc when implementation changes are driven by a decision change. It dates active decisions inline when added or changed and replaces stale active decisions rather than appending separate timestamped decision notes.
 
 When Truth Sync restructures a bounded truth doc or runs Structure inline, it inventories Product Decisions and Rationale before editing. Existing entries must be preserved in or moved to their bounded owner docs, narrowed or removed only with checkout evidence, or blocked for manual review when ownership is unclear.
+
+When Truth Sync creates, updates, or repairs a truth doc, it uses the routed `truth_kind` to select `docs/templates/<kind>-doc.md`. The HTML comments under that template's section headings are part of the authoring contract: Sync must satisfy the section intent for changed content, not just preserve or copy the headings.
 
 Truth Sync updates architecture docs in the same sync when changed code alters architecture-level structure or ownership.
 
@@ -97,6 +99,7 @@ Truth Sync outputs truth-doc and route-file updates plus a completion report. It
 - Decision (2026-05-15): Truth Sync must not lose Product Decisions or Rationale during bounded shape repair or inline Structure handoff.
 - Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode subagents may automatically gather bounded read-only route and claim evidence for Sync when host-supported without preloading repo-wide policy by default. Sync may also dispatch `truth-doc-writer` only with an explicit write lease, while parent agents retain policy, acceptance, and diff-validation ownership.
 - Decision (2026-05-16): Truth Sync write authority is bounded by file class and route ownership, not by the root route index alone. It may write canonical truth docs and truth routing files, while functional code remains outside Sync authority.
+- Decision (2026-05-31): Truth Sync follows the selected truth-doc template's section comments as content guidance for touched sections, because template compliance requires useful section content as well as matching headings.
 
 ## Rationale
 
@@ -110,4 +113,4 @@ Truth Sync is the finish-time bridge from code to truth, so it must protect rout
 
 ## Maintenance Notes
 
-Update this doc when Sync triggers, skip reasons, report shape, delegation language, or ownership handoff behavior changes.
+Update this doc when Sync triggers, skip reasons, report shape, delegation language, template-authoring guidance, or ownership handoff behavior changes.

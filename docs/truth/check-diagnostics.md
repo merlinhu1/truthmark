@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-05-14
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../src/checks/check.ts
   - ../../src/checks/authority.ts
@@ -24,7 +24,7 @@ This document protects the user-facing truth-health contract for `truthmark chec
 
 ## Scope
 
-This document describes the current behavior of `truthmark check`.
+This document owns the current behavior of `truthmark check`: config-aware validation of authority files, route areas, frontmatter, links, decision structure, generated surfaces, coverage, and optional branch-impact freshness diagnostics. Installed agent workflow behavior is covered by the workflow truth docs instead of this CLI diagnostics surface.
 
 ## Current Behavior
 

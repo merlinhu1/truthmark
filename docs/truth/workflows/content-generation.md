@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/generation/**
 ---
@@ -15,11 +15,13 @@ Content-generation prompt contracts shape draft truth-doc updates without becomi
 
 ## Scope
 
-This document owns source-internal draft prompt contracts used by Truthmark workflow code.
+This document owns the source-internal prompt, schema, registry, and validation contracts under `src/generation/**` that draft truth-doc updates from bounded evidence context. Installed workflow surfaces own permissions, write boundaries, and final acceptance.
 
 ## Triggers
 
-- renderer or schema changes under `src/generation/**`
+- prompt renderer, schema, registry, type, or validator changes under `src/generation/**`
+- changes to draft-output semantics such as evidence IDs, relevant-doc path checks, blocked status rules, patch-path validation, or JSON parsing requirements
+- workflow changes that alter how generated draft content is consumed or rejected
 
 ## Inputs
 
@@ -62,8 +64,9 @@ Separating draft generation from workflow authority prevents helper prompts from
 
 ## Non-Goals
 
-- no permission grants from draft prompts
-- no replacement for direct checkout inspection
+- no permission grants, write leases, or workflow authority from draft prompts
+- no replacement for direct checkout inspection, route ownership review, or final workflow acceptance
+- no unrestricted patch paths outside repository-relative `docs/**` targets supplied by the bounded context
 
 ## Maintenance Notes
 

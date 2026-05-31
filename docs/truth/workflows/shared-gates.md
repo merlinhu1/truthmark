@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-15
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/shared.ts
   - ../../../src/truth/**
@@ -28,7 +28,7 @@ The gates apply whenever Truth Structure, Truth Document, Truth Sync, Truth Prev
 - `.truthmark/config.yml`
 - route files under `docs/truthmark/`
 - routed truth docs
-- implementation, config, generated templates, schemas, and contract definitions
+- implementation, config, generated templates including section comments, schemas, and contract definitions
 - tests and existing canonical docs as corroboration
 
 ## Execution Model
@@ -81,7 +81,7 @@ Shape repair does not cover ownership splits. Broad or mixed-owner docs require 
 
 ### Template And Decision Guidance
 
-Generated workflows point to the routed truth kind's matching template under `docs/templates/`, rendered as `docs/templates/<kind>-doc.md`. Agents inspect the routed truth kind, align existing docs to the template while preserving accurate authored content, and fall back to the built-in minimal truth-doc structure only when the matching template is missing.
+Generated workflows point to the routed truth kind's matching template under `docs/templates/`, rendered as `docs/templates/<kind>-doc.md`. Agents inspect the routed truth kind, read the matching template file, and treat the HTML comments under each template section as normative authoring guidance for that section. Shape alignment is not only heading alignment: agents write or repair section content so it satisfies the comment guidance while preserving accurate authored content. Workflows fall back to the built-in minimal truth-doc structure only when the matching template is missing.
 
 Decision truth lives in the canonical doc it governs. Active decisions are dated inline when added or changed; separate active-decision ADR or planning logs are rejected.
 
@@ -100,12 +100,15 @@ The gates output workflow decisions: proceed inside a bounded owner, repair shap
 - Decision (2026-05-15): Evidence validation is changed-claim-only and requires primary checkout evidence.
 - Decision (2026-05-15): Generated workflow surfaces refer to routed truth-doc templates instead of embedding full template text.
 - Decision (2026-05-15): Truth-doc split, restructure, and shape repair must preserve, move, explicitly narrow/remove with evidence, or block every pre-existing Product Decision and Rationale entry.
+- Decision (2026-05-31): Template section comments are normative authoring guidance for truth-doc content. Agents must satisfy those comments, not merely copy the matching `##` headings.
 
 ## Rationale
 
 The product is the workflow. Agents must choose the correct owner before making local edits, otherwise evidence-backed prose can still preserve the wrong truth boundary.
 
 Keeping ownership, evidence, and shape repair separate prevents broad-doc cleanup from hiding topology drift.
+
+Treating section comments as authoring guidance keeps templates lightweight while still carrying the quality bar agents need for useful section content.
 
 ## Non-Goals
 
@@ -115,4 +118,4 @@ Keeping ownership, evidence, and shape repair separate prevents broad-doc cleanu
 
 ## Maintenance Notes
 
-Update this doc when shared gate wording, template rules, decision-truth behavior, evidence reporting, or ownership/split behavior changes.
+Update this doc when shared gate wording, template-comment guidance, template rules, decision-truth behavior, evidence reporting, or ownership/split behavior changes.

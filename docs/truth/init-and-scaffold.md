@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-05-18
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../src/config/defaults.ts
   - ../../src/fs/paths.ts
@@ -26,7 +26,7 @@ This document protects the repository setup contract for `truthmark config` and 
 
 ## Scope
 
-This document describes the current behavior of `truthmark config` and `truthmark init`.
+This document owns the current setup and scaffold behavior for `truthmark config` and `truthmark init`: config-file creation, default docs and routes, editable typed templates, managed instruction blocks, generated platform surfaces, and migration-risk reporting. It hands ongoing truth-doc content maintenance to the routed truth docs and workflow surfaces.
 
 ## Current Behavior
 

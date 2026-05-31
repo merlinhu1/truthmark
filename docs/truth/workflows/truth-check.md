@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truth-check.ts
   - ../../../src/checks/**
@@ -14,7 +14,7 @@ source_of_truth:
 
 ## Purpose
 
-Truth Check audits repository truth health.
+Truth Check protects repository-truth health by auditing configured routes, canonical docs, implementation evidence, and optional CLI diagnostics without becoming a code verifier or silent repair workflow.
 
 ## Scope
 
@@ -22,7 +22,8 @@ Truth Check owns agent-led truth-health review. It reports issues and suggested 
 
 ## Triggers
 
-- explicit user invocation through the installed host surface
+- explicit user invocation through an installed host surface such as `/truthmark-check`, `$truthmark-check`, `/skill truthmark-check`, or `/truthmark:check`
+- a user request to audit an area, document path, route owner, stale claim, topology concern, or overall truth-health state
 
 ## Inputs
 
@@ -76,8 +77,9 @@ Audits must identify ownership drift, not only stale claims. Reporting mixed-own
 
 ## Non-Goals
 
-- no silent rewrite of unrelated files
-- no replacement for normal code verification
+- no silent rewrite of unrelated files, functional code, route files, or truth docs
+- no replacement for normal lint, tests, typecheck, build checks, or code review
+- no topology repair in place when findings require Truth Structure ownership
 
 ## Maintenance Notes
 

@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truth-preview.ts
   - ../../../src/agents/workflow-manifest.ts
@@ -79,10 +79,9 @@ Preview improves agent performance only when it prevents unnecessary workflow lo
 
 ## Non-Goals
 
-- no automatic invocation
-- no validation gate
-- no Truth Check replacement
-- no file mutation
+- no automatic invocation, mutation, or approval bypass before the user chooses a follow-up workflow
+- no validation gate, final correctness claim, or replacement for Truth Check
+- no write leases, write-worker dispatch, route updates, truth-doc edits, or functional-code mutation
 
 ## Maintenance Notes
 

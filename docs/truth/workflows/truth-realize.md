@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/prompts.ts
   - ../../../src/templates/workflow-surfaces.ts
@@ -13,7 +13,7 @@ source_of_truth:
 
 ## Purpose
 
-Truth Realize implements functional code from existing canonical truth docs.
+Truth Realize protects doc-first implementation by turning bounded, current canonical truth claims into functional code while keeping truth docs and routing read-only for the run.
 
 ## Scope
 
@@ -21,7 +21,8 @@ Truth Realize is doc-first and manual. Truth docs lead, code follows, and the ag
 
 ## Triggers
 
-- explicit user invocation through the installed host surface
+- explicit user invocation through an installed host surface such as `/truthmark-realize`, `$truthmark-realize`, `/skill truthmark-realize`, or `/truthmark:realize`
+- a user request that specifically asks to realize existing truth docs into code, not a generic code edit or documentation task
 
 ## Inputs
 
@@ -71,9 +72,9 @@ Doc-first implementation is only reliable when the source truth has a bounded ow
 
 ## Non-Goals
 
-- no truth-doc edits
-- no routing edits
-- no implementation from ambiguous source truth
+- no truth-doc edits, template rewrites, or truth-routing changes
+- no automatic invocation as a finish gate for ordinary code tasks
+- no implementation from broad, mixed-owner, stale, unrouteable, or implementation-conflicting source truth
 
 ## Maintenance Notes
 

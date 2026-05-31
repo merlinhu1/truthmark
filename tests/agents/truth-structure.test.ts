@@ -48,6 +48,8 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain("docs/templates/<kind>-doc.md");
     expect(skill).toContain("inspect the routed truth kind");
     expect(skill).toContain("Align existing docs to that template");
+    expect(skill).toContain("HTML comments under each template section");
+    expect(skill).toContain("normative authoring guidance");
     expect(skill).toContain("Truth-doc ownership gate");
     expect(skill).toContain(
       "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership",

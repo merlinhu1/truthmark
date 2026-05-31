@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-25
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truthmark-portal.ts
   - ../../../src/agents/workflow-manifest.ts
@@ -29,8 +29,11 @@ Portal runs only from an explicit user request to generate, refresh, or update t
 
 ## Inputs
 
-- configured repository files
-- relevant checkout evidence
+- `.truthmark/config.yml`, especially the namespaced `truthmark-portal` block when present
+- configured route docs and Markdown truth sources selected for presentation
+- repository instruction, architecture, and standards Markdown when they are part of the requested Portal source set
+- configured Portal template when the selected template is a repository-relative file
+- optional local `truthmark check` or `truthmark index` output used only as supporting evidence, never as required infrastructure
 
 ## Execution Model
 

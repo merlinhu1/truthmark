@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-14
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../truthmark/areas/release-automation.md
   - ../../../.github/workflows/ci.yml
@@ -21,9 +21,9 @@ This doc covers the committed GitHub Actions workflows under `.github/workflows/
 
 ## Triggers
 
-- Pushes to `main`
-- Pull requests
-- Published GitHub releases
+- Pushes to the `main` branch start the `CI` workflow.
+- Pull request events start the same `CI` verification workflow before merge.
+- Published GitHub release events start the `Publish` workflow; branch pushes and pull requests do not publish.
 
 ## Inputs
 

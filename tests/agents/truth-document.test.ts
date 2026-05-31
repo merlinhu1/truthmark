@@ -47,6 +47,8 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("must not write functional code");
     expect(skill).toContain("docs/templates/<kind>-doc.md");
     expect(skill).toContain("When creating or updating a truth doc");
+    expect(skill).toContain("HTML comments under each template section");
+    expect(skill).toContain("normative authoring guidance");
     expect(skill).toContain("Truth-doc ownership gate");
     expect(skill).toContain(
       "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners",
