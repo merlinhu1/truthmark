@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-05-18
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../src/config/defaults.ts
   - ../../src/fs/paths.ts
@@ -20,9 +20,13 @@ source_of_truth:
 
 # Init And Scaffold
 
+## Purpose
+
+This document protects the repository setup contract for `truthmark config` and `truthmark init`: how configuration is created, what init scaffolds or refreshes, and which generated surfaces are managed.
+
 ## Scope
 
-This document describes the current behavior of `truthmark config` and `truthmark init`.
+This document owns the current setup and scaffold behavior for `truthmark config` and `truthmark init`: config-file creation, default docs and routes, editable typed templates, managed instruction blocks, generated platform surfaces, and migration-risk reporting. It hands ongoing truth-doc content maintenance to the routed truth docs and workflow surfaces.
 
 ## Current Behavior
 
@@ -41,7 +45,7 @@ This document describes the current behavior of `truthmark config` and `truthmar
 9. reports migration risks instead of moving existing truth docs when hierarchy changes imply manual migration
 10. reports each touched file as `created`, `updated`, or `unchanged`
 
-## Scaffolded Files
+## Core Rules
 
 Current scaffold targets:
 
@@ -166,8 +170,6 @@ The generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth 
 
 Truthmark Portal surfaces are managed by the same renderer only when normalized `truthmarkPortal.enabled` is `true`. When disabled or omitted, init emits no Portal skills, prompts, commands, or managed-instruction mention.
 
-## AGENTS Management Rules
-
 The current managed-instruction update behavior is:
 
 - replace an existing managed Truthmark block when it is well formed
@@ -184,8 +186,6 @@ Repository-specific instructions should therefore live outside the managed block
 
 Truthmark does not create `OPENCODE.md` in V1. OpenCode-compatible behavior is installed through shared `AGENTS.md` guidance and project skill files under `.opencode/skills/`.
 
-## Hierarchy Behavior
-
 Hierarchy is configured in `.truthmark/config.yml`:
 
 - `docs.layout` is currently `hierarchical`
@@ -199,8 +199,6 @@ Hierarchy is configured in `.truthmark/config.yml`:
 The default scaffold treats truth `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the configured truth root, such as `<truth-root>/<domain>/<behavior>.md`.
 `truthmark init` creates [docs/templates/behavior-doc.md](../templates/behavior-doc.md) when it is missing or empty and refreshes all six templates under `docs/templates/*.md` on rerun. Template refreshes replace Truthmark-owned default sections with the current professional guidance baseline, including evidence, boundary, current-state, contract, operational, verification, decision, rationale, non-goal, and maintenance prompts. Existing template preambles/frontmatter are preserved so repository-owned metadata, custom titles, source-of-truth defaults, and local introductory guidance do not churn during section refresh. Project-specific custom `##` sections are preserved and reinserted before the next default section that followed them in the authored file; trailing custom sections remain trailing. Fenced code blocks are ignored while finding `##` template sections, so examples can contain Markdown headings without being split or mistaken for Truthmark-owned sections. The default child route references the seeded leaf truth doc with fenced YAML `truth_documents` metadata and `kind: behavior` rather than relying on path inference.
 When creating the default bounded behavior truth doc, init reads the repository's merged behavior template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{source_of_truth}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, and `{{template_path}}`. The seeded leaf uses `doc_type: behavior` and `truth_kind: behavior`. Existing non-empty truth docs are preserved; existing template files are merged rather than blindly overwritten so teams can keep local truth-doc standard sections while receiving updated default guidance.
-
-## Current Defaults
 
 Important current defaults:
 
@@ -222,7 +220,23 @@ Important current defaults:
 - Gemini CLI support uses `GEMINI.md` for hierarchical memory, `.gemini/commands/truthmark/*.toml` for explicit workflow commands with `{{args}}` focus forwarding, `.gemini/skills/truthmark-*/` for Agent Skills, and `.gemini/agents/*.md` for project subagents instead of introducing Truthmark-specific top-level CLI verbs or Gemini extensions
 - helper files are emitted only for workflows with declared helpers and configured skill-package platforms (`codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`); helper manifests call installed Truthmark CLI validators and generated packages do not bundle repo-local `scripts/*.mjs` helper copies
 
-## Init Diagnostics
+- all generated paths must remain inside the active repository root
+- generated path containment must reject symlinks that resolve outside the repository, including broken symlink leaves that would otherwise be created outside the worktree
+- init must be idempotent for existing non-empty scaffold files except for managed update surfaces such as instruction blocks, generated workflow assets, and merged `docs/templates/*.md` default sections
+- the command should remain safe to run repeatedly in the same repository
+
+## Flows And States
+
+The setup flow is:
+
+1. `truthmark config` writes or prints the repository configuration.
+2. `truthmark init` requires an existing valid config and resolves the active Git worktree.
+3. Init creates missing configured routing, truth-root, default-area, standards, template, and generated workflow surfaces.
+4. Init refreshes managed surfaces that Truthmark owns, including managed instruction blocks, generated host workflow assets, and default sections in `docs/templates/*.md`.
+5. Init preserves repository-authored content outside managed blocks and preserves template preambles/frontmatter plus custom template sections when refreshing default template sections.
+6. Init reports every created, updated, or unchanged surface as an action diagnostic in the shared command envelope.
+
+## Contracts
 
 Current init JSON reporting uses:
 
@@ -231,12 +245,7 @@ Current init JSON reporting uses:
 - `authority` for [docs/truthmark/areas.md](../truthmark/areas.md)
 - `config` for the remaining scaffolded files
 
-## Invariants
-
-- all generated paths must remain inside the active repository root
-- generated path containment must reject symlinks that resolve outside the repository, including broken symlink leaves that would otherwise be created outside the worktree
-- init must be idempotent for existing non-empty scaffold files except for managed update surfaces such as instruction blocks, generated workflow assets, and merged `docs/templates/*.md` default sections
-- the command should remain safe to run repeatedly in the same repository
+`truthmark config --json` and `truthmark init --json` use the shared command-result envelope described in [contracts.md](contracts.md). `truthmark init` requires a valid config and does not silently migrate existing truth-doc placement.
 
 ## Product Decisions
 
@@ -260,10 +269,22 @@ Keeping host-specific detail in generated skills and Gemini command files preven
 
 Keeping typed truth-doc templates in `docs/templates/` gives repository owners one local standard surface per truth kind while keeping generated workflow text compact as more workflow surfaces are added. Refreshing default template sections on `truthmark init` keeps those local standard surfaces aligned with current professional guidance, while preserving custom sections prevents product-specific review gates from being erased by package upgrades.
 
-## Primary Code Files
+## Non-Goals
+
+- Init does not create `.truthmark/config.yml`; `truthmark config` owns that step.
+- Init does not silently migrate existing truth docs to a new hierarchy.
+- Init does not overwrite manual text outside managed instruction blocks.
+- Init does not replace repository-authored template preambles/frontmatter or custom template sections during template refresh.
+- Init does not delete generated files for platforms that were later removed from config.
+
+## Maintenance Notes
+
+Primary implementation files:
 
 - `src/init/init.ts`
 - `src/templates/init-files.ts`
 - `src/templates/agents-block.ts`
 - `src/templates/workflow-surfaces.ts`
 - `src/fs/paths.ts`
+
+Update this doc when scaffold targets, managed-surface categories, template refresh behavior, generated platform surfaces, config defaults, or init diagnostics change.

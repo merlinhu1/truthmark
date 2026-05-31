@@ -44,7 +44,14 @@ Installed skills, prompts, commands, and managed instruction blocks are the work
 
 Agents inspect the checkout directly, apply workflow boundaries from committed surfaces, update only workflow-allowed files, and report what changed.
 
-## Current Behavior
+## Steps
+
+1. `truthmark init` reads `.truthmark/config.yml` and refreshes managed instruction blocks plus configured host surfaces.
+2. Generated host surfaces expose explicit manual workflows and the automatic finish-time Truth Sync guidance.
+3. An agent invokes or follows a generated surface, reads the checkout directly, applies workflow write boundaries, and reports the outcome.
+4. Optional CLI helpers may validate reports, build context, or index the repository, but they do not orchestrate workflow execution.
+
+Current behavior notes:
 
 The default platform list includes every supported platform. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`.
 
@@ -72,6 +79,14 @@ Truthmark Portal surfaces are generated only when `truthmark-portal.enabled` nor
 Truthmark-owned workflow surfaces are generated under host-specific directories. Repo-root `skills/` files are not generated V1 workflow surfaces.
 
 Managed instruction blocks are compact automatic-Sync trigger and boundary indexes. They intentionally omit platform-specific invocation strings, non-automatic workflow procedures, report examples, and long checklists. Detailed invocations and procedures live in generated skills, skill support files, prompts, and command files.
+
+## State, Retry, And Failure Behavior
+
+Generated workflow surfaces are committed repository files. If the Truthmark package is unavailable at workflow-execution time, agents still follow the committed surfaces manually and report unavailable optional helper output. Removing a platform from config stops future refreshes for that platform but does not delete already committed surfaces.
+
+## Outputs
+
+The installed runtime outputs managed instruction blocks, host-native skills/prompts/commands/agents, optional helper validation reports, and agent completion reports. Canonical truth remains in Markdown docs and route files.
 
 ## Product Decisions
 

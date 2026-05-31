@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-18
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truth-document.ts
   - ../../../src/agents/write-lease.ts
@@ -40,13 +40,24 @@ Truth Document owns manual missing-truth generation for implemented behavior. It
 
 Truth Document is implementation-first and never writes functional code. It documents current implemented behavior only and does not invent future behavior or planned endpoints. In Codex, Claude Code, GitHub Copilot, Gemini CLI, or OpenCode, Truth Document may automatically use generated read-only verifier subagents and explicit-lease `truth-doc-writer` subagents when the host supports subagent dispatch and the parent agent chooses bounded fan-out.
 
-## Current Behavior
+## Steps
+
+1. Confirm the user is asking to document existing implemented behavior rather than change functional code.
+2. Inspect implementation, tests, config, route files, and existing canonical docs.
+3. Apply the ownership gate and run Truth Structure first when routing or truth ownership is unsafe and repair is in scope.
+4. Create or update only routed canonical truth docs and route files needed for the documented behavior, using the routed truth kind's template and its section-comment guidance for touched truth-doc content.
+5. Preserve active Product Decisions and Rationale during bounded shape repair or Structure handoff.
+6. Report evidence, written docs, routing changes, and blocked ambiguities.
+
+Current behavior notes:
 
 Truth Document applies the ownership gate before writing. If routing is missing, stale, broad, overloaded, catch-all, or cannot map behavior to a bounded truth owner, it runs Truth Structure first when repair is safe and in scope. If repair is unsafe, ambiguous, or outside the task boundary, it blocks and recommends Truth Structure.
 
 If the candidate truth doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, Truth Document does not repair it in place. It switches to Truth Structure or blocks.
 
 When ownership is bounded, Truth Document creates or updates leaf truth docs, keeps behavior truth docs behavior-oriented, keeps API endpoint details in the nearest contract truth doc when that doc owns the contract, and preserves unrelated authored content.
+
+When creating or updating a truth doc, Truth Document uses the routed `truth_kind` to select `docs/templates/<kind>-doc.md`. The HTML comments under each selected template section are normative authoring guidance for that section; Document must write content that satisfies the comment guidance while preserving supported existing claims.
 
 When Truth Document restructures a bounded truth doc or runs Structure first, it inventories Product Decisions and Rationale before editing. Existing entries must be preserved in or moved to their bounded owner docs, narrowed or removed only with checkout evidence, or blocked for manual review when ownership is unclear.
 
@@ -59,12 +70,21 @@ When subagent mode is available, the parent agent may dispatch read-only route a
 Completed reports include `Implementation reviewed`, `Ownership reviewed`, `Structure required` when applicable, `Truth docs created`, `Truth docs updated`, `Truth docs restructured`, `Routing updated`, `Evidence checked`, `Helper scripts`, and `Notes`. Required completed-report sections must contain at least one bullet entry, `Evidence checked` must use structured `Claim`, indented `Evidence`, and `Result` entries, and blocked reports must include `Reason` for helper validation to accept them.
 When write workers are used, each worker report must include `status`, `worker`, `workflow`, `shard`, `filesChanged`, `claimsChecked`, `evidenceChecked`, `offLeaseChanges`, `blockers`, and `notes`. The parent accepts a completed worker report only after validating the parsed report against the lease identity, required report fields, actual worker diff, `allowedWrites`, `forbiddenWrites`, reported `filesChanged`, reported `offLeaseChanges`, and reported `blockers`. Blocked worker reports remain blocked outcomes and must include blockers; off-lease or forbidden actual diffs are rejected rather than trusted from self-report.
 
+## State, Retry, And Failure Behavior
+
+If routing is missing, stale, broad, overloaded, catch-all, or cannot map behavior to a bounded owner, Truth Document either runs Truth Structure when safe and in scope or blocks and recommends it. If helper/subagent support is unavailable, the parent agent performs the same checks manually.
+
+## Outputs
+
+Truth Document outputs canonical truth-doc and route-file changes plus a completion report. It does not output functional-code changes or planned-behavior docs.
+
 ## Product Decisions
 
 - Decision (2026-05-15): Truth Document exists because documenting existing implemented behavior without code changes is not a Truth Sync run.
 - Decision (2026-05-15): Truth Document must switch to Truth Structure rather than patching mixed-owner truth docs.
 - Decision (2026-05-15): Truth Document must not lose Product Decisions or Rationale during bounded shape repair or Structure handoff.
 - Decision (2026-05-16): Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode subagents may gather bounded read-only evidence for Document without preloading repo-wide policy by default. Document may also dispatch `truth-doc-writer` only with an explicit write lease, while parent agents retain policy, acceptance, and diff-validation ownership.
+- Decision (2026-05-31): Truth Document treats template section comments as the section-level content standard for authored or repaired truth-doc prose.
 
 ## Rationale
 
@@ -72,10 +92,10 @@ Documentation-only work can still damage repository truth if it appends implemen
 
 ## Non-Goals
 
-- no functional-code edits
-- no planned behavior documentation
-- no in-place ownership repair for mixed-owner docs
+- no functional-code edits or generated code changes
+- no planned behavior documentation, speculative endpoints, or roadmap prose
+- no in-place ownership repair for mixed-owner docs; hand off to Truth Structure instead
 
 ## Maintenance Notes
 
-Update this doc when Truth Document triggers, write boundaries, ownership handoff behavior, or report shape changes.
+Update this doc when Truth Document triggers, write boundaries, template-authoring guidance, ownership handoff behavior, or report shape changes.

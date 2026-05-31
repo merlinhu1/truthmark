@@ -129,6 +129,8 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("docs/templates/<kind>-doc.md");
     expect(skillBody).toContain("inspect the routed truth kind");
     expect(skillBody).toContain("Align existing docs to that template");
+    expect(skillBody).toContain("HTML comments under each template section");
+    expect(skillBody).toContain("normative authoring guidance");
     expect(skillBody).toContain("Truth-doc ownership gate");
     expect(skillBody).toContain(
       "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners",

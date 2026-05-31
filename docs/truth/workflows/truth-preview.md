@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-05-16
+last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/agents/truth-preview.ts
   - ../../../src/agents/workflow-manifest.ts
@@ -11,6 +11,10 @@ source_of_truth:
 ---
 
 # Truth Preview
+
+## Purpose
+
+Truth Preview protects a read-only, explicit planning surface for previewing likely Truthmark routing, workflow choice, write classes, target files, and handoff before edits.
 
 ## Scope
 
@@ -22,6 +26,14 @@ It is an explicit read-only planning surface. It is intended, not authorized, an
 
 - explicit user invocation through the installed host surface
 - questions about likely workflow routing, route ownership, target files, write classes, or subagent use before edits
+
+## Inputs
+
+- `.truthmark/config.yml`
+- root and child route files
+- relevant canonical docs
+- relevant implementation files
+- the user's requested focus or proposed change
 
 ## Execution Model
 
@@ -40,6 +52,21 @@ Truth Preview must not edit files, create truth docs, update routing, run Truth 
 
 Completed reports include `Requested outcome`, `Likely workflow`, `Why this workflow`, `Likely route owner`, `Expected write classes`, `Expected target files`, `Suggested subagent use`, `Blocking ambiguity`, and `Handoff`.
 
+## Steps
+
+1. Read only the config, routes, canonical docs, and implementation needed to preview ownership.
+2. Identify the likely Truthmark workflow, route owner, write classes, target files, and useful subagent mode.
+3. Report ambiguity or blocking ownership risk instead of mutating files.
+4. Hand off to the selected workflow only after user approval or explicit follow-up.
+
+## State, Retry, And Failure Behavior
+
+Truth Preview is read-only and has no retry state beyond re-running the preview with more specific context. If ownership is ambiguous, the output states the ambiguity and recommends the next workflow instead of authorizing edits.
+
+## Outputs
+
+Truth Preview outputs a planning report: likely workflow, selection rationale, likely route owner, expected write classes, expected target files, suggested subagent use, blocking ambiguity, and handoff. It does not create, update, or validate repository files.
+
 ## Product Decisions
 
 - Decision (2026-05-16): Truth Preview is a first-class explicit workflow because routing transparency before mutation can prevent agents from loading or acting through the wrong heavier workflow.
@@ -52,10 +79,9 @@ Preview improves agent performance only when it prevents unnecessary workflow lo
 
 ## Non-Goals
 
-- no automatic invocation
-- no validation gate
-- no Truth Check replacement
-- no file mutation
+- no automatic invocation, mutation, or approval bypass before the user chooses a follow-up workflow
+- no validation gate, final correctness claim, or replacement for Truth Check
+- no write leases, write-worker dispatch, route updates, truth-doc edits, or functional-code mutation
 
 ## Maintenance Notes
 
