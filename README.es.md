@@ -368,7 +368,7 @@ La invocación directa sigue siendo útil para depurar, forzar una sincronizaci�
 Usa Truth Document cuando la implementación ya existe pero la verdad del repositorio está incompleta.
 
 ```text
-/truthmark-document documenta el comportamiento implementado de timeout de sesión bajo docs/truth/authentication
+/truthmark-document documenta el comportamiento implementado de timeout de sesión bajo docs/truthmark/truth/authentication
 ```
 
 Truth Document inspecciona implementación, pruebas, archivos de rutas y documentación existente como evidencia.
@@ -382,7 +382,7 @@ No debe cambiar código funcional.
 Usa Truth Realize cuando una decisión de producto o arquitectura empieza en documentos y el código debe actualizarse para coincidir.
 
 ```text
-/truthmark-realize realiza docs/truth/authentication/session-timeout.md como código
+/truthmark-realize realiza docs/truthmark/truth/authentication/session-timeout.md como código
 ```
 
 Truth Realize es doc-first.
@@ -456,10 +456,10 @@ Está separado deliberadamente del flujo central de verdad:
 Habilítalo con el bloque de configuración con espacio de nombres:
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 Luego vuelve a ejecutar:
@@ -498,14 +498,14 @@ Las áreas importantes de configuración incluyen:
 | --- | --- |
 | `version` | Versión del contrato de configuración. |
 | `platforms` | Hosts de agentes que deben recibir superficies generadas específicas de plataforma. |
-| `docs.layout` | Modo actual de layout de documentación. |
-| `docs.roots` | Raíces nombradas de documentación canónica. |
-| `docs.routing.root_index` | Ruta del índice raíz de rutas. |
-| `docs.routing.area_files_root` | Directorio para archivos de rutas secundarias delegadas. |
-| `docs.routing.default_area` | Nombre base de la ruta secundaria inicial generada. |
-| `docs.routing.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
-| `truthmark-portal` | Ajustes opcionales del flujo manual de presentación: `enabled`, `output` y `template`. |
-| `authority` | Documentos canónicos y globs ordenados usados como autoridad de verdad del repositorio. |
+| `truthmark.workspace` | Workspace propiedad de Truthmark para rutas, documentos de verdad, plantillas y salida de presentación generada. |
+| `truthmark.routes.index` | Ruta del índice raíz relativa a `truthmark.workspace`. |
+| `truthmark.routes.areas` | Directorio de rutas secundarias delegadas relativo a `truthmark.workspace`. |
+| `truthmark.routes.default_area` | Nombre base de la ruta secundaria inicial generada. |
+| `truthmark.routes.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
+| `truthmark.truth.root` | Raíz de documentos de verdad relativa a `truthmark.workspace`. |
+| `truthmark.templates.root` | Raíz de plantillas de documentos de verdad relativa a `truthmark.workspace`. |
+| `truthmark.generated.portal` | Activación opcional del flujo manual de presentación: `enabled`. |
 | `instruction_targets` | Archivos que reciben bloques de instrucciones administrados compartidos, como `AGENTS.md`. |
 | `frontmatter.required` | Campos de metadatos que producen diagnósticos de error cuando faltan. |
 | `frontmatter.recommended` | Campos de metadatos que producen diagnósticos de revisión cuando faltan. |
@@ -518,8 +518,8 @@ Truthmark mapea superficies de código a documentos de verdad.
 Los archivos principales de rutas son:
 
 ```text
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
+docs/truthmark/routes/areas.md
+docs/truthmark/routes/areas/**/*.md
 ```
 
 Una ruta le dice al agente:
@@ -633,7 +633,7 @@ truthmark check
 ### Documentar comportamiento implementado
 
 ```text
-/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truth/authentication
+/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truthmark/truth/authentication
 ```
 
 ### Sincronizar después de cambios de código
@@ -645,7 +645,7 @@ truthmark check
 ### Realizar una decisión doc-first
 
 ```text
-/truthmark-realize realiza docs/truth/billing/invoice-retry-policy.md como código
+/truthmark-realize realiza docs/truthmark/truth/billing/invoice-retry-policy.md como código
 ```
 
 ### Auditar la salud de verdad desde la terminal
@@ -669,10 +669,10 @@ truthmark context --workflow truth-sync --base main --format markdown
 ### Habilitar el flujo Portal opcional
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 ```bash
@@ -747,10 +747,10 @@ El comportamiento actual detallado vive bajo `docs/`:
 
 - [Índice de documentación](docs/README.md)
 - [Resumen de arquitectura](docs/architecture/overview.md)
-- [Contratos de API y CLI](docs/truth/contracts.md)
-- [Comportamiento de init y scaffold](docs/truth/init-and-scaffold.md)
-- [Diagnósticos de check](docs/truth/check-diagnostics.md)
-- [Flujos instalados](docs/truth/workflows/overview.md)
+- [Contratos de API y CLI](docs/truthmark/truth/contracts.md)
+- [Comportamiento de init y scaffold](docs/truthmark/truth/init-and-scaffold.md)
+- [Diagnósticos de check](docs/truthmark/truth/check-diagnostics.md)
+- [Flujos instalados](docs/truthmark/truth/workflows/overview.md)
 - [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
 
 ## Límites de diseño

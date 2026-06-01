@@ -57,6 +57,8 @@ export type ParseAreasMarkdownOptions = {
   truthDocsRoot?: string;
 };
 
+const DEFAULT_WORKSPACE_TRUTH_DOCS_ROOT = "docs/truthmark/truth";
+
 const slugify = (value: string): string => {
   return value
     .trim()
@@ -98,48 +100,12 @@ export const inferTruthDocumentKindFromPath = (
   options: ParseAreasMarkdownOptions = {},
 ): TruthDocumentKind | null => {
   const normalizedPath = documentPath.replaceAll("\\", "/");
-  const truthDocsRoot = options.truthDocsRoot
+  const truthDocsRoot = (options.truthDocsRoot ?? DEFAULT_WORKSPACE_TRUTH_DOCS_ROOT)
     ?.replaceAll("\\", "/")
     .replace(/\/+$/u, "");
 
-  if (
-    (truthDocsRoot && normalizedPath.startsWith(`${truthDocsRoot}/`)) ||
-    normalizedPath.startsWith("docs/truth/")
-  ) {
+  if (truthDocsRoot && normalizedPath.startsWith(`${truthDocsRoot}/`)) {
     return "behavior";
-  }
-
-  if (
-    normalizedPath.startsWith("docs/contracts/") ||
-    normalizedPath.startsWith("docs/contract/") ||
-    normalizedPath.startsWith("docs/api/")
-  ) {
-    return "contract";
-  }
-
-  if (normalizedPath.startsWith("docs/architecture/")) {
-    return "architecture";
-  }
-
-  if (
-    normalizedPath.startsWith("docs/workflows/") ||
-    normalizedPath.startsWith("docs/workflow/")
-  ) {
-    return "workflow";
-  }
-
-  if (
-    normalizedPath.startsWith("docs/operations/") ||
-    normalizedPath.startsWith("docs/platform/")
-  ) {
-    return "operations";
-  }
-
-  if (
-    normalizedPath.startsWith("docs/testing/") ||
-    normalizedPath.startsWith("docs/tests/")
-  ) {
-    return "test-behavior";
   }
 
   return null;

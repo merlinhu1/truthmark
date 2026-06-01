@@ -7,7 +7,7 @@ const contextPack = {
   task: "truth-sync",
   changedFiles: ["src/auth/session.ts"],
   owningAreas: ["Authentication"],
-  relevantDocs: ["docs/truth/authentication/session-timeout.md"],
+  relevantDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
   evidenceSnippets: [
     {
       id: "E1",

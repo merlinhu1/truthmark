@@ -1,19 +1,10 @@
 import fs from "node:fs/promises";
-import fg from "fast-glob";
-import { DEFAULT_DOCS_HIERARCHY } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { FileWriteResult } from "../fs/paths.js";
 import { ensureRepoFile, resolveRepoPath, writeRepoFile } from "../fs/paths.js";
-import type { Diagnostic } from "../output/diagnostic.js";
 import { parseAreasMarkdown } from "../routing/areas.js";
 import { resolveTruthDocsRoot } from "../truth/docs.js";
 import {
-  ARCHITECTURE_DOC_TEMPLATE_PATH,
-  BEHAVIOR_DOC_TEMPLATE_PATH,
-  CONTRACT_DOC_TEMPLATE_PATH,
-  OPERATIONS_DOC_TEMPLATE_PATH,
-  TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
-  WORKFLOW_DOC_TEMPLATE_PATH,
   renderChildAreaTemplate,
   mergeTruthDocTemplate,
   renderArchitectureDocTemplateFile,
@@ -27,23 +18,6 @@ import {
   renderTestBehaviorDocTemplateFile,
   renderWorkflowDocTemplateFile,
 } from "../templates/init-files.js";
-
-const KNOWN_DEFAULT_ROOTS = [
-  DEFAULT_DOCS_HIERARCHY.roots.truth,
-  "docs/api",
-  DEFAULT_DOCS_HIERARCHY.roots.architecture,
-  DEFAULT_DOCS_HIERARCHY.roots.standards,
-  "docs/guides",
-] as const;
-
-const hasMarkdownFiles = async (rootDir: string, root: string): Promise<boolean> => {
-  const matches = await fg([`${root}/**/*.md`], {
-    cwd: rootDir,
-    onlyFiles: true,
-    followSymbolicLinks: false,
-  });
-  return matches.length > 0;
-};
 
 const truthRoot = resolveTruthDocsRoot;
 
@@ -60,9 +34,19 @@ const rootIndexReferencesChildRoute = async (
   );
 };
 
-const readBehaviorDocTemplate = async (rootDir: string): Promise<string> => {
+const truthTemplatePath = (config: TruthmarkConfig, fileName: string): string => {
+  return `${config.truthmark.paths.templatesRoot}/${fileName}`;
+};
+
+const readBehaviorDocTemplate = async (
+  rootDir: string,
+  config: TruthmarkConfig,
+): Promise<string> => {
   try {
-    return await fs.readFile(resolveRepoPath(rootDir, BEHAVIOR_DOC_TEMPLATE_PATH), "utf8");
+    return await fs.readFile(
+      resolveRepoPath(rootDir, truthTemplatePath(config, "behavior-doc.md")),
+      "utf8",
+    );
   } catch (error: unknown) {
     if (error instanceof Error && "code" in error && error.code === "ENOENT") {
       return renderBehaviorDocTemplateFile();
@@ -94,18 +78,18 @@ export const scaffoldHierarchy = async (
 ): Promise<FileWriteResult[]> => {
   const results: FileWriteResult[] = [];
   const truthDocsRoot = truthRoot(config);
-  const truthDomainRoot = `${truthDocsRoot}/${config.docs.routing.defaultArea}`;
-  const childRoutePath = `${config.docs.routing.areaFilesRoot}/${config.docs.routing.defaultArea}.md`;
+  const truthDomainRoot = `${truthDocsRoot}/${config.truthmark.routes.defaultArea}`;
+  const childRoutePath = `${config.truthmark.paths.routeAreasRoot}/${config.truthmark.routes.defaultArea}.md`;
 
   results.push(
     await ensureRepoFile(
       rootDir,
-      config.docs.routing.rootIndex,
+      config.truthmark.paths.routesIndex,
       renderHierarchicalAreasIndexTemplate(config),
     ),
   );
   if (
-    await rootIndexReferencesChildRoute(rootDir, config.docs.routing.rootIndex, childRoutePath)
+    await rootIndexReferencesChildRoute(rootDir, config.truthmark.paths.routesIndex, childRoutePath)
   ) {
     results.push(await ensureRepoFile(rootDir, childRoutePath, renderChildAreaTemplate(config)));
   }
@@ -126,46 +110,46 @@ export const scaffoldHierarchy = async (
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      BEHAVIOR_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "behavior-doc.md"),
       renderBehaviorDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      CONTRACT_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "contract-doc.md"),
       renderContractDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      ARCHITECTURE_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "architecture-doc.md"),
       renderArchitectureDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      WORKFLOW_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "workflow-doc.md"),
       renderWorkflowDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      OPERATIONS_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "operations-doc.md"),
       renderOperationsDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      TEST_BEHAVIOR_DOC_TEMPLATE_PATH,
+      truthTemplatePath(config, "test-behavior-doc.md"),
       renderTestBehaviorDocTemplateFile(),
     ),
   );
-  const behaviorDocTemplate = await readBehaviorDocTemplate(rootDir);
+  const behaviorDocTemplate = await readBehaviorDocTemplate(rootDir, config);
   results.push(
     await ensureRepoFile(
       rootDir,
@@ -174,26 +158,4 @@ export const scaffoldHierarchy = async (
     ),
   );
   return results;
-};
-
-export const detectHierarchyMigrationDiagnostics = async (
-  rootDir: string,
-  config: TruthmarkConfig,
-): Promise<Diagnostic[]> => {
-  const configuredRoots = new Set(Object.values(config.docs.roots));
-  const diagnostics: Diagnostic[] = [];
-  for (const defaultRoot of KNOWN_DEFAULT_ROOTS) {
-    if (configuredRoots.has(defaultRoot)) {
-      continue;
-    }
-    if (await hasMarkdownFiles(rootDir, defaultRoot)) {
-      diagnostics.push({
-        category: "config",
-        severity: "review",
-        message: `Configured hierarchy no longer includes ${defaultRoot}, but markdown still exists there. Perform manual migration before relying on the new hierarchy.`,
-        file: ".truthmark/config.yml",
-      });
-    }
-  }
-  return diagnostics;
 };

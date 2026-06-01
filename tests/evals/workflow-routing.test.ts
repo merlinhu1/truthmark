@@ -111,7 +111,7 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   ],
   "truthmark-portal": [
     "manual-only presentation workflow",
-    "configured Portal output directory only",
+    "fixed Portal output directory only",
     "Markdown remains canonical",
     "Truthmark Portal: completed",
     "Output path:",
@@ -145,7 +145,7 @@ const candidateManifestText = (
 
 const buildGeneratedSurfaceMap = (): Map<string, string> => {
   const config = createDefaultConfig();
-  config.truthmarkPortal.enabled = true;
+  config.truthmark.generated.portal.enabled = true;
   return new Map(
     renderGeneratedSurfaces(config).map((surface) => [
       surface.path,

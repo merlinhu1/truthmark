@@ -16,9 +16,9 @@ This guide is for humans maintaining Truthmark's own docs tree.
 
 ## When To Update Which Docs
 
-- Change to scaffolded files or AGENTS management: update [docs/truth/init-and-scaffold.md](../truth/init-and-scaffold.md)
-- Change to diagnostics, routing, containment, or branch scope: update [docs/truth/check-diagnostics.md](../truth/check-diagnostics.md)
-- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truth/workflows/overview.md](../truth/workflows/overview.md) and the relevant bounded doc under `docs/truth/workflows/`
+- Change to scaffolded files or AGENTS management: update [docs/truthmark/truth/init-and-scaffold.md](../truthmark/truth/init-and-scaffold.md)
+- Change to diagnostics, routing, containment, or branch scope: update [docs/truthmark/truth/check-diagnostics.md](../truthmark/truth/check-diagnostics.md)
+- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truthmark/truth/workflows/overview.md](../truthmark/truth/workflows/overview.md) and the relevant bounded doc under `docs/truthmark/truth/workflows/`
 - Change to repository-wide rules or completion policy: update [docs/ai/repo-rules.md](../ai/repo-rules.md) or the relevant standard
 
 ## Maintaining AGENTS.md
@@ -32,7 +32,7 @@ Do not hand-edit the managed block for one-off wording changes. Change the templ
 
 Generated Truthmark skill files under `.codex/skills/` and `.opencode/skills/` follow the same rule. Edit the renderers in `src/agents/` and `src/templates/`, then refresh through `truthmark init`.
 
-## Maintaining docs/truthmark/areas.md
+## Maintaining docs/truthmark/routes/areas.md
 
 When code boundaries or canonical docs change:
 
@@ -40,7 +40,7 @@ When code boundaries or canonical docs change:
 2. narrow overly broad truth-doc lists instead of adding more shadow docs
 3. make sure every relevant `src/**` file still matches at least one area mapping
 
-With hierarchical routing, treat [docs/truthmark/areas.md](../truthmark/areas.md) as the root route index and `docs/truthmark/areas/**/*.md` as the delegated child route files. Keep delegation to one level.
+With hierarchical routing, treat [docs/truthmark/routes/areas.md](../truthmark/routes/areas.md) as the root route index and `docs/truthmark/routes/areas/**/*.md` as the delegated child route files. Keep delegation to one level.
 
 ## Changing Hierarchy
 

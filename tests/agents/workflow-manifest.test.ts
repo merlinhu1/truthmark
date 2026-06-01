@@ -162,7 +162,7 @@ describe("Truthmark workflow manifest", () => {
       expect.arrayContaining([
         "generate the Truthmark Portal",
         "refresh the committed HTML docs site",
-        "update docs/truthmark-portal",
+        "update the Truthmark Portal output",
       ]),
     );
     expect(workflow.negativeTriggers).toEqual(
@@ -173,7 +173,7 @@ describe("Truthmark workflow manifest", () => {
         "machine-readable agent context",
       ]),
     );
-    expect(workflow.allowedWrites).toEqual(["configured Portal output directory only"]);
+    expect(workflow.allowedWrites).toEqual(["fixed Portal output directory only"]);
     expect(workflow.reportSections).toEqual([
       "Output path",
       "Page count",

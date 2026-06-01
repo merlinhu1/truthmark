@@ -81,7 +81,7 @@ describe("installed workflow contract", () => {
       expect(structureSkill).toContain(
         "Follow repository instruction files that exist in this checkout",
       );
-      expect(structureSkill).toContain("docs/truthmark/areas.md");
+      expect(structureSkill).toContain("docs/truthmark/routes/areas.md");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain(
         "Follow repository instruction files that exist in this checkout",

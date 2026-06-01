@@ -4,10 +4,9 @@ import { loadConfig } from "../config/load.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { CommandResult, DiagnosticCategory } from "../output/diagnostic.js";
 import { getGitRepository } from "../git/repository.js";
-import { ensureRepoFile, resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
-import { detectHierarchyMigrationDiagnostics, scaffoldHierarchy } from "./hierarchy.js";
+import { resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
+import { scaffoldHierarchy } from "./hierarchy.js";
 import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
-import { renderDefaultStandards } from "../templates/default-standards.js";
 import { renderGeneratedSurfaces, type GeneratedSurface } from "../templates/generated-surfaces.js";
 
 const escapeRegExp = (value: string): string => {
@@ -15,25 +14,16 @@ const escapeRegExp = (value: string): string => {
 };
 
 const MANAGED_WORKFLOW_HEADING = "## Truthmark Workflow";
-const LEGACY_MANAGED_LINES = [
-  "### Truth Sync",
-  "- may read changed functional code files",
-  "- may write truth docs only",
-  "- must not rewrite functional code",
-];
 const CANONICAL_MANAGED_LINES = new Set(
-  [
-    ...renderAgentsBlock()
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(
-        (line) =>
-          line.length > 0 &&
-          line !== TRUTHMARK_BLOCK_START &&
-          line !== TRUTHMARK_BLOCK_END,
-      ),
-    ...LEGACY_MANAGED_LINES,
-  ],
+  renderAgentsBlock()
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line.length > 0 &&
+        line !== TRUTHMARK_BLOCK_START &&
+        line !== TRUTHMARK_BLOCK_END,
+    ),
 );
 
 const countCanonicalManagedLineMatches = (lines: string[]): number => {
@@ -68,58 +58,12 @@ const removeTrailingManagedChunk = (preservedLines: string[]): void => {
   }
 };
 
-const LEGACY_REPO_RULES_PATH = ["docs", "ai", `repo-${"rules.md"}`].join("/");
-const LEGACY_AGENT_ONBOARDING_PATH = ["docs", "ai", `agent-${"onboarding.md"}`].join(
-  "/",
-);
-const LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE = [
-  "primary repository",
-  "instruction source",
-].join(" ");
-
-const normalizeLegacyInstructionPreamble = (content: string): string => {
-  return content
-    .replaceAll(
-      `Follow \`${LEGACY_REPO_RULES_PATH}\`.`,
-      "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
-    )
-    .replaceAll(
-      `Follow \`${LEGACY_REPO_RULES_PATH}\` as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE}.`,
-      "Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.",
-    )
-    .replaceAll(
-      `Use that file as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE} for Codex.`,
-      "Use explicitly configured repository policy docs only when they exist in this checkout.",
-    )
-    .replaceAll(
-      `Use that file as the ${LEGACY_PRIMARY_REPO_INSTRUCTION_PHRASE} for this agent.`,
-      "Use explicitly configured repository policy docs only when they exist in this checkout.",
-    )
-    .replaceAll("Codex-specific:", "Agent-specific:")
-    .replaceAll(
-      "- Read `docs/README.md` for the canonical docs map.",
-      "- Read the configured Truthmark routing files when choosing or updating canonical docs.",
-    )
-    .replaceAll(
-      "- Read `docs/README.md` only when choosing or updating canonical docs.",
-      "- Read the configured Truthmark routing files when choosing or updating canonical docs.",
-    )
-    .replaceAll(
-      `- Use \`${LEGACY_AGENT_ONBOARDING_PATH}\` for quick task routing.`,
-      "- Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
-    )
-    .replaceAll(
-      `- Use \`${LEGACY_AGENT_ONBOARDING_PATH}\` only when task routing is unclear or cross-area.`,
-      "- Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.",
-    );
-};
-
 const upsertManagedBlock = (existingContent: string | null, block: string): string => {
   if (!existingContent || existingContent.trim().length === 0) {
     return block;
   }
 
-  const normalizedExistingContent = normalizeLegacyInstructionPreamble(existingContent);
+  const normalizedExistingContent = existingContent;
   const startMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_START), "g");
   const endMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_END), "g");
   const managedBlockPattern = new RegExp(
@@ -253,8 +197,8 @@ const diagnosticCategoryForPath = (
     return "truth-sync";
   }
 
-  if (filePath === config.docs.routing.rootIndex) {
-    return "authority";
+  if (filePath === config.truthmark.paths.routesIndex) {
+    return "area-index";
   }
 
   return "config";
@@ -303,7 +247,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
     return {
       command: "init",
       summary:
-        "Truthmark init requires .truthmark/config.yml. Run truthmark config first, review the hierarchy, then run truthmark init.",
+        "Truthmark init requires .truthmark/config.yml. Run truthmark config first, review the workspace paths, then run truthmark init.",
       diagnostics: loadedConfig.diagnostics,
       data: {
         repositoryRoot: repository.repositoryRoot,
@@ -315,17 +259,10 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
     };
   }
 
-  const defaultStandards = renderDefaultStandards([]);
-
   const results: FileWriteResult[] = [];
-
-  for (const template of defaultStandards) {
-    results.push(await ensureRepoFile(rootDir, template.path, template.content));
-  }
 
   const config = loadedConfig.config;
   results.push(...(await scaffoldHierarchy(rootDir, config)));
-  const migrationDiagnostics = await detectHierarchyMigrationDiagnostics(rootDir, config);
   const block = renderAgentsBlock(config);
   const platformFiles = renderGeneratedSurfaces(config, block);
 
@@ -341,7 +278,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
       changedResults.length > 0
         ? "Initialized or updated the Truthmark repository scaffold."
         : "Truthmark repository scaffold is already up to date.",
-    diagnostics: [...writeDiagnostics(results, config), ...migrationDiagnostics],
+    diagnostics: writeDiagnostics(results, config),
     data: {
       repositoryRoot: repository.repositoryRoot,
       worktreePath: repository.worktreePath,

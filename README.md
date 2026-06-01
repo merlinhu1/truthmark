@@ -329,7 +329,7 @@ They are used by agents or agent hosts during repository work. They are not top-
 | Truth Preview | read-only | The agent needs to preview likely routing before edits. | Reads only. Does not authorize writes. |
 | Truth Realize | doc-first | Product or architecture truth docs lead and code should be updated to match. | Updates code only. The agent must not edit the truth docs it is realizing. |
 | Truth Check | audit-first | A reviewer or agent needs to audit repository truth health. | Audits and reports. |
-| Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the configured Portal output directory. |
+| Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the fixed Portal output directory. |
 
 ### Important distinction
 
@@ -368,7 +368,7 @@ Direct invocation is still useful for troubleshooting, forcing an early sync, or
 Use Truth Document when the implementation already exists but the repository truth is incomplete.
 
 ```text
-/truthmark-document document the implemented session timeout behavior under docs/truth/authentication
+/truthmark-document document the implemented session timeout behavior under docs/truthmark/truth/authentication
 ```
 
 Truth Document inspects implementation, tests, route files, and existing docs as evidence.
@@ -382,7 +382,7 @@ It must not change functional code.
 Use Truth Realize when a product or architecture decision starts in docs and code should be updated to match.
 
 ```text
-/truthmark-realize realize docs/truth/authentication/session-timeout.md into code
+/truthmark-realize realize docs/truthmark/truth/authentication/session-timeout.md into code
 ```
 
 Truth Realize is doc-first.
@@ -450,16 +450,16 @@ It is deliberately separate from the core truth workflow:
 - Markdown truth docs remain canonical.
 - Generated Portal HTML is presentation only.
 - Portal is manual-only; it does not run as a completion gate, Truth Sync step, `truthmark check` step, or automatic post-change hook.
-- Portal writes stay inside the configured output directory unless the user explicitly changes scope.
+- Portal writes stay inside the fixed Truthmark-derived output directory.
 - Generated pages should use local assets, source provenance, and a visible Markdown-canonical disclaimer.
 
 Enable it with the namespaced config block:
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 Then rerun:
@@ -498,14 +498,14 @@ Important config areas include:
 | --- | --- |
 | `version` | Config contract version. |
 | `platforms` | Agent hosts that should receive platform-specific generated surfaces. |
-| `docs.layout` | Current docs layout mode. |
-| `docs.roots` | Named canonical documentation roots. |
-| `docs.routing.root_index` | Root route index path. |
-| `docs.routing.area_files_root` | Directory for delegated child route files. |
-| `docs.routing.default_area` | Initial scaffolded child route basename. |
-| `docs.routing.max_delegation_depth` | Current maximum route delegation depth. |
-| `truthmark-portal` | Optional manual presentation workflow settings: `enabled`, `output`, and `template`. |
-| `authority` | Ordered canonical docs and globs used as repository truth authority. |
+| `truthmark.workspace` | Truthmark-owned workspace for routes, truth docs, templates, and generated presentation output. |
+| `truthmark.routes.index` | Root route index path relative to `truthmark.workspace`. |
+| `truthmark.routes.areas` | Directory for delegated child route files relative to `truthmark.workspace`. |
+| `truthmark.routes.default_area` | Initial scaffolded child route basename. |
+| `truthmark.routes.max_delegation_depth` | Current maximum route delegation depth. |
+| `truthmark.truth.root` | Truth doc root relative to `truthmark.workspace`. |
+| `truthmark.templates.root` | Truth-doc template root relative to `truthmark.workspace`. |
+| `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
 | `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
 | `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
 | `frontmatter.recommended` | Metadata fields that produce review diagnostics when missing. |
@@ -518,8 +518,8 @@ Truthmark maps code surfaces to truth docs.
 The main routing files are:
 
 ```text
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
+docs/truthmark/routes/areas.md
+docs/truthmark/routes/areas/**/*.md
 ```
 
 A route tells the agent:
@@ -633,7 +633,7 @@ truthmark check
 ### Document implemented behavior
 
 ```text
-/truthmark-document document the implemented password reset flow under docs/truth/authentication
+/truthmark-document document the implemented password reset flow under docs/truthmark/truth/authentication
 ```
 
 ### Sync after code changes
@@ -645,7 +645,7 @@ truthmark check
 ### Realize a doc-first decision
 
 ```text
-/truthmark-realize realize docs/truth/billing/invoice-retry-policy.md into code
+/truthmark-realize realize docs/truthmark/truth/billing/invoice-retry-policy.md into code
 ```
 
 ### Audit truth health from the terminal
@@ -669,10 +669,10 @@ truthmark context --workflow truth-sync --base main --format markdown
 ### Enable the optional Portal workflow
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 ```bash
@@ -747,10 +747,10 @@ Detailed current behavior lives under `docs/`:
 
 - [Docs index](docs/README.md)
 - [Architecture overview](docs/architecture/overview.md)
-- [API and CLI contracts](docs/truth/contracts.md)
-- [Init and scaffold behavior](docs/truth/init-and-scaffold.md)
-- [Check diagnostics](docs/truth/check-diagnostics.md)
-- [Installed workflows](docs/truth/workflows/overview.md)
+- [API and CLI contracts](docs/truthmark/truth/contracts.md)
+- [Init and scaffold behavior](docs/truthmark/truth/init-and-scaffold.md)
+- [Check diagnostics](docs/truthmark/truth/check-diagnostics.md)
+- [Installed workflows](docs/truthmark/truth/workflows/overview.md)
 - [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
 
 ## Design boundaries

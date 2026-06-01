@@ -28,24 +28,24 @@ Read:
 
 1. [docs/architecture/overview.md](../architecture/overview.md)
 2. [docs/architecture/module-map.md](../architecture/module-map.md)
-3. [docs/truth/init-and-scaffold.md](../truth/init-and-scaffold.md)
-4. [docs/truth/contracts.md](../truth/contracts.md)
+3. [docs/truthmark/truth/init-and-scaffold.md](../truthmark/truth/init-and-scaffold.md)
+4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)
 
 ### Diagnostics, routing, or containment checks
 
 Read:
 
 1. [docs/architecture/module-map.md](../architecture/module-map.md)
-2. [docs/truth/check-diagnostics.md](../truth/check-diagnostics.md)
+2. [docs/truthmark/truth/check-diagnostics.md](../truthmark/truth/check-diagnostics.md)
 3. [docs/standards/documentation-governance.md](../standards/documentation-governance.md)
-4. [docs/truth/contracts.md](../truth/contracts.md)
+4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)
 
 ### Installed workflow, prompt, or reporting changes
 
 Read:
 
 1. [.truthmark/config.yml](../../.truthmark/config.yml)
-2. [docs/truth/workflows/overview.md](../truth/workflows/overview.md) and the relevant workflow leaf doc under `docs/truth/workflows/`
+2. [docs/truthmark/truth/workflows/overview.md](../truthmark/truth/workflows/overview.md) and the relevant workflow leaf doc under `docs/truthmark/truth/workflows/`
 3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
 4. The manifest, renderer, generated surfaces, and focused tests named by the workflow truth docs
 
@@ -78,7 +78,7 @@ Do:
 
 - treat [docs/ai/repo-rules.md](repo-rules.md) as the primary authority for repository-wide rules
 - route code changes to the nearest maintained architecture, contract, and truth docs
-- update [docs/truthmark/areas.md](../truthmark/areas.md) when canonical routing changes
+- update [docs/truthmark/routes/areas.md](../truthmark/routes/areas.md) when canonical routing changes
 - apply [docs/standards/versioning.md](../standards/versioning.md) before changing or accepting a package version
 - write `changes/` notes from [docs/standards/change-notes.md](../standards/change-notes.md) when PR or release text is needed
 - preserve the generated Truthmark block in [AGENTS.md](../../AGENTS.md) unless the template behavior itself is changing

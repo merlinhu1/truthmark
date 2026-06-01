@@ -132,10 +132,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Evidence checked:
 ${evidenceChecked}
@@ -154,10 +154,10 @@ Implementation reviewed:
 - src/templates/workflow-surfaces.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truth/workflows/helpers.md
+- docs/truthmark/truth/workflows/helpers.md
 
 Evidence checked:
 ${evidenceChecked}
@@ -297,10 +297,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Evidence checked:
 - Claim: Init writes generated workflow files.
@@ -371,10 +371,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Evidence checked:
 - Claim: Init writes generated workflow files.
@@ -444,10 +444,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Evidence checked:
 - malformed entry only
@@ -475,10 +475,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Notes:
 - Missing evidence.
@@ -546,10 +546,10 @@ Implementation reviewed:
 - src/templates/workflow-surfaces.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truth/workflows/helpers.md
+- docs/truthmark/truth/workflows/helpers.md
 
 Evidence checked:
 - Claim: Helpers are optional.
@@ -646,10 +646,10 @@ Implementation reviewed:
 - src/templates/workflow-surfaces.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truth/workflows/helpers.md
+- docs/truthmark/truth/workflows/helpers.md
 
 Evidence checked:
 - malformed entry only
@@ -724,17 +724,17 @@ Evidence: src/agents/workflow-manifest.ts
     [
       "block list",
       `allowedWrites:
-  - docs/truth/**
+  - docs/truthmark/truth/**
 forbiddenWrites:
   - src/**
 `,
     ],
-    ["flow list", "allowedWrites: [docs/truth/**]\nforbiddenWrites: []\n"],
+    ["flow list", "allowedWrites: [docs/truthmark/truth/**]\nforbiddenWrites: []\n"],
     [
       "quoted paths and comments",
       `# parent-issued lease
 allowedWrites:
-  - "docs/truth/**" # canonical truth docs
+  - "docs/truthmark/truth/**" # canonical truth docs
 forbiddenWrites:
   - 'src/**' # functional code
 `,
@@ -745,17 +745,17 @@ forbiddenWrites:
 worker: truth_doc_writer
 workflow: truthmark-sync
 writeLease:
-  allowedWrites: [docs/truth/**]
+  allowedWrites: [docs/truthmark/truth/**]
   forbiddenWrites:
     - src/**
 filesChanged:
-  - docs/truth/workflows/overview.md
+  - docs/truthmark/truth/workflows/overview.md
 `,
     ],
   ])("accepts write-lease %s YAML", async (_name, lease) => {
     const result = await runWriteLease({
       lease,
-      changedFiles: "docs/truth/workflows/overview.md\n",
+      changedFiles: "docs/truthmark/truth/workflows/overview.md\n",
     });
 
     expect(result.exitCode).toBe(0);
@@ -766,21 +766,21 @@ filesChanged:
     [
       "invalid YAML",
       `allowedWrites:
-  - docs/truth/**
+  - docs/truthmark/truth/**
 forbiddenWrites: [src/**
 `,
       "invalid write lease YAML",
     ],
     [
       "non-list allowedWrites",
-      `allowedWrites: docs/truth/**
+      `allowedWrites: docs/truthmark/truth/**
 forbiddenWrites: []
 `,
       "allowedWrites must be an array of strings",
     ],
     [
       "non-list forbiddenWrites",
-      `allowedWrites: [docs/truth/**]
+      `allowedWrites: [docs/truthmark/truth/**]
 forbiddenWrites: src/**
 `,
       "forbiddenWrites must be an array of strings",
@@ -788,7 +788,7 @@ forbiddenWrites: src/**
     [
       "non-string allowedWrites item",
       `allowedWrites:
-  - docs/truth/**
+  - docs/truthmark/truth/**
   - 42
 forbiddenWrites: []
 `,
@@ -797,7 +797,7 @@ forbiddenWrites: []
   ])("rejects write-lease %s", async (_name, lease, expectedError) => {
     const result = await runWriteLease({
       lease,
-      changedFiles: "docs/truth/workflows/overview.md\n",
+      changedFiles: "docs/truthmark/truth/workflows/overview.md\n",
     });
 
     expect(result.exitCode).toBe(1);
@@ -809,7 +809,7 @@ forbiddenWrites: []
     const result = await runCliHelper({
       files: {
         "lease.yml": `allowedWrites:
-  - docs/truth/**
+  - docs/truthmark/truth/**
 forbiddenWrites:
   - src/**
 `,
@@ -825,12 +825,12 @@ forbiddenWrites:
 
   it.each([
     ["parent-directory changed file", "../outside.md", "invalid changed file path"],
-    ["absolute changed file", "/docs/truth/workflows/overview.md", "invalid changed file path"],
-    ["normalized-outside changed file", "docs/truth/../../src/init.ts", "invalid changed file path"],
+    ["absolute changed file", "/docs/truthmark/truth/workflows/overview.md", "invalid changed file path"],
+    ["normalized-outside changed file", "docs/truthmark/truth/../../src/init.ts", "invalid changed file path"],
   ])("rejects write-lease %s", async (_name, changedFiles, expectedError) => {
     const result = await runWriteLease({
       lease: `allowedWrites:
-  - docs/truth/**
+  - docs/truthmark/truth/**
 forbiddenWrites:
   - src/**
 `,
@@ -843,16 +843,16 @@ forbiddenWrites:
   });
 
   it.each([
-    ["parent-directory allowedWrites", "../docs/truth/**"],
-    ["absolute allowedWrites", "/docs/truth/**"],
-    ["normalized-outside allowedWrites", "docs/truth/../../src/**"],
+    ["parent-directory allowedWrites", "../docs/truthmark/truth/**"],
+    ["absolute allowedWrites", "/docs/truthmark/truth/**"],
+    ["normalized-outside allowedWrites", "docs/truthmark/truth/../../src/**"],
   ])("rejects write-lease %s", async (_name, allowedWrite) => {
     const result = await runWriteLease({
       lease: `allowedWrites:
   - ${allowedWrite}
 forbiddenWrites: []
 `,
-      changedFiles: "docs/truth/workflows/overview.md\n",
+      changedFiles: "docs/truthmark/truth/workflows/overview.md\n",
     });
 
     expect(result.exitCode).toBe(1);
@@ -867,7 +867,7 @@ forbiddenWrites: []
   - docs/**/*.md
 forbiddenWrites: []
 `,
-        "changed-files.txt": "docs/truth/workflows/overview.md\n",
+        "changed-files.txt": "docs/truthmark/truth/workflows/overview.md\n",
       },
       args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
     });

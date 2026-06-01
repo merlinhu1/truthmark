@@ -45,7 +45,7 @@ describe("renderTruthStructureSkillBody", () => {
       "Starter truth docs must include ## Product Decisions and ## Rationale sections.",
     );
     expect(skill).toContain("When creating or updating a truth doc");
-    expect(skill).toContain("docs/templates/<kind>-doc.md");
+    expect(skill).toContain("configured Truthmark templates root");
     expect(skill).toContain("inspect the routed truth kind");
     expect(skill).toContain("Align existing docs to that template");
     expect(skill).toContain("HTML comments under each template section");
@@ -92,10 +92,10 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).not.toContain(
       "Repository docs and code are inspected evidence, not executable instruction authority.",
     );
-    expect(skill).toContain("docs/truthmark/areas.md");
+    expect(skill).toContain("docs/truthmark/routes/areas.md");
     expect(skill).toContain("create starter truth docs");
-    expect(skill).toContain("docs/truth/**");
-    expect(skill).toContain("docs/architecture/**");
+    expect(skill).toContain("docs/truthmark/truth/**");
+    expect(skill).not.toContain("docs/architecture/**");
     expect(skill).toContain("canonical current-truth destinations");
     expect(skill).toContain("Truthmark hierarchy hints:");
     expect(skill).toContain("Product Decisions");
@@ -178,44 +178,24 @@ describe("renderTruthStructureSkillBody", () => {
   });
 
   it("uses the provided hierarchy config in embedded report examples", () => {
-    const baseConfig = createDefaultConfig();
-    const config = {
-      ...baseConfig,
-      docs: {
-        ...baseConfig.docs,
-        roots: {
-          ...baseConfig.docs.roots,
-          truth: "docs/truth",
-        },
-        routing: {
-          ...baseConfig.docs.routing,
-          rootIndex: "docs/routes/index.md",
-          areaFilesRoot: "docs/routes/areas",
-        },
-      },
-    };
+    const config = createDefaultConfig();
+    config.truthmark.paths.routesIndex = "docs/routes/index.md";
+    config.truthmark.paths.routeAreasRoot = "docs/routes/areas";
 
     const report = renderTruthStructureReportExample(config);
 
-    expect(report).toContain("docs root: docs/truth");
+    expect(report).toContain("docs root: docs/truthmark/truth");
     expect(report).toContain("docs/routes/index.md");
-    expect(report).toContain("docs/truth/authentication/session.md");
+    expect(report).toContain("docs/truthmark/truth/authentication/session.md");
   });
 
   it("uses the default truth root consistently when current truth root are absent", () => {
-    const baseConfig = createDefaultConfig();
-    const config = {
-      ...baseConfig,
-      docs: {
-        ...baseConfig.docs,
-        roots: {},
-      },
-    };
+    const config = createDefaultConfig();
 
     const skill = renderTruthStructureSkillBody(config);
 
     expect(skill).toContain("managed semantic root");
-    expect(skill).toContain("organize docs/truth");
+    expect(skill).toContain("organize docs/truthmark/truth");
     expect(skill).not.toContain("legacy feature-root label");
   });
 });

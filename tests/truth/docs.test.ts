@@ -4,10 +4,9 @@ import { createDefaultConfig } from "../../src/config/defaults.js";
 import { resolveTruthDocsRoot } from "../../src/truth/docs.js";
 
 describe("resolveTruthDocsRoot", () => {
-  it("falls back to the default truth root when the truth root is omitted", () => {
+  it("returns the normalized configured truth root", () => {
     const config = createDefaultConfig();
-    delete config.docs.roots.truth;
 
-    expect(resolveTruthDocsRoot(config)).toBe("docs/truth");
+    expect(resolveTruthDocsRoot(config)).toBe("docs/truthmark/truth");
   });
 });

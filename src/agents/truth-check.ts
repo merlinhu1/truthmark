@@ -24,7 +24,7 @@ export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
 const renderTruthCheckReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const rootRouteIndex = config.docs.routing.rootIndex;
+  const rootRouteIndex = config.truthmark.paths.routesIndex;
   return `Truth Check: completed
 
 Files reviewed:
@@ -103,7 +103,7 @@ Truth Check is agent-led:
 
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/ when they exist
+- inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
 - check that current docs describe current code rather than historical plans
 - check that route files map code surfaces to canonical truth docs when route files exist
 - check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure

@@ -3,7 +3,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 # Truthmark Check
@@ -17,7 +17,7 @@ Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthma
 
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
-- Inspect .truthmark/config.yml and configured route files (docs/truthmark/areas.md; docs/truthmark/areas/) only when they exist; then inspect canonical docs and relevant implementation directly.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect canonical docs and relevant implementation directly.
 - Report issues and suggested fixes; do not silently rewrite unrelated files.
 - Direct checkout inspection is valid even when local tooling is unavailable.
 - Read support/procedure.md before auditing details.

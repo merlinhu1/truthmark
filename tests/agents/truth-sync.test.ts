@@ -126,7 +126,7 @@ describe("renderTruthSyncSkillBody", () => {
       "Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs",
     );
     expect(skillBody).toContain("When creating or updating a truth doc");
-    expect(skillBody).toContain("docs/templates/<kind>-doc.md");
+    expect(skillBody).toContain("configured Truthmark templates root");
     expect(skillBody).toContain("inspect the routed truth kind");
     expect(skillBody).toContain("Align existing docs to that template");
     expect(skillBody).toContain("HTML comments under each template section");
@@ -171,7 +171,7 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("structured Truth Sync report contract");
     expect(skillBody).not.toContain("### Truth Sync Worker");
     expect(skillBody).not.toContain(
-      "may write truth docs and docs/truthmark/areas.md only for Truth Sync alignment",
+      "may write truth docs and docs/truthmark/routes/areas.md only for Truth Sync alignment",
     );
     expect(skillBody).toContain(
       "verify the final report records ownership review, structure requirement, split, restructure, or blocked reason",
@@ -180,26 +180,13 @@ describe("renderTruthSyncSkillBody", () => {
   });
 
   it("uses the provided hierarchy config in embedded report examples", () => {
-    const baseConfig = createDefaultConfig();
-    const config = {
-      ...baseConfig,
-      docs: {
-        ...baseConfig.docs,
-        roots: {
-          ...baseConfig.docs.roots,
-          truth: "docs/truth",
-        },
-        routing: {
-          ...baseConfig.docs.routing,
-          rootIndex: "docs/routes/index.md",
-          areaFilesRoot: "docs/routes/areas",
-        },
-      },
-    };
+    const config = createDefaultConfig();
+    config.truthmark.paths.routesIndex = "docs/routes/index.md";
+    config.truthmark.paths.routeAreasRoot = "docs/routes/areas";
 
     const skillBody = renderTruthSyncSkillBody(config);
 
-    expect(skillBody).toContain("docs/truth/repository/overview.md");
+    expect(skillBody).toContain("docs/truthmark/truth/repository/overview.md");
     expect(skillBody).toContain("docs/routes/index.md:11");
     expect(skillBody).toContain(
       "verify only truth docs and leased truth routing files changed",

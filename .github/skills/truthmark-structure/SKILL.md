@@ -3,7 +3,7 @@ name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 # Truthmark Structure
@@ -17,7 +17,7 @@ Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or 
 
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
-- Inspect .truthmark/config.yml and configured route files (docs/truthmark/areas.md; docs/truthmark/areas/) only when they exist; then inspect current docs and relevant code directly.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect current docs and relevant code directly.
 - Define areas by product or behavior ownership, not by mechanical directory mirroring.
 - Do not edit functional code.
 - Read support/procedure.md before writing route or starter truth-doc changes.

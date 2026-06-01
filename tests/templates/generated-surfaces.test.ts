@@ -20,7 +20,7 @@ describe("Truthmark Portal generated surfaces", () => {
     const config = createDefaultConfig();
     const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
 
-    expect(config.truthmarkPortal.enabled).toBe(false);
+    expect(config.truthmark.generated.portal.enabled).toBe(false);
     for (const portalPath of portalPaths) {
       expect(paths).not.toContain(portalPath);
     }
@@ -29,10 +29,8 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("renders Portal surfaces for all configured platforms when enabled", () => {
     const config = createDefaultConfig();
-    config.truthmarkPortal = {
+    config.truthmark.generated.portal = {
       enabled: true,
-      output: "docs/project-map",
-      template: "docs/truthmark/portal-templates/product.md",
     };
 
     const surfaces = renderGeneratedSurfaces(config);
@@ -53,9 +51,8 @@ describe("Truthmark Portal generated surfaces", () => {
       expect(text).toContain("manual-only");
       expect(text).toContain("Markdown remains canonical");
       expect(text).toContain("does not require the truthmark CLI");
-      expect(text).toContain("docs/truthmark-portal");
-      expect(text).toContain("docs/project-map");
-      expect(text).toContain("docs/truthmark/portal-templates/product.md");
+      expect(text).toContain("docs/truthmark/generated/portal");
+      expect(text).toContain("docs/truthmark/templates/portal.html");
       expect(text).toContain("no remote dependencies");
       expect(text).toContain("no .truthmark/index.json dependency");
       expect(text).toContain("source provenance");
@@ -63,10 +60,10 @@ describe("Truthmark Portal generated surfaces", () => {
     }
 
     expect(portalProcedure).toContain("replace the entire output directory");
-    expect(portalProcedure).toContain("configured Portal output directory only");
-    expect(portalProcedure).toContain("explicit user or template request");
+    expect(portalProcedure).toContain("fixed Portal output directory only");
+    expect(portalProcedure).not.toContain("custom Portal output");
     expect(agentsBlock).toContain("Truthmark Portal is a separate manual-only presentation workflow");
-    expect(agentsBlock).toContain("default `docs/truthmark-portal/`");
+    expect(agentsBlock).toContain("docs/truthmark/generated/portal/");
     expect(agentsBlock).toContain("Markdown remains canonical");
   });
 });

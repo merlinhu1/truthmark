@@ -33,7 +33,7 @@ Truthmark does not currently include:
 The durable surfaces are ordinary repository files:
 
 - `.truthmark/config.yml`
-- [docs/truthmark/areas.md](../truthmark/areas.md)
+- [docs/truthmark/routes/areas.md](../truthmark/routes/areas.md)
 - canonical docs under `docs/`
 - the managed Truthmark block inside [AGENTS.md](../../AGENTS.md)
 - generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check surfaces under `.codex/skills/`, `.opencode/skills/`, `.claude/skills/`, `.github/prompts/`, and `.gemini/commands/truthmark/`
@@ -71,7 +71,7 @@ Key implementation surfaces:
 
 - `src/checks/*` for individual validation passes
 - `src/config/*` for config loading and schema validation
-- `src/routing/*` for `docs/truthmark/areas.md` parsing and area resolution
+- `src/routing/*` for `docs/truthmark/routes/areas.md` parsing and area resolution
 - `src/markdown/*` for document parsing and hashing
 - `src/output/*` for result rendering
 

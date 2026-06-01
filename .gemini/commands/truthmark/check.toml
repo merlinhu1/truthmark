@@ -5,7 +5,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 # Truthmark Check
@@ -19,7 +19,7 @@ Truth Check is agent-led:
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
 - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
-- inspect the configured root route index at docs/truthmark/areas.md and relevant child route files under docs/truthmark/areas/ when they exist
+- inspect the configured root route index at docs/truthmark/routes/areas.md and relevant child route files under docs/truthmark/routes/areas/ when they exist
 - check that current docs describe current code rather than historical plans
 - check that route files map code surfaces to canonical truth docs when route files exist
 - check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure
@@ -35,9 +35,9 @@ Evidence Gate:
 
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/areas.md
-- Area route files, when present: docs/truthmark/areas/**/*.md
-- Truth docs, when present: docs/truth/**/*.md
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Truth docs, when present: docs/truthmark/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
@@ -48,7 +48,7 @@ Report completion in this shape:
 Truth Check: completed
 
 Files reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Issues found:
 - none
@@ -58,7 +58,7 @@ Fixes suggested:
 
 Evidence checked:
 - Finding: The root route index is present and maps repository truth owners.
-  Evidence: docs/truthmark/areas.md:1
+  Evidence: docs/truthmark/routes/areas.md:1
   Suggested fix: none
   Confidence: high
 

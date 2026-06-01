@@ -3,7 +3,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 # Truthmark Document
@@ -15,7 +15,7 @@ Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $t
 
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
-- Inspect .truthmark/config.yml and configured route files (docs/truthmark/areas.md; docs/truthmark/areas/) only when they exist; then inspect existing canonical docs, implementation code, and tests directly.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect existing canonical docs, implementation code, and tests directly.
 - Document current implemented behavior; do not invent future behavior.
 - May write canonical truth docs and truth routing files only; must not write functional code.
 - Read support/procedure.md before editing truth docs.

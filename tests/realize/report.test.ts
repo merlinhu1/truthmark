@@ -6,14 +6,14 @@ describe("renderTruthRealizeCompletedReport", () => {
   it("matches the README handoff-note shape", () => {
     expect(
       renderTruthRealizeCompletedReport({
-        truthDocsUsed: ["docs/truth/authentication.md"],
+        truthDocsUsed: ["docs/truthmark/truth/authentication.md"],
         codeUpdated: ["src/auth/session.ts"],
         verification: ["npm test -- auth"],
       }),
     ).toBe(`Truth Realize: completed
 
 Truth docs used:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Code updated:
 - src/auth/session.ts

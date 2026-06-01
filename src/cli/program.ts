@@ -12,6 +12,8 @@ import {
   runValidateDocumentReport,
   runValidateSyncReport,
   runValidateWriteLease,
+  runWorkflowInstructions,
+  runWorkflowStatus,
 } from "./handlers.js";
 import type { WorkflowHelperValidationResult } from "../agents/workflow-helper-validation.js";
 
@@ -36,6 +38,11 @@ type ContextOptions = OutputOptions & {
   workflow?: string;
   base?: string;
   format?: string;
+};
+
+type WorkflowOptions = OutputOptions & {
+  workflow?: string;
+  base?: string;
 };
 
 const markFailedWhenErrorDiagnosticsExist = (result: CommandResult): void => {
@@ -160,6 +167,42 @@ export const buildProgram = (): Command => {
         workflow: options.workflow,
         base: options.base,
         format: options.format,
+      }),
+      options,
+    );
+  });
+
+  const workflow = program
+    .command("workflow")
+    .description("Inspect agent-facing Truthmark workflow state and instructions.");
+
+  addJsonOption(
+    workflow
+      .command("status")
+      .description("Return schema-versioned workflow state for a canonical workflow ID.")
+      .option("--workflow <workflow>", "Canonical workflow ID, such as truthmark-sync")
+      .option("--base <ref>", "Base Git ref for impact-backed workflow state"),
+  ).action(async (options: WorkflowOptions) => {
+    writeResult(
+      await runWorkflowStatus({
+        workflow: options.workflow,
+        base: options.base,
+      }),
+      options,
+    );
+  });
+
+  addJsonOption(
+    workflow
+      .command("instructions")
+      .description("Return agent instructions derived from workflow state.")
+      .option("--workflow <workflow>", "Canonical workflow ID, such as truthmark-sync")
+      .option("--base <ref>", "Base Git ref for impact-backed workflow state"),
+  ).action(async (options: WorkflowOptions) => {
+    writeResult(
+      await runWorkflowInstructions({
+        workflow: options.workflow,
+        base: options.base,
       }),
       options,
     );

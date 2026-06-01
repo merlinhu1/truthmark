@@ -5,7 +5,7 @@ name: truthmark-preview
 description: Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.
 argument-hint: Optional requested outcome, code area, doc path, or routing question
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
@@ -21,8 +21,8 @@ Purpose:
 
 Read:
 - .truthmark/config.yml, only when present
-- docs/truthmark/areas.md, only when present
-- relevant child route files under docs/truthmark/areas/, only when present
+- docs/truthmark/routes/areas.md, only when present
+- relevant child route files under docs/truthmark/routes/areas/, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
@@ -44,9 +44,9 @@ Suggested subagent use:
 
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/areas.md
-- Area route files, when present: docs/truthmark/areas/**/*.md
-- Truth docs, when present: docs/truth/**/*.md
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Truth docs, when present: docs/truthmark/truth/**/*.md
 
 Report completion in this shape:
 ```md
@@ -64,15 +64,15 @@ Why this workflow:
 - forbidden adjacency considered: must not edit functional code
 
 Likely route owner:
-- route file: docs/truthmark/areas.md
-- truth doc: docs/truth/example.md
+- route file: docs/truthmark/routes/areas.md
+- truth doc: docs/truthmark/truth/example.md
 - confidence: medium
 
 Expected write classes:
 - truth docs
 
 Expected target files:
-- docs/truth/example.md
+- docs/truthmark/truth/example.md
 
 Suggested subagent use:
 - read-only verifiers: truth_route_auditor

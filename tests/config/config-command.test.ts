@@ -15,32 +15,34 @@ describe("runConfig", () => {
 
       expect(result.command).toBe("config");
       const configText = await repo.readFile(".truthmark/config.yml");
-      const config = parse(configText) as {
-        platforms: string[];
-        docs: {
-          layout: string;
-          roots: Record<string, string>;
-          routing: {
-            area_files_root: string;
-          };
-        };
-        authority: string[];
-      };
+      const config = parse(configText) as Record<string, unknown>;
 
-      expect(config.docs.layout).toBe("hierarchical");
-      expect(config.docs.routing.area_files_root).toBe("docs/truthmark/areas");
-      expect(config.platforms).toEqual(
-        expect.arrayContaining(["github-copilot", "gemini-cli"]),
-      );
-      expect(config.docs.roots).toEqual({
-        ai: "docs/ai",
-        standards: "docs/standards",
-        architecture: "docs/architecture",
-        truth: "docs/truth",
+      expect(config.version).toBe(2);
+      expect(config).not.toHaveProperty("docs");
+      expect(config).not.toHaveProperty("authority");
+      expect(config.truthmark).toEqual({
+        workspace: "docs/truthmark",
+        routes: {
+          index: "routes/areas.md",
+          areas: "routes/areas",
+          default_area: "repository",
+          max_delegation_depth: 1,
+        },
+        truth: { root: "truth" },
+        templates: { root: "templates" },
+        generated: {
+          portal: {
+            enabled: false,
+          },
+        },
       });
-      expect(config.authority).toContain("docs/truth/**/*.md");
+      expect(JSON.stringify(config)).not.toContain("docs/standards");
+      expect(JSON.stringify(config)).not.toContain("docs/architecture");
+      expect(JSON.stringify(config)).not.toContain("docs/ai");
+      expect(JSON.stringify(config)).not.toContain("docs/truth\"");
+      expect(JSON.stringify(config)).not.toContain("docs/templates");
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
-      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/areas.md`)).rejects.toThrow();
+      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).rejects.toThrow();
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -65,15 +67,6 @@ describe("runConfig", () => {
 
       expect(await repo.readFile(".truthmark/config.yml")).toBe("version: 1\ncustom: true\n");
       expect(result.summary).toContain("already exists");
-      expect(result.diagnostics).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            category: "config",
-            severity: "review",
-            file: ".truthmark/config.yml",
-          }),
-        ]),
-      );
     } finally {
       await repo.cleanup();
     }
@@ -87,7 +80,7 @@ describe("runConfig", () => {
 
       const result = await runConfig(repo.rootDir, { force: true });
 
-      expect(await repo.readFile(".truthmark/config.yml")).toContain("layout: hierarchical");
+      expect(await repo.readFile(".truthmark/config.yml")).toContain("workspace: docs/truthmark");
       expect(await repo.readFile(".truthmark/config.yml")).not.toContain("custom: true");
       expect(result.summary).toContain("Wrote");
     } finally {
@@ -104,7 +97,7 @@ describe("runConfig", () => {
       expect(result.data).toMatchObject({
         path: ".truthmark/config.yml",
       });
-      expect(String(result.data?.content)).toContain("layout: hierarchical");
+      expect(String(result.data?.content)).toContain("workspace: docs/truthmark");
       await expect(fs.stat(`${repo.rootDir}/.truthmark/config.yml`)).rejects.toThrow();
     } finally {
       await repo.cleanup();

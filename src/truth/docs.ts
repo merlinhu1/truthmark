@@ -1,8 +1,5 @@
-import { DEFAULT_DOCS_HIERARCHY } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 
-const DEFAULT_TRUTH_DOCS_ROOT = DEFAULT_DOCS_HIERARCHY.roots.truth;
-
-export const resolveTruthDocsRoot = (config: Pick<TruthmarkConfig, "docs">): string => {
-  return config.docs.roots.truth ?? DEFAULT_TRUTH_DOCS_ROOT;
+export const resolveTruthDocsRoot = (config: Pick<TruthmarkConfig, "truthmark">): string => {
+  return config.truthmark.paths.truthRoot;
 };

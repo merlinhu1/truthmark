@@ -12,7 +12,7 @@ describe("checkDecisionSections", () => {
 
     try {
       await repo.writeFile(
-        "docs/truth/installed-workflows.md",
+        "docs/truthmark/truth/installed-workflows.md",
         `# Installed Workflows
 
 ## Scope
@@ -32,10 +32,10 @@ Agents inspect the checkout directly.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truth/installed-workflows.md"],
+        ["docs/truthmark/truth/installed-workflows.md"],
         [
           {
-            path: "docs/truth/installed-workflows.md",
+            path: "docs/truthmark/truth/installed-workflows.md",
             kind: "workflow",
             kindSource: "explicit",
           },
@@ -46,7 +46,7 @@ Agents inspect the checkout directly.
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truth/installed-workflows.md",
+          file: "docs/truthmark/truth/installed-workflows.md",
           message: expect.stringContaining("Product Decisions"),
         }),
       ]);
@@ -60,7 +60,7 @@ Agents inspect the checkout directly.
 
     try {
       await repo.writeFile(
-        "docs/truth/installed-workflows.md",
+        "docs/truthmark/truth/installed-workflows.md",
         `# Installed Workflows
 
 ## Scope
@@ -88,10 +88,10 @@ This keeps installed repositories usable when the Truthmark package is unavailab
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truth/installed-workflows.md"],
+        ["docs/truthmark/truth/installed-workflows.md"],
         [
           {
-            path: "docs/truth/installed-workflows.md",
+            path: "docs/truthmark/truth/installed-workflows.md",
             kind: "workflow",
             kindSource: "explicit",
           },
@@ -109,12 +109,12 @@ This keeps installed repositories usable when the Truthmark package is unavailab
 
     try {
       await repo.writeFile("docs/notes/future.md", "# Future\n");
-      await repo.writeFile("docs/truth/README.md", "# Current Feature Docs\n");
+      await repo.writeFile("docs/truthmark/truth/README.md", "# Current Feature Docs\n");
 
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/notes/future.md", "docs/truth/README.md"],
+        ["docs/notes/future.md", "docs/truthmark/truth/README.md"],
       );
 
       expect(diagnostics).toEqual([]);
@@ -128,7 +128,7 @@ This keeps installed repositories usable when the Truthmark package is unavailab
 
     try {
       await repo.writeFile(
-        "docs/truth/repository/overview.md",
+        "docs/truthmark/truth/repository/overview.md",
         `# Repository Overview
 
 ## Product Decisions
@@ -144,10 +144,10 @@ Bounded truth docs are easier to maintain.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truth/repository/overview.md"],
+        ["docs/truthmark/truth/repository/overview.md"],
         [
           {
-            path: "docs/truth/repository/overview.md",
+            path: "docs/truthmark/truth/repository/overview.md",
             kind: "behavior",
             kindSource: "explicit",
           },
@@ -158,7 +158,7 @@ Bounded truth docs are easier to maintain.
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truth/repository/overview.md",
+          file: "docs/truthmark/truth/repository/overview.md",
           message: expect.stringContaining("Scope"),
         }),
       ]);
@@ -173,7 +173,7 @@ Bounded truth docs are easier to maintain.
 
     try {
       await repo.writeFile(
-        "docs/truth/contract-surface.md",
+        "docs/truthmark/truth/contract-surface.md",
         `---
 truth_kind: contract
 ---
@@ -201,14 +201,14 @@ Structured JSON output.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truth/contract-surface.md"],
+        ["docs/truthmark/truth/contract-surface.md"],
       );
 
       expect(diagnostics).toEqual([
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truth/contract-surface.md",
+          file: "docs/truthmark/truth/contract-surface.md",
           message: expect.stringContaining("Product Decisions"),
         }),
       ]);

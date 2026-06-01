@@ -7,7 +7,6 @@ import {
   renderConfigTemplate,
   renderAreasTemplate,
 } from "../../src/templates/init-files.js";
-import { renderDefaultStandards } from "../../src/templates/default-standards.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 
 describe("discoverMarkdownDocuments", () => {
@@ -19,10 +18,7 @@ describe("discoverMarkdownDocuments", () => {
         "docs/architecture/system.md",
         "---\nstatus: active\n---\n# System Architecture\n",
       );
-      await repo.writeFile(
-        "docs/truth/authentication.md",
-        "# Authentication\n",
-      );
+      await repo.writeFile("docs/product/authentication.md", "# Authentication\n");
       await repo.writeFile("README.md", "# Truthmark\n");
       await repo.writeFile("node_modules/example/ignored.md", "# Ignore me\n");
       await repo.writeFile("dist/generated.md", "# Ignore me\n");
@@ -82,7 +78,7 @@ describe("discoverMarkdownDocuments", () => {
       expect(documents.map((document) => document.path)).toEqual([
         "README.md",
         "docs/architecture/system.md",
-        "docs/truth/authentication.md",
+        "docs/product/authentication.md",
       ]);
       expect(documents[1]).toMatchObject({
         path: "docs/architecture/system.md",
@@ -96,11 +92,9 @@ describe("discoverMarkdownDocuments", () => {
 });
 
 describe("init templates", () => {
-  it("renders the V1 config template fields", () => {
+  it("renders the V2 workspace config template fields", () => {
     const config = parse(renderConfigTemplate()) as {
-      docs: {
-        roots: Record<string, string>;
-      };
+      truthmark: Record<string, unknown>;
       frontmatter: {
         required: string[];
         recommended: string[];
@@ -108,7 +102,7 @@ describe("init templates", () => {
     } & Record<string, unknown>;
 
     expect(config).toMatchObject({
-      version: 1,
+      version: 2,
       platforms: [
         "codex",
         "opencode",
@@ -116,7 +110,7 @@ describe("init templates", () => {
         "github-copilot",
         "gemini-cli",
       ],
-      authority: expect.any(Array),
+      truthmark: expect.any(Object),
       instruction_targets: expect.any(Array),
       frontmatter: expect.any(Object),
       ignore: expect.any(Array),
@@ -125,18 +119,19 @@ describe("init templates", () => {
       required: [],
       recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
     });
-    expect(config.docs.roots).toEqual({
-      ai: "docs/ai",
-      standards: "docs/standards",
-      architecture: "docs/architecture",
-      truth: "docs/truth",
+    expect(config).not.toHaveProperty("docs");
+    expect(config).not.toHaveProperty("authority");
+    expect(config.truthmark).toMatchObject({
+      workspace: "docs/truthmark",
+      truth: { root: "truth" },
+      templates: { root: "templates" },
     });
   });
 
-  it("seeds docs/truthmark/areas.md from discovered docs without moving them", () => {
+  it("seeds docs/truthmark/routes/areas.md from discovered docs without moving them", () => {
     const areas = renderAreasTemplate([
       {
-        path: "docs/truth/authentication.md",
+        path: "docs/truthmark/truth/authentication.md",
         title: "Authentication",
         hasFrontmatter: false,
       },
@@ -147,15 +142,15 @@ describe("init templates", () => {
       },
     ]);
 
-    expect(areas).toContain("docs/truth/authentication.md");
+    expect(areas).toContain("docs/truthmark/truth/authentication.md");
     expect(areas).toContain("docs/api/authentication.md");
     expect(areas).toContain("Truth documents:");
     expect(areas).toContain("```yaml");
     expect(areas).toContain("kind: behavior");
-    expect(areas).toContain("kind: contract");
+    expect(areas).not.toContain("kind: contract");
     expect(areas).toContain("Code surface:");
     expect(areas).toContain("Update truth when:");
-    expect(areas).not.toContain("- docs/truth/authentication.md");
+    expect(areas).not.toContain("- docs/truthmark/truth/authentication.md");
   });
 
   it("renders a managed AGENTS.md block with stable markers and workflow boundaries", () => {
@@ -189,33 +184,4 @@ describe("init templates", () => {
     expect(agentsBlock).not.toContain("/skill truthmark-sync");
   });
 
-  it("renders default standards only when comparable standards are missing", () => {
-    const missingStandards = renderDefaultStandards([]);
-
-    expect(missingStandards.map((template) => template.path)).toEqual([
-      "docs/standards/default-principles.md",
-      "docs/standards/documentation-governance.md",
-    ]);
-    expect(missingStandards.map((template) => template.content).join("\n")).toContain(
-      "Architecture docs describe system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, and generated-surface ownership.",
-    );
-    expect(missingStandards.map((template) => template.content).join("\n")).toContain(
-      "Do not put ordinary feature behavior in architecture docs.",
-    );
-
-    const existingStandards = renderDefaultStandards([
-      {
-        path: "docs/standards/default-principles.md",
-        title: "Default Principles",
-        hasFrontmatter: true,
-      },
-      {
-        path: "docs/standards/documentation-governance.md",
-        title: "Documentation Governance",
-        hasFrontmatter: true,
-      },
-    ]);
-
-    expect(existingStandards).toEqual([]);
-  });
 });

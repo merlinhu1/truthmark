@@ -105,13 +105,7 @@ const kindSpecificHeadingMessages = (
 };
 
 const decisionTruthGlobs = (config: TruthmarkConfig): string[] => {
-  return [
-    config.docs.roots.architecture,
-    resolveTruthDocsRoot(config),
-    config.docs.roots.api,
-  ]
-    .filter((root): root is string => Boolean(root))
-    .map((root) => `${root}/**/*.md`);
+  return [`${resolveTruthDocsRoot(config)}/**/*.md`];
 };
 
 const isDecisionTruthCandidate = (config: TruthmarkConfig, filePath: string): boolean => {

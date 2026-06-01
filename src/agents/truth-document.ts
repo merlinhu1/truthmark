@@ -40,7 +40,7 @@ Implementation reviewed:
 - src/routing/area-resolver.ts
 
 Ownership reviewed:
-- ${config.docs.routing.rootIndex}
+- ${config.truthmark.paths.routesIndex}
 
 Truth docs created:
 - ${truthDocsRoot}/contracts.md
@@ -52,14 +52,14 @@ Truth docs restructured:
 - ${truthDocsRoot}/check-diagnostics.md
 
 Routing updated:
-- ${config.docs.routing.rootIndex}
+- ${config.truthmark.paths.routesIndex}
 
 ${renderClaimEvidenceCheckedSection([
     {
       claim: "Route resolution behavior is documented in the contracts truth doc.",
       evidence: [
         "src/routing/area-resolver.ts:14",
-        `${config.docs.routing.rootIndex}:9`,
+        `${config.truthmark.paths.routesIndex}:9`,
       ],
       result: "supported",
     },
@@ -131,7 +131,7 @@ Truth Document is manual and implementation-first:
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - document current implemented behavior; do not invent future behavior or planned endpoints
-- may write canonical truth docs and ${config.docs.routing.rootIndex} or relevant child route files only
+- may write canonical truth docs and ${config.truthmark.paths.routesIndex} or relevant child route files only
 - must not write functional code
 - when routing is missing, stale, broad, overloaded, catch-all, or cannot map the behavior to a bounded truth owner, run Truth Structure first when routing repair is safe and in scope
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary

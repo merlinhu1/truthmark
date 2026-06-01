@@ -14,17 +14,17 @@ describe("validateEvidenceReferences", () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile(
-      "docs/truth/sample.md",
+      "docs/truthmark/truth/sample.md",
       "---\nstatus: active\nsource_of_truth:\n  - ../../src/missing.ts\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({
         category: "freshness",
         severity: "error",
-        file: "docs/truth/sample.md",
+        file: "docs/truthmark/truth/sample.md",
       }),
     );
   });
@@ -35,11 +35,11 @@ describe("validateEvidenceReferences", () => {
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
     await repo.writeFile(
-      "docs/truth/sample.md",
-      "---\nstatus: active\nsource_of_truth:\n  - ../../src/**/*.ts\n---\n# Sample\n",
+      "docs/truthmark/truth/sample.md",
+      "---\nstatus: active\nsource_of_truth:\n  - ../../../src/**/*.ts\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
 
     expect(diagnostics).toEqual([]);
   });
@@ -48,13 +48,13 @@ describe("validateEvidenceReferences", () => {
     const repo = await createTempRepo();
     repos.push(repo);
 
-    await repo.writeFile("docs/truth/overview.md", "# Overview\n");
+    await repo.writeFile("docs/truthmark/truth/overview.md", "# Overview\n");
     await repo.writeFile(
-      "docs/truth/sample.md",
+      "docs/truthmark/truth/sample.md",
       "---\nstatus: active\nsource_of_truth:\n  - overview.md\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
 
     expect(diagnostics).toEqual([]);
   });
@@ -65,7 +65,7 @@ describe("validateEvidenceReferences", () => {
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
     await repo.writeFile(
-      "docs/truth/sample.md",
+      "docs/truthmark/truth/sample.md",
       `---
 status: active
 ---
@@ -73,20 +73,20 @@ status: active
 
 \`\`\`yaml
 evidence:
-  - path: ../../src/index.ts
+  - path: ../../../src/index.ts
     start_line: 10
     end_line: 12
 \`\`\`
 `,
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({
         category: "freshness",
         severity: "error",
-        file: "docs/truth/sample.md",
+        file: "docs/truthmark/truth/sample.md",
         message: expect.stringContaining("outside the file"),
       }),
     );

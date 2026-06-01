@@ -242,7 +242,7 @@ const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.";
 
 const routeFilesHint = (config: TruthmarkConfig): string =>
-  `${config.docs.routing.rootIndex}; ${config.docs.routing.areaFilesRoot}/`;
+  `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
 
 const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   TruthmarkWorkflowId,
@@ -353,7 +353,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   },
   "truthmark-portal": {
     title: "Truthmark Portal",
-    argumentHint: "Optional output path, template, or portal generation focus",
+    argumentHint: "Optional portal generation focus",
     invocations: TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to generate or refresh the committed static HTML Truthmark Portal.",
@@ -363,8 +363,8 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Markdown remains canonical; generated HTML is non-canonical presentation only.",
       "Read Markdown directly; the workflow does not require the truthmark CLI or package.",
       "Generate committed, generated non-canonical static files for humans.",
-      `Write only under configured Portal output ${config.truthmarkPortal.output}; default output is docs/truthmark-portal.`,
-      `Use configured Portal template ${config.truthmarkPortal.template}; no .truthmark/index.json dependency.`,
+      `Write only under fixed Portal output ${config.truthmark.paths.portalOutput}.`,
+      `Use determined Portal template ${config.truthmark.paths.portalTemplate} when present; no .truthmark/index.json dependency.`,
       "Use no remote dependencies by default and include source provenance on every page.",
       "Read support/procedure.md before generating Portal output.",
       "Read support/report-template.md before the final report.",
@@ -676,10 +676,10 @@ const renderOpenCodeWriterEditAllowRules = (
     resolveTruthDocsRoot(config),
   );
   const rootRouteIndex = normalizeOpenCodePermissionPath(
-    config.docs.routing.rootIndex,
+    config.truthmark.paths.routesIndex,
   );
   const areaFilesRoot = normalizeOpenCodePermissionPath(
-    config.docs.routing.areaFilesRoot,
+    config.truthmark.paths.routeAreasRoot,
   );
   const allowedPatterns = [
     appendOpenCodePermissionGlob(truthDocsRoot, "/**"),

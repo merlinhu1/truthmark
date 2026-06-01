@@ -4,6 +4,8 @@ import path from "node:path";
 import fg from "fast-glob";
 
 import { buildImpactSet } from "../impact/build.js";
+import { createDefaultConfig } from "../config/defaults.js";
+import { loadConfig } from "../config/load.js";
 import type { ImpactSet } from "../impact/types.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import { buildRepoIndex } from "../repo-index/build.js";
@@ -143,15 +145,16 @@ const sourceOfTruthPathsFor = async (
 
 const writePathsFor = (
   workflow: ContextPackOptions["workflow"],
+  routeIndexPath: string,
   truthDocs: string[],
   routes: ContextRoute[],
 ): string[] => {
   if (workflow === "truth-sync") {
-    return uniqueSorted(["docs/truthmark/areas.md", ...truthDocs]);
+    return uniqueSorted([routeIndexPath, ...truthDocs]);
   }
 
   if (workflow === "truth-document") {
-    return uniqueSorted(["docs/truthmark/areas.md", ...truthDocs]);
+    return uniqueSorted([routeIndexPath, ...truthDocs]);
   }
 
   return uniqueSorted(routes.flatMap((route) => route.codeSurface));
@@ -169,11 +172,13 @@ export const buildContextPack = async (
 ): Promise<ContextPack> => {
   const repoIndex = await buildRepoIndex(cwd);
   const rootDir = repoIndex.repository.root;
+  const loadResult = await loadConfig(rootDir);
+  const config = loadResult.config ?? (loadResult.status === "missing" ? createDefaultConfig() : null);
   const impactSet: ImpactSet | null = options.base
     ? await buildImpactSet(rootDir, { base: options.base })
     : null;
   const routeMap: RouteMap = impactSet ? repoIndex.routeMap : repoIndex.routeMap;
-  const warnings: Diagnostic[] = [];
+  const warnings: Diagnostic[] = loadResult.status === "invalid" ? [...loadResult.diagnostics] : [];
   const truthDocPaths =
     impactSet?.affectedTruthDocs ??
     (options.workflow === "truth-realize" ? [] : routeMap.routes.flatMap((route) => route.truthDocs));
@@ -198,7 +203,15 @@ export const buildContextPack = async (
     base: options.base ?? null,
     impactSet,
     routeMap,
-    allowedWritePaths: writePathsFor(options.workflow, truthDocPaths, contextRoutes),
+    allowedWritePaths:
+      config === null
+        ? []
+        : writePathsFor(
+            options.workflow,
+            config.truthmark.paths.routesIndex,
+            truthDocPaths,
+            contextRoutes,
+          ),
     truthDocs: await documentsFor(rootDir, truthDocPaths),
     sourceFiles: await sourceFilesFor(rootDir, sourceFilePaths, warnings),
     testCommands: testCommandsFor(impactSet?.affectedTests ?? []),

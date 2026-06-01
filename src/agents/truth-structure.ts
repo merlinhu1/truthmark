@@ -34,11 +34,11 @@ export const renderTruthStructureReportExample = (
 Topology reviewed:
 - controllers: src/auth/**
 - docs root: ${truthDocsRoot}
-- route files: ${config.docs.routing.rootIndex}
+- route files: ${config.truthmark.paths.routesIndex}
 Areas reviewed:
 - src/auth/**
 Routing updated:
-- ${config.docs.routing.rootIndex}
+- ${config.truthmark.paths.routesIndex}
 Initial truth boundary:
 - Area: Authentication
 - Code: src/auth/**
@@ -53,7 +53,7 @@ Truth docs restructured:
 ${renderClaimEvidenceCheckedSection([
     {
       claim: "Session behavior belongs to a dedicated Authentication truth owner.",
-      evidence: ["src/auth/**", `${config.docs.routing.rootIndex}:7`],
+      evidence: ["src/auth/**", `${config.truthmark.paths.routesIndex}:7`],
       result: "supported",
     },
   ])}
@@ -99,15 +99,15 @@ Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- inspect the configured root route index at ${config.docs.routing.rootIndex} and relevant child route files under ${config.docs.routing.areaFilesRoot}/ when they exist
+- inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
-- create or repair ${config.docs.routing.rootIndex}
+- create or repair ${config.truthmark.paths.routesIndex}
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, doc_type, last_reviewed, and source_of_truth inside that frontmatter.
 - Starter truth docs must include ## Product Decisions and ## Rationale sections.
 ${subagentMode}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
-- use ${truthDocsRoot}/**, docs/architecture/**, or docs/standards/** for current truth destinations
+- use ${truthDocsRoot}/** for current truth destinations
 - use only canonical current-truth destinations for starter truth docs
 - keep active Product Decisions and Rationale in the canonical doc that owns the behavior
 - preserve unrelated authored content
@@ -142,7 +142,7 @@ Topology pressure signals:
 - the configured truth root has many direct non-index docs
 - a changed controller, route, or service cannot map to a specific behavior doc
 - Truth Sync would need to create a new generic truth doc because routing is too broad
-- endpoint or controller names reveal domains missing from ${config.docs.routing.areaFilesRoot}/**
+- endpoint or controller names reveal domains missing from ${config.truthmark.paths.routeAreasRoot}/**
 Use these review thresholds as guidance:
 - more than 10 direct truth docs in one folder
 - more than 15 leaf areas in one child route file
@@ -151,7 +151,7 @@ Use these review thresholds as guidance:
 Repair rules:
 - split broad, overloaded, or catch-all areas into behavior-owned child route files
 - split mixed-owner truth docs into bounded owner docs before adding new behavior claims
-- create route files under ${config.docs.routing.areaFilesRoot}/ when a product/domain boundary is clear
+- create route files under ${config.truthmark.paths.routeAreasRoot}/ when a product/domain boundary is clear
 - create behavior truth docs under the configured truth root only when behavior lacks a current doc
 - README.md files are indexes, not Truth Sync targets
 - prefer bounded leaf truth docs at <truth-root>/<domain>/<behavior>.md

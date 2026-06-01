@@ -45,8 +45,8 @@ Truthmark's minimal canonical surface is:
 
 - `docs/ai/repo-rules.md` as the repository-wide agent policy source
 - `.truthmark/config.yml` as the committed hierarchy contract
-- `docs/truthmark/areas.md` as the primary routing surface
-- the project's canonical truth docs under directories such as `docs/standards/`, `docs/architecture/`, and `docs/truth/`
+- `docs/truthmark/routes/areas.md` as the primary routing surface
+- the project's canonical truth docs under directories such as `docs/standards/`, `docs/architecture/`, and `docs/truthmark/truth/`
 
 By default, instruction files such as `AGENTS.md` install workflow behavior. They do not outrank the canonical truth surface unless a project opts into that explicitly.
 
@@ -83,7 +83,7 @@ Do not create separate timestamped ADR folders, planning tickets, or historical 
 - Behavior changes and truth-doc updates should land in the same working change when possible.
 - Major product, onboarding, install, command, positioning, or workflow changes should include a root README review in the same working change. Update the README when its human-facing claims, examples, or command sequences are stale.
 - When the root README has localized variants, keep them aligned with the English README for materially changed install, command, positioning, and workflow guidance in the same working change, or explicitly document why a variant intentionally differs.
-- When routing changes, update `docs/truthmark/areas.md` and any affected canonical docs together.
+- When routing changes, update `docs/truthmark/routes/areas.md` and any affected canonical docs together.
 - When routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before adding more generic truth docs.
 - When a code change alters system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership, update the owning architecture doc in the same change.
 - Do not update architecture docs for ordinary product behavior unless that behavior changes an architecture boundary.
@@ -111,7 +111,7 @@ Do not create separate timestamped ADR folders, planning tickets, or historical 
 - Does this document have one primary responsibility?
 - Does each class of fact have one canonical source?
 - Is this fact stored in the correct document class?
-- Does `docs/truthmark/areas.md` route the changed area to the right truth docs?
+- Does `docs/truthmark/routes/areas.md` route the changed area to the right truth docs?
 - If routing is broad or overloaded, has Truth Structure repaired topology before new truth docs were created?
 - Are duplicated or shadow documentation paths being avoided?
 - Is generated helper output still treated as non-authoritative rather than truth?

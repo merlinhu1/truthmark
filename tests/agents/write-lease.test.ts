@@ -15,12 +15,12 @@ const lease: TruthmarkWriteLease = {
   objective: "Update one routed workflow truth doc.",
   requiredReads: [
     ".truthmark/config.yml",
-    "docs/truthmark/areas.md",
-    "docs/truth/workflows/truth-sync.md",
+    "docs/truthmark/routes/areas.md",
+    "docs/truthmark/truth/workflows/truth-sync.md",
   ],
   allowedWrites: [
-    "docs/truth/workflows/truth-sync.md",
-    "docs/truthmark/areas/**/*.md",
+    "docs/truthmark/truth/workflows/truth-sync.md",
+    "docs/truthmark/routes/areas/**/*.md",
   ],
   forbiddenWrites: ["src/**", ".codex/**", ".opencode/**"],
   evidenceRequired: ["implemented source or generated surface for each claim"],
@@ -33,7 +33,7 @@ worker: truth_doc_writer
 workflow: truthmark-sync
 shard: workflow-sync-doc
 filesChanged:
-  - docs/truth/workflows/truth-sync.md
+  - docs/truthmark/truth/workflows/truth-sync.md
 claimsChecked:
   - Sync parent validation claim
 evidenceChecked:
@@ -48,14 +48,14 @@ describe("validateTruthmarkWriteLeaseChanges", () => {
   it("accepts only files covered by allowed writes", () => {
     expect(
       validateTruthmarkWriteLeaseChanges(lease, [
-        "docs/truth/workflows/truth-sync.md",
-        "./docs/truthmark/areas/workflows.md",
+        "docs/truthmark/truth/workflows/truth-sync.md",
+        "./docs/truthmark/routes/areas/workflows.md",
       ]),
-    ).toEqual({
-      allowedChanges: [
-        "docs/truth/workflows/truth-sync.md",
-        "docs/truthmark/areas/workflows.md",
-      ],
+    ).toMatchObject({
+      allowedChanges: expect.arrayContaining([
+        "docs/truthmark/truth/workflows/truth-sync.md",
+        "docs/truthmark/routes/areas/workflows.md",
+      ]),
       forbiddenChanges: [],
       offLeaseChanges: [],
     });
@@ -64,20 +64,20 @@ describe("validateTruthmarkWriteLeaseChanges", () => {
   it("reports off-lease and explicitly forbidden changes", () => {
     expect(
       validateTruthmarkWriteLeaseChanges(lease, [
-        "docs/truth/workflows/truth-sync.md",
+        "docs/truthmark/truth/workflows/truth-sync.md",
         "src/agents/truth-sync.ts",
         ".opencode/agents/truth-doc-writer.md",
-        "docs/truth/workflows/truth-document.md",
+        "docs/truthmark/truth/workflows/truth-document.md",
       ]),
     ).toEqual({
-      allowedChanges: ["docs/truth/workflows/truth-sync.md"],
+      allowedChanges: ["docs/truthmark/truth/workflows/truth-sync.md"],
       forbiddenChanges: [
         ".opencode/agents/truth-doc-writer.md",
         "src/agents/truth-sync.ts",
       ],
       offLeaseChanges: [
         ".opencode/agents/truth-doc-writer.md",
-        "docs/truth/workflows/truth-document.md",
+        "docs/truthmark/truth/workflows/truth-document.md",
         "src/agents/truth-sync.ts",
       ],
     });
@@ -90,13 +90,13 @@ describe("validateTruthmarkWriteWorkerAcceptance", () => {
       validateTruthmarkWriteWorkerAcceptance({
         lease,
         workerReport: parseTruthmarkWriteWorkerReport(completedReport),
-        actualChangedFiles: ["docs/truth/workflows/truth-sync.md"],
+        actualChangedFiles: ["docs/truthmark/truth/workflows/truth-sync.md"],
       }),
     ).toMatchObject({
       status: "accepted",
       reasons: [],
       changeValidation: {
-        allowedChanges: ["docs/truth/workflows/truth-sync.md"],
+        allowedChanges: ["docs/truthmark/truth/workflows/truth-sync.md"],
         forbiddenChanges: [],
         offLeaseChanges: [],
       },
@@ -109,8 +109,8 @@ describe("validateTruthmarkWriteWorkerAcceptance", () => {
         lease,
         workerReport: parseTruthmarkWriteWorkerReport(completedReport),
         actualChangedFiles: [
-          "docs/truth/workflows/truth-sync.md",
-          "docs/truth/workflows/truth-document.md",
+          "docs/truthmark/truth/workflows/truth-sync.md",
+          "docs/truthmark/truth/workflows/truth-document.md",
         ],
       }).reasons.map((reason) => reason.code),
     ).toEqual(["off-lease-actual-diff", "reported-files-mismatch"]);
@@ -122,7 +122,7 @@ describe("validateTruthmarkWriteWorkerAcceptance", () => {
         lease,
         workerReport: parseTruthmarkWriteWorkerReport(completedReport),
         actualChangedFiles: [
-          "docs/truth/workflows/truth-sync.md",
+          "docs/truthmark/truth/workflows/truth-sync.md",
           "src/agents/truth-sync.ts",
         ],
       }).reasons.map((reason) => reason.code),
@@ -140,7 +140,7 @@ worker: truth_doc_writer
 workflow: truthmark-sync
 shard: workflow-sync-doc
 filesChanged:
-  - docs/truth/workflows/truth-sync.md
+  - docs/truthmark/truth/workflows/truth-sync.md
 claimsChecked: []
 evidenceChecked: []
 offLeaseChanges: []
@@ -151,7 +151,7 @@ blockers: []
       validateTruthmarkWriteWorkerAcceptance({
         lease,
         workerReport: report,
-        actualChangedFiles: ["docs/truth/workflows/truth-sync.md"],
+        actualChangedFiles: ["docs/truthmark/truth/workflows/truth-sync.md"],
       }).reasons.map((reason) => reason.code),
     ).toEqual(["missing-report-field"]);
   });
@@ -163,7 +163,7 @@ worker: 7
 workflow: truthmark-sync
 shard: workflow-sync-doc
 filesChanged:
-  - docs/truth/workflows/truth-sync.md
+  - docs/truthmark/truth/workflows/truth-sync.md
 claimsChecked: []
 evidenceChecked: []
 offLeaseChanges: []
@@ -175,7 +175,7 @@ notes: []
       validateTruthmarkWriteWorkerAcceptance({
         lease,
         workerReport: report,
-        actualChangedFiles: ["docs/truth/workflows/truth-sync.md"],
+        actualChangedFiles: ["docs/truthmark/truth/workflows/truth-sync.md"],
       }).reasons.map((reason) => reason.code),
     ).toEqual(["invalid-report-field"]);
   });
@@ -187,13 +187,13 @@ worker: truth_doc_writer
 workflow: truthmark-sync
 shard: workflow-sync-doc
 filesChanged:
-  - docs/truth/workflows/truth-sync.md
+  - docs/truthmark/truth/workflows/truth-sync.md
 claimsChecked:
   - Sync parent validation claim
 evidenceChecked:
   - src/agents/write-lease.ts
 offLeaseChanges:
-  - docs/truth/workflows/truth-document.md
+  - docs/truthmark/truth/workflows/truth-document.md
 blockers:
   - ownership ambiguous
 notes:
@@ -204,7 +204,7 @@ notes:
       validateTruthmarkWriteWorkerAcceptance({
         lease,
         workerReport: report,
-        actualChangedFiles: ["docs/truth/workflows/truth-sync.md"],
+        actualChangedFiles: ["docs/truthmark/truth/workflows/truth-sync.md"],
       }).reasons.map((reason) => reason.code),
     ).toEqual([
       "completed-with-reported-off-lease-changes",

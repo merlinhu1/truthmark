@@ -5,7 +5,7 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.0.0
 ---
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
@@ -40,12 +40,12 @@ Product Decisions/Rationale preservation gate:
 - remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
 - if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing
 - after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
-When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
+When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
 Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
 Treat the HTML comments under each template section as normative authoring guidance for that section.
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
 If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
-Teams may edit the template files under docs/templates/ to define their local truth-doc standards.
+Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
 Truth-doc shape repair gate:
 - Truth Sync may restructure only truth docs impacted by the current functional-code change.
 - repair shape in place only after the ownership gate confirms the doc is the right bounded owner
@@ -78,9 +78,9 @@ Helper status reporting:
 - Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/areas.md
-- Area route files, when present: docs/truthmark/areas/**/*.md
-- Truth docs, when present: docs/truth/**/*.md
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Truth docs, when present: docs/truthmark/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
@@ -101,14 +101,14 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/repository/overview.md
+- docs/truthmark/truth/repository/overview.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.
-  Evidence: src/auth/session.ts:12 / docs/truthmark/areas.md:11
+  Evidence: src/auth/session.ts:12 / docs/truthmark/routes/areas.md:11
   Result: supported
 
 Helper scripts:
@@ -125,7 +125,7 @@ Reason:
 - routing repair is not allowed
 
 Files requiring manual review:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Next action:
 - update routing metadata and rerun Truth Sync

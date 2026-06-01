@@ -15,8 +15,8 @@ export const buildRouteMap = async (rootDir: string): Promise<RouteMap> => {
   }
 
   const routing = await resolveAreaRouting(rootDir, {
-    rootIndex: loadResult.config.docs.routing.rootIndex,
-    areaFilesRoot: loadResult.config.docs.routing.areaFilesRoot,
+    rootIndex: loadResult.config.truthmark.paths.routesIndex,
+    areaFilesRoot: loadResult.config.truthmark.paths.routeAreasRoot,
     truthDocsRoot: resolveTruthDocsRoot(loadResult.config),
   });
 

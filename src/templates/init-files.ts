@@ -45,7 +45,7 @@ export const renderAreasTemplate = (
           path: document.path,
           kind: inferTruthDocumentKindFromPath(document.path) ?? "behavior",
         }))
-      : [{ path: "docs/truth/**/*.md", kind: "behavior" }];
+      : [{ path: `${createDefaultConfig().truthmark.paths.truthRoot}/**/*.md`, kind: "behavior" }];
 
   return [
     "# Truthmark Areas",
@@ -76,11 +76,11 @@ const titleCase = (value: string): string => {
 export const renderHierarchicalAreasIndexTemplate = (
   config: TruthmarkConfig,
 ): string => {
-  const defaultArea = config.docs.routing.defaultArea;
-  const childPath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
+  const defaultArea = config.truthmark.routes.defaultArea;
+  const childPath = `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`;
   const title = titleCase(defaultArea);
   const sourceOfTruth = resolveRelativePath(
-    config.docs.routing.rootIndex,
+    config.truthmark.paths.routesIndex,
     ".truthmark/config.yml",
   );
 
@@ -111,11 +111,11 @@ export const renderHierarchicalAreasIndexTemplate = (
 };
 
 export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
-  const defaultArea = config.docs.routing.defaultArea;
+  const defaultArea = config.truthmark.routes.defaultArea;
   const title = titleCase(defaultArea);
   const truthDocsRoot = truthRoot(config);
   const leafTruthDoc = `${truthDocsRoot}/${defaultArea}/overview.md`;
-  const templatePath = `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`;
+  const templatePath = `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`;
   const sourceOfTruth = resolveRelativePath(templatePath, ".truthmark/config.yml");
 
   return [
@@ -153,7 +153,7 @@ export const renderTruthRootReadmeTemplate = (
   const templatePath = `${truthRoot(config)}/README.md`;
   const sourceOfTruth = resolveRelativePath(
     templatePath,
-    config.docs.routing.rootIndex,
+    config.truthmark.paths.routesIndex,
   );
 
   return [
@@ -175,12 +175,12 @@ export const renderTruthRootReadmeTemplate = (
 };
 
 export const renderTruthDomainReadmeTemplate = (config: TruthmarkConfig): string => {
-  const defaultArea = config.docs.routing.defaultArea;
+  const defaultArea = config.truthmark.routes.defaultArea;
   const title = titleCase(defaultArea);
   const templatePath = `${truthRoot(config)}/${defaultArea}/README.md`;
   const sourceOfTruth = resolveRelativePath(
     templatePath,
-    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+    `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`,
   );
 
   return [
@@ -205,12 +205,12 @@ export const renderTruthDomainReadmeTemplate = (config: TruthmarkConfig): string
   ].join("\n");
 };
 
-export const BEHAVIOR_DOC_TEMPLATE_PATH = "docs/templates/behavior-doc.md";
-export const CONTRACT_DOC_TEMPLATE_PATH = "docs/templates/contract-doc.md";
-export const ARCHITECTURE_DOC_TEMPLATE_PATH = "docs/templates/architecture-doc.md";
-export const WORKFLOW_DOC_TEMPLATE_PATH = "docs/templates/workflow-doc.md";
-export const OPERATIONS_DOC_TEMPLATE_PATH = "docs/templates/operations-doc.md";
-export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH = "docs/templates/test-behavior-doc.md";
+export const BEHAVIOR_DOC_TEMPLATE_PATH = "docs/truthmark/templates/behavior-doc.md";
+export const CONTRACT_DOC_TEMPLATE_PATH = "docs/truthmark/templates/contract-doc.md";
+export const ARCHITECTURE_DOC_TEMPLATE_PATH = "docs/truthmark/templates/architecture-doc.md";
+export const WORKFLOW_DOC_TEMPLATE_PATH = "docs/truthmark/templates/workflow-doc.md";
+export const OPERATIONS_DOC_TEMPLATE_PATH = "docs/truthmark/templates/operations-doc.md";
+export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH = "docs/truthmark/templates/test-behavior-doc.md";
 
 type TemplateSectionSpec = {
   heading: string;
@@ -683,12 +683,12 @@ export const renderBehaviorLeafDocTemplate = (
   config: TruthmarkConfig,
   template = renderBehaviorDocTemplateFile(),
 ): string => {
-  const defaultArea = config.docs.routing.defaultArea;
+  const defaultArea = config.truthmark.routes.defaultArea;
   const title = titleCase(defaultArea);
   const templatePath = `${truthRoot(config)}/${defaultArea}/overview.md`;
   const sourceOfTruth = resolveRelativePath(
     templatePath,
-    `${config.docs.routing.areaFilesRoot}/${defaultArea}.md`,
+    `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`,
   );
   const today = currentDate();
 

@@ -34,7 +34,7 @@ Why this workflow:
 - forbidden adjacency considered: must not edit functional code
 
 Likely route owner:
-- route file: ${config.docs.routing.rootIndex}
+- route file: ${config.truthmark.paths.routesIndex}
 - truth doc: ${truthDocsRoot}/example.md
 - confidence: medium
 
@@ -82,8 +82,8 @@ Purpose:
 
 Read:
 - .truthmark/config.yml, only when present
-- ${config.docs.routing.rootIndex}, only when present
-- relevant child route files under ${config.docs.routing.areaFilesRoot}/, only when present
+- ${config.truthmark.paths.routesIndex}, only when present
+- relevant child route files under ${config.truthmark.paths.routeAreasRoot}/, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 

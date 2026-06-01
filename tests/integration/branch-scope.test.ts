@@ -93,22 +93,22 @@ describe("branch-scoped truth integration", () => {
 
       const secondary = await repo.addWorktree("feature/docs");
       await secondary.writeFile(
-        "docs/truthmark/areas.md",
-        `${await secondary.readFile("docs/truthmark/areas.md")}\n## Feature Branch Notes\nOnly here.\n`,
+        "docs/truthmark/routes/areas.md",
+        `${await secondary.readFile("docs/truthmark/routes/areas.md")}\n## Feature Branch Notes\nOnly here.\n`,
       );
 
       const primaryResult = await runCheck(repo.rootDir);
       const secondaryResult = await runCheck(secondary.rootDir);
       const primaryHash = (primaryResult.data?.branchScope as { relevantFileHashes: Record<string, string> })
-        .relevantFileHashes["docs/truthmark/areas.md"];
+        .relevantFileHashes["docs/truthmark/routes/areas.md"];
       const secondaryHash = (secondaryResult.data?.branchScope as { relevantFileHashes: Record<string, string> })
-        .relevantFileHashes["docs/truthmark/areas.md"];
+        .relevantFileHashes["docs/truthmark/routes/areas.md"];
 
       expect(primaryHash).toBeTruthy();
       expect(secondaryHash).toBeTruthy();
       expect(primaryHash).not.toBe(secondaryHash);
-      expect(await repo.readFile("docs/truthmark/areas.md")).not.toContain("Feature Branch Notes");
-      expect(await secondary.readFile("docs/truthmark/areas.md")).toContain("Feature Branch Notes");
+      expect(await repo.readFile("docs/truthmark/routes/areas.md")).not.toContain("Feature Branch Notes");
+      expect(await secondary.readFile("docs/truthmark/routes/areas.md")).toContain("Feature Branch Notes");
     } finally {
       await repo.cleanup();
     }
