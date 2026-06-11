@@ -167,6 +167,7 @@ export const buildWorkflowState = async (
   return {
     schemaVersion: "truthmark-workflow/v0",
     workflow: options.workflow,
+    ...(options.base ? { base: options.base } : {}),
     applicability,
     actionContext: buildWorkflowActionContext(manifestEntry, actionData),
     changedFiles: impactSet?.changedFiles ?? [],

@@ -4,10 +4,10 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-16
 source_of_truth:
-  - ../../../src/repo-index/build.ts
-  - ../../../src/repo-index/file-tree.ts
-  - ../../../src/repo-index/route-map.ts
-  - ../../../src/repo-index/types.ts
+  - ../../../../src/repo-index/build.ts
+  - ../../../../src/repo-index/file-tree.ts
+  - ../../../../src/repo-index/route-map.ts
+  - ../../../../src/repo-index/types.ts
 ---
 
 # RepoIndex

@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../../src/agents/shared.ts
-  - ../../../src/truth/**
-  - ../../../src/sync/report.ts
+  - ../../../../src/agents/shared.ts
+  - ../../../../src/truth/**
+  - ../../../../src/sync/report.ts
 ---
 
 # Shared Workflow Gates

@@ -3,7 +3,7 @@ status: active
 doc_type: index
 last_reviewed: 2026-05-13
 source_of_truth:
-  - ../../truthmark/areas/init-and-scaffold.md
+  - ../../routes/areas/init-and-scaffold.md
 ---
 
 # Repository Truth Docs

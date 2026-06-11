@@ -28,8 +28,8 @@ truth_documents:
 Code surface:
 - src/fs/paths.ts
 - src/init/**
-- src/templates/generated-surfaces.ts
-- src/templates/init-files.ts
+- src/templates/**
+- tests/init/**
 
 Update truth when:
 - `truthmark init` scaffolds or refreshes files differently

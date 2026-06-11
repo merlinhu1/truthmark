@@ -4,10 +4,10 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../../src/agents/truth-preview.ts
-  - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/templates/workflow-surfaces.ts
-  - ../../../src/templates/generated-surfaces.ts
+  - ../../../../src/agents/truth-preview.ts
+  - ../../../../src/agents/workflow-manifest.ts
+  - ../../../../src/templates/workflow-surfaces.ts
+  - ../../../../src/templates/generated-surfaces.ts
 ---
 
 # Truth Preview

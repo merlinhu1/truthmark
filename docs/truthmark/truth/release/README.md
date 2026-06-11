@@ -3,7 +3,7 @@ status: active
 doc_type: index
 last_reviewed: 2026-05-13
 source_of_truth:
-  - ../../truthmark/areas/release-automation.md
+  - ../../routes/areas/release-automation.md
 ---
 
 # Release Truth Docs

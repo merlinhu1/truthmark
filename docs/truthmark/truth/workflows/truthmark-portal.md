@@ -4,13 +4,13 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../../src/agents/truthmark-portal.ts
-  - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/templates/generated-surfaces.ts
-  - ../../../src/templates/workflow-surfaces.ts
-  - ../../../src/templates/agents-block.ts
-  - ../../../src/config/schema.ts
-  - ../../../src/config/load.ts
+  - ../../../../src/agents/truthmark-portal.ts
+  - ../../../../src/agents/workflow-manifest.ts
+  - ../../../../src/templates/generated-surfaces.ts
+  - ../../../../src/templates/workflow-surfaces.ts
+  - ../../../../src/templates/agents-block.ts
+  - ../../../../src/config/schema.ts
+  - ../../../../src/config/load.ts
 ---
 
 # Truthmark Portal Workflow

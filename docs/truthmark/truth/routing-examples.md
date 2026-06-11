@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-09
 source_of_truth:
-  - ../../src/checks/areas.ts
-  - ../../src/sync/classify.ts
-  - ../../src/routing/area-resolver.ts
+  - ../../../src/checks/areas.ts
+  - ../../../src/sync/classify.ts
+  - ../../../src/routing/area-resolver.ts
 ---
 
 # Routing Examples

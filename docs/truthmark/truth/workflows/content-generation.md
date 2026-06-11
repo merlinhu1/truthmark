@@ -4,7 +4,7 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../../src/generation/**
+  - ../../../../src/generation/**
 ---
 
 # Workflow Content Generation

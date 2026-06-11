@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
+import type { TruthHealthScorecard } from "../../src/checks/scorecard.js";
 import { runConfig } from "../../src/config/command.js";
 import { TRUTHMARK_VERSION } from "../../src/version.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -14,12 +15,28 @@ const initializeRepo = async (rootDir: string): Promise<void> => {
   await runInit(rootDir);
 };
 
+const scorecardFrom = (result: Awaited<ReturnType<typeof runCheck>>): TruthHealthScorecard => {
+  const scorecard = result.data?.scorecard;
+  expect(scorecard).toBeDefined();
+  return scorecard as TruthHealthScorecard;
+};
+
+const scorecardDimension = (
+  scorecard: TruthHealthScorecard,
+  id: TruthHealthScorecard["dimensions"][number]["id"],
+) => {
+  const dimension = scorecard.dimensions.find((candidate) => candidate.id === id);
+  expect(dimension).toBeDefined();
+  return dimension!;
+};
+
 describe("runCheck", () => {
   it("returns no error diagnostics for a healthy initialized repository", async () => {
     const repo = await createTempRepo();
 
     try {
       await initializeRepo(repo.rootDir);
+      await repo.writeFile("src/index.ts", "export const value = true;\n");
 
       const result = await runCheck(repo.rootDir);
 
@@ -29,6 +46,13 @@ describe("runCheck", () => {
           (diagnostic) => diagnostic.severity === "error",
         ),
       ).toEqual([]);
+
+      const scorecard = scorecardFrom(result);
+      expect(scorecard.schemaVersion).toBe("truthmark-scorecard/v0");
+      expect(scorecard.dimensions).toHaveLength(7);
+      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe("pass");
+      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe("not-run");
+      expect(result.data).toHaveProperty("truthVisibility");
     } finally {
       await repo.cleanup();
     }
@@ -75,6 +99,7 @@ describe("runCheck", () => {
           (diagnostic) => diagnostic.category === "links",
         ),
       ).toBe(true);
+      expect(scorecardDimension(scorecardFrom(result), "truth-doc-structure").status).toBe("fail");
     } finally {
       await repo.cleanup();
     }
@@ -221,6 +246,10 @@ ignore: []
             diagnostic.category === "authority",
         ),
       ).toBe(false);
+
+      const scorecard = scorecardFrom(result);
+      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe("fail");
+      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe("not-run");
     } finally {
       await fs.rm(
         path.resolve(repo.rootDir, "..", "truthmark-outside-authority.md"),

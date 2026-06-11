@@ -4,14 +4,14 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../../src/agents/truth-document.ts
-  - ../../../src/agents/write-lease.ts
-  - ../../../src/agents/shared.ts
-  - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/agents/workflow-helper-validation.ts
-  - ../../../src/cli/program.ts
-  - ../../../src/cli/handlers.ts
-  - ../../../src/templates/workflow-surfaces.ts
+  - ../../../../src/agents/truth-document.ts
+  - ../../../../src/agents/write-lease.ts
+  - ../../../../src/agents/shared.ts
+  - ../../../../src/agents/workflow-manifest.ts
+  - ../../../../src/agents/workflow-helper-validation.ts
+  - ../../../../src/cli/program.ts
+  - ../../../../src/cli/handlers.ts
+  - ../../../../src/templates/workflow-surfaces.ts
 ---
 
 # Truth Document Workflow

@@ -1,5 +1,8 @@
-## ADDED Requirements
+# generated-playbooks-workflow-contract Specification
 
+## Purpose
+TBD - created by archiving change generated-playbooks-workflow-contract. Update Purpose after archive.
+## Requirements
 ### Requirement: Generated workflow surfaces run live workflow preflight
 
 Truthmark generated workflow surfaces MUST instruct agents to query the local workflow status and instructions CLI for the canonical full workflow ID before acting when the local CLI is available.
@@ -22,21 +25,28 @@ Truthmark generated workflow surfaces MUST instruct agents to query the local wo
 - **THEN** those surfaces include the same live workflow status/instructions preflight policy
 - **AND** host-specific frontmatter, command syntax, and argument placeholders remain valid for that host
 
+#### Scenario: Legacy public workflow renderers include the same preflight
+
+- **WHEN** public legacy renderer functions still emit Truthmark workflow instructions directly
+- **THEN** those rendered instructions include the same live workflow status/instructions preflight policy or the renderer is explicitly documented as out of scope before implementation
+
 ### Requirement: Generated playbooks obey workflow action context
 
 Generated workflow surfaces MUST instruct agents to treat returned workflow status and instructions as operational guardrails for applicability, writes, helpers, and reporting.
 
-#### Scenario: Blocked or not-applicable workflows stop before writes
+#### Scenario: Blocked, not-applicable, or ambiguous workflows stop before writes
 
 - **WHEN** generated workflow prose describes handling the `workflow status` response
-- **THEN** it instructs agents to stop before writes when workflow applicability is `blocked` or `not_applicable`
-- **AND** it permits continuing only when the user explicitly changes scope or selects a different workflow
+- **THEN** it instructs agents to inspect `data.workflowState.applicability.state`
+- **AND** it instructs agents to stop before writes when workflow applicability is `blocked`, `not_applicable`, or `ambiguous`
+- **AND** it permits continuing with writes only when the user explicitly changes scope or selects a different workflow that returns applicable status
+- **AND** it permits only read-only inspection/reporting without writes while reporting `data.workflowState.nextSteps` or diagnostics for the current blocked, not-applicable, or ambiguous state
 
 #### Scenario: Write boundaries come from action context
 
 - **WHEN** generated workflow prose describes allowed and forbidden writes
-- **THEN** it tells agents to obey `actionContext.allowedWritePaths`
-- **AND** it tells agents to obey `actionContext.forbiddenWritePaths`
+- **THEN** it tells agents to obey `data.workflowState.actionContext.allowedWritePaths`
+- **AND** it tells agents to obey `data.workflowState.actionContext.forbiddenWritePaths`
 - **AND** it does not broaden write authority beyond the returned action context, the current user task, and any parent/lease rules
 
 #### Scenario: Stop conditions remain hard boundaries
@@ -50,6 +60,12 @@ Generated workflow surfaces MUST instruct agents to treat returned workflow stat
 - **THEN** generated prose tells agents to run applicable helpers when available
 - **AND** it tells agents to report helper status as passed, failed, or skipped with reason
 - **AND** it does not claim helper success unless a helper actually ran and returned successful validation
+
+#### Scenario: Report shape comes from live instructions when available
+
+- **WHEN** generated workflow prose describes final reporting after `workflow instructions` succeeds
+- **THEN** it tells agents to use `data.instructions.reportTemplate.sections` or `data.instructions.finalReportShape` when present
+- **AND** it falls back to checked-in report templates only when live instructions are unavailable or skipped
 
 ### Requirement: Generated playbooks preserve safe CLI-unavailable fallback
 
@@ -83,6 +99,12 @@ Generated workflow surfaces MUST consume the workflow status/instructions contra
 - **THEN** they use full manifest IDs such as `truthmark-sync`, `truthmark-document`, `truthmark-realize`, `truthmark-structure`, `truthmark-check`, `truthmark-preview`, and `truthmark-portal`
 - **AND** they do not use short aliases such as `truth-sync`, `truth-document`, or `truth-realize`
 
+#### Scenario: All emitted workflow surfaces are matrix-verified
+
+- **WHEN** generated surfaces are rendered for default and Portal-enabled configurations
+- **THEN** every emitted workflow entrypoint, prompt, and command surface contains the correct full-ID workflow status and workflow instructions commands for its workflow
+- **AND** checked-in support procedure files are treated as subordinate references unless invoked through an entrypoint, prompt, or command that has performed or explicitly skipped the live preflight
+
 ### Requirement: Generated output refresh and documentation are synchronized
 
 Pass 3 implementation MUST refresh generated surfaces through the normal renderer/init path and update routed truth documentation for the new generated-playbook behavior.
@@ -97,6 +119,7 @@ Pass 3 implementation MUST refresh generated surfaces through the normal rendere
 #### Scenario: Routed truth docs describe the CLI-first generated playbook contract
 
 - **WHEN** Pass 3 implementation is complete
-- **THEN** the routed truth documentation states that generated workflow surfaces prefer live `workflow status` and `workflow instructions` preflight before acting
-- **AND** it documents safe fallback behavior when the CLI is unavailable
-- **AND** it documents canonical full workflow IDs for generated preflight commands
+- **THEN** all routed truth documentation owners touched by the behavior change have been evaluated, including installed workflow behavior, init/scaffold generated surfaces, and CLI/generated-surface contracts
+- **AND** updated truth docs state that generated workflow surfaces prefer live `workflow status` and `workflow instructions` preflight before acting
+- **AND** they document safe fallback behavior when the CLI is unavailable
+- **AND** they document canonical full workflow IDs and exact JSON field paths for generated preflight commands and guardrails

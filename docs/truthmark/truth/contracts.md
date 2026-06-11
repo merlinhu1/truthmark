@@ -4,17 +4,18 @@ doc_type: contract
 truth_kind: contract
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../src/config/schema.ts
-  - ../../src/checks/check.ts
-  - ../../src/templates/init-files.ts
-  - ../../src/templates/generated-surfaces.ts
-  - ../../src/init/init.ts
-  - ../../src/output/diagnostic.ts
-  - ../../src/output/render.ts
-  - ../../src/cli/handlers.ts
-  - ../../src/cli/program.ts
-  - ../../src/workflow-state/instructions.ts
-  - ../../src/agents/workflow-helper-validation.ts
+  - ../../../src/config/schema.ts
+  - ../../../src/checks/check.ts
+  - ../../../src/checks/scorecard.ts
+  - ../../../src/templates/init-files.ts
+  - ../../../src/templates/generated-surfaces.ts
+  - ../../../src/init/init.ts
+  - ../../../src/output/diagnostic.ts
+  - ../../../src/output/render.ts
+  - ../../../src/cli/handlers.ts
+  - ../../../src/cli/program.ts
+  - ../../../src/workflow-state/instructions.ts
+  - ../../../src/agents/workflow-helper-validation.ts
 ---
 
 # Contracts
@@ -120,6 +121,17 @@ Diagnostic fields:
 Human-rendered output is intended for people. JSON output is the machine-facing contract. CLI invocations that render a `CommandResult` set a non-zero process exit code when any diagnostic has `severity: "error"`; `info`, `action`, and `review` diagnostics do not make the process fail.
 
 `truthmark index --json` returns `data.repoIndex` with `schemaVersion: repo-index/v0` and `data.routeMap` with `schemaVersion: route-map/v0`.
+
+`truthmark check --json` returns `data.branchScope`, the compatibility `data.truthVisibility` summary, and `data.scorecard` with `schemaVersion: truthmark-scorecard/v0`. The scorecard is additive triage over the same top-level `diagnostics` array; raw diagnostics remain authoritative and keep their existing shape. `data.impactSet` is included only when `--base <ref>` is supplied.
+
+The Truth Health Scorecard dimensions are compact runtime objects:
+
+- `id`: one of `routing-coverage`, `ownership-clarity`, `evidence-support`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, or `decision-rationale-preservation`
+- `status`: `pass`, `warn`, `fail`, or `not-run`
+- `diagnosticIndexes`: indexes into the same raw `diagnostics` array returned by the command
+- `evidence`: optional, capped short snippets for non-pass states only
+
+Scorecard statuses are categorical: mapped `error` diagnostics produce `fail`; mapped non-error diagnostics produce `warn`; a dimension whose relevant checker ran with no mapped diagnostics produces `pass`; and unavailable or intentionally skipped context produces `not-run`. `branch-freshness` is `not-run` when `truthmark check` runs without `--base`, rather than `pass` just because freshness diagnostics did not run. Pass 4 does not add a scorecard command, numeric health grade, generated-playbook payload, or `data.workflowState.scorecard`.
 
 `truthmark impact --base <ref> --json` returns `data.impactSet` with `schemaVersion: impact-set/v0`.
 
@@ -290,7 +302,7 @@ Current agent-native scaffold targets include:
 - `.gemini/agents/truth-doc-reviewer.md`
 - `.gemini/agents/truth-doc-writer.md`
 
-Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode-style skill indexers can parse every generated workflow surface. For those skill-package hosts, `SKILL.md` is the compact routing and quick-procedure entrypoint; detailed procedure text, report templates, and subagent or lease reference material live in generated sibling `support/*.md` files. Helper-capable workflows also emit `helper-manifest.yml` and `support/helper-policy.md` files that call installed `truthmark validate ... --json` CLI validators; generated packages do not bundle repo-local helper scripts. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated verifier agents are read-only and context-bounded to parent-assigned shards, while generated `truth-doc-writer` agents are write-capable only through parent-provided leases and parent diff validation. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:preview`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`; each command prompt ends with an explicit `User focus or arguments: {{args}}` handoff. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
+Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode-style skill indexers can parse every generated workflow surface. For those skill-package hosts, `SKILL.md` is the compact routing and quick-procedure entrypoint; detailed procedure text, report templates, and subagent or lease reference material live in generated sibling `support/*.md` files. Public workflow entrypoints, generated GitHub Copilot prompt files, and generated Gemini command files include a live workflow preflight that calls `truthmark workflow status --workflow <full-id> --json` and `truthmark workflow instructions --workflow <full-id> --json` before workflow-specific procedure text when the installed CLI is available; the preflight binds agents to `data.workflowState` applicability, action context, stop conditions, helper commands, and report template/final-report fields without adding workflow execution verbs. Helper-capable workflows also emit `helper-manifest.yml` and `support/helper-policy.md` files that call installed `truthmark validate ... --json` CLI validators; generated packages do not bundle repo-local helper scripts. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated verifier agents are read-only and context-bounded to parent-assigned shards, while generated `truth-doc-writer` agents are write-capable only through parent-provided leases and parent diff validation. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:preview`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`; each command prompt ends with an explicit `User focus or arguments: {{args}}` handoff. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
 
 The OpenCode `truth-doc-writer` edit allow-list is rendered from the active `truthmark.workspace`, `truthmark.truth.root`, `truthmark.routes.index`, and `truthmark.routes.areas` config paths so valid leases remain writable in non-default documentation layouts.
 
@@ -361,6 +373,7 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Date active decisions inline when added or changed.
 - The V1 user-facing CLI surface is `config`, `init`, `check`, `index`, `impact`, `context`, agent-facing `workflow status` / `workflow instructions`, and optional helper `validate` subcommands; workflow execution verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, and `build` are not top-level commands.
 - `gemini-cli` installs hierarchical `GEMINI.md` context, Agent Skills under `.gemini/skills/`, project-scoped `.gemini/commands/truthmark/*.toml` custom commands, and project subagents under `.gemini/agents/` so Gemini users get explicit workflow entrypoints and bounded delegation without adding top-level CLI verbs.
+- Generated public workflow entrypoints, GitHub Copilot prompts, and Gemini commands consume the local read-only `workflow status` / `workflow instructions` contract before acting when the installed CLI is available; support files remain subordinate fallback references.
 - Decision (2026-05-14): Truth Realize is manually invoked through installed workflow surfaces and is not controlled by `realization.enabled` or any other config key.
 
 ## Rationale

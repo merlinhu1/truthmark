@@ -3,7 +3,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 2.0.0
+truthmark-version: 2.1.0
 ---
 
 # Truthmark Document
@@ -12,8 +12,28 @@ Use this skill to document existing implemented behavior when no functional-code
 
 Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs.
 
-
 Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
+
+## Live workflow preflight
+
+When the local Truthmark CLI is available, run the live workflow contract before acting:
+
+```bash
+truthmark workflow status --workflow truthmark-document --json
+truthmark workflow instructions --workflow truthmark-document --json
+```
+
+If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands; do not invent a default branch.
+
+Before writes, parse the JSON command envelopes:
+
+- stop when `data.workflowState.applicability.state` is `blocked`, `not_applicable`, or `ambiguous`; current-scope continuation is read-only reporting of `nextSteps` or diagnostics
+- obey `data.workflowState.actionContext.allowedWritePaths`, `forbiddenWritePaths`, and stop conditions
+- run structured helpers from `data.instructions.helperValidationCommands` when present and report each helper as passed, failed, or skipped with reason
+- shape the final report from `data.instructions.reportTemplate.sections` or `finalReportShape`; use checked-in report templates only when live instructions are unavailable
+- continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
+
+If the workflow CLI is unavailable or too old, continue direct checkout inspection and checked-in support files without broadening writes. Include `workflow status/instructions: skipped` and the skip reason in the final report.
 
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.

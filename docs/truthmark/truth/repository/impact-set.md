@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-16
 source_of_truth:
-  - ../../../src/impact/build.ts
-  - ../../../src/impact/git-diff.ts
-  - ../../../src/repo-index/build.ts
+  - ../../../../src/impact/build.ts
+  - ../../../../src/impact/git-diff.ts
+  - ../../../../src/repo-index/build.ts
 ---
 
 # ImpactSet

@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../truthmark/areas/release-automation.md
-  - ../../../.github/workflows/ci.yml
-  - ../../../.github/workflows/publish.yml
+  - ../../routes/areas/release-automation.md
+  - ../../../../.github/workflows/ci.yml
+  - ../../../../.github/workflows/publish.yml
 ---
 
 # Release Automation

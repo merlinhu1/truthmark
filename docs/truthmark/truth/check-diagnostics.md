@@ -6,6 +6,7 @@ last_reviewed: 2026-05-31
 source_of_truth:
   - ../../../src/config/load.ts
   - ../../../src/checks/check.ts
+  - ../../../src/checks/scorecard.ts
   - ../../../src/checks/authority.ts
   - ../../../src/checks/areas.ts
   - ../../../src/checks/branch-scope.ts
@@ -39,7 +40,8 @@ The command:
 3. loads `.truthmark/config.yml`
 4. runs authority, area, decision-structure, frontmatter, internal-link, generated-surface, and coverage diagnostics when config is valid
 5. when `--base <ref>` is supplied, builds an ImpactSet and adds freshness diagnostics for changed code without route ownership, stale evidence, invalid base comparisons, and changed public API without docs sync
-6. returns a human summary or the shared JSON envelope
+6. builds the compact `data.scorecard` summary from the final raw diagnostics array and explicit run context
+7. returns a human summary or the shared JSON envelope
 
 There is no supported `--workflow` helper mode. Agent workflows inspect the checkout directly and may run `truthmark check` only as optional validation.
 
@@ -206,8 +208,15 @@ The command does not run Truth Sync, Truth Preview, Truth Realize, Truth Structu
 - JSON output returns the shared command envelope
 - JSON output includes `data.branchScope`
 - JSON output includes `data.truthVisibility`
+- JSON output includes `data.scorecard` with `schemaVersion: truthmark-scorecard/v0`
 - JSON output includes `data.impactSet` only when `--base <ref>` is supplied
 - JSON output does not include workflow payloads
+
+`data.scorecard` is a compact Truth Health Scorecard over the same raw diagnostics returned at top level. It includes seven dimensions: `routing-coverage`, `ownership-clarity`, `evidence-support`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, and `decision-rationale-preservation`. Each dimension contains `id`, categorical `status`, and `diagnosticIndexes`; non-pass dimensions may include capped short `evidence`. `diagnosticIndexes` always point into the final returned `diagnostics` array, so raw diagnostics remain the source of full messages, files, severities, and machine data.
+
+Status derivation is deterministic: any mapped `error` diagnostic makes the dimension `fail`, mapped non-error diagnostics make it `warn`, no mapped diagnostics after the relevant checker ran makes it `pass`, and unavailable or skipped context makes it `not-run`. `branch-freshness` is `not-run` when `--base` is omitted. Missing or invalid config still returns a parseable check envelope with `data.scorecard`; dimensions affected by config errors fail or report not-run instead of being omitted.
+
+Pass 4 keeps workflow-state exposure deferred: `truthmark check --json` has the scorecard, but `workflow status`, `workflow instructions`, and generated playbooks do not receive `data.workflowState.scorecard` in this change.
 
 Branch scope identifies the active checkout:
 
@@ -248,6 +257,7 @@ Keeping topology repair in generated agent workflows preserves portability: a re
 Primary implementation files:
 
 - `src/checks/check.ts`
+- `src/checks/scorecard.ts`
 - `src/checks/authority.ts`
 - `src/checks/areas.ts`
 - `src/checks/frontmatter.ts`

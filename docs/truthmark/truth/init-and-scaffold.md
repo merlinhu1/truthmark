@@ -4,18 +4,18 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../src/config/defaults.ts
-  - ../../src/fs/paths.ts
-  - ../../src/init/init.ts
-  - ../../src/init/hierarchy.ts
-  - ../../src/templates/init-files.ts
-  - ../../src/templates/agents-block.ts
-  - ../../src/agents/workflow-manifest.ts
-  - ../../src/agents/workflow-helper-validation.ts
-  - ../../src/cli/program.ts
-  - ../../src/cli/handlers.ts
-  - ../../src/templates/workflow-surfaces.ts
-  - ../../src/templates/generated-surfaces.ts
+  - ../../../src/config/defaults.ts
+  - ../../../src/fs/paths.ts
+  - ../../../src/init/init.ts
+  - ../../../src/init/hierarchy.ts
+  - ../../../src/templates/init-files.ts
+  - ../../../src/templates/agents-block.ts
+  - ../../../src/agents/workflow-manifest.ts
+  - ../../../src/agents/workflow-helper-validation.ts
+  - ../../../src/cli/program.ts
+  - ../../../src/cli/handlers.ts
+  - ../../../src/templates/workflow-surfaces.ts
+  - ../../../src/templates/generated-surfaces.ts
 ---
 
 # Init And Scaffold

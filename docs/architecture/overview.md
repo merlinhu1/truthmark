@@ -4,11 +4,11 @@ doc_type: architecture
 last_reviewed: 2026-05-16
 source_of_truth:
   - ../../.truthmark/config.yml
-  - ../truth/contracts.md
-  - ../truth/init-and-scaffold.md
-  - ../truth/check-diagnostics.md
-  - ../truth/workflows/overview.md
-  - ../truth/workflows/shared-gates.md
+  - ../truthmark/truth/contracts.md
+  - ../truthmark/truth/init-and-scaffold.md
+  - ../truthmark/truth/check-diagnostics.md
+  - ../truthmark/truth/workflows/overview.md
+  - ../truthmark/truth/workflows/shared-gates.md
 ---
 
 # Architecture Overview

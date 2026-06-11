@@ -4,14 +4,14 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../../.truthmark/config.yml
-  - ../../../src/agents/instructions.ts
-  - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/agents/workflow-helper-validation.ts
-  - ../../../src/cli/program.ts
-  - ../../../src/cli/handlers.ts
-  - ../../../src/templates/workflow-surfaces.ts
-  - ../../../src/templates/generated-surfaces.ts
+  - ../../../../.truthmark/config.yml
+  - ../../../../src/agents/instructions.ts
+  - ../../../../src/agents/workflow-manifest.ts
+  - ../../../../src/agents/workflow-helper-validation.ts
+  - ../../../../src/cli/program.ts
+  - ../../../../src/cli/handlers.ts
+  - ../../../../src/templates/workflow-surfaces.ts
+  - ../../../../src/templates/generated-surfaces.ts
 ---
 
 # Installed Workflow Overview
@@ -42,14 +42,17 @@ This document owns the shared installed-workflow runtime model and generated hos
 
 Installed skills, prompts, commands, and managed instruction blocks are the workflow runtime. The `truthmark` CLI installs and refreshes those surfaces and may validate artifacts afterward, but it does not orchestrate workflow execution or prepare required workflow payloads before an agent can act.
 
-Agents inspect the checkout directly, apply workflow boundaries from committed surfaces, update only workflow-allowed files, and report what changed.
+Generated workflow entrypoints, prompts, and commands first instruct agents to read the live local `truthmark workflow status --workflow <id> --json` and `truthmark workflow instructions --workflow <id> --json` contracts when the CLI is available. Those contracts provide current applicability, write boundaries, stop conditions, helper commands, and report-shape fields; checked-in generated prose remains the fallback when the installed CLI is unavailable or too old.
+
+Agents inspect the checkout directly, apply workflow boundaries from the live workflow contract and committed surfaces, update only workflow-allowed files, and report what changed.
 
 ## Steps
 
 1. `truthmark init` reads `.truthmark/config.yml` and refreshes managed instruction blocks plus configured host surfaces.
 2. Generated host surfaces expose explicit manual workflows and the automatic finish-time Truth Sync guidance.
-3. An agent invokes or follows a generated surface, reads the checkout directly, applies workflow write boundaries, and reports the outcome.
-4. Optional CLI helpers may validate reports, build context, or index the repository, but they do not orchestrate workflow execution.
+3. An agent invokes or follows a generated workflow entrypoint, prompt, or command and runs the live workflow status/instructions preflight when available.
+4. The agent reads the checkout directly, applies live and committed workflow write boundaries, and reports the outcome.
+5. Optional CLI helpers may validate reports, build context, or index the repository, but they do not orchestrate workflow execution.
 
 Current behavior notes:
 
@@ -72,6 +75,8 @@ Read-only verifier agents include an explicit context boundary: they inspect onl
 
 Generated workflow descriptions are routing triggers. They use short positive trigger language plus adjacent-workflow exclusions. Skill-package hosts keep `SKILL.md` as the compact routing and quick-procedure entrypoint, then put detailed procedure, report templates, and subagent or lease instructions in generated `support/*.md` files. Standalone prompt and command hosts keep the full workflow body inline because they do not load skill-package support files.
 
+Every public generated workflow entrypoint, GitHub Copilot prompt, and Gemini command includes the live workflow preflight before workflow-specific procedure text. The preflight uses the canonical full workflow ID, tells agents to inspect `data.workflowState.applicability.state`, `data.workflowState.actionContext.allowedWritePaths`, `data.workflowState.actionContext.forbiddenWritePaths`, `data.workflowState.actionContext.stopConditions`, `data.instructions.stopConditions`, helper validation commands, and report template/final-report fields, and requires a visible skipped status when the local workflow CLI is unavailable. Generated support files remain subordinate references and do not duplicate the preflight.
+
 The typed workflow manifest owns generated description text, Codex-facing short descriptions and default prompts, implicit-invocation policy, positive and negative routing examples, forbidden-adjacent cases, required gates, write boundaries, and report-section expectations. Generated host surfaces and deterministic routing tests should consume that manifest rather than duplicating workflow metadata in renderer code.
 
 Truthmark Portal surfaces are generated only when `truthmark.generated.portal.enabled` normalizes to `true`. When enabled, configured platforms receive the `truthmark-portal` skill package, GitHub Copilot receives `.github/prompts/truthmark-portal.prompt.md`, Gemini receives `.gemini/commands/truthmark/portal.toml`, and managed instruction blocks mention Portal with manual-only wording. Portal installs no dedicated subagents in V1.
@@ -82,7 +87,7 @@ Managed instruction blocks are compact automatic-Sync trigger and boundary index
 
 ## State, Retry, And Failure Behavior
 
-Generated workflow surfaces are committed repository files. If the Truthmark package is unavailable at workflow-execution time, agents still follow the committed surfaces manually and report unavailable optional helper output. Removing a platform from config stops future refreshes for that platform but does not delete already committed surfaces.
+Generated workflow surfaces are committed repository files. If the Truthmark package is unavailable at workflow-execution time, agents still follow the committed surfaces manually and report unavailable workflow status/instructions and optional helper output. Removing a platform from config stops future refreshes for that platform but does not delete already committed surfaces.
 
 ## Outputs
 
@@ -103,6 +108,7 @@ The installed runtime outputs managed instruction blocks, host-native skills/pro
 - Decision (2026-05-16): Generated skill packages use progressive disclosure: `SKILL.md` stays compact for routing and first-step execution, while heavy procedure detail, report examples, and subagent or lease reference material move to generated support files beside the skill.
 - Decision (2026-05-18): Workflow helpers are optional read-only accelerators declared in generated helper manifests; current helpers are owned by the installed `truthmark` CLI and use argv-style `truthmark validate ... --json` commands rather than packaged script copies.
 - Decision (2026-05-25): Truthmark Portal is opt-in and manual-only; generated Portal HTML is a non-canonical human presentation surface and Markdown remains canonical.
+- Decision (2026-06-01): Generated public workflow entrypoints, GitHub Copilot prompts, and Gemini commands consume the local read-only `workflow status` / `workflow instructions` contract before acting when the installed CLI is available, while generated support files remain subordinate fallback references.
 
 ## Rationale
 

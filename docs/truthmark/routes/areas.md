@@ -38,8 +38,8 @@ Area files:
 Code surface:
 - src/fs/paths.ts
 - src/init/**
-- src/templates/generated-surfaces.ts
-- src/templates/init-files.ts
+- src/templates/**
+- tests/init/**
 
 Update truth when:
 - `truthmark init` scaffolds or refreshes files differently
@@ -79,6 +79,7 @@ Code surface:
 - src/templates/generated-surfaces.ts
 - src/truth/**
 - src/version.ts
+- tests/templates/**
 
 Update truth when:
 - installed workflow boundaries or report shapes change

@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../truthmark/areas/init-and-scaffold.md
-  - ../../../src/init/init.ts
-  - ../../../src/templates/init-files.ts
+  - ../../routes/areas/init-and-scaffold.md
+  - ../../../../src/init/init.ts
+  - ../../../../src/templates/init-files.ts
 ---
 
 # Repository Overview

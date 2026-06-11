@@ -244,6 +244,49 @@ const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
 const routeFilesHint = (config: TruthmarkConfig): string =>
   `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
 
+export const renderWorkflowCliPreflight = (
+  workflowId: TruthmarkWorkflowId,
+): string => {
+  return `## Live workflow preflight
+
+When the local Truthmark CLI is available, run the live workflow contract before acting:
+
+\`\`\`bash
+truthmark workflow status --workflow ${workflowId} --json
+truthmark workflow instructions --workflow ${workflowId} --json
+\`\`\`
+
+If a caller supplies a comparison ref, preserve it with \`--base <ref>\` on both commands; do not invent a default branch.
+
+Before writes, parse the JSON command envelopes:
+
+- stop when \`data.workflowState.applicability.state\` is \`blocked\`, \`not_applicable\`, or \`ambiguous\`; current-scope continuation is read-only reporting of \`nextSteps\` or diagnostics
+- obey \`data.workflowState.actionContext.allowedWritePaths\`, \`forbiddenWritePaths\`, and stop conditions
+- run structured helpers from \`data.instructions.helperValidationCommands\` when present and report each helper as passed, failed, or skipped with reason
+- shape the final report from \`data.instructions.reportTemplate.sections\` or \`finalReportShape\`; use checked-in report templates only when live instructions are unavailable
+- continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
+
+If the workflow CLI is unavailable or too old, continue direct checkout inspection and checked-in support files without broadening writes. Include \`workflow status/instructions: skipped\` and the skip reason in the final report.`;
+};
+
+const insertWorkflowCliPreflightAfterFrontmatter = (
+  workflowId: TruthmarkWorkflowId,
+  body: string,
+): string => {
+  const preflight = renderWorkflowCliPreflight(workflowId);
+  if (!body.startsWith("---\n")) {
+    return `${preflight}\n\n${body}`;
+  }
+
+  const endOfFrontmatter = body.indexOf("\n---\n", 4);
+  if (endOfFrontmatter === -1) {
+    return `${preflight}\n\n${body}`;
+  }
+
+  const frontmatterEndOffset = endOfFrontmatter + "\n---\n".length;
+  return `${body.slice(0, frontmatterEndOffset)}\n${preflight}\n\n${body.slice(frontmatterEndOffset).trimStart()}`;
+};
+
 const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   TruthmarkWorkflowId,
   WorkflowPackageDefinition
@@ -517,10 +560,11 @@ truthmark-version: ${TRUTHMARK_VERSION}
 
 # ${definition.title}
 
-${definition.use(config)}
-${hostUsage === undefined ? "" : `\n${hostUsage}\n`}
+${definition.use(config)}${hostUsage === undefined ? "" : `\n\n${hostUsage}`}
 
 Invocations: ${definition.invocations}
+
+${renderWorkflowCliPreflight(workflowId)}
 
 Quick procedure:
 ${definition
@@ -1180,21 +1224,30 @@ export const renderTruthmarkOpenCodeDocWriterAgent = (
 export const renderTruthmarkStructureSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthStructureSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-structure",
+    renderTruthStructureSkillBody(config),
+  );
 };
 
 export const renderTruthmarkStructureLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthStructureSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-structure",
+    renderTruthStructureSkillBody(config),
+  );
 };
 
 export const renderTruthmarkStructureClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthStructureSkillBody(config, {
-    includeClaudeSubagentMode: true,
-  });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-structure",
+    renderTruthStructureSkillBody(config, {
+      includeClaudeSubagentMode: true,
+    }),
+  );
 };
 
 export const renderTruthmarkStructureSkillMetadata = (): string => {
@@ -1217,23 +1270,32 @@ truthmark:
 export const renderTruthmarkDocumentSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthDocumentSkillBody(config, {
-    includeCodexSubagentMode: true,
-  });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-document",
+    renderTruthDocumentSkillBody(config, {
+      includeCodexSubagentMode: true,
+    }),
+  );
 };
 
 export const renderTruthmarkDocumentLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthDocumentSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-document",
+    renderTruthDocumentSkillBody(config),
+  );
 };
 
 export const renderTruthmarkDocumentClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthDocumentSkillBody(config, {
-    includeClaudeSubagentMode: true,
-  });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-document",
+    renderTruthDocumentSkillBody(config, {
+      includeClaudeSubagentMode: true,
+    }),
+  );
 };
 
 export const renderTruthmarkDocumentSkillMetadata = (): string => {
@@ -1256,19 +1318,28 @@ truthmark:
 export const renderTruthmarkSyncSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthSyncSkillBody(config, { includeCodexSubagentMode: true });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-sync",
+    renderTruthSyncSkillBody(config, { includeCodexSubagentMode: true }),
+  );
 };
 
 export const renderTruthmarkSyncLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthSyncSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-sync",
+    renderTruthSyncSkillBody(config),
+  );
 };
 
 export const renderTruthmarkSyncClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-sync",
+    renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true }),
+  );
 };
 
 export const renderTruthmarkSyncSkillMetadata = (): string => {
@@ -1355,7 +1426,10 @@ Verification:
 export const renderTruthmarkRealizeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthmarkRealizeSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-realize",
+    renderTruthmarkRealizeSkillBody(config),
+  );
 };
 
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
@@ -1378,13 +1452,19 @@ truthmark:
 export const renderTruthmarkPreviewSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthPreviewSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-preview",
+    renderTruthPreviewSkillBody(config),
+  );
 };
 
 export const renderTruthmarkPreviewLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthPreviewSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-preview",
+    renderTruthPreviewSkillBody(config),
+  );
 };
 
 export const renderTruthmarkPreviewSkillMetadata = (): string => {
@@ -1407,19 +1487,28 @@ truthmark:
 export const renderTruthmarkCheckSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthCheckSkillBody(config, { includeCodexSubagentMode: true });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-check",
+    renderTruthCheckSkillBody(config, { includeCodexSubagentMode: true }),
+  );
 };
 
 export const renderTruthmarkCheckLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthCheckSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-check",
+    renderTruthCheckSkillBody(config),
+  );
 };
 
 export const renderTruthmarkCheckClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true });
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-check",
+    renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true }),
+  );
 };
 
 export const renderTruthmarkCheckSkillMetadata = (): string => {
@@ -1442,7 +1531,10 @@ truthmark:
 export const renderTruthmarkPortalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return renderTruthmarkPortalSkillBody(config);
+  return insertWorkflowCliPreflightAfterFrontmatter(
+    "truthmark-portal",
+    renderTruthmarkPortalSkillBody(config),
+  );
 };
 
 export const renderTruthmarkPortalSkillMetadata = (): string => {
@@ -1469,7 +1561,10 @@ export const renderTruthmarkGeminiStructureCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthStructureSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-structure",
+      renderTruthStructureSkillBody(config),
+    ),
   );
 };
 
@@ -1480,7 +1575,10 @@ export const renderTruthmarkGeminiDocumentCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthDocumentSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-document",
+      renderTruthDocumentSkillBody(config),
+    ),
   );
 };
 
@@ -1491,7 +1589,10 @@ export const renderTruthmarkGeminiSyncCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthSyncSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-sync",
+      renderTruthSyncSkillBody(config),
+    ),
   );
 };
 
@@ -1502,7 +1603,10 @@ export const renderTruthmarkGeminiRealizeCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthmarkRealizeSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-realize",
+      renderTruthmarkRealizeSkillBody(config),
+    ),
   );
 };
 
@@ -1513,7 +1617,10 @@ export const renderTruthmarkGeminiCheckCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthCheckSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-check",
+      renderTruthCheckSkillBody(config),
+    ),
   );
 };
 
@@ -1524,7 +1631,10 @@ export const renderTruthmarkGeminiPreviewCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthPreviewSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-preview",
+      renderTruthPreviewSkillBody(config),
+    ),
   );
 };
 
@@ -1535,7 +1645,10 @@ export const renderTruthmarkGeminiPortalCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthmarkPortalSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-portal",
+      renderTruthmarkPortalSkillBody(config),
+    ),
   );
 };
 
@@ -1546,9 +1659,12 @@ export const renderTruthmarkCopilotStructurePrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthStructureSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-structure",
+      renderTruthStructureSkillBody(config, {
+        includeCopilotCustomAgentMode: true,
+      }),
+    ),
   );
 };
 
@@ -1559,9 +1675,12 @@ export const renderTruthmarkCopilotDocumentPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthDocumentSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-document",
+      renderTruthDocumentSkillBody(config, {
+        includeCopilotCustomAgentMode: true,
+      }),
+    ),
   );
 };
 
@@ -1572,9 +1691,12 @@ export const renderTruthmarkCopilotSyncPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthSyncSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-sync",
+      renderTruthSyncSkillBody(config, {
+        includeCopilotCustomAgentMode: true,
+      }),
+    ),
   );
 };
 
@@ -1585,7 +1707,10 @@ export const renderTruthmarkCopilotRealizePrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthmarkRealizeSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-realize",
+      renderTruthmarkRealizeSkillBody(config),
+    ),
   );
 };
 
@@ -1596,9 +1721,12 @@ export const renderTruthmarkCopilotCheckPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthCheckSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-check",
+      renderTruthCheckSkillBody(config, {
+        includeCopilotCustomAgentMode: true,
+      }),
+    ),
   );
 };
 
@@ -1609,7 +1737,10 @@ export const renderTruthmarkCopilotPreviewPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthPreviewSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-preview",
+      renderTruthPreviewSkillBody(config),
+    ),
   );
 };
 
@@ -1620,6 +1751,9 @@ export const renderTruthmarkCopilotPortalPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthmarkPortalSkillBody(config),
+    insertWorkflowCliPreflightAfterFrontmatter(
+      "truthmark-portal",
+      renderTruthmarkPortalSkillBody(config),
+    ),
   );
 };

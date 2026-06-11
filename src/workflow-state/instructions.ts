@@ -33,6 +33,19 @@ export type WorkflowInstructions = {
 const uniqueSorted = (values: string[]): string[] =>
   [...new Set(values.filter((value) => value.length > 0))].sort();
 
+const renderWorkflowCommand = (
+  workflowState: WorkflowState,
+  command: "status" | "instructions",
+): string =>
+  [
+    "truthmark workflow",
+    command,
+    "--workflow",
+    workflowState.workflow,
+    ...(workflowState.base ? ["--base", workflowState.base] : []),
+    "--json",
+  ].join(" ");
+
 export const buildWorkflowInstructions = (
   workflowState: WorkflowState,
   manifestEntry: TruthmarkWorkflowManifestEntry,
@@ -51,12 +64,12 @@ export const buildWorkflowInstructions = (
     workflow: workflowState.workflow,
     commandSequence: [
       {
-        command: `truthmark workflow status --workflow ${workflowState.workflow} --json`,
+        command: renderWorkflowCommand(workflowState, "status"),
         when: "Before deciding whether to run the workflow.",
         required: true,
       },
       {
-        command: `truthmark workflow instructions --workflow ${workflowState.workflow} --json`,
+        command: renderWorkflowCommand(workflowState, "instructions"),
         when: "Before reading, writing, validating, or reporting.",
         required: true,
       },

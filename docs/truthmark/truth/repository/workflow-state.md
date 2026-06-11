@@ -4,12 +4,12 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../../src/workflow-state/types.ts
-  - ../../../src/workflow-state/action-context.ts
-  - ../../../src/workflow-state/build.ts
-  - ../../../src/workflow-state/instructions.ts
-  - ../../../tests/workflow-state/build.test.ts
-  - ../../../tests/cli/workflow.test.ts
+  - ../../../../src/workflow-state/types.ts
+  - ../../../../src/workflow-state/action-context.ts
+  - ../../../../src/workflow-state/build.ts
+  - ../../../../src/workflow-state/instructions.ts
+  - ../../../../tests/workflow-state/build.test.ts
+  - ../../../../tests/cli/check-workflow.test.ts
 ---
 
 # WorkflowState

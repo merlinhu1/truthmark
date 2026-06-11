@@ -4,10 +4,10 @@ doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
 source_of_truth:
-  - ../../../src/agents/truth-structure.ts
-  - ../../../src/agents/shared.ts
-  - ../../../src/templates/workflow-surfaces.ts
-  - ../../../src/routing/**
+  - ../../../../src/agents/truth-structure.ts
+  - ../../../../src/agents/shared.ts
+  - ../../../../src/templates/workflow-surfaces.ts
+  - ../../../../src/routing/**
 ---
 
 # Truth Structure Workflow

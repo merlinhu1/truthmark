@@ -9,6 +9,7 @@ import { checkAreas } from "./areas.js";
 import { checkDecisionSections } from "./decisions.js";
 import { checkGeneratedSurfaces } from "./generated-surfaces.js";
 import { checkFreshness } from "../freshness/check.js";
+import { buildTruthHealthScorecard } from "./scorecard.js";
 
 export type CheckOptions = {
   base?: string;
@@ -32,12 +33,23 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
   const loadResult = await loadConfig(rootDir);
 
   if (!loadResult.config) {
+    const scorecard = buildTruthHealthScorecard(loadResult.diagnostics, {
+      branchFreshnessRan: false,
+      routingChecksRan: false,
+      ownershipChecksRan: false,
+      evidenceChecksRan: false,
+      generatedSurfaceChecksRan: false,
+      truthDocStructureChecksRan: false,
+      decisionRationaleChecksRan: false,
+    });
+
     return {
       command: "check",
       summary: summarizeDiagnostics(loadResult.diagnostics),
       diagnostics: loadResult.diagnostics,
       data: {
         branchScope,
+        scorecard,
       },
     };
   }
@@ -86,6 +98,9 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
       topologyPressureCount: areas.topologyPressureCount,
       freshnessDiagnosticCount: freshness?.diagnostics.length ?? 0,
   };
+  const scorecard = buildTruthHealthScorecard(diagnostics, {
+    branchFreshnessRan: Boolean(freshness),
+  });
 
   return {
     command: "check",
@@ -94,6 +109,7 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
     data: {
       branchScope,
       truthVisibility,
+      scorecard,
       ...(freshness ? { impactSet: freshness.impactSet } : {}),
     },
   };

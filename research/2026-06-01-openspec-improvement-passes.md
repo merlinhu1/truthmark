@@ -2,9 +2,9 @@
 
 > **For Hermes:** Use `subagent-driven-development` to implement these passes one pass at a time. Each pass should finish with focused tests, `npm run check` when feasible, and a Truthmark Sync review if functional source changes were made.
 
-Date: 2026-06-01  
-Source research: `research/2026-06-01-openspec-comparison.md`  
-Scope: Truthmark implementation, generated agent surfaces, CLI contract, validation/reporting UX.  
+Date: 2026-06-01
+Source research: `research/2026-06-01-openspec-comparison.md`
+Scope: Truthmark implementation, generated agent surfaces, CLI contract, validation/reporting UX.
 Non-goal: do **not** turn Truthmark into OpenSpec, a spec-driver library, a proposal/task lifecycle, or an arbitrary workflow DAG engine.
 
 ## Goal
@@ -42,10 +42,10 @@ This is OpenSpec-inspired ergonomics, not OpenSpec behavior. Truthmark workflow 
 | 1 | Workflow state core | New typed `WorkflowState` builder composes manifest/check/index/impact/context | Yes, internal only |
 | 2 | Agent-facing CLI | `truthmark workflow status/instructions --json` expose the state contract | Yes |
 | 3 | Generated playbooks consume the contract | Host surfaces call the new CLI and receive operational playbooks | Yes |
-| 4 | Truth health scorecard | `check` and workflow status summarize governance outcomes above raw diagnostics | Yes |
-| 5 | Truth Explore | Expand Preview into read-only truth discovery without writes | Yes |
-| 6 | Truth Sync Plan | Add reviewable sync-intent output before truth-doc edits | Yes |
-| 7 | Platform surface adapter refactor | Internal adapter registry for generated host surfaces | Yes, but defer until behavior is stable |
+| 4 | Compact truth health scorecard | `check --json` gets a tiny diagnostic triage index; workflow-state exposure is deferred | Yes |
+| 5 | Preview/Explore wording hardening | Keep `truthmark-preview`; improve read-only discovery instructions without new JSON | Yes |
+| 6 | Lightweight Sync intent checklist | Add a pre-write intent section to Sync instructions/reports; no typed plan engine yet | Yes |
+| 7 | Platform surface adapter refactor | Deferred internal maintainability refactor after behavior stabilizes | No — explicitly deferred |
 
 ---
 
@@ -544,62 +544,83 @@ npx tsx src/cli/main.ts index --json
 
 ---
 
-# Pass 4: Truth Health Scorecard
+# Pass 4: Compact Truth Health Scorecard
 
 ## Objective
 
-Add a scorecard layer above raw diagnostics so humans and agents can understand repository-truth health quickly.
+Add a **small** scorecard layer to `check --json` so humans and agents can triage repository-truth health quickly without reading every raw diagnostic first.
 
-OpenSpec's transferable lesson here is verification UX, not spec validation semantics.
+This is intentionally narrower than the original Pass 4 idea. The scorecard is not a second checker, not a grade, not a workflow-state payload, and not a new command. It is a compact index over the existing diagnostics returned by `check --json`.
+
+## Product decision
+
+Implement Pass 4 as **check-only**:
+
+- Add `data.scorecard` to `truthmark check --json`.
+- Do **not** add `data.workflowState.scorecard` in this pass.
+- Do **not** update generated playbooks in this pass.
+- Keep raw diagnostics authoritative.
+- Keep JSON compact enough that routine checks do not become expensive to read or paste.
+
+Reason: `workflow instructions` currently embeds full `workflowState`; adding fields there directly increases agent token load. Workflow-state scorecard exposure should wait until there is evidence agents need it inside workflow status/instructions.
 
 ## Proposed dimensions
 
-- Routing coverage
-- Ownership clarity
-- Evidence support
-- Freshness against branch diff
-- Generated surface freshness
-- Truth-doc structure
-- Decision/rationale preservation
+Use stable IDs only in runtime JSON; labels/remediation can live in docs/constants.
 
-## Files
+- `routing-coverage`
+- `ownership-clarity`
+- `evidence-support`
+- `branch-freshness`
+- `generated-surface-freshness`
+- `truth-doc-structure`
+- `decision-rationale-preservation`
 
-- Create: `src/checks/scorecard.ts`
-- Modify: `src/checks/check.ts`
-- Modify: `src/workflow-state/build.ts` to include scorecard in workflow state once available.
-- Test: `tests/checks/scorecard.test.ts`
-- Modify: `tests/checks/check.test.ts`
-- Modify: `docs/truth/contracts.md` or routed validation truth doc.
-
-## Proposed type shape
+## Compact type shape
 
 ```ts
 export type TruthHealthScorecard = {
   schemaVersion: "truthmark-scorecard/v0";
   dimensions: Array<{
-    id: string;
-    label: string;
+    id: TruthHealthDimensionId;
     status: "pass" | "warn" | "fail" | "not-run";
-    keyEvidence: string[];
-    topRemediation: string | null;
     diagnosticIndexes: number[];
+    evidence?: string[]; // optional, capped, non-pass only
   }>;
 };
 ```
 
+Rules:
+
+- `diagnosticIndexes` point into the raw diagnostics returned with the same command result.
+- `evidence` is optional and should be capped to 1-2 short snippets for non-pass dimensions.
+- Do not emit full diagnostic text, source excerpts, labels, or remediation paragraphs in every dimension.
+- `branch-freshness` is `not-run` when no `--base` was supplied.
+
+## Files
+
+- Create: `src/checks/scorecard.ts`
+- Modify: `src/checks/check.ts`
+- Test: `tests/checks/scorecard.test.ts`
+- Modify: `tests/checks/check.test.ts`
+- Modify: the routed check/validation truth doc, likely `docs/truthmark/truth/contracts.md` after route confirmation.
+
+Do **not** modify `src/workflow-state/**`, `src/templates/**`, generated platform surfaces, or report validators for this pass.
+
 ## Tasks
 
-### Task 4.1: Add scorecard mapper tests
+### Task 4.1: Add compact scorecard mapper tests
 
-**Objective:** Map existing diagnostics to stable governance dimensions.
+**Objective:** Prove the scorecard is a compact triage index over existing diagnostics.
 
 **Tests:**
 
-- Area/routing diagnostics affect Routing coverage and Ownership clarity.
-- Evidence diagnostics affect Evidence support.
-- Freshness diagnostics affect Freshness against branch diff.
-- Generated surface diagnostics affect Generated surface freshness.
-- Frontmatter/decision diagnostics affect Truth-doc structure and Decision/rationale preservation.
+- Shape includes `schemaVersion: "truthmark-scorecard/v0"` and the seven dimension IDs.
+- Runtime dimensions include `id`, `status`, `diagnosticIndexes`, and optional capped `evidence` only.
+- Error diagnostics map to `fail`; non-error mapped diagnostics map to `warn`.
+- No mapped diagnostics after a relevant check ran maps to `pass`.
+- Missing base maps branch freshness to `not-run`.
+- `diagnosticIndexes` remain stable when one diagnostic maps to multiple dimensions.
 
 **Verification:**
 
@@ -607,90 +628,90 @@ export type TruthHealthScorecard = {
 npx vitest run tests/checks/scorecard.test.ts
 ```
 
-### Task 4.2: Include scorecard in `check --json`
+### Task 4.2: Implement the pure scorecard mapper
 
-**Objective:** Add scorecard without removing or reshaping raw diagnostics.
+**Objective:** Add the minimum implementation needed for the tests.
 
-**Expected JSON:**
+**Implementation constraints:**
+
+- Use diagnostic category first.
+- Use message/data predicates only when a category is too coarse.
+- No filesystem writes, Git commands, OpenSpec runtime artifacts, external calls, or LLM judgment.
+- Keep optional evidence short and capped.
+
+**Verification:**
+
+```bash
+npx vitest run tests/checks/scorecard.test.ts
+npm run typecheck
+```
+
+### Task 4.3: Include compact scorecard in `check --json`
+
+**Objective:** Add `data.scorecard` without changing the existing diagnostic contract.
+
+**Expected JSON excerpt:**
 
 ```json
 {
   "data": {
     "scorecard": {
       "schemaVersion": "truthmark-scorecard/v0",
-      "dimensions": []
+      "dimensions": [
+        { "id": "branch-freshness", "status": "not-run", "diagnosticIndexes": [] }
+      ]
     }
   }
 }
 ```
 
+**Must preserve:**
+
+- top-level `diagnostics`
+- `data.branchScope`
+- optional `data.impactSet`
+- `data.truthVisibility`
+
 **Verification:**
 
 ```bash
-npx vitest run tests/checks/check.test.ts tests/cli/check-workflow.test.ts
+npx vitest run tests/checks/check.test.ts tests/checks/scorecard.test.ts
 npx tsx src/cli/main.ts check --json
 ```
 
-### Task 4.3: Include scorecard summary in workflow state
+### Task 4.4: Update routed check-output truth docs only
 
-**Objective:** Let agents see health summary in `workflow status` without parsing all diagnostics.
+**Objective:** Document the new check JSON contract without implying workflow-state support.
 
-**Files:**
+**Docs:**
 
-- Modify: `src/workflow-state/types.ts`
-- Modify: `src/workflow-state/build.ts`
-- Modify: `tests/workflow-state/build.test.ts`
+- Confirm routing through `.truthmark/config.yml` and `docs/truthmark/routes/areas.md`.
+- Update the routed validation/check contract doc.
+- Say raw diagnostics remain authoritative.
+- Say workflow-state scorecard exposure is deferred if needed to prevent ambiguity.
 
 **Verification:**
 
 ```bash
-npx vitest run tests/workflow-state/build.test.ts tests/checks/scorecard.test.ts
+npx tsx src/cli/main.ts check --json
+npx tsx src/cli/main.ts index --json
 ```
 
 ---
 
-# Pass 5: Truth Explore
+# Pass 5: Preview / Truth Explore Wording Hardening
 
 ## Objective
 
-Expand the existing read-only Preview concept into a broader truth-discovery workflow. This should help agents answer “what owns this behavior and what would be impacted?” before selecting Sync, Document, Structure, or Realize.
+Make the existing `truthmark-preview` workflow read as a safe “Truth Explore” stance for agents: inspect ownership, likely evidence, ambiguity, and recommended next workflow **without writing anything**.
 
-This should remain read-only. It must not create planning artifacts or write docs.
+This pass should be mostly generated-instruction and workflow-copy refinement. Do not add a new workflow ID and do not add a broad `exploration` JSON object yet.
 
 ## Product decision
 
-Use one of these names, and close the decision before implementation:
+Keep the manifest id as `truthmark-preview`. Use “Truth Explore” only as user-facing wording inside Preview instructions if helpful.
 
-- Option A: Keep the existing `truthmark-preview` workflow id and expand its instructions/output.
-- Option B: Add a new alias or user-facing name “Truth Explore” while keeping `truthmark-preview` as the manifest id for compatibility.
-
-Recommended: **Option B as wording only, Option A in code first**. Expand `truthmark-preview` behavior and call it a read-only Truth Explore stance in generated instructions. Avoid adding another workflow id until tests prove the current id cannot serve the UX.
-
-## Files
-
-- Modify: `src/agents/workflow-manifest.ts`
-- Modify: `src/workflow-state/build.ts`
-- Modify: `src/templates/workflow-surfaces.ts`
-- Modify: `tests/agents/truth-preview.test.ts`
-- Modify: `tests/workflow-state/build.test.ts`
-- Modify: `tests/templates/generated-surfaces.test.ts`
-
-## Truth Explore should answer
-
-- Which route/truth docs own this behavior?
-- Is ownership ambiguous or missing?
-- What source evidence should be inspected?
-- What truth update would likely be needed after a code change?
-- What files must not be touched?
-- Which workflow should be selected next?
-
-## Tasks
-
-### Task 5.1: Add read-only explore output to workflow state
-
-**Objective:** Make `truthmark-preview` status useful for discovery.
-
-**Add fields if needed:**
+Do **not** add this proposed object in the first pass:
 
 ```ts
 exploration?: {
@@ -703,22 +724,30 @@ exploration?: {
 };
 ```
 
-**Verification:**
+Reason: most of those fields duplicate existing workflow-state concepts or require agent judgment. Large path arrays and speculative “likely impacts” would add token cost without enough new correctness.
 
-```bash
-npx vitest run tests/workflow-state/build.test.ts -t "preview"
-```
+## Files
 
-### Task 5.2: Update generated Preview/Explore instructions
+- Modify: `src/agents/workflow-manifest.ts` only if Preview manifest wording/report sections need tightening.
+- Modify: `src/workflow-state/instructions.ts` if generated instructions should call Preview “Truth Explore”.
+- Modify: `src/templates/workflow-surfaces.ts` only for wording emitted to generated surfaces.
+- Modify focused Preview/generated-surface tests that already cover Preview text.
 
-**Objective:** Make generated surfaces frame Preview as safe investigation.
+Do **not** add a new workflow id, new CLI command, or new workflow-state JSON object.
 
-**Renderer requirements:**
+## Tasks
 
-- Must say read-only.
-- Must call `truthmark workflow status --workflow truthmark-preview --json`.
-- Must not tell agents to edit docs/routes/code.
-- Must report recommended next workflow instead of performing it.
+### Task 5.1: Tighten Preview/Explore instruction wording
+
+**Objective:** Make Preview clearly safe and read-only.
+
+**Instruction requirements:**
+
+- Say Preview/Explore is read-only.
+- Tell agents to call `truthmark workflow status --workflow truthmark-preview --json`.
+- Tell agents to inspect only enough checkout evidence to answer ownership/ambiguity/next-workflow questions.
+- Tell agents to report the recommended next workflow instead of executing Sync/Document/Structure/Realize.
+- Do not tell agents to edit docs, routes, code, or generated surfaces.
 
 **Verification:**
 
@@ -726,48 +755,39 @@ npx vitest run tests/workflow-state/build.test.ts -t "preview"
 npx vitest run tests/agents/truth-preview.test.ts tests/templates/generated-surfaces.test.ts
 ```
 
-### Task 5.3: Add CLI examples and docs
+### Task 5.2: Preserve existing workflow-state contract
 
-**Objective:** Teach users how to run the read-only pass.
+**Objective:** Ensure the wording improvement does not introduce new JSON fields or broaden write permissions.
 
-**Docs:**
+**Checks:**
 
-- Routed truth docs only; README gets at most a compact pointer.
-- Explain that Preview/Explore can recommend Sync/Structure/Document/Realize but does not perform them.
+- `truthmark-preview` remains the manifest id.
+- Preview action context remains read-only.
+- No `exploration` object is added.
+- Generated surfaces do not imply automatic follow-on writes.
 
 **Verification:**
 
 ```bash
-npm run check
-npx tsx src/cli/main.ts check --json
-npx tsx src/cli/main.ts index --json
+npx vitest run tests/workflow-state/build.test.ts -t "preview"
+npx tsx src/cli/main.ts workflow status --workflow truthmark-preview --json
 ```
 
 ---
 
-# Pass 6: Truth Sync Plan
+# Pass 6: Lightweight Sync Intent Checklist
 
 ## Objective
 
-Before truth-doc writes, produce a reviewable sync-intent plan: changed code reviewed, affected routes, target truth docs, stale claims, proposed updates, evidence references, and no-update-needed rationale.
+Before truth-doc writes, make agents state a reviewable Sync intent: changed code reviewed, affected routes, target truth docs, intended update, evidence to verify, no-update-needed rationale, and blockers.
 
-This borrows OpenSpec's reviewable intent without adding persistent change objects.
+This borrows OpenSpec's “reviewable intent” value without creating persistent change objects or a typed Sync Plan engine.
 
-## Non-goal
+## Product decision
 
-Do not create `truthmark/changes/*`, proposal files, task files, or lifecycle objects. The sync plan is transient command output or a section inside the final Sync report.
+Start with a **checklist embedded in Sync instructions and reports**, not a `src/sync/plan.ts` builder.
 
-## Files
-
-- Create: `src/sync/plan.ts`
-- Modify: `src/workflow-state/instructions.ts`
-- Modify: `src/templates/workflow-surfaces.ts`
-- Modify: `src/agents/workflow-helper-validation.ts` if report validation should require/recognize the plan section.
-- Modify: `tests/sync/report.test.ts`
-- Create: `tests/sync/plan.test.ts`
-- Modify: `tests/agents/truth-sync.test.ts`
-
-## Proposed output shape
+Do **not** create this typed object in the first pass:
 
 ```ts
 export type TruthSyncPlan = {
@@ -775,45 +795,56 @@ export type TruthSyncPlan = {
   changedCodeReviewed: string[];
   affectedRoutes: string[];
   targetTruthDocs: string[];
-  staleClaims: Array<{
-    claim: string;
-    truthDoc: string;
-    evidence: string[];
-    proposedAction: "support" | "narrow" | "remove" | "block";
-  }>;
+  staleClaims: Array<...>;
   proposedUpdates: string[];
   noUpdateNeededRationale: string[];
 };
 ```
 
-## Tasks
+Reason: `staleClaims` and `proposedUpdates` require agent judgment and checkout inspection. A generated skeleton could look authoritative while incomplete, and it would duplicate the final Sync report.
 
-### Task 6.1: Add sync plan builder from workflow state
+## Non-goal
 
-**Objective:** Reuse impact/routes/context to produce a structured plan skeleton.
+Do not create `truthmark/changes/*`, proposal files, task files, sync-plan files, lifecycle objects, or arbitrary workflow DAGs. The Sync intent is transient report content.
 
-**Test cases:**
+## Files
 
-- With changed code and affected truth docs, plan lists target truth docs.
-- With no affected docs, plan records no-update-needed or route ambiguity.
-- With route ambiguity, plan blocks instead of guessing.
+- Modify: `src/workflow-state/instructions.ts`
+- Modify: `src/templates/workflow-surfaces.ts`
+- Modify: `src/agents/workflow-manifest.ts` if report sections/templates are centralized there.
+- Modify: `tests/agents/truth-sync.test.ts`
+- Modify: `tests/templates/generated-surfaces.test.ts`
+- Modify report validator tests only if the validator already recognizes report sections and the change is intentionally optional.
 
-**Verification:**
+Do **not** create `src/sync/plan.ts` in this pass.
 
-```bash
-npx vitest run tests/sync/plan.test.ts
+## Proposed report section
+
+```md
+## Sync Intent
+
+- Changed code reviewed:
+- Affected route/truth owner:
+- Target truth docs:
+- Intended update:
+- Evidence to verify:
+- No-update-needed rationale:
+- Blockers:
 ```
 
-### Task 6.2: Add sync plan section to workflow instructions
+## Tasks
 
-**Objective:** Agents should produce or review the plan before editing truth docs.
+### Task 6.1: Add Sync Intent to generated Sync instructions
+
+**Objective:** Require agents to pause before truth-doc writes and summarize intent.
 
 **Instruction behavior:**
 
 - Run workflow status/instructions first.
-- Summarize sync plan.
-- Only then edit canonical truth docs/routes within allowed writes.
-- Validate final report with `truthmark validate sync-report <report-file> --json`.
+- Fill the Sync Intent section before editing truth docs.
+- If route ownership is ambiguous, block and recommend Truth Structure instead of guessing.
+- Only edit allowed truth docs/routes after the intent is clear.
+- Validate final report with `truthmark validate sync-report <report-file> --json` when applicable.
 
 **Verification:**
 
@@ -821,15 +852,11 @@ npx vitest run tests/sync/plan.test.ts
 npx vitest run tests/agents/truth-sync.test.ts tests/templates/generated-surfaces.test.ts
 ```
 
-### Task 6.3: Update report validator carefully
+### Task 6.2: Keep validator changes optional during migration
 
-**Objective:** If the report template gains a new Sync Plan section, validator behavior should be explicit.
+**Objective:** Avoid breaking existing reports before all generated surfaces are refreshed.
 
-**Decision needed:**
-
-- Required section immediately, or optional during migration?
-
-Recommended: optional in first pass, with generated templates encouraging it. Make it required only after generated surfaces and docs are refreshed.
+**Decision:** The Sync Intent section should be encouraged/recognized in this pass, not required by the validator unless all generated templates and tests are updated in the same change.
 
 **Verification:**
 
@@ -839,133 +866,37 @@ npx vitest run tests/sync/report.test.ts tests/cli/validate.test.ts
 
 ---
 
-# Pass 7: Platform Surface Adapter Refactor
+# Pass 7: Deferred Platform Surface Adapter Refactor
 
 ## Objective
 
-Refactor generated surface rendering toward an adapter registry after the behavior contract is stable.
+Defer platform adapter refactoring out of the V2 value path. It is internal maintainability work and should happen only after Passes 4-6 behavior is stable and generated-output parity tests are strong enough to catch prompt drift.
 
-This is an internal maintainability pass inspired by OpenSpec's adapter design. It should not broaden Truthmark's supported-host mission or force identical generated files across hosts.
+## Deferred rationale
 
-## Current concern
+Truthmark supports many host-native surfaces, and current rendering is centralized. An adapter registry may help later, but it does not directly improve repository-truth correctness now. Refactoring Codex, OpenCode, Claude Code, Copilot, and Gemini surfaces at once creates broad churn and subtle prompt-regression risk.
 
-Truthmark supports many valuable host-native surfaces, but rendering is centralized and constant-heavy. This makes platform-specific frontmatter, command syntax, skills, agents, helper manifests, and diagnostic categorization harder to evolve safely.
+## Do not implement in V2
 
-## Proposed adapter interface
+Do not create these files as part of the current V2 pass sequence:
 
-```ts
-export type SurfaceCapability =
-  | "instruction-block"
-  | "skill-package"
-  | "command"
-  | "agent"
-  | "prompt"
-  | "helper-manifest";
+- `src/templates/platform-adapters/types.ts`
+- `src/templates/platform-adapters/registry.ts`
+- `src/templates/platform-adapters/codex.ts`
+- `src/templates/platform-adapters/opencode.ts`
+- `src/templates/platform-adapters/claude.ts`
+- `src/templates/platform-adapters/copilot.ts`
+- `src/templates/platform-adapters/gemini.ts`
 
-export interface TruthmarkSurfaceAdapter {
-  id: PlatformId;
-  capabilities: SurfaceCapability[];
-  outputRoots: string[];
-  renderInstructionBlock(input: RenderInput): GeneratedFile[];
-  renderSkillPackage(input: RenderInput): GeneratedFile[];
-  renderCommands(input: RenderInput): GeneratedFile[];
-  renderAgents(input: RenderInput): GeneratedFile[];
-}
-```
+## Future acceptance criteria before reopening
 
-## Files
+Only reopen this pass when:
 
-- Create: `src/templates/platform-adapters/types.ts`
-- Create: `src/templates/platform-adapters/registry.ts`
-- Create: `src/templates/platform-adapters/codex.ts`
-- Create: `src/templates/platform-adapters/opencode.ts`
-- Create: `src/templates/platform-adapters/claude.ts`
-- Create: `src/templates/platform-adapters/copilot.ts`
-- Create: `src/templates/platform-adapters/gemini.ts`
-- Modify: `src/templates/generated-surfaces.ts`
-- Modify: `src/init/init.ts` only after adapter outputs are parity-tested.
-- Test: `tests/templates/generated-surfaces.test.ts`
-- Test: `tests/init/init.test.ts`
-
-## Tasks
-
-### Task 7.1: Add adapter types and registry with one no-op wrapper
-
-**Objective:** Introduce the structure without changing generated output.
-
-**Start with:** Codex or Claude, whichever has the simplest complete surface set.
-
-**Verification:**
-
-```bash
-npx vitest run tests/templates/generated-surfaces.test.ts -t "codex"
-npm run typecheck
-```
-
-Expected: output parity for the migrated platform.
-
-### Task 7.2: Add snapshot/parity tests before moving more platforms
-
-**Objective:** Protect generated-body integrity, not just metadata presence.
-
-**Tests must assert:**
-
-- rendered body contains workflow status/instructions calls;
-- body hashes/freshness metadata remain deterministic if used;
-- platform-specific frontmatter remains valid;
-- missing legacy metadata degrades as regeneration-needed, not corruption;
-- no silent fallback to stale embedded prompts.
-
-**Verification:**
-
-```bash
-npx vitest run tests/templates/generated-surfaces.test.ts tests/init/init.test.ts
-```
-
-### Task 7.3: Migrate remaining platforms one at a time
-
-**Objective:** Keep review diffs small and reversible.
-
-**Order recommendation:**
-
-1. Codex
-2. OpenCode
-3. Claude Code
-4. GitHub Copilot
-5. Gemini CLI
-
-**For each platform:**
-
-- Move rendering into adapter.
-- Run focused platform tests.
-- Run all generated-surface tests.
-- Inspect generated outputs from `truthmark init --json`.
-
-**Verification after each platform:**
-
-```bash
-npx vitest run tests/templates/generated-surfaces.test.ts tests/init/init.test.ts
-npx tsx src/cli/main.ts init --json
-npm run check
-```
-
-### Task 7.4: Remove old central branching only after parity is proven
-
-**Objective:** Avoid deleting old render paths while still needed.
-
-**Checks:**
-
-- No platform-specific rendering remains in the central file except registry dispatch.
-- `truthmark-realize` diagnostic categorization still maps to `realization`, not broad `truth-sync` or generic config categories.
-- All generated host-native directories still emit when configured.
-
-**Verification:**
-
-```bash
-npm run check
-npx tsx src/cli/main.ts check --json
-npx tsx src/cli/main.ts index --json
-```
+1. Generated behavior from Passes 4-6 is stable.
+2. Parity/snapshot tests prove generated body content, frontmatter, helper manifests, diagnostic categorization, and host-native paths do not drift.
+3. The first adapter is a no-op wrapper around one existing platform renderer.
+4. Platforms migrate one at a time.
+5. Generated output is byte-for-byte or semantically equivalent before old central branches are removed.
 
 ---
 
@@ -990,9 +921,10 @@ A pass is ready to merge only when:
 2. **Pass 1** next, because all later behavior needs the internal state model.
 3. **Pass 2** next, because generated surfaces need a real CLI contract to call.
 4. **Pass 3** next, because it lets agents benefit from the new contract.
-5. **Pass 4** next, because scorecard quality improves both human review and workflow status.
-6. **Pass 5** and **Pass 6** can be done independently after Pass 2.
-7. **Pass 7** last, because adapter refactoring is safer after generated behavior is stable.
+5. **Pass 4** next, but only as a compact `check --json` scorecard; defer workflow-state exposure.
+6. **Pass 5** next as Preview/Explore wording hardening, with no new JSON object.
+7. **Pass 6** next as a lightweight Sync Intent checklist, with no typed plan engine yet.
+8. **Pass 7** is deferred out of the V2 value path until generated behavior is stable and parity tests justify the refactor.
 
 # Defer explicitly
 
@@ -1040,7 +972,7 @@ The improvement path is not “copy OpenSpec.” The improvement path is:
 1. Make Truthmark's existing governance state computable.
 2. Expose it through stable JSON commands for agents.
 3. Teach generated host-native surfaces to consume that contract.
-4. Improve human review with scorecards and sync plans.
-5. Refactor platform rendering only after behavior is stable.
+4. Improve human review with compact scorecards and lightweight Sync intent checklists.
+5. Refactor platform rendering only after behavior is stable and the adapter refactor has a separate maintainability justification.
 
 This gives Truthmark OpenSpec's best workflow ergonomics while keeping Truthmark focused on repository truth, route ownership, evidence-backed claims, branch-scoped freshness, safe write boundaries, and Git-reviewable local operation.

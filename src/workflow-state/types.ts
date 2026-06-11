@@ -53,6 +53,7 @@ export type WorkflowStateChecks = {
 export type WorkflowState = {
   schemaVersion: WorkflowStateSchemaVersion;
   workflow: TruthmarkWorkflowId;
+  base?: string;
   applicability: WorkflowApplicability;
   actionContext: WorkflowActionContext;
   changedFiles: ImpactFile[];

@@ -4,9 +4,9 @@ doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
 source_of_truth:
-  - ../../../src/context-pack/build.ts
-  - ../../../src/context-pack/render.ts
-  - ../../../src/impact/build.ts
+  - ../../../../src/context-pack/build.ts
+  - ../../../../src/context-pack/render.ts
+  - ../../../../src/impact/build.ts
 ---
 
 # ContextPack
