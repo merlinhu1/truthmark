@@ -40,7 +40,7 @@ The command:
 2. computes branch-scope metadata
 3. loads `.truthmark/config.yml`
 4. runs authority, area, decision-structure, frontmatter, internal-link, generated-surface, and coverage diagnostics when config is valid
-5. when `--base <ref>` is supplied, builds an ImpactSet and adds freshness diagnostics for changed code without route ownership, stale evidence, invalid base comparisons, and changed public API without docs sync
+5. runs source-traceability diagnostics for configured truth docs independently of `--base <ref>`; when `--base <ref>` is supplied, builds an ImpactSet and adds branch-freshness diagnostics for changed code without route ownership, invalid base comparisons, and changed public API without docs sync
 6. builds the compact `data.scorecard` summary from the final raw diagnostics array and explicit run context
 7. returns a human summary or the shared JSON envelope
 
