@@ -28,13 +28,13 @@ This document owns the WorkflowState contract, instruction projection, and build
 
 WorkflowState includes applicability, action context, changed files, affected routes, target truth docs, merged diagnostics, required and recommended checks, helper validation commands, next steps, report sections, and a ContextPack when the selected workflow has a supported ContextPack mapping.
 
-`truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` exposes the full `truthmark-workflow/v0` state in `data.workflowState` for agent-facing use. Caller-supplied request metadata such as `--base` is reported in the CLI envelope under `data.request` unless a later schema change explicitly adds it to WorkflowState.
+`truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` exposes the full `truthmark-workflow/v0` state in `data.workflowState` for status-only or debug inspection. Caller-supplied request metadata such as `--base` is reported in the CLI envelope under `data.request` unless a later schema change explicitly adds it to WorkflowState.
 
-`truthmark workflow instructions --workflow <workflow-id> [--base <ref>] --json` builds WorkflowState once and derives `data.instructions` from that same source state plus manifest metadata. The instruction schema is `truthmark-workflow-instructions/v0` and preserves structured helper validation commands with `id`, `runner`, `argv`, and `optional`.
+`truthmark workflow instructions --workflow <workflow-id> [--base <ref>] --json` is the canonical one-call live preflight for generated workflows. It builds WorkflowState once, returns the source state in `data.workflowState`, and derives `data.instructions` from that same state plus manifest metadata. The instruction schema is `truthmark-workflow-instructions/v0` and preserves structured helper validation commands with `id`, `runner`, `argv`, and `optional`.
 
 ## Core Rules
 
-- WorkflowState is exposed through agent-facing `workflow status` and `workflow instructions` CLI JSON, but it still does not add Truthmark lifecycle commands.
+- WorkflowState is exposed through agent-facing `workflow status` and `workflow instructions` CLI JSON, but it still does not add Truthmark lifecycle commands. Generated workflow preflights use `workflow instructions` as the one-call contract because it includes both instructions and the source WorkflowState; `workflow status` remains available for status-only/debug inspection.
 - Workflow IDs stay in the full manifest form (`truthmark-sync`, `truthmark-document`, `truthmark-realize`, and peers). The builder maps to ContextPack's shorter workflow IDs only for supported ContextPack calls. Pass 2 rejects short workflow aliases such as `truth-sync`; full manifest IDs are canonical.
 - Read-only workflows (`truthmark-preview` and `truthmark-check`) have mode `read-only` and no allowed write paths.
 - Sync and document workflows use mode `truth-doc-write`; structure uses `route-write`; realize uses `code-write`; portal uses `portal-write` when portal output is configured.

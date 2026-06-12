@@ -9,7 +9,10 @@ source_of_truth:
   - ../truthmark/truth/repository/workflow-state.md
 ---
 
-# Product Boundary
+# Truthmark Product Boundary
+
+**Audience:** Truthmark maintainers and agents changing this repository.
+**Portability:** repo-local only; not installed into downstream projects.
 
 ## Purpose
 

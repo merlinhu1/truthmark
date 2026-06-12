@@ -14,16 +14,15 @@ Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $tru
 
 ## Live workflow preflight
 
-When the local Truthmark CLI is available, run the live workflow contract before acting:
+When the local Truthmark CLI is available, run the canonical one-call live workflow preflight before acting:
 
 ```bash
-truthmark workflow status --workflow truthmark-realize --json
 truthmark workflow instructions --workflow truthmark-realize --json
 ```
 
-If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands; do not invent a default branch.
+If a caller supplies a comparison ref, preserve it with `--base <ref>` on this command; do not invent a default branch. Use `truthmark workflow status` only for status-only/debug inspection; `workflow instructions` already returns both `data.instructions` and the source `data.workflowState` in one JSON envelope.
 
-Before writes, parse the JSON command envelopes:
+Before writes, parse the JSON command envelope:
 
 - stop when `data.workflowState.applicability.state` is `blocked`, `not_applicable`, or `ambiguous`; current-scope continuation is read-only reporting of `nextSteps` or diagnostics
 - obey `data.workflowState.actionContext.allowedWritePaths`, `forbiddenWritePaths`, and stop conditions
@@ -31,7 +30,7 @@ Before writes, parse the JSON command envelopes:
 - shape the final report from `data.instructions.reportTemplate.sections` or `finalReportShape`; use checked-in report templates only when live instructions are unavailable
 - continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
 
-If the workflow CLI is unavailable or too old, continue direct checkout inspection and checked-in support files without broadening writes. Include `workflow status/instructions: skipped` and the skip reason in the final report.
+If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract. Follow the route-first procedure, read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes. Include `workflow instructions: skipped` and the skip reason in the final report.
 
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
@@ -42,5 +41,5 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md
-- support/report-template.md
+- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/report-template.md — read before the final report

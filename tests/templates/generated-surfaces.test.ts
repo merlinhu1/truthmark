@@ -17,11 +17,45 @@ const portalPaths = [
 ];
 
 describe("Truthmark Portal generated surfaces", () => {
-  it("renders sync preflight as non-blocking when no base is supplied", () => {
+  it("renders sync preflight as non-blocking one-call instructions preflight when no base is supplied", () => {
     const preflight = renderWorkflowCliPreflight("truthmark-sync");
 
     expect(preflight).toContain("cheap local base selection");
     expect(preflight).toContain("do not stop solely because the caller omitted --base");
+    expect(preflight).toContain("canonical one-call live workflow preflight");
+    expect(preflight).toContain("truthmark workflow instructions --workflow truthmark-sync --json");
+    expect(preflight).toContain("workflow instructions` already returns both `data.instructions` and the source `data.workflowState`");
+    expect(preflight).toContain("Use `truthmark workflow status` only for status-only/debug inspection");
+    expect(preflight).not.toContain("truthmark workflow status --workflow truthmark-sync --json");
+    expect(preflight).not.toContain("workflow status/instructions: skipped");
+  });
+
+  it("bounds manual fallback for write workflows when live instructions are unavailable", () => {
+    for (const workflow of [
+      "truthmark-sync",
+      "truthmark-document",
+      "truthmark-structure",
+      "truthmark-realize",
+    ] as const) {
+      const preflight = renderWorkflowCliPreflight(workflow);
+
+      expect(preflight).toContain("read only the workflow-owned support files named by that entrypoint for the current step");
+      expect(preflight).toContain("do not read every support file, every route file, or every truth doc by default");
+      expect(preflight).toContain("block as ambiguous");
+      expect(preflight).toContain("instead of scanning the repository until sure");
+      expect(preflight).toContain("workflow instructions: skipped");
+    }
+  });
+
+  it("does not give read-only workflow preflight the heavier write-workflow fallback", () => {
+    for (const workflow of ["truthmark-preview", "truthmark-check"] as const) {
+      const preflight = renderWorkflowCliPreflight(workflow);
+
+      expect(preflight).toContain("continue only with the committed generated entrypoint");
+      expect(preflight).toContain("do not broaden into support-file or repo-wide scans solely to replace the CLI");
+      expect(preflight).not.toContain("read only the workflow-owned support files named by that entrypoint for the current step");
+      expect(preflight).not.toContain("do not read every support file, every route file, or every truth doc by default");
+    }
   });
 
   it("omits Portal surfaces and AGENTS wording when disabled", () => {

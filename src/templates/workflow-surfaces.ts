@@ -244,26 +244,35 @@ const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
 const routeFilesHint = (config: TruthmarkConfig): string =>
   `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
 
+const WORKFLOWS_WITH_ROUTE_FIRST_MANUAL_FALLBACK = new Set<TruthmarkWorkflowId>([
+  "truthmark-sync",
+  "truthmark-document",
+  "truthmark-structure",
+  "truthmark-realize",
+]);
+
 export const renderWorkflowCliPreflight = (
   workflowId: TruthmarkWorkflowId,
 ): string => {
   const baseGuidance =
     workflowId === "truthmark-sync"
-      ? "If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands. If not, the CLI performs cheap local base selection from existing Git refs (upstream, main, or master); do not stop solely because the caller omitted --base, and do not invent a remote branch that is not present locally."
-      : "If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands; do not invent a default branch.";
+      ? "If a caller supplies a comparison ref, preserve it with `--base <ref>` on this command. If not, the CLI performs cheap local base selection from existing Git refs (upstream, main, or master); do not stop solely because the caller omitted --base, and do not invent a remote branch that is not present locally."
+      : "If a caller supplies a comparison ref, preserve it with `--base <ref>` on this command; do not invent a default branch.";
+  const fallbackGuidance = WORKFLOWS_WITH_ROUTE_FIRST_MANUAL_FALLBACK.has(workflowId)
+    ? "If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract. Follow the route-first procedure, read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes. Include `workflow instructions: skipped` and the skip reason in the final report."
+    : "If the local Truthmark CLI is unavailable or too old, continue only with the committed generated entrypoint and focused direct checkout inspection needed for the requested read-only report; do not broaden into support-file or repo-wide scans solely to replace the CLI. Include `workflow instructions: skipped` and the skip reason in the final report.";
 
   return `## Live workflow preflight
 
-When the local Truthmark CLI is available, run the live workflow contract before acting:
+When the local Truthmark CLI is available, run the canonical one-call live workflow preflight before acting:
 
 \`\`\`bash
-truthmark workflow status --workflow ${workflowId} --json
 truthmark workflow instructions --workflow ${workflowId} --json
 \`\`\`
 
-${baseGuidance}
+${baseGuidance} Use \`truthmark workflow status\` only for status-only/debug inspection; \`workflow instructions\` already returns both \`data.instructions\` and the source \`data.workflowState\` in one JSON envelope.
 
-Before writes, parse the JSON command envelopes:
+Before writes, parse the JSON command envelope:
 
 - stop when \`data.workflowState.applicability.state\` is \`blocked\`, \`not_applicable\`, or \`ambiguous\`; current-scope continuation is read-only reporting of \`nextSteps\` or diagnostics
 - obey \`data.workflowState.actionContext.allowedWritePaths\`, \`forbiddenWritePaths\`, and stop conditions
@@ -271,7 +280,7 @@ Before writes, parse the JSON command envelopes:
 - shape the final report from \`data.instructions.reportTemplate.sections\` or \`finalReportShape\`; use checked-in report templates only when live instructions are unavailable
 - continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
 
-If the workflow CLI is unavailable or too old, continue direct checkout inspection and checked-in support files without broadening writes. Include \`workflow status/instructions: skipped\` and the skip reason in the final report.`;
+${fallbackGuidance}`;
 };
 
 const insertWorkflowCliPreflightAfterFrontmatter = (
@@ -325,7 +334,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Document current implemented behavior; do not invent future behavior.",
       "May write canonical truth docs and truth routing files only; must not write functional code.",
       "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md before dispatching or accepting worker output.",
+      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule:
@@ -344,7 +353,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "direct checkout inspection is the canonical path; do not require the truthmark binary.",
       "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
       "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md before dispatching or accepting worker output.",
+      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule:
@@ -394,7 +403,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
       "Direct checkout inspection is valid even when local tooling is unavailable.",
       "Read support/procedure.md before auditing details.",
-      "Read support/subagents-and-leases.md before dispatching verifier subagents.",
+      "Read support/subagents-and-leases.md only when dispatching verifier subagents.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule: "Parent agent owns the final Truth Check report",
@@ -545,8 +554,31 @@ const renderWorkflowEntrypoint = (
 ): string => {
   const workflow = getTruthmarkWorkflow(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
+  const supportFileUsage = (supportFile: string): string => {
+    if (supportFile === "support/procedure.md") {
+      return "read before edits or detailed auditing; contains core quality gates";
+    }
+
+    if (supportFile === "support/report-template.md") {
+      return "read before the final report";
+    }
+
+    if (supportFile === "support/subagents-and-leases.md") {
+      return "read only when using subagents, leases, or accepting worker output";
+    }
+
+    if (supportFile === "support/helper-policy.md") {
+      return "read only when invoking helper validators or reporting helper status";
+    }
+
+    if (supportFile === "helper-manifest.yml") {
+      return "read only when invoking helper validators or validating helper registration";
+    }
+
+    return "available when relevant to the current step";
+  };
   const supportFileList = supportFiles
-    .map((supportFile) => `- ${supportFile}`)
+    .map((supportFile) => `- ${supportFile} — ${supportFileUsage(supportFile)}`)
     .join("\n");
   const hostUsage =
     host === "github-copilot"

@@ -7,6 +7,7 @@ import {
   getTruthmarkWorkflow,
   type TruthmarkWorkflowId,
 } from "../../src/agents/workflow-manifest.js";
+import { NO_CLI_FALLBACK_EVAL_CASES } from "./no-cli-fallback-cases.js";
 import { WORKFLOW_ROUTING_EVAL_CASES } from "./workflow-routing-cases.js";
 
 const WORKFLOW_COMMAND_PATHS: Record<TruthmarkWorkflowId, string> = {
@@ -119,6 +120,23 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   ],
 };
 
+const NO_CLI_FALLBACK_SCENARIOS = [
+  "single-file-one-truth-doc",
+  "multi-file-one-truth-doc",
+  "multi-route-multiple-truth-docs",
+  "ambiguous-unmapped-code-blocks",
+  "broad-index-truth-doc-triggers-structure",
+  "evidence-reference-stale-or-missing",
+  "preserve-product-decisions-rationale",
+] as const;
+
+const NO_CLI_FALLBACK_EQUIVALENCE_AXES = [
+  "same target docs",
+  "same block/apply decision",
+  "same write boundary",
+  "same evidence status",
+] as const;
+
 const manifestRoutingText = (id: TruthmarkWorkflowId): string => {
   const workflow = getTruthmarkWorkflow(id);
 
@@ -188,6 +206,31 @@ describe("workflow routing eval corpus", () => {
       }
     },
   );
+});
+
+describe("no-CLI fallback eval corpus", () => {
+  it("covers route-first fallback outcomes before any hard budget policy is added", () => {
+    const caseIds = NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.id);
+
+    expect(caseIds).toEqual(expect.arrayContaining([...NO_CLI_FALLBACK_SCENARIOS]));
+
+    for (const testCase of NO_CLI_FALLBACK_EVAL_CASES) {
+      expect(testCase.changedSurface.length).toBeGreaterThan(0);
+      expect(testCase.equivalenceAxes).toEqual([...NO_CLI_FALLBACK_EQUIVALENCE_AXES]);
+      expect(testCase.expectedCliOutcome).toEqual(
+        expect.objectContaining({
+          decision: expect.stringMatching(/^(apply|block|structure)$/u),
+          evidenceStatus: expect.stringMatching(
+            /^(current|missing-or-stale|requires-preservation-check)$/u,
+          ),
+        }),
+      );
+    }
+
+    expect(NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.scenario).join("\n")).not.toMatch(
+      /token budget|hard budget/iu,
+    );
+  });
 });
 
 describe("generated workflow surface conformance", () => {

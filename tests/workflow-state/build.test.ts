@@ -234,11 +234,12 @@ describe("buildWorkflowState", () => {
       TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"],
       { base: "main" },
     );
-    expect(instructions.commandSequence.map((step) => step.command)).toEqual(
-      expect.arrayContaining([
-        "truthmark workflow status --workflow truthmark-sync --base main --json",
-        "truthmark workflow instructions --workflow truthmark-sync --base main --json",
-      ]),
+    const instructionCommands = instructions.commandSequence.map((step) => step.command);
+    expect(instructionCommands).toContain(
+      "truthmark workflow instructions --workflow truthmark-sync --base main --json",
+    );
+    expect(instructionCommands).not.toContain(
+      "truthmark workflow status --workflow truthmark-sync --base main --json",
     );
     expect("base" in state).toBe(false);
   });

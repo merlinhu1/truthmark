@@ -13,16 +13,15 @@ truthmark-version: 2.1.0
 
 ## Live workflow preflight
 
-When the local Truthmark CLI is available, run the live workflow contract before acting:
+When the local Truthmark CLI is available, run the canonical one-call live workflow preflight before acting:
 
 ```bash
-truthmark workflow status --workflow truthmark-sync --json
 truthmark workflow instructions --workflow truthmark-sync --json
 ```
 
-If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands. If not, the CLI performs cheap local base selection from existing Git refs (upstream, main, or master); do not stop solely because the caller omitted --base, and do not invent a remote branch that is not present locally.
+If a caller supplies a comparison ref, preserve it with `--base <ref>` on this command. If not, the CLI performs cheap local base selection from existing Git refs (upstream, main, or master); do not stop solely because the caller omitted --base, and do not invent a remote branch that is not present locally. Use `truthmark workflow status` only for status-only/debug inspection; `workflow instructions` already returns both `data.instructions` and the source `data.workflowState` in one JSON envelope.
 
-Before writes, parse the JSON command envelopes:
+Before writes, parse the JSON command envelope:
 
 - stop when `data.workflowState.applicability.state` is `blocked`, `not_applicable`, or `ambiguous`; current-scope continuation is read-only reporting of `nextSteps` or diagnostics
 - obey `data.workflowState.actionContext.allowedWritePaths`, `forbiddenWritePaths`, and stop conditions
@@ -30,7 +29,7 @@ Before writes, parse the JSON command envelopes:
 - shape the final report from `data.instructions.reportTemplate.sections` or `finalReportShape`; use checked-in report templates only when live instructions are unavailable
 - continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
 
-If the workflow CLI is unavailable or too old, continue direct checkout inspection and checked-in support files without broadening writes. Include `workflow status/instructions: skipped` and the skip reason in the final report.
+If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract. Follow the route-first procedure, read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes. Include `workflow instructions: skipped` and the skip reason in the final report.
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
