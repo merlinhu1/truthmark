@@ -31,7 +31,7 @@ WorkflowState includes applicability, action context, changed files, affected ro
 
 ## Core Rules
 
-- WorkflowState is exposed through agent-facing `workflow status` CLI JSON for focused status/debug inspection, but generated workflows do not run live workflow preflights before acting. `workflow instructions --json` was removed because it embedded an expensive workflow payload that could create context pressure for agents.
+- WorkflowState is exposed through agent-facing `workflow status` CLI JSON for focused status/debug inspection, while generated workflows rely on checked-in workflow surfaces and direct checkout inspection as their execution contract.
 - Workflow IDs stay in the full manifest form (`truthmark-sync`, `truthmark-document`, `truthmark-realize`, and peers). The builder maps to ContextPack's shorter workflow IDs only for supported ContextPack calls. Pass 2 rejects short workflow aliases such as `truth-sync`; full manifest IDs are canonical.
 - Read-only workflows (`truthmark-preview` and `truthmark-check`) have mode `read-only` and no allowed write paths.
 - Sync and document workflows use mode `truth-doc-write`; structure uses `route-write`; realize uses `code-write`; portal uses `portal-write` when portal output is configured.
@@ -56,7 +56,7 @@ Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambi
 - Decision (2026-06-01): WorkflowState v0 remains an internal repository-intelligence artifact in Pass 1; it does not expose OpenSpec-like lifecycle commands through the Truthmark CLI.
 - Decision (2026-06-01): WorkflowState composes existing manifest, config, RepoIndex, ImpactSet, ContextPack, and Check systems instead of creating a separate workflow engine.
 - Decision (2026-06-01): Fail-closed write boundaries are preferred over default or wildcard fallback paths whenever config, route ownership, or branch comparison data is ambiguous.
-- Decision (2026-06-12): Generated workflows no longer consume `workflow instructions --json`; committed surfaces, support-file progressive disclosure, direct checkout inspection, and optional focused validation commands are the normal execution contract.
+- Decision (2026-06-12): Committed surfaces, support-file progressive disclosure, direct checkout inspection, and optional focused validation commands are the normal generated-workflow execution contract.
 - Decision (2026-06-12): OpenSpec remains research input only; Truthmark must not add an OpenSpec dependency, committed OpenSpec workspace, OPSX command surface, or generated `openspec-*` agent skills.
 - Decision (2026-06-01): Pass 2 accepts only full manifest workflow IDs and rejects short ContextPack aliases instead of silently mapping them.
 

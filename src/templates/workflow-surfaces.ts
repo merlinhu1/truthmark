@@ -263,7 +263,7 @@ export const renderOptionalLocalCliValidation = (
 
   return `## Optional local CLI validation
 
-This workflow is driven by committed generated files, direct checkout inspection, and progressive-disclosure support files. Do not run a live workflow preflight or load large workflow JSON before acting. In particular, do not run \`truthmark workflow instructions --json\` or \`truthmark workflow status --json\` as a workflow prerequisite.
+Use this checked-in workflow text as the contract. Inspect the checkout directly and open progressive-disclosure support files only when needed. Use the local Truthmark CLI only for focused validation after relevant work has been performed.
 
 When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
 

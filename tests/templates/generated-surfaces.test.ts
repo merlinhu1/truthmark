@@ -17,18 +17,16 @@ const portalPaths = [
 ];
 
 describe("Truthmark Portal generated surfaces", () => {
-  it("renders optional local CLI validation without live workflow preflight", () => {
+  it("renders optional local CLI validation as a focused validation aid", () => {
     const validation = renderOptionalLocalCliValidation("truthmark-sync");
 
     expect(validation).toContain("Optional local CLI validation");
-    expect(validation).toContain("direct checkout inspection");
+    expect(validation).toContain("checked-in workflow text as the contract");
+    expect(validation).toContain("Inspect the checkout directly");
     expect(validation).toContain("progressive-disclosure support files");
     expect(validation).toContain("truthmark check --json");
     expect(validation).toContain("truthmark index --json");
     expect(validation).toContain("helper-manifest.yml");
-    expect(validation).not.toContain("truthmark workflow instructions --workflow");
-    expect(validation).not.toContain("workflow instructions: skipped");
-    expect(validation).not.toContain("workflow status/instructions: skipped");
   });
 
   it("bounds direct checkout inspection for write workflows", () => {

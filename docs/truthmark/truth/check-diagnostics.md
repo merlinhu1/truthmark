@@ -224,7 +224,7 @@ The command does not run Truth Sync, Truth Preview, Truth Realize, Truth Structu
 
 Status derivation is deterministic: any mapped `error` diagnostic makes the dimension `fail`, mapped non-error diagnostics make it `warn`, no mapped diagnostics after the relevant checker ran makes it `pass`, and unavailable or skipped context makes it `not-run`. `branch-freshness` is `not-run` when `--base` is omitted. Missing or invalid config still returns a parseable check envelope with `data.scorecard`; dimensions affected by config errors fail or report not-run instead of being omitted.
 
-Pass 4 keeps workflow-state scorecard exposure deferred: `truthmark check --json` has the scorecard, but `workflow status` and generated playbooks do not receive `data.workflowState.scorecard` in this change. The removed `workflow instructions --json` surface has no scorecard exposure.
+Pass 4 keeps workflow-state scorecard exposure deferred: `truthmark check --json` has the scorecard, but `workflow status` and generated playbooks do not receive `data.workflowState.scorecard` in this change.
 
 Branch scope identifies the active checkout:
 
