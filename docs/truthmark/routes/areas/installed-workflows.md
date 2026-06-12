@@ -51,6 +51,7 @@ Code surface:
 - src/templates/generated-surfaces.ts
 - src/truth/\*\*
 - src/version.ts
+- tests/evals/**
 - tests/templates/**
 
 Update truth when:
