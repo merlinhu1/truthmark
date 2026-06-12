@@ -56,9 +56,7 @@ Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambi
 - Decision (2026-06-01): WorkflowState v0 remains an internal repository-intelligence artifact in Pass 1; it does not expose OpenSpec-like lifecycle commands through the Truthmark CLI.
 - Decision (2026-06-01): WorkflowState composes existing manifest, config, RepoIndex, ImpactSet, and Check systems instead of creating a separate workflow engine.
 - Decision (2026-06-01): Fail-closed write boundaries are preferred over default or wildcard fallback paths whenever config, route ownership, or branch comparison data is ambiguous.
-- Decision (2026-06-12): Committed surfaces, support-file progressive disclosure, direct checkout inspection, and optional focused validation commands are the normal generated-workflow execution contract.
 - Decision (2026-06-12): WorkflowState does not carry ContextPack; public ContextPack JSON output was removed in v2.
-- Decision (2026-06-12): OpenSpec remains research input only; Truthmark must not add an OpenSpec dependency, committed OpenSpec workspace, OPSX command surface, or generated `openspec-*` agent skills.
 - Decision (2026-06-01): Pass 2 accepts only full manifest workflow IDs and rejects short ContextPack aliases instead of silently mapping them.
 
 ## Rationale
