@@ -255,6 +255,21 @@ describe("buildWorkflowState", () => {
     expect(state.nextSteps.join("\n")).not.toContain("--base");
   });
 
+  it("blocks sync without a supplied or discoverable comparison base", async () => {
+    const repo = await setupConfiguredRepo();
+    repos.push(repo);
+    await repo.runGit(["branch", "-m", "feature/no-base"]);
+
+    const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
+
+    expect(state.applicability.state).toBe("blocked");
+    expect(state.applicability.reasons.join("\n")).toContain("truthmark-sync requires --base");
+    expect(state.actionContext.allowedWritePaths).toEqual([]);
+    expect(state.changedFiles).toEqual([]);
+    expect(state.targetTruthDocs).toEqual([]);
+    expect(state.nextSteps.join("\n")).toContain("--base <ref>");
+  });
+
   it("blocks write-capable workflows when config is missing", async () => {
     const repo = await createTempRepo();
     repos.push(repo);

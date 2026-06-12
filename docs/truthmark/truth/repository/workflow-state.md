@@ -39,7 +39,7 @@ WorkflowState includes applicability, action context, changed files, affected ro
 - Read-only workflows (`truthmark-preview` and `truthmark-check`) have mode `read-only` and no allowed write paths.
 - Sync and document workflows use mode `truth-doc-write`; structure uses `route-write`; realize uses `code-write`; portal uses `portal-write` when portal output is configured.
 - Missing config, ambiguous route ownership, invalid workflow IDs, or missing branch comparison data fail closed instead of widening allowed writes.
-- `truthmark-sync` may select a cheap existing local Git base when the caller omits `--base`; `truthmark-realize` still blocks without `--base` because code-write paths must be derived from a bounded comparison.
+- `truthmark-sync` may select a cheap existing local Git base when the caller omits `--base`, but blocks with no allowed writes when no candidate base exists; `truthmark-realize` still blocks without `--base` because code-write paths must be derived from a bounded comparison.
 - Realize forbids writes to configured route and truth documentation paths.
 - Helper validation commands are copied from the workflow manifest into machine-readable action context and check metadata.
 - Full WorkflowState output may include ContextPack truth document and source file content, subject to existing ContextPack truncation behavior.
@@ -48,7 +48,7 @@ WorkflowState includes applicability, action context, changed files, affected ro
 
 The builder validates the workflow ID, loads config and RepoIndex, derives ImpactSet only when a base ref is supplied, derives ContextPack only for supported workflows, runs Truthmark Check, merges diagnostics, determines applicability, then derives action context from the manifest and bounded route/config/impact data.
 
-Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambiguous changed functional files leave target truth docs empty and direct the caller toward Truth Structure or route repair. Sync without a caller-supplied base performs cheap local base selection from existing upstream/main/master refs. Realize without a comparison base is `blocked` with a next step to rerun with `--base <ref>` so code-write paths remain bounded.
+Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambiguous changed functional files leave target truth docs empty and direct the caller toward Truth Structure or route repair. Sync without a caller-supplied base performs cheap local base selection from existing upstream/main/master refs, and if none exists it is `blocked` with a next step to rerun with `--base <ref>` so truth-doc write paths remain bounded. Realize without a comparison base is `blocked` with a next step to rerun with `--base <ref>` so code-write paths remain bounded.
 
 ## Contracts
 

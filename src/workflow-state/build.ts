@@ -94,6 +94,11 @@ const applicabilityFor = (
     return { state: isWriteCapable(workflow) ? "blocked" : "not_applicable", reasons };
   }
 
+  if (workflow === "truthmark-sync" && !impactSet) {
+    reasons.push("truthmark-sync requires --base to derive bounded truth-doc write paths.");
+    return { state: "blocked", reasons };
+  }
+
   if (workflow === "truthmark-realize" && !impactSet) {
     reasons.push("truthmark-realize requires --base to derive bounded allowed write paths.");
     return { state: "blocked", reasons };
@@ -159,9 +164,15 @@ const nextStepsFor = (
     return ["Run Truth Structure or repair route ownership before writing truth docs."];
   }
 
-  if (workflow === "truthmark-realize" && applicability.state === "blocked" && !comparisonBase) {
+  if (
+    (workflow === "truthmark-sync" || workflow === "truthmark-realize") &&
+    applicability.state === "blocked" &&
+    !comparisonBase
+  ) {
     return [
-      "Rerun with --base <ref> so Truthmark can derive bounded allowed code-write paths.",
+      workflow === "truthmark-sync"
+        ? "Rerun with --base <ref> so Truthmark can derive bounded truth-doc write paths."
+        : "Rerun with --base <ref> so Truthmark can derive bounded allowed code-write paths.",
     ];
   }
 
