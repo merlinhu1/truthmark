@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: workflow
-last_reviewed: 2026-06-01
+last_reviewed: 2026-06-12
 source_of_truth:
   - ../../../../.truthmark/config.yml
   - ../../../../src/agents/instructions.ts
@@ -42,17 +42,17 @@ This document owns the shared installed-workflow runtime model and generated hos
 
 Installed skills, prompts, commands, and managed instruction blocks are the workflow runtime. The `truthmark` CLI installs and refreshes those surfaces and may validate artifacts afterward, but it does not orchestrate workflow execution or prepare required workflow payloads before an agent can act.
 
-Generated workflow entrypoints, prompts, and commands first instruct agents to read the live local `truthmark workflow status --workflow <id> --json` and `truthmark workflow instructions --workflow <id> --json` contracts when the CLI is available. Those contracts provide current applicability, write boundaries, stop conditions, helper commands, and report-shape fields; checked-in generated prose remains the fallback when the installed CLI is unavailable or too old.
+Generated workflow entrypoints, prompts, and commands may instruct agents to read the live local `truthmark workflow status --workflow <id> --json` and `truthmark workflow instructions --workflow <id> --json` contracts when the CLI is available. Those read-only contracts provide current applicability, write boundaries, stop conditions, helper commands, and report-shape fields; checked-in generated prose remains authoritative fallback workflow guidance when the installed CLI is unavailable, too old, or returns unusable output.
 
-Agents inspect the checkout directly, apply workflow boundaries from the live workflow contract and committed surfaces, update only workflow-allowed files, and report what changed.
+No CLI command or helper output is a required prerequisite before an agent can act. Agents inspect the checkout directly, apply workflow boundaries from the committed surfaces plus any available live read-only workflow contract, update only workflow-allowed files, and report what changed.
 
 ## Steps
 
 1. `truthmark init` reads `.truthmark/config.yml` and refreshes managed instruction blocks plus configured host surfaces.
 2. Generated host surfaces expose explicit manual workflows and the automatic finish-time Truth Sync guidance.
-3. An agent invokes or follows a generated workflow entrypoint, prompt, or command and runs the live workflow status/instructions preflight when available.
-4. The agent reads the checkout directly, applies live and committed workflow write boundaries, and reports the outcome.
-5. Optional CLI helpers may validate reports, build context, or index the repository, but they do not orchestrate workflow execution.
+3. An agent invokes or follows a generated workflow entrypoint, prompt, or command and treats live workflow status/instructions preflight as optional read-only context when available.
+4. The agent reads the checkout directly, applies committed workflow write boundaries plus any available live read-only boundary data, and reports the outcome.
+5. Optional CLI helpers may validate reports, build context, or index the repository, but they do not orchestrate workflow execution and are never required before the agent can act.
 
 Current behavior notes:
 
@@ -87,7 +87,7 @@ Managed instruction blocks are compact automatic-Sync trigger and boundary index
 
 ## State, Retry, And Failure Behavior
 
-Generated workflow surfaces are committed repository files. If the Truthmark package is unavailable at workflow-execution time, agents still follow the committed surfaces manually and report unavailable workflow status/instructions and optional helper output. Removing a platform from config stops future refreshes for that platform but does not delete already committed surfaces.
+Generated workflow surfaces are committed repository files. If the Truthmark package is unavailable at workflow-execution time, agents still follow the committed surfaces manually and report unavailable workflow status/instructions and optional helper output. Unavailable, stale, or failing read-only CLI helpers degrade to visible skipped helper status; they do not block agent action when committed workflow surfaces and direct checkout evidence are sufficient. Removing a platform from config stops future refreshes for that platform but does not delete already committed surfaces.
 
 ## Outputs
 
@@ -109,6 +109,7 @@ The installed runtime outputs managed instruction blocks, host-native skills/pro
 - Decision (2026-05-18): Workflow helpers are optional read-only accelerators declared in generated helper manifests; current helpers are owned by the installed `truthmark` CLI and use argv-style `truthmark validate ... --json` commands rather than packaged script copies.
 - Decision (2026-05-25): Truthmark Portal is opt-in and manual-only; generated Portal HTML is a non-canonical human presentation surface and Markdown remains canonical.
 - Decision (2026-06-01): Generated public workflow entrypoints, GitHub Copilot prompts, and Gemini commands consume the local read-only `workflow status` / `workflow instructions` contract before acting when the installed CLI is available, while generated support files remain subordinate fallback references.
+- Decision (2026-06-12): Read-only CLI helper surfaces such as `workflow status`, `workflow instructions`, `context`, and `impact` must remain optional coordination aids; no CLI command becomes required before an agent can act from committed workflow surfaces and direct checkout evidence.
 
 ## Rationale
 
