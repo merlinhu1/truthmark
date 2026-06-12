@@ -15,3 +15,7 @@ README.md files are indexes, not Truth Sync targets. Keep behavior truth in boun
 Current leaf docs:
 
 - [Overview](overview.md)
+- [Context Pack](context-pack.md)
+- [Impact Set](impact-set.md)
+- [Repo Index](repo-index.md)
+- [Workflow State](workflow-state.md)

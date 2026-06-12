@@ -4,7 +4,7 @@ doc_type: architecture
 last_reviewed: 2026-06-12
 source_of_truth:
   - ../../README.md
-  - overview.md
+  - ../truthmark/truth/architecture/overview.md
   - ../truthmark/truth/workflows/overview.md
   - ../truthmark/truth/repository/workflow-state.md
 ---
@@ -29,6 +29,21 @@ Read it before proposing changes to product shape, runtime model, persistence, d
 **Your agents write code. Truthmark maintains the human-facing, Git-reviewable documentation.**
 
 Truthmark keeps repository documentation aligned with agent-made code changes so humans can review the resulting documentation changes in Git.
+
+Canonical truth documents are human-facing Git-review artifacts. Human maintainers are the primary reviewers; agents write and maintain truth docs, but agents are not the only consumers.
+
+Truth-doc structure, wording, and style must be friendly for humans to read and understand.
+
+Human-friendly truth docs:
+
+- Make the audience and purpose clear near the top.
+- Separate current behavior from rationale, decisions, operations, contracts, and future or non-goals.
+- Use scannable headings and bounded sections.
+- Use plain, concrete, present-tense wording.
+- Expand or link terms and acronyms that are not obvious to a maintainer.
+- Trace claims to source evidence without forcing readers to inspect giant machine payloads.
+- Keep examples, commands, and paths accurate, minimal, and reviewable.
+- Keep prose concise enough for Git diff review while complete enough to preserve decisions and rationale.
 
 ## In Scope
 
@@ -69,6 +84,7 @@ Optional integrations are acceptable only when they preserve host-native agent w
 5. **Write boundaries fail closed.** Missing config, ambiguous ownership, missing comparison base, or stale routing must block or narrow writes, never widen them.
 6. **Human review stays central.** Truthmark produces reviewable documentation changes, not silent approval or merge authority.
 7. **Local-first simplicity wins.** Add dependencies, services, or runtime layers only when they preserve the no-blockade repository-file workflow.
+8. **Truth docs stay human-friendly.** Truth docs must be structured and written for maintainers to review, scan, and understand before they are optimized for agent or machine consumption.
 
 ## Required Product Boundary Check
 
@@ -89,6 +105,7 @@ A plan that cannot answer these questions is not ready for implementation.
 - Decision (2026-06-12): Product-boundary checks live in architecture because they govern runtime topology, persistence, dependencies, workflow authority, generated surfaces, and write boundaries.
 - Decision (2026-06-12): Repository rules cite this document so agents must check product boundaries before generating new designs or plans.
 - Decision (2026-06-12): Truthmark workflows must stay 100% operational from repository files and host-native agent surfaces; missing packages, CLIs, daemons, services, or plugins must not block normal workflow execution.
+- Decision (2026-06-12): Human-facing readability is part of the Truthmark product boundary for canonical truth documents.
 
 ## Maintenance Notes
 

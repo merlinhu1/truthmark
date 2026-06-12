@@ -3,7 +3,7 @@ status: active
 doc_type: index
 last_reviewed: 2026-05-09
 source_of_truth:
-  - ../truthmark/areas.md
+  - ../routes/areas.md
 ---
 
 # Truth Docs

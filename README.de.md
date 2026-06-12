@@ -758,7 +758,7 @@ Die README ist der schnelle Pfad für Evaluation und Setup.
 Aktuelles Verhalten im Detail lebt unter `docs/`:
 
 - [Dokumentationsindex](docs/README.md)
-- [Architekturüberblick](docs/architecture/overview.md)
+- [Architekturüberblick](docs/truthmark/truth/architecture/overview.md)
 - [API- und CLI-Verträge](docs/truthmark/truth/contracts.md)
 - [Init- und Scaffold-Verhalten](docs/truthmark/truth/init-and-scaffold.md)
 - [Check-Diagnostik](docs/truthmark/truth/check-diagnostics.md)

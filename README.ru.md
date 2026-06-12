@@ -758,7 +758,7 @@ README — быстрый путь для оценки и настройки.
 Подробное текущее поведение живет в `docs/`:
 
 - [Индекс документации](docs/README.md)
-- [Обзор архитектуры](docs/architecture/overview.md)
+- [Обзор архитектуры](docs/truthmark/truth/architecture/overview.md)
 - [Контракты API и CLI](docs/truthmark/truth/contracts.md)
 - [Поведение init и scaffold](docs/truthmark/truth/init-and-scaffold.md)
 - [Диагностика check](docs/truthmark/truth/check-diagnostics.md)

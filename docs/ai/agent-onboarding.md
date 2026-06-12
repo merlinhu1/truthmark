@@ -26,8 +26,8 @@ Fast routing for agents. Repository-wide rules live in [docs/ai/repo-rules.md](r
 
 Read:
 
-1. [docs/architecture/overview.md](../architecture/overview.md)
-2. [docs/architecture/module-map.md](../architecture/module-map.md)
+1. [docs/truthmark/truth/architecture/overview.md](../truthmark/truth/architecture/overview.md)
+2. [docs/truthmark/truth/architecture/module-map.md](../truthmark/truth/architecture/module-map.md)
 3. [docs/truthmark/truth/init-and-scaffold.md](../truthmark/truth/init-and-scaffold.md)
 4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)
 
@@ -35,7 +35,7 @@ Read:
 
 Read:
 
-1. [docs/architecture/module-map.md](../architecture/module-map.md)
+1. [docs/truthmark/truth/architecture/module-map.md](../truthmark/truth/architecture/module-map.md)
 2. [docs/truthmark/truth/check-diagnostics.md](../truthmark/truth/check-diagnostics.md)
 3. [docs/standards/documentation-governance.md](../standards/documentation-governance.md)
 4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)

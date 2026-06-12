@@ -15,9 +15,9 @@ source_of_truth:
 Truth documents:
 ```yaml
 truth_documents:
-  - path: docs/architecture/overview.md
+  - path: docs/truthmark/truth/architecture/overview.md
     kind: architecture
-  - path: docs/architecture/module-map.md
+  - path: docs/truthmark/truth/architecture/module-map.md
     kind: architecture
   - path: docs/truthmark/truth/init-and-scaffold.md
     kind: behavior

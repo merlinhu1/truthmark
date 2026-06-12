@@ -17,9 +17,9 @@ Truth documents:
 truth_documents:
   - path: docs/truthmark/truth/contracts.md
     kind: contract
-  - path: docs/architecture/overview.md
+  - path: docs/truthmark/truth/architecture/overview.md
     kind: architecture
-  - path: docs/architecture/module-map.md
+  - path: docs/truthmark/truth/architecture/module-map.md
     kind: architecture
   - path: docs/truthmark/truth/check-diagnostics.md
     kind: behavior

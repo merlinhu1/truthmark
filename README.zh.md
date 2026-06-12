@@ -760,7 +760,7 @@ README 是评估和设置的快速路径。
 详细的当前行为位于 `docs/` 下：
 
 - [文档索引](docs/README.md)
-- [架构概览](docs/architecture/overview.md)
+- [架构概览](docs/truthmark/truth/architecture/overview.md)
 - [API 和 CLI 契约](docs/truthmark/truth/contracts.md)
 - [Init 和脚手架行为](docs/truthmark/truth/init-and-scaffold.md)
 - [Check 诊断](docs/truthmark/truth/check-diagnostics.md)
