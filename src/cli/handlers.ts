@@ -191,14 +191,21 @@ export const runContext = async (options: {
   });
   const diagnostics = contextPack.warnings;
 
+  const summary = `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`;
+  const markdown = options.format === "markdown" ? renderContextPackMarkdown(contextPack) : null;
+
   return {
     command: "context",
-    summary: `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`,
+    summary,
     diagnostics,
-    data: {
-      contextPack,
-      ...(options.format === "markdown" ? { markdown: renderContextPackMarkdown(contextPack) } : {}),
-    },
+    data: markdown
+      ? {
+          markdown,
+          summary,
+        }
+      : {
+          contextPack,
+        },
   };
 };
 

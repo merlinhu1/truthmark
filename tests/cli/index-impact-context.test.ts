@@ -95,6 +95,34 @@ describe("repository intelligence CLI commands", () => {
 
       expect(result.stdout).toContain("# Truthmark ContextPack (truth-document)");
       expect(result.stdout).toContain("## Allowed Write Paths");
+      expect(result.stdout.trim()).not.toContain('"contextPack"');
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("renders markdown-only JSON data when --json and --format markdown are combined", async () => {
+    const repo = await createTempRepo();
+    try {
+      await repo.writeFile("src/index.ts", "export const value = 1;\n");
+      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await runInit(repo.rootDir);
+
+      const result = await runCli(
+        ["context", "--workflow", "truth-document", "--format", "markdown", "--json"],
+        { cwd: repo.rootDir },
+      );
+      const output = JSON.parse(result.stdout) as {
+        command: string;
+        data: { contextPack?: unknown; markdown?: string; summary?: string };
+        summary: string;
+      };
+
+      expect(output.command).toBe("context");
+      expect(output.data.contextPack).toBeUndefined();
+      expect(output.data.markdown).toContain("# Truthmark ContextPack (truth-document)");
+      expect(output.data.markdown).toContain("## Allowed Write Paths");
+      expect(output.data.summary).toBe(output.summary);
     } finally {
       await repo.cleanup();
     }

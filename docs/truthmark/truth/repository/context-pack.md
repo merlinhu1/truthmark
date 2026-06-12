@@ -21,7 +21,7 @@ This document owns ContextPack v0 behavior for Truth Sync, Truth Document, and T
 
 ## Current Behavior
 
-`truthmark context --workflow <workflow> [--base <ref>] --json` generates a bounded context artifact for a workflow. `--format markdown` renders a deterministic human-readable pack, and `--json --format markdown` includes the rendered Markdown in `data.markdown`. ContextPack rejects unsupported `--format` values with a `context-pack` error diagnostic. ContextPack includes route ownership, affected truth docs, selected source files, related tests, warnings, and allowed write paths. Truth docs and source files over 200 lines are truncated to the first 80 lines and last 40 lines with an explicit `truncated: true` marker and a review warning.
+`truthmark context --workflow <workflow> [--base <ref>] --json` generates a bounded context artifact for a workflow. `--format markdown` renders a deterministic human-readable pack. When `--json --format markdown` is combined, the JSON envelope returns only `data.markdown` plus `data.summary` and does not include the full content-bearing `data.contextPack`. ContextPack rejects unsupported `--format` values with a `context-pack` error diagnostic. ContextPack includes route ownership, affected truth docs, selected source files, related tests, warnings, and allowed write paths. Truth docs and source files over 200 lines are truncated to the first 80 lines and last 40 lines with an explicit `truncated: true` marker and a review warning.
 
 ContextPack output includes `schemaVersion: context-pack/v0`. It is generated from the active checkout and, when a base ref is supplied, ImpactSet.
 
@@ -42,7 +42,7 @@ ContextPack output includes `schemaVersion: context-pack/v0`. It is generated fr
 
 ## Contracts
 
-`truthmark context --workflow <workflow> [--base <ref>] --json` returns the shared command envelope with ContextPack data. `--format markdown` renders deterministic Markdown, and `--json --format markdown` includes rendered Markdown in `data.markdown`. Unsupported formats produce a `context-pack` error diagnostic.
+`truthmark context --workflow <workflow> [--base <ref>] --json` returns the shared command envelope with ContextPack data. `--format markdown` renders deterministic Markdown. When combined with `--json`, `--format markdown` returns rendered Markdown in `data.markdown` plus `data.summary` and omits the full content-bearing `data.contextPack`. Unsupported formats produce a `context-pack` error diagnostic.
 
 ## Product Decisions
 

@@ -134,7 +134,7 @@ Scorecard statuses are categorical: mapped `error` diagnostics produce `fail`; m
 
 `truthmark impact --base <ref> --json` returns `data.impactSet` with `schemaVersion: impact-set/v0`.
 
-`truthmark context --workflow <workflow> [--base <ref>] --json` returns `data.contextPack` with `schemaVersion: context-pack/v0`. `--workflow` accepts `truth-sync`, `truth-document`, and `truth-realize`. `--format` accepts `json` or `markdown`; unsupported formats return a `context-pack` error diagnostic. `--format markdown` renders a deterministic Markdown ContextPack for human review, and `--json --format markdown` includes that Markdown under `data.markdown`.
+`truthmark context --workflow <workflow> [--base <ref>] --json` returns `data.contextPack` with `schemaVersion: context-pack/v0` for JSON-format context output. `--workflow` accepts `truth-sync`, `truth-document`, and `truth-realize`. `--format` accepts `json` or `markdown`; unsupported formats return a `context-pack` error diagnostic. `--format markdown` renders a deterministic Markdown ContextPack for human review. `--json --format markdown` returns only `data.markdown` plus `data.summary` and omits the full content-bearing `data.contextPack`.
 
 `truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` returns `command: "workflow status"`, `data.request`, and `data.workflowState` with nested `schemaVersion: truthmark-workflow/v0`. It is retained for status-only/debug inspection. `data.request.workflow` records the caller-supplied canonical workflow ID, and `data.request.base` records the caller-supplied comparison ref when present. The WorkflowState schema is not extended for request metadata unless a later explicit schema change does so.
 
