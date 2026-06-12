@@ -286,4 +286,43 @@ describe("generated workflow surface conformance", () => {
       }
     }
   });
+
+  it("keeps write-workflow no-CLI fallback route-first and non-expansive", () => {
+    for (const id of [
+      "truthmark-sync",
+      "truthmark-structure",
+      "truthmark-document",
+      "truthmark-realize",
+    ] as const) {
+      const content = surfaces.get(`.codex/skills/${id}/SKILL.md`);
+
+      expect(content, `${id} Codex skill is generated`).toBeDefined();
+      expect(content).toContain("If the local Truthmark CLI is unavailable or too old");
+      expect(content).toContain("use the checked-in workflow files as the contract");
+      expect(content).toContain("Follow the route-first procedure");
+      expect(content).toContain(
+        "read only the config, route files, truth docs, and source evidence needed for the current changed surface",
+      );
+      expect(content).toContain(
+        "stop on missing or ambiguous ownership instead of broadening reads or writes",
+      );
+    }
+  });
+
+  it("labels non-main progressive-disclosure files as conditional", () => {
+    const syncSkill = surfaces.get(".codex/skills/truthmark-sync/SKILL.md");
+
+    expect(syncSkill).toContain(
+      "support/procedure.md — read before edits or detailed auditing; contains core quality gates",
+    );
+    expect(syncSkill).toContain(
+      "support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output",
+    );
+    expect(syncSkill).toContain(
+      "helper-manifest.yml — read only when invoking helper validators or validating helper registration",
+    );
+    expect(syncSkill).toContain(
+      "support/helper-policy.md — read only when invoking helper validators or reporting helper status",
+    );
+  });
 });

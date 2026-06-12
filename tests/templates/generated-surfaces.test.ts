@@ -39,10 +39,10 @@ describe("Truthmark Portal generated surfaces", () => {
     ] as const) {
       const preflight = renderWorkflowCliPreflight(workflow);
 
-      expect(preflight).toContain("read only the workflow-owned support files named by that entrypoint for the current step");
-      expect(preflight).toContain("do not read every support file, every route file, or every truth doc by default");
-      expect(preflight).toContain("block as ambiguous");
-      expect(preflight).toContain("instead of scanning the repository until sure");
+      expect(preflight).toContain("use the checked-in workflow files as the contract");
+      expect(preflight).toContain("Follow the route-first procedure");
+      expect(preflight).toContain("read only the config, route files, truth docs, and source evidence needed for the current changed surface");
+      expect(preflight).toContain("stop on missing or ambiguous ownership instead of broadening reads or writes");
       expect(preflight).toContain("workflow instructions: skipped");
     }
   });
@@ -53,8 +53,8 @@ describe("Truthmark Portal generated surfaces", () => {
 
       expect(preflight).toContain("continue only with the committed generated entrypoint");
       expect(preflight).toContain("do not broaden into support-file or repo-wide scans solely to replace the CLI");
-      expect(preflight).not.toContain("read only the workflow-owned support files named by that entrypoint for the current step");
-      expect(preflight).not.toContain("do not read every support file, every route file, or every truth doc by default");
+      expect(preflight).not.toContain("use the checked-in workflow files as the contract");
+      expect(preflight).not.toContain("Follow the route-first procedure");
     }
   });
 
