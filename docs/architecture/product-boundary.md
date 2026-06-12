@@ -15,6 +15,10 @@ source_of_truth:
 
 This is the product-boundary guardrail for Truthmark designs and plans.
 
+This document governs the Truthmark repository itself. It is not a scaffolded Truthmark artifact and must not be installed into downstream repositories as their product boundary.
+
+Downstream repositories may define their own product-boundary docs if useful, but Truthmark's installed workflows must not impose this repository's product strategy, non-goals, or governance doctrine on user projects.
+
 Read it before proposing changes to product shape, runtime model, persistence, dependencies, workflow authority, generated surfaces, command surface, or agent write boundaries.
 
 ## North Star
