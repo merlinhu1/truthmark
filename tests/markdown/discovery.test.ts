@@ -25,19 +25,19 @@ describe("discoverMarkdownDocuments", () => {
       await repo.writeFile("vendor/copied.md", "# Ignore me\n");
       await repo.writeFile("build/output.md", "# Ignore me\n");
       await repo.writeFile(
-        ".codex/skills/truthmark-sync/SKILL.md",
+        ".agents/skills/truthmark-sync/SKILL.md",
         "# Ignore me\n",
       );
       await repo.writeFile(
-        ".codex/skills/truthmark-structure/SKILL.md",
+        ".agents/skills/truthmark-structure/SKILL.md",
         "# Ignore me\n",
       );
       await repo.writeFile(
-        ".codex/skills/truthmark-realize/SKILL.md",
+        ".agents/skills/truthmark-realize/SKILL.md",
         "# Ignore me\n",
       );
       await repo.writeFile(
-        ".codex/skills/truthmark-check/SKILL.md",
+        ".agents/skills/truthmark-check/SKILL.md",
         "# Ignore me\n",
       );
       await repo.writeFile(
@@ -54,7 +54,7 @@ describe("discoverMarkdownDocuments", () => {
         "# Ignore me\n",
       );
       await repo.writeFile(
-        ".github/agents/truth-route-auditor.agent.md",
+        ".github/agents/truth-route-auditor.md",
         "# Ignore me\n",
       );
       await repo.writeFile("CLAUDE.md", "# Ignore me\n");

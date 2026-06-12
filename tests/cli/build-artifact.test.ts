@@ -141,39 +141,4 @@ describe("built truthmark CLI", () => {
     }
   });
 
-  it("runs workflow instructions from the built artifact outside the source repo cwd", async () => {
-    const buildResult = await execa("npm", ["run", "build"], {
-      cwd: workspaceRoot,
-      reject: false,
-    });
-
-    expect(buildResult.exitCode).toBe(0);
-    expect(path.isAbsolute(builtCliEntrypoint)).toBe(true);
-
-    const repo = await createTempRepo();
-
-    try {
-      await runConfig(repo.rootDir, { force: false, stdout: false });
-      await runInit(repo.rootDir);
-      const result = await execa(
-        process.execPath,
-        [builtCliEntrypoint, "workflow", "instructions", "--workflow", "truthmark-check", "--json"],
-        {
-          cwd: repo.rootDir,
-          reject: false,
-        },
-      );
-      const output = JSON.parse(result.stdout) as {
-        command: string;
-        data: { instructions: { schemaVersion: string; workflow: string } };
-      };
-
-      expect(result.exitCode).toBe(0);
-      expect(output.command).toBe("workflow instructions");
-      expect(output.data.instructions.schemaVersion).toBe("truthmark-workflow-instructions/v0");
-      expect(output.data.instructions.workflow).toBe("truthmark-check");
-    } finally {
-      await repo.cleanup();
-    }
-  });
 });

@@ -165,55 +165,55 @@ describe("runInit", () => {
 
       const agents = await repo.readFile("AGENTS.md");
       const structureSkill = await repo.readFile(
-        ".codex/skills/truthmark-structure/SKILL.md",
+        ".agents/skills/truthmark-structure/SKILL.md",
       );
       const structureReportTemplate = await repo.readFile(
-        ".codex/skills/truthmark-structure/support/report-template.md",
+        ".agents/skills/truthmark-structure/support/report-template.md",
       );
       const structureSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-structure/agents/openai.yaml",
+        ".agents/skills/truthmark-structure/agents/openai.yaml",
       );
       const structureOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-structure/SKILL.md",
       );
       const documentSkill = await repo.readFile(
-        ".codex/skills/truthmark-document/SKILL.md",
+        ".agents/skills/truthmark-document/SKILL.md",
       );
       const documentSubagents = await repo.readFile(
-        ".codex/skills/truthmark-document/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-document/support/subagents-and-leases.md",
       );
       const documentReportTemplate = await repo.readFile(
-        ".codex/skills/truthmark-document/support/report-template.md",
+        ".agents/skills/truthmark-document/support/report-template.md",
       );
       const documentSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-document/agents/openai.yaml",
+        ".agents/skills/truthmark-document/agents/openai.yaml",
       );
       const documentOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-document/SKILL.md",
       );
       const documentHelperManifest = await repo.readFile(
-        ".codex/skills/truthmark-document/helper-manifest.yml",
+        ".agents/skills/truthmark-document/helper-manifest.yml",
       );
       const syncSkill = await repo.readFile(
-        ".codex/skills/truthmark-sync/SKILL.md",
+        ".agents/skills/truthmark-sync/SKILL.md",
       );
       const syncHelperManifest = await repo.readFile(
-        ".codex/skills/truthmark-sync/helper-manifest.yml",
+        ".agents/skills/truthmark-sync/helper-manifest.yml",
       );
       const syncHelperPolicy = await repo.readFile(
-        ".codex/skills/truthmark-sync/support/helper-policy.md",
+        ".agents/skills/truthmark-sync/support/helper-policy.md",
       );
       const syncProcedure = await repo.readFile(
-        ".codex/skills/truthmark-sync/support/procedure.md",
+        ".agents/skills/truthmark-sync/support/procedure.md",
       );
       const syncSubagents = await repo.readFile(
-        ".codex/skills/truthmark-sync/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-sync/support/subagents-and-leases.md",
       );
       const syncReportTemplate = await repo.readFile(
-        ".codex/skills/truthmark-sync/support/report-template.md",
+        ".agents/skills/truthmark-sync/support/report-template.md",
       );
       const syncSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-sync/agents/openai.yaml",
+        ".agents/skills/truthmark-sync/agents/openai.yaml",
       );
       const syncOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
@@ -225,25 +225,25 @@ describe("runInit", () => {
         ".github/prompts/truthmark-sync.prompt.md",
       );
       const realizeSkill = await repo.readFile(
-        ".codex/skills/truthmark-realize/SKILL.md",
+        ".agents/skills/truthmark-realize/SKILL.md",
       );
       const realizeSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-realize/agents/openai.yaml",
+        ".agents/skills/truthmark-realize/agents/openai.yaml",
       );
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
       const previewSkill = await repo.readFile(
-        ".codex/skills/truthmark-preview/SKILL.md",
+        ".agents/skills/truthmark-preview/SKILL.md",
       );
       const previewSubagents = await repo.readFile(
-        ".codex/skills/truthmark-preview/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-preview/support/subagents-and-leases.md",
       );
       const previewReportTemplate = await repo.readFile(
-        ".codex/skills/truthmark-preview/support/report-template.md",
+        ".agents/skills/truthmark-preview/support/report-template.md",
       );
       const previewSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-preview/agents/openai.yaml",
+        ".agents/skills/truthmark-preview/agents/openai.yaml",
       );
       const previewOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-preview/SKILL.md",
@@ -258,10 +258,10 @@ describe("runInit", () => {
         ".gemini/commands/truthmark/preview.toml",
       );
       const checkSkill = await repo.readFile(
-        ".codex/skills/truthmark-check/SKILL.md",
+        ".agents/skills/truthmark-check/SKILL.md",
       );
       const checkSkillMetadata = await repo.readFile(
-        ".codex/skills/truthmark-check/agents/openai.yaml",
+        ".agents/skills/truthmark-check/agents/openai.yaml",
       );
       const checkOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-check/SKILL.md",
@@ -291,16 +291,16 @@ describe("runInit", () => {
         ".opencode/agents/truth-doc-writer.md",
       );
       const copilotRouteAuditorAgent = await repo.readFile(
-        ".github/agents/truth-route-auditor.agent.md",
+        ".github/agents/truth-route-auditor.md",
       );
       const copilotClaimVerifierAgent = await repo.readFile(
-        ".github/agents/truth-claim-verifier.agent.md",
+        ".github/agents/truth-claim-verifier.md",
       );
       const copilotDocReviewerAgent = await repo.readFile(
-        ".github/agents/truth-doc-reviewer.agent.md",
+        ".github/agents/truth-doc-reviewer.md",
       );
       const copilotDocWriterAgent = await repo.readFile(
-        ".github/agents/truth-doc-writer.agent.md",
+        ".github/agents/truth-doc-writer.md",
       );
       const claudeRouteAuditorAgent = await repo.readFile(
         ".claude/agents/truth-route-auditor.md",
@@ -421,14 +421,14 @@ describe("runInit", () => {
       expect(syncHelperManifest).toContain("- sync-report");
       expect(syncHelperManifest).toContain("- <report-file>");
       expect(syncHelperManifest).toContain("- --json");
-      expect(syncHelperManifest).not.toContain("cd .codex/skills/truthmark-sync");
+      expect(syncHelperManifest).not.toContain("cd .agents/skills/truthmark-sync");
       expect(syncHelperManifest).not.toContain("node scripts/");
       expect(syncHelperManifest).toContain("writes: false");
       expect(syncHelperPolicy).toContain("Optional helper CLI commands");
       expect(syncHelperPolicy).toContain("manual fallback");
       expect(syncHelperPolicy).toContain("Helper scripts:");
       await expect(
-        repo.readFile(".codex/skills/truthmark-sync/scripts/validate-sync-report.mjs"),
+        repo.readFile(".agents/skills/truthmark-sync/scripts/validate-sync-report.mjs"),
       ).rejects.toThrow();
       expect(syncProcedure).toContain("host supports subagent dispatch");
       expect(syncSubagents).toContain("truth_doc_writer");
@@ -618,7 +618,7 @@ describe("runInit", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
-            diagnostic.file === ".codex/skills/truthmark-sync/SKILL.md",
+            diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md",
         ),
       ).toBe(true);
       expect(
@@ -639,21 +639,21 @@ describe("runInit", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
-            diagnostic.file === ".codex/skills/truthmark-structure/SKILL.md",
+            diagnostic.file === ".agents/skills/truthmark-structure/SKILL.md",
         ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
-            diagnostic.file === ".codex/skills/truthmark-document/SKILL.md",
+            diagnostic.file === ".agents/skills/truthmark-document/SKILL.md",
         ),
       ).toBe(true);
       expect(
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "truth-sync" &&
-            diagnostic.file === ".codex/skills/truthmark-check/SKILL.md",
+            diagnostic.file === ".agents/skills/truthmark-check/SKILL.md",
         ),
       ).toBe(true);
       expect(
@@ -785,7 +785,7 @@ ignore: []
       await runInit(repo.rootDir);
 
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
         fs.stat(`${repo.rootDir}/.github/copilot-instructions.md`),
@@ -956,7 +956,7 @@ ignore: []
         await repo.readFile(".claude/skills/truthmark-realize/SKILL.md"),
       ).toContain("Claude Code /truthmark-realize");
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/SKILL.md`),
       ).rejects.toThrow();
     } finally {
       await repo.cleanup();
@@ -1256,28 +1256,28 @@ Keep this project-specific trailing section.
       expect(
         secondResult.diagnostics.some((diagnostic) =>
           diagnostic.message.includes(
-            "Unchanged .codex/skills/truthmark-sync/SKILL.md",
+            "Unchanged .agents/skills/truthmark-sync/SKILL.md",
           ),
         ),
       ).toBe(true);
       expect(
         secondResult.diagnostics.some((diagnostic) =>
           diagnostic.message.includes(
-            "Unchanged .codex/skills/truthmark-structure/SKILL.md",
+            "Unchanged .agents/skills/truthmark-structure/SKILL.md",
           ),
         ),
       ).toBe(true);
       expect(
         secondResult.diagnostics.some((diagnostic) =>
           diagnostic.message.includes(
-            "Unchanged .codex/skills/truthmark-check/SKILL.md",
+            "Unchanged .agents/skills/truthmark-check/SKILL.md",
           ),
         ),
       ).toBe(true);
       expect(
         secondResult.diagnostics.some((diagnostic) =>
           diagnostic.message.includes(
-            "Unchanged .codex/skills/truthmark-realize/SKILL.md",
+            "Unchanged .agents/skills/truthmark-realize/SKILL.md",
           ),
         ),
       ).toBe(true);

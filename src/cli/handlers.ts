@@ -8,11 +8,9 @@ import { renderContextPackMarkdown } from "../context-pack/render.js";
 import type { ContextPackWorkflow } from "../context-pack/types.js";
 import {
   TRUTHMARK_WORKFLOW_IDS,
-  TRUTHMARK_WORKFLOW_MANIFEST,
   type TruthmarkWorkflowId,
 } from "../agents/workflow-manifest.js";
 import { buildWorkflowState } from "../workflow-state/build.js";
-import { buildWorkflowInstructions } from "../workflow-state/instructions.js";
 import fs from "node:fs/promises";
 
 import {
@@ -93,7 +91,7 @@ const isTruthmarkWorkflowId = (value: unknown): value is TruthmarkWorkflowId => 
 };
 
 const invalidWorkflowResult = (
-  command: "workflow status" | "workflow instructions",
+  command: "workflow status",
   workflow: string | undefined,
 ): CommandResult => ({
   command,
@@ -226,39 +224,6 @@ export const runWorkflowStatus = async (options: {
         workflow: options.workflow,
         ...(options.base ? { base: options.base } : {}),
       },
-      workflowState,
-    },
-  };
-};
-
-export const runWorkflowInstructions = async (options: {
-  workflow?: string;
-  base?: string;
-}): Promise<CommandResult> => {
-  if (!isTruthmarkWorkflowId(options.workflow)) {
-    return invalidWorkflowResult("workflow instructions", options.workflow);
-  }
-
-  const workflowState = await buildWorkflowState(process.cwd(), {
-    workflow: options.workflow,
-    ...(options.base ? { base: options.base } : {}),
-  });
-  const instructions = buildWorkflowInstructions(
-    workflowState,
-    TRUTHMARK_WORKFLOW_MANIFEST[options.workflow],
-    options.base ? { base: options.base } : {},
-  );
-
-  return {
-    command: "workflow instructions",
-    summary: `Truthmark workflow instructions generated for ${options.workflow}.`,
-    diagnostics: workflowState.diagnostics,
-    data: {
-      request: {
-        workflow: options.workflow,
-        ...(options.base ? { base: options.base } : {}),
-      },
-      instructions,
       workflowState,
     },
   };

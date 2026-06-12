@@ -62,23 +62,23 @@ Current scaffold targets:
 - configured default-area bounded leaf truth docs such as `docs/truthmark/truth/repository/overview.md`
 - the managed block inside [AGENTS.md](../../../AGENTS.md)
 - [CLAUDE.md](../../../CLAUDE.md)
-- `.codex/skills/truthmark-structure/SKILL.md`
-- `.codex/skills/truthmark-structure/agents/openai.yaml`
-- `.codex/skills/truthmark-document/SKILL.md`
-- `.codex/skills/truthmark-document/agents/openai.yaml`
-- `.codex/skills/truthmark-sync/SKILL.md`
-- `.codex/skills/truthmark-sync/agents/openai.yaml`
-- `.codex/skills/truthmark-realize/SKILL.md`
-- `.codex/skills/truthmark-realize/agents/openai.yaml`
-- `.codex/skills/truthmark-check/SKILL.md`
-- `.codex/skills/truthmark-check/agents/openai.yaml`
-- `.codex/skills/truthmark-preview/SKILL.md`
-- `.codex/skills/truthmark-preview/agents/openai.yaml`
-- `.codex/skills/truthmark-*/support/procedure.md`
-- `.codex/skills/truthmark-*/support/report-template.md`
-- `.codex/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
-- `.codex/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
-- `.codex/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
+- `.agents/skills/truthmark-structure/SKILL.md`
+- `.agents/skills/truthmark-structure/agents/openai.yaml`
+- `.agents/skills/truthmark-document/SKILL.md`
+- `.agents/skills/truthmark-document/agents/openai.yaml`
+- `.agents/skills/truthmark-sync/SKILL.md`
+- `.agents/skills/truthmark-sync/agents/openai.yaml`
+- `.agents/skills/truthmark-realize/SKILL.md`
+- `.agents/skills/truthmark-realize/agents/openai.yaml`
+- `.agents/skills/truthmark-check/SKILL.md`
+- `.agents/skills/truthmark-check/agents/openai.yaml`
+- `.agents/skills/truthmark-preview/SKILL.md`
+- `.agents/skills/truthmark-preview/agents/openai.yaml`
+- `.agents/skills/truthmark-*/support/procedure.md`
+- `.agents/skills/truthmark-*/support/report-template.md`
+- `.agents/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.agents/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.agents/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
 - `.codex/agents/truth-route-auditor.toml`
 - `.codex/agents/truth-claim-verifier.toml`
 - `.codex/agents/truth-doc-reviewer.toml`
@@ -130,10 +130,10 @@ Current scaffold targets:
 - `.github/prompts/truthmark-realize.prompt.md`
 - `.github/prompts/truthmark-check.prompt.md`
 - `.github/prompts/truthmark-preview.prompt.md`
-- `.github/agents/truth-route-auditor.agent.md`
-- `.github/agents/truth-claim-verifier.agent.md`
-- `.github/agents/truth-doc-reviewer.agent.md`
-- `.github/agents/truth-doc-writer.agent.md`
+- `.github/agents/truth-route-auditor.md`
+- `.github/agents/truth-claim-verifier.md`
+- `.github/agents/truth-doc-reviewer.md`
+- `.github/agents/truth-doc-writer.md`
 - `GEMINI.md`
 - `.gemini/skills/truthmark-structure/SKILL.md`
 - `.gemini/skills/truthmark-document/SKILL.md`
@@ -206,7 +206,7 @@ Important current defaults:
 - explicit Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check surfaces are installed only for configured platforms
 - Truthmark Portal defaults to disabled; when enabled, Portal surfaces are installed only for configured platforms and use Truthmark-derived output/template paths in generated guidance
 - installed workflows are agent-native; generated skills tell agents to inspect the checkout directly
-- Codex platform generation includes `.codex/agents/*.toml`, Claude Code platform generation includes `.claude/agents/*.md`, GitHub Copilot platform generation includes `.github/agents/*.agent.md`, Gemini CLI platform generation includes `.gemini/agents/*.md`, and OpenCode platform generation includes `.opencode/agents/*.md` read-only verifier agents plus `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards; the acting parent agent may use them automatically when the host supports subagent dispatch, and read-only verifier agents are context-bounded so they do not preload repo-wide instruction or policy docs unless assigned as evidence
+- Codex platform generation includes `.codex/agents/*.toml`, Claude Code platform generation includes `.claude/agents/*.md`, GitHub Copilot platform generation includes `.github/agents/*.md`, Gemini CLI platform generation includes `.gemini/agents/*.md`, and OpenCode platform generation includes `.opencode/agents/*.md` read-only verifier agents plus `truth-doc-writer` for parent-leased Truth Sync and Truth Document shards; the acting parent agent may use them automatically when the host supports subagent dispatch, and read-only verifier agents are context-bounded so they do not preload repo-wide instruction or policy docs unless assigned as evidence
 - managed instruction blocks include only compact hierarchy, decision-truth, automatic-Sync trigger, boundary reminders, and a pointer to explicit workflows; generated skill entrypoints carry invocation strings and link to support files for detailed workflow bodies
 - generated workflow surfaces must not demote configured repository instruction docs or optional project-local policy docs when warning agents that product truth cannot override workflow write boundaries; project-local policy docs are not universal Truthmark product files and generated wording must stay generic and config-driven
 - scaffolded default standards include AI-native topology repair guidance and an architecture-vs-behavior boundary so new repositories do not rely on human folder discipline

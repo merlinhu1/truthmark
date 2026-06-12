@@ -21,7 +21,7 @@ const WORKFLOW_COMMAND_PATHS: Record<TruthmarkWorkflowId, string> = {
 };
 
 const WORKFLOW_SURFACE_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
-  `.codex/skills/${id}/SKILL.md`,
+  `.agents/skills/${id}/SKILL.md`,
   `.opencode/skills/${id}/SKILL.md`,
   `.claude/skills/${id}/SKILL.md`,
   `.github/prompts/${id}.prompt.md`,
@@ -29,7 +29,7 @@ const WORKFLOW_SURFACE_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
 ];
 
 const CODEX_METADATA_PATHS = (id: TruthmarkWorkflowId): string =>
-  `.codex/skills/${id}/agents/openai.yaml`;
+  `.agents/skills/${id}/agents/openai.yaml`;
 
 const WORKFLOW_SKILL_PACKAGE_PATHS = (
   hostSkillRoot: string,
@@ -53,7 +53,7 @@ const WORKFLOW_SKILL_PACKAGE_PATHS = (
 const WORKFLOW_CONTRACT_PATH_GROUPS = (
   id: TruthmarkWorkflowId,
 ): readonly (readonly string[])[] => [
-  WORKFLOW_SKILL_PACKAGE_PATHS(".codex/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
   [`.github/prompts/${id}.prompt.md`],
@@ -294,7 +294,7 @@ describe("generated workflow surface conformance", () => {
       "truthmark-document",
       "truthmark-realize",
     ] as const) {
-      const content = surfaces.get(`.codex/skills/${id}/SKILL.md`);
+      const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
 
       expect(content, `${id} Codex skill is generated`).toBeDefined();
       expect(content).toContain("If the local Truthmark CLI is unavailable or too old");
@@ -310,7 +310,7 @@ describe("generated workflow surface conformance", () => {
   });
 
   it("labels non-main progressive-disclosure files as conditional", () => {
-    const syncSkill = surfaces.get(".codex/skills/truthmark-sync/SKILL.md");
+    const syncSkill = surfaces.get(".agents/skills/truthmark-sync/SKILL.md");
 
     expect(syncSkill).toContain(
       "support/procedure.md — read before edits or detailed auditing; contains core quality gates",

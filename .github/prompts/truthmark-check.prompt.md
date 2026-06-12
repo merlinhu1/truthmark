@@ -11,25 +11,16 @@ user-invocable: true
 truthmark-version: 2.1.0
 ---
 
-## Live workflow preflight
+## Optional local CLI validation
 
-When the local Truthmark CLI is available, run the canonical one-call live workflow preflight before acting:
+This workflow is driven by committed generated files, direct checkout inspection, and progressive-disclosure support files. Do not run a live workflow preflight or load large workflow JSON before acting. In particular, do not run `truthmark workflow instructions --json` or `truthmark workflow status --json` as a workflow prerequisite.
 
-```bash
-truthmark workflow instructions --workflow truthmark-check --json
-```
+When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
 
-If a caller supplies a comparison ref, preserve it with `--base <ref>` on this command; do not invent a default branch. Use `truthmark workflow status` only for status-only/debug inspection; `workflow instructions` already returns both `data.instructions` and the source `data.workflowState` in one JSON envelope.
+- run `truthmark check --json` and `truthmark index --json` when repository-truth health or routing/index health needs verification
+- treat CLI output as derived validation evidence; it never replaces direct checkout inspection, route files, truth docs, or workflow write boundaries
 
-Before writes, parse the JSON command envelope:
-
-- stop when `data.workflowState.applicability.state` is `blocked`, `not_applicable`, or `ambiguous`; current-scope continuation is read-only reporting of `nextSteps` or diagnostics
-- obey `data.workflowState.actionContext.allowedWritePaths`, `forbiddenWritePaths`, and stop conditions
-- run structured helpers from `data.instructions.helperValidationCommands` when present and report each helper as passed, failed, or skipped with reason
-- shape the final report from `data.instructions.reportTemplate.sections` or `finalReportShape`; use checked-in report templates only when live instructions are unavailable
-- continue direct checkout inspection for code, docs, routes, tests, and evidence; CLI output is guardrails, not proof by itself
-
-If the local Truthmark CLI is unavailable or too old, continue only with the committed generated entrypoint and focused direct checkout inspection needed for the requested read-only report; do not broaden into support-file or repo-wide scans solely to replace the CLI. Include `workflow instructions: skipped` and the skip reason in the final report.
+If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract and continue with direct checkout evidence. If the CLI is available but irrelevant to the current step, do not run it preemptively. Report skipped optional CLI validation only when a check, index, or helper validator was relevant and not run. For read-only workflows, keep inspection focused on the requested report; do not broaden into support-file or repo-wide scans just because an optional CLI command is unavailable.
 
 # Truthmark Check
 

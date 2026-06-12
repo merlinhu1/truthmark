@@ -97,7 +97,7 @@ const runCliHelper = async ({
 
 const getGeneratedReportExample = (workflowId: "truthmark-document" | "truthmark-sync"): string => {
   const files = renderTruthmarkSkillPackage({
-    skillPath: `.codex/skills/${workflowId}/SKILL.md`,
+    skillPath: `.agents/skills/${workflowId}/SKILL.md`,
     workflowId,
     host: "codex",
   });
@@ -116,7 +116,7 @@ const materializeSkillPackage = async (workflowId: "truthmark-document" | "truth
   tempRepos.push(repo);
 
   for (const file of renderTruthmarkSkillPackage({
-    skillPath: `.codex/skills/${workflowId}/SKILL.md`,
+    skillPath: `.agents/skills/${workflowId}/SKILL.md`,
     workflowId,
     host: "codex",
   })) {
@@ -251,7 +251,7 @@ describe("workflow helper scripts", () => {
 
   it("runs generated helper manifest argv through the Truthmark CLI", async () => {
     const repo = await materializeSkillPackage("truthmark-sync");
-    const skillDirectory = path.join(repo.rootDir, ".codex/skills/truthmark-sync");
+    const skillDirectory = path.join(repo.rootDir, ".agents/skills/truthmark-sync");
     const manifest = await fs.readFile(
       path.join(skillDirectory, "helper-manifest.yml"),
       "utf8",

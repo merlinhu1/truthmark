@@ -8,7 +8,6 @@ import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
 import { buildWorkflowActionContext } from "../../src/workflow-state/action-context.js";
 import { buildWorkflowState } from "../../src/workflow-state/build.js";
-import { buildWorkflowInstructions } from "../../src/workflow-state/instructions.js";
 import type { WorkflowState } from "../../src/workflow-state/types.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
 
@@ -228,19 +227,6 @@ describe("buildWorkflowState", () => {
     expect(state.checks.helpers.map((helper) => helper.id)).toContain("validate-sync-report");
     expect(state.reportSections).toEqual(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections);
     expect(Array.isArray(state.diagnostics)).toBe(true);
-
-    const instructions = buildWorkflowInstructions(
-      state,
-      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"],
-      { base: "main" },
-    );
-    const instructionCommands = instructions.commandSequence.map((step) => step.command);
-    expect(instructionCommands).toContain(
-      "truthmark workflow instructions --workflow truthmark-sync --base main --json",
-    );
-    expect(instructionCommands).not.toContain(
-      "truthmark workflow status --workflow truthmark-sync --base main --json",
-    );
     expect("base" in state).toBe(false);
   });
 

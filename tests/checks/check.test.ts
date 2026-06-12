@@ -662,9 +662,9 @@ Update truth when:
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        ".codex/skills/truthmark-sync/SKILL.md",
+        ".agents/skills/truthmark-sync/SKILL.md",
         `${(
-          await repo.readFile(".codex/skills/truthmark-sync/SKILL.md")
+          await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")
         ).replace(
           `truthmark-version: ${TRUTHMARK_VERSION}`,
           "truthmark-version: 0.9.0",
@@ -677,13 +677,13 @@ Update truth when:
           expect.objectContaining({
             category: "generated-surface",
             severity: "review",
-            file: ".codex/skills/truthmark-sync/SKILL.md",
+            file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("stale"),
           }),
           expect.objectContaining({
             category: "generated-surface",
             severity: "review",
-            file: ".codex/skills/truthmark-sync/SKILL.md",
+            file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("version"),
           }),
         ]),

@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
-import { renderWorkflowCliPreflight } from "../../src/templates/workflow-surfaces.js";
+import { renderOptionalLocalCliValidation } from "../../src/templates/workflow-surfaces.js";
 
 const portalPaths = [
-  ".codex/skills/truthmark-portal/SKILL.md",
-  ".codex/skills/truthmark-portal/agents/openai.yaml",
+  ".agents/skills/truthmark-portal/SKILL.md",
+  ".agents/skills/truthmark-portal/agents/openai.yaml",
   ".opencode/skills/truthmark-portal/SKILL.md",
   ".claude/skills/truthmark-portal/SKILL.md",
   ".github/skills/truthmark-portal/SKILL.md",
@@ -17,44 +17,42 @@ const portalPaths = [
 ];
 
 describe("Truthmark Portal generated surfaces", () => {
-  it("renders sync preflight as non-blocking one-call instructions preflight when no base is supplied", () => {
-    const preflight = renderWorkflowCliPreflight("truthmark-sync");
+  it("renders optional local CLI validation without live workflow preflight", () => {
+    const validation = renderOptionalLocalCliValidation("truthmark-sync");
 
-    expect(preflight).toContain("cheap local base selection");
-    expect(preflight).toContain("do not stop solely because the caller omitted --base");
-    expect(preflight).toContain("canonical one-call live workflow preflight");
-    expect(preflight).toContain("truthmark workflow instructions --workflow truthmark-sync --json");
-    expect(preflight).toContain("workflow instructions` already returns both `data.instructions` and the source `data.workflowState`");
-    expect(preflight).toContain("Use `truthmark workflow status` only for status-only/debug inspection");
-    expect(preflight).not.toContain("truthmark workflow status --workflow truthmark-sync --json");
-    expect(preflight).not.toContain("workflow status/instructions: skipped");
+    expect(validation).toContain("Optional local CLI validation");
+    expect(validation).toContain("direct checkout inspection");
+    expect(validation).toContain("progressive-disclosure support files");
+    expect(validation).toContain("truthmark check --json");
+    expect(validation).toContain("truthmark index --json");
+    expect(validation).toContain("helper-manifest.yml");
+    expect(validation).not.toContain("truthmark workflow instructions --workflow");
+    expect(validation).not.toContain("workflow instructions: skipped");
+    expect(validation).not.toContain("workflow status/instructions: skipped");
   });
 
-  it("bounds manual fallback for write workflows when live instructions are unavailable", () => {
+  it("bounds direct checkout inspection for write workflows", () => {
     for (const workflow of [
       "truthmark-sync",
       "truthmark-document",
       "truthmark-structure",
       "truthmark-realize",
     ] as const) {
-      const preflight = renderWorkflowCliPreflight(workflow);
+      const validation = renderOptionalLocalCliValidation(workflow);
 
-      expect(preflight).toContain("use the checked-in workflow files as the contract");
-      expect(preflight).toContain("Follow the route-first procedure");
-      expect(preflight).toContain("read only the config, route files, truth docs, and source evidence needed for the current changed surface");
-      expect(preflight).toContain("stop on missing or ambiguous ownership instead of broadening reads or writes");
-      expect(preflight).toContain("workflow instructions: skipped");
+      expect(validation).toContain("route-first procedure");
+      expect(validation).toContain("read only the config, route files, truth docs, and source evidence needed for the current changed surface");
+      expect(validation).toContain("stop on missing or ambiguous ownership instead of broadening reads or writes");
     }
   });
 
-  it("does not give read-only workflow preflight the heavier write-workflow fallback", () => {
+  it("does not give read-only workflows the heavier write-workflow fallback", () => {
     for (const workflow of ["truthmark-preview", "truthmark-check"] as const) {
-      const preflight = renderWorkflowCliPreflight(workflow);
+      const validation = renderOptionalLocalCliValidation(workflow);
 
-      expect(preflight).toContain("continue only with the committed generated entrypoint");
-      expect(preflight).toContain("do not broaden into support-file or repo-wide scans solely to replace the CLI");
-      expect(preflight).not.toContain("use the checked-in workflow files as the contract");
-      expect(preflight).not.toContain("Follow the route-first procedure");
+      expect(validation).toContain("keep inspection focused on the requested report");
+      expect(validation).toContain("do not broaden into support-file or repo-wide scans");
+      expect(validation).not.toContain("route-first procedure");
     }
   });
 
@@ -82,9 +80,9 @@ describe("Truthmark Portal generated surfaces", () => {
       expect(byPath.has(portalPath)).toBe(true);
     }
 
-    const portalSkill = byPath.get(".codex/skills/truthmark-portal/SKILL.md") ?? "";
+    const portalSkill = byPath.get(".agents/skills/truthmark-portal/SKILL.md") ?? "";
     const portalProcedure =
-      byPath.get(".codex/skills/truthmark-portal/support/procedure.md") ?? "";
+      byPath.get(".agents/skills/truthmark-portal/support/procedure.md") ?? "";
     const copilotPrompt = byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
     const geminiCommand = byPath.get(".gemini/commands/truthmark/portal.toml") ?? "";
     const agentsBlock = renderAgentsBlock(config);

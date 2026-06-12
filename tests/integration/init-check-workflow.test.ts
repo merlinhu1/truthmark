@@ -27,16 +27,16 @@ describe("init and check workflow acceptance", () => {
       await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).resolves.toBeTruthy();
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-structure/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-structure/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-realize/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-realize/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-check/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-check/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
         fs.stat(`${repo.rootDir}/.claude/skills/truthmark-sync/SKILL.md`),

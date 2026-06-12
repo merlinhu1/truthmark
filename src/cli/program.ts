@@ -12,7 +12,6 @@ import {
   runValidateDocumentReport,
   runValidateSyncReport,
   runValidateWriteLease,
-  runWorkflowInstructions,
   runWorkflowStatus,
 } from "./handlers.js";
 import type { WorkflowHelperValidationResult } from "../agents/workflow-helper-validation.js";
@@ -174,7 +173,7 @@ export const buildProgram = (): Command => {
 
   const workflow = program
     .command("workflow")
-    .description("Inspect agent-facing Truthmark workflow state and instructions.");
+    .description("Inspect agent-facing Truthmark workflow state.");
 
   addJsonOption(
     workflow
@@ -185,22 +184,6 @@ export const buildProgram = (): Command => {
   ).action(async (options: WorkflowOptions) => {
     writeResult(
       await runWorkflowStatus({
-        workflow: options.workflow,
-        base: options.base,
-      }),
-      options,
-    );
-  });
-
-  addJsonOption(
-    workflow
-      .command("instructions")
-      .description("Return agent instructions derived from workflow state.")
-      .option("--workflow <workflow>", "Canonical workflow ID, such as truthmark-sync")
-      .option("--base <ref>", "Base Git ref for impact-backed workflow state"),
-  ).action(async (options: WorkflowOptions) => {
-    writeResult(
-      await runWorkflowInstructions({
         workflow: options.workflow,
         base: options.base,
       }),

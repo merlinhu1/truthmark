@@ -161,7 +161,7 @@ const diagnosticCategoryForPath = (
     filePath.startsWith(".github/skills/truthmark-realize/") ||
     filePath.startsWith(".claude/skills/truthmark-realize/") ||
     filePath.startsWith(".opencode/skills/truthmark-realize/") ||
-    filePath.startsWith(".codex/skills/truthmark-realize/") ||
+    filePath.startsWith(".agents/skills/truthmark-realize/") ||
     filePath.startsWith(".gemini/skills/truthmark-realize/")
   ) {
     return "realization";
@@ -185,7 +185,7 @@ const diagnosticCategoryForPath = (
     return "truth-sync";
   }
 
-  if (filePath.startsWith(".codex/skills/truthmark-")) {
+  if (filePath.startsWith(".agents/skills/truthmark-")) {
     return "truth-sync";
   }
 

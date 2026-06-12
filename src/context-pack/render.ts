@@ -11,7 +11,7 @@ export const renderContextPackMarkdown = (pack: ContextPack): string => {
     ...pack.allowedWritePaths.map((filePath) => `- ${filePath}`),
     "",
     "## Truth Docs",
-    ...pack.truthDocs.map((doc) => `- ${doc.path}`),
+    ...pack.truthDocs.map((doc) => `- ${doc.path}${doc.truncated ? " (truncated)" : ""}`),
     "",
     "## Source Files",
     ...pack.sourceFiles.map((file) => `- ${file.path}${file.truncated ? " (truncated)" : ""}`),

@@ -49,14 +49,27 @@ const readIfExists = async (rootDir: string, filePath: string): Promise<string |
   }
 };
 
+const boundContent = (content: string): { content: string; truncated: boolean } => {
+  const lines = content.split("\n");
+
+  if (lines.length <= 200) {
+    return { content, truncated: false };
+  }
+
+  return {
+    content: [...lines.slice(0, 80), "...", ...lines.slice(-40)].join("\n"),
+    truncated: true,
+  };
+};
+
 const boundedContent = (
   filePath: string,
   content: string,
   warnings: Diagnostic[],
 ): ContextSourceFile => {
-  const lines = content.split("\n");
+  const bounded = boundContent(content);
 
-  if (lines.length <= 200) {
+  if (!bounded.truncated) {
     return { path: filePath, content, truncated: false };
   }
 
@@ -69,7 +82,7 @@ const boundedContent = (
 
   return {
     path: filePath,
-    content: [...lines.slice(0, 80), "...", ...lines.slice(-40)].join("\n"),
+    content: bounded.content,
     truncated: true,
   };
 };
@@ -77,13 +90,23 @@ const boundedContent = (
 const documentsFor = async (
   rootDir: string,
   paths: string[],
+  warnings: Diagnostic[],
 ): Promise<ContextDocument[]> => {
   const documents: ContextDocument[] = [];
 
   for (const filePath of uniqueSorted(paths)) {
     const content = await readIfExists(rootDir, filePath);
     if (content !== null) {
-      documents.push({ path: filePath, content });
+      const bounded = boundContent(content);
+      if (bounded.truncated) {
+        warnings.push({
+          category: "context-pack",
+          severity: "review",
+          message: `Context truth doc ${filePath} was truncated to fit ContextPack v0 bounds.`,
+          file: filePath,
+        });
+      }
+      documents.push({ path: filePath, content: bounded.content, truncated: bounded.truncated });
     }
   }
 
@@ -212,7 +235,7 @@ export const buildContextPack = async (
             truthDocPaths,
             contextRoutes,
           ),
-    truthDocs: await documentsFor(rootDir, truthDocPaths),
+    truthDocs: await documentsFor(rootDir, truthDocPaths, warnings),
     sourceFiles: await sourceFilesFor(rootDir, sourceFilePaths, warnings),
     testCommands: testCommandsFor(impactSet?.affectedTests ?? []),
     warnings,

@@ -14,7 +14,6 @@ source_of_truth:
   - ../../../src/output/render.ts
   - ../../../src/cli/handlers.ts
   - ../../../src/cli/program.ts
-  - ../../../src/workflow-state/instructions.ts
   - ../../../src/agents/workflow-helper-validation.ts
 ---
 
@@ -32,7 +31,7 @@ This document defines the current machine-facing contracts exposed by Truthmark:
 
 - The committed `.truthmark/config.yml` schema and defaults.
 - Route metadata under `docs/truthmark/routes/areas.md` and delegated child route files.
-- The JSON result envelope emitted by human/setup commands such as `truthmark config` and `truthmark init`, agent/context commands such as `truthmark check`, `truthmark index`, `truthmark impact`, `truthmark context`, `truthmark workflow status`, and `truthmark workflow instructions`, and workflow helper validator commands under `truthmark validate`.
+- The JSON result envelope emitted by human/setup commands such as `truthmark config` and `truthmark init`, agent/context commands such as `truthmark check`, `truthmark index`, `truthmark impact`, `truthmark context`, and `truthmark workflow status`, and workflow helper validator commands under `truthmark validate`.
 
 ## Inputs
 
@@ -139,11 +138,9 @@ Scorecard statuses are categorical: mapped `error` diagnostics produce `fail`; m
 
 `truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` returns `command: "workflow status"`, `data.request`, and `data.workflowState` with nested `schemaVersion: truthmark-workflow/v0`. It is retained for status-only/debug inspection. `data.request.workflow` records the caller-supplied canonical workflow ID, and `data.request.base` records the caller-supplied comparison ref when present. The WorkflowState schema is not extended for request metadata unless a later explicit schema change does so.
 
-`truthmark workflow instructions --workflow <workflow-id> [--base <ref>] --json` is the canonical one-call live preflight for generated workflow surfaces. It returns `command: "workflow instructions"`, `data.request`, `data.instructions`, and the source `data.workflowState` used to derive the instructions, so generated preflights do not need to call `workflow status` separately. `data.instructions.schemaVersion` is `truthmark-workflow-instructions/v0`; the instruction payload includes command sequence entries, required reads, action context, stop conditions, structured helper validation commands, report template sections, final report shape, and a source-state summary.
+Workflow status accepts full manifest workflow IDs such as `truthmark-sync` and `truthmark-check`. Short ContextPack aliases such as `truth-sync` are rejected and are not mapped to full manifest IDs. Missing `--workflow` or unknown workflow IDs return a parseable `CommandResult` JSON envelope with a `workflow-state` error diagnostic, a non-zero exit code, and no workflow state or permissive write-boundary payload.
 
-Workflow CLI commands accept full manifest workflow IDs such as `truthmark-sync` and `truthmark-check`. Short ContextPack aliases such as `truth-sync` are rejected in Pass 2 and are not mapped to full manifest IDs. Missing `--workflow` or unknown workflow IDs return a parseable `CommandResult` JSON envelope with a `workflow-state` error diagnostic, a non-zero exit code, and no workflow state, instructions, or permissive write-boundary payload.
-
-The `workflow status` and `workflow instructions` commands are agent-facing repository-intelligence commands. They expose the full WorkflowState intentionally, so `data.workflowState` may include ContextPack truth document and source file content when the selected workflow builds a ContextPack. Callers must treat that output as local checkout context and avoid logging or sharing it externally unless that is deliberate.
+`workflow status` is an agent-facing repository-intelligence command for status-only/debug inspection. It exposes full WorkflowState intentionally, so `data.workflowState` may include ContextPack truth document and source file content when the selected workflow builds a ContextPack. Generated workflow surfaces must not ask agents to load workflow status as a prerequisite; callers must treat that output as local checkout context and avoid logging or sharing it externally unless that is deliberate.
 
 Workflow helper validators are optional CLI-owned accelerators used by generated skill `helper-manifest.yml` files. They validate report text or lease/path inputs that agents provide after doing checkout inspection; they do not grant workflow write authority and do not replace route files, source files, truth docs, or parent workflow validation.
 
@@ -196,25 +193,25 @@ Generated Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Chec
 
 Current agent-native scaffold targets include:
 
-- `.codex/skills/truthmark-structure/SKILL.md`
-- `.codex/skills/truthmark-structure/agents/openai.yaml`
-- `.codex/skills/truthmark-document/SKILL.md`
-- `.codex/skills/truthmark-document/agents/openai.yaml`
-- `.codex/skills/truthmark-sync/SKILL.md`
-- `.codex/skills/truthmark-sync/agents/openai.yaml`
-- `.codex/skills/truthmark-realize/SKILL.md`
-- `.codex/skills/truthmark-realize/agents/openai.yaml`
-- `.codex/skills/truthmark-check/SKILL.md`
-- `.codex/skills/truthmark-check/agents/openai.yaml`
-- `.codex/skills/truthmark-preview/SKILL.md`
-- `.codex/skills/truthmark-preview/agents/openai.yaml`
-- `.codex/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
-- `.codex/skills/truthmark-portal/agents/openai.yaml` when Truthmark Portal is enabled
-- `.codex/skills/truthmark-*/support/procedure.md`
-- `.codex/skills/truthmark-*/support/report-template.md`
-- `.codex/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
-- `.codex/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
-- `.codex/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
+- `.agents/skills/truthmark-structure/SKILL.md`
+- `.agents/skills/truthmark-structure/agents/openai.yaml`
+- `.agents/skills/truthmark-document/SKILL.md`
+- `.agents/skills/truthmark-document/agents/openai.yaml`
+- `.agents/skills/truthmark-sync/SKILL.md`
+- `.agents/skills/truthmark-sync/agents/openai.yaml`
+- `.agents/skills/truthmark-realize/SKILL.md`
+- `.agents/skills/truthmark-realize/agents/openai.yaml`
+- `.agents/skills/truthmark-check/SKILL.md`
+- `.agents/skills/truthmark-check/agents/openai.yaml`
+- `.agents/skills/truthmark-preview/SKILL.md`
+- `.agents/skills/truthmark-preview/agents/openai.yaml`
+- `.agents/skills/truthmark-portal/SKILL.md` when Truthmark Portal is enabled
+- `.agents/skills/truthmark-portal/agents/openai.yaml` when Truthmark Portal is enabled
+- `.agents/skills/truthmark-*/support/procedure.md`
+- `.agents/skills/truthmark-*/support/report-template.md`
+- `.agents/skills/truthmark-*/support/subagents-and-leases.md` when the workflow has generated subagent guidance
+- `.agents/skills/truthmark-*/helper-manifest.yml` when the workflow declares helpers
+- `.agents/skills/truthmark-*/support/helper-policy.md` when the workflow declares helpers
 - `.codex/agents/truth-route-auditor.toml`
 - `.codex/agents/truth-claim-verifier.toml`
 - `.codex/agents/truth-doc-reviewer.toml`
@@ -273,10 +270,10 @@ Current agent-native scaffold targets include:
 - `.github/prompts/truthmark-check.prompt.md`
 - `.github/prompts/truthmark-preview.prompt.md`
 - `.github/prompts/truthmark-portal.prompt.md` when Truthmark Portal is enabled
-- `.github/agents/truth-route-auditor.agent.md`
-- `.github/agents/truth-claim-verifier.agent.md`
-- `.github/agents/truth-doc-reviewer.agent.md`
-- `.github/agents/truth-doc-writer.agent.md`
+- `.github/agents/truth-route-auditor.md`
+- `.github/agents/truth-claim-verifier.md`
+- `.github/agents/truth-doc-reviewer.md`
+- `.github/agents/truth-doc-writer.md`
 - `GEMINI.md`
 - `.gemini/skills/truthmark-structure/SKILL.md`
 - `.gemini/skills/truthmark-document/SKILL.md`
@@ -371,9 +368,9 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 - The committed config file owns the documentation hierarchy contract, while route files own domain-to-doc mappings.
 - `truthmark config` and `truthmark init` are separate contracts so repositories can review hierarchy before workflow installation.
 - Active decisions stay in the canonical doc they govern instead of in separate timestamped decision logs. Date active decisions inline when added or changed.
-- The V1 user-facing CLI surface is `config`, `init`, `check`, `index`, `impact`, `context`, agent-facing `workflow status` / `workflow instructions`, and optional helper `validate` subcommands; workflow execution verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, and `build` are not top-level commands.
+- The V1 user-facing CLI surface is `config`, `init`, `check`, `index`, `impact`, `context`, agent-facing `workflow status`, and optional helper `validate` subcommands; workflow execution verbs such as `sync`, `realize`, `structure`, `audit`, `packet`, `review`, `scan`, `doctor`, and `build` are not top-level commands.
 - `gemini-cli` installs hierarchical `GEMINI.md` context, Agent Skills under `.gemini/skills/`, project-scoped `.gemini/commands/truthmark/*.toml` custom commands, and project subagents under `.gemini/agents/` so Gemini users get explicit workflow entrypoints and bounded delegation without adding top-level CLI verbs.
-- Generated public workflow entrypoints, GitHub Copilot prompts, and Gemini commands consume the local read-only `workflow instructions` contract before acting when the installed CLI is available; `workflow status` is retained for status-only/debug inspection, and support files remain subordinate fallback references.
+- Generated public workflow entrypoints, GitHub Copilot prompts, and Gemini commands do not consume a live workflow-instructions contract before acting; `workflow status` is retained for status-only/debug inspection, and support files remain progressive-disclosure fallback references.
 - Decision (2026-05-14): Truth Realize is manually invoked through installed workflow surfaces and is not controlled by `realization.enabled` or any other config key.
 
 ## Rationale
