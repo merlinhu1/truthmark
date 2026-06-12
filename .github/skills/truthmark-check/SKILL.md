@@ -14,22 +14,10 @@ Use as a Copilot agent skill. Prompt files remain available under `.github/promp
 
 Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
 
-## Optional local CLI validation
-
-Use this checked-in workflow text as the contract. Inspect the checkout directly and open progressive-disclosure support files only when needed. Use the local Truthmark CLI only for focused validation after relevant work has been performed.
-
-When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
-
-- run `truthmark check --json` and `truthmark index --json` when repository-truth health or routing/index health needs verification
-- treat CLI output as derived validation evidence; it never replaces direct checkout inspection, route files, truth docs, or workflow write boundaries
-
-If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract and continue with direct checkout evidence. If the CLI is available but irrelevant to the current step, do not run it preemptively. Report skipped optional CLI validation only when a check, index, or helper validator was relevant and not run. For read-only workflows, keep inspection focused on the requested report; do not broaden into support-file or repo-wide scans just because an optional CLI command is unavailable.
-
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
 - Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect canonical docs and relevant implementation directly.
 - Report issues and suggested fixes; do not silently rewrite unrelated files.
-- Direct checkout inspection is valid even when local tooling is unavailable.
 - Read support/procedure.md before auditing details.
 - Read support/subagents-and-leases.md only when dispatching verifier subagents.
 - Read support/report-template.md before the final report.

@@ -288,24 +288,62 @@ describe("generated workflow surface conformance", () => {
   });
 
   it("keeps write-workflow no-CLI fallback route-first and non-expansive", () => {
-    for (const id of [
-      "truthmark-sync",
-      "truthmark-structure",
-      "truthmark-document",
-      "truthmark-realize",
-    ] as const) {
+    const writeWorkflowExpectations: Record<
+      | "truthmark-sync"
+      | "truthmark-structure"
+      | "truthmark-document"
+      | "truthmark-realize",
+      readonly string[]
+    > = {
+      "truthmark-sync": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect relevant canonical docs directly.",
+        "direct checkout inspection is the canonical path; do not require the truthmark binary.",
+        "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
+        "Read support/procedure.md before editing truth docs.",
+      ],
+      "truthmark-structure": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect current docs and relevant code directly.",
+        "Define areas by product or behavior ownership, not by mechanical directory mirroring.",
+        "Do not edit functional code.",
+        "Read support/procedure.md before writing route or starter truth-doc changes.",
+      ],
+      "truthmark-document": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect existing canonical docs, implementation code, and tests directly.",
+        "Document current implemented behavior; do not invent future behavior.",
+        "May write canonical truth docs and truth routing files only; must not write functional code.",
+        "Read support/procedure.md before editing truth docs.",
+      ],
+      "truthmark-realize": [
+        "Read the source truth docs, inspect .truthmark/config.yml and configured route files",
+        "only when they exist, then inspect tests and relevant functional code directly.",
+        "Truth docs lead; code follows.",
+        "may write functional code only; must not edit truth docs or truth routing while realizing those docs.",
+        "Read support/procedure.md before changing code.",
+      ],
+    };
+
+    for (const [id, expectedTerms] of Object.entries(writeWorkflowExpectations)) {
       const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
 
       expect(content, `${id} Codex skill is generated`).toBeDefined();
-      expect(content).toContain("If the local Truthmark CLI is unavailable or too old");
-      expect(content).toContain("use the checked-in workflow files as the contract");
-      expect(content).toContain("Follow the route-first procedure");
       expect(content).toContain(
-        "read only the config, route files, truth docs, and source evidence needed for the current changed surface",
+        "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       );
-      expect(content).toContain(
-        "stop on missing or ambiguous ownership instead of broadening reads or writes",
+      expect(content).not.toContain("## Optional local CLI validation");
+      expect(content).not.toContain(
+        "If the local Truthmark CLI is unavailable or too old",
       );
+      expect(content).not.toContain(
+        "use the checked-in workflow files as the contract",
+      );
+      expect(content).not.toContain("Follow the route-first procedure");
+
+      for (const term of expectedTerms) {
+        expect(content).toContain(term);
+      }
     }
   });
 

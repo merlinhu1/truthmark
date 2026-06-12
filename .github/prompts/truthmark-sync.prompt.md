@@ -11,18 +11,6 @@ user-invocable: true
 truthmark-version: 2.1.0
 ---
 
-## Optional local CLI validation
-
-Use this checked-in workflow text as the contract. Inspect the checkout directly and open progressive-disclosure support files only when needed. Use the local Truthmark CLI only for focused validation after relevant work has been performed.
-
-When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
-
-- run `truthmark check --json` and `truthmark index --json` when repository-truth health or routing/index health needs verification
-- run optional helper validators from `helper-manifest.yml` only after producing their declared inputs
-- treat CLI output as derived validation evidence; it never replaces direct checkout inspection, route files, truth docs, or workflow write boundaries
-
-If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract and continue with direct checkout evidence. If the CLI is available but irrelevant to the current step, do not run it preemptively. Report skipped optional CLI validation only when a check, index, or helper validator was relevant and not run. Follow the route-first procedure: read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes.
-
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
 Explicit invocation runs immediately. Later functional-code changes reopen the finish-time requirement, and an earlier explicit run satisfies the finish gate only if no later functional-code changes occur.

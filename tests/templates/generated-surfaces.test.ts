@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
-import { renderOptionalLocalCliValidation } from "../../src/templates/workflow-surfaces.js";
 
 const portalPaths = [
   ".agents/skills/truthmark-portal/SKILL.md",
@@ -17,41 +16,62 @@ const portalPaths = [
 ];
 
 describe("Truthmark Portal generated surfaces", () => {
-  it("renders optional local CLI validation as a focused validation aid", () => {
-    const validation = renderOptionalLocalCliValidation("truthmark-sync");
+  it("omits generic optional CLI validation from generated user-facing workflow surfaces", () => {
+    const config = createDefaultConfig();
+    const generatedSurfaces = renderGeneratedSurfaces(config);
+    const publicWorkflowSurfaces = generatedSurfaces.filter(
+      (surface) =>
+        surface.path.endsWith("/SKILL.md") ||
+        surface.path.startsWith(".github/prompts/") ||
+        surface.path.startsWith(".gemini/commands/"),
+    );
+    const forbiddenText = [
+      "## Optional local CLI validation",
+      "truthmark workflow instructions --json",
+      ["truthmark", "workflow", "status", "--json"].join(" "),
+      "workflow instructions --json",
+      ["workflow", "status", "--json"].join(" "),
+      "live preflight",
+    ];
 
-    expect(validation).toContain("Optional local CLI validation");
-    expect(validation).toContain("checked-in workflow text as the contract");
-    expect(validation).toContain("Inspect the checkout directly");
-    expect(validation).toContain("progressive-disclosure support files");
-    expect(validation).toContain("truthmark check --json");
-    expect(validation).toContain("truthmark index --json");
-    expect(validation).toContain("helper-manifest.yml");
-  });
-
-  it("bounds direct checkout inspection for write workflows", () => {
-    for (const workflow of [
-      "truthmark-sync",
-      "truthmark-document",
-      "truthmark-structure",
-      "truthmark-realize",
-    ] as const) {
-      const validation = renderOptionalLocalCliValidation(workflow);
-
-      expect(validation).toContain("route-first procedure");
-      expect(validation).toContain("read only the config, route files, truth docs, and source evidence needed for the current changed surface");
-      expect(validation).toContain("stop on missing or ambiguous ownership instead of broadening reads or writes");
+    expect(publicWorkflowSurfaces.length).toBeGreaterThan(0);
+    for (const surface of publicWorkflowSurfaces) {
+      for (const text of forbiddenText) {
+        expect(surface.content, surface.path).not.toContain(text);
+      }
     }
   });
 
-  it("does not give read-only workflows the heavier write-workflow fallback", () => {
-    for (const workflow of ["truthmark-preview", "truthmark-check"] as const) {
-      const validation = renderOptionalLocalCliValidation(workflow);
+  it("keeps compact workflow-specific validation and procedure guidance", () => {
+    const config = createDefaultConfig();
+    const byPath = new Map(
+      renderGeneratedSurfaces(config).map((surface) => [
+        surface.path,
+        surface.content,
+      ]),
+    );
 
-      expect(validation).toContain("keep inspection focused on the requested report");
-      expect(validation).toContain("do not broaden into support-file or repo-wide scans");
-      expect(validation).not.toContain("route-first procedure");
-    }
+    const syncSkill = byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
+    const syncProcedure =
+      byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
+    const syncHelperManifest =
+      byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
+    const syncHelperPolicy =
+      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ?? "";
+    const previewSkill =
+      byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
+
+    expect(syncSkill).toContain("Quick procedure:");
+    expect(syncSkill).toContain("direct checkout inspection is the canonical path");
+    expect(syncSkill).toContain("Read support/procedure.md before editing truth docs.");
+    expect(syncProcedure).toContain("Code verification is parent-owned");
+    expect(syncProcedure).toContain("Validate the report body before adding this validator's own success status");
+    expect(syncHelperManifest).toContain("validate-sync-report");
+    expect(syncHelperManifest).toContain("validate-write-lease");
+    expect(syncHelperPolicy).toContain("Optional helper CLI commands may collect deterministic checkout facts");
+    expect(syncHelperPolicy).toContain("truthmark validate ... --json");
+    expect(previewSkill).toContain("Truth Preview is read-only");
+    expect(previewSkill).not.toContain("CLI is unavailable");
   });
 
   it("omits Portal surfaces and AGENTS wording when disabled", () => {

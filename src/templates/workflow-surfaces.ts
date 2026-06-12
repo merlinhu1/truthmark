@@ -244,53 +244,6 @@ const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
 const routeFilesHint = (config: TruthmarkConfig): string =>
   `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
 
-const WORKFLOWS_WITH_ROUTE_FIRST_MANUAL_FALLBACK = new Set<TruthmarkWorkflowId>([
-  "truthmark-sync",
-  "truthmark-document",
-  "truthmark-structure",
-  "truthmark-realize",
-]);
-
-export const renderOptionalLocalCliValidation = (
-  workflowId: TruthmarkWorkflowId,
-): string => {
-  const manualBoundary = WORKFLOWS_WITH_ROUTE_FIRST_MANUAL_FALLBACK.has(workflowId)
-    ? "Follow the route-first procedure: read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes."
-    : "For read-only workflows, keep inspection focused on the requested report; do not broaden into support-file or repo-wide scans just because an optional CLI command is unavailable.";
-  const helperValidationLine = (getTruthmarkWorkflow(workflowId).helpers ?? []).length
-    ? "- run optional helper validators from `helper-manifest.yml` only after producing their declared inputs\n"
-    : "";
-
-  return `## Optional local CLI validation
-
-Use this checked-in workflow text as the contract. Inspect the checkout directly and open progressive-disclosure support files only when needed. Use the local Truthmark CLI only for focused validation after relevant work has been performed.
-
-When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
-
-- run \`truthmark check --json\` and \`truthmark index --json\` when repository-truth health or routing/index health needs verification
-${helperValidationLine}- treat CLI output as derived validation evidence; it never replaces direct checkout inspection, route files, truth docs, or workflow write boundaries
-
-If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract and continue with direct checkout evidence. If the CLI is available but irrelevant to the current step, do not run it preemptively. Report skipped optional CLI validation only when a check, index, or helper validator was relevant and not run. ${manualBoundary}`;
-};
-
-const insertOptionalLocalCliValidationAfterFrontmatter = (
-  workflowId: TruthmarkWorkflowId,
-  body: string,
-): string => {
-  const validation = renderOptionalLocalCliValidation(workflowId);
-  if (!body.startsWith("---\n")) {
-    return `${validation}\n\n${body}`;
-  }
-
-  const endOfFrontmatter = body.indexOf("\n---\n", 4);
-  if (endOfFrontmatter === -1) {
-    return `${validation}\n\n${body}`;
-  }
-
-  const frontmatterEndOffset = endOfFrontmatter + "\n---\n".length;
-  return `${body.slice(0, frontmatterEndOffset)}\n${validation}\n\n${body.slice(frontmatterEndOffset).trimStart()}`;
-};
-
 const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   TruthmarkWorkflowId,
   WorkflowPackageDefinition
@@ -391,7 +344,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect canonical docs and relevant implementation directly.`,
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
-      "Direct checkout inspection is valid even when local tooling is unavailable.",
       "Read support/procedure.md before auditing details.",
       "Read support/subagents-and-leases.md only when dispatching verifier subagents.",
       "Read support/report-template.md before the final report.",
@@ -590,8 +542,6 @@ truthmark-version: ${TRUTHMARK_VERSION}
 ${definition.use(config)}${hostUsage === undefined ? "" : `\n\n${hostUsage}`}
 
 Invocations: ${definition.invocations}
-
-${renderOptionalLocalCliValidation(workflowId)}
 
 Quick procedure:
 ${definition
@@ -1251,30 +1201,21 @@ export const renderTruthmarkOpenCodeDocWriterAgent = (
 export const renderTruthmarkStructureSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-structure",
-    renderTruthStructureSkillBody(config),
-  );
+  return renderTruthStructureSkillBody(config);
 };
 
 export const renderTruthmarkStructureLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-structure",
-    renderTruthStructureSkillBody(config),
-  );
+  return renderTruthStructureSkillBody(config);
 };
 
 export const renderTruthmarkStructureClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-structure",
-    renderTruthStructureSkillBody(config, {
-      includeClaudeSubagentMode: true,
-    }),
-  );
+  return renderTruthStructureSkillBody(config, {
+    includeClaudeSubagentMode: true,
+  });
 };
 
 export const renderTruthmarkStructureSkillMetadata = (): string => {
@@ -1297,32 +1238,23 @@ truthmark:
 export const renderTruthmarkDocumentSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-document",
-    renderTruthDocumentSkillBody(config, {
-      includeCodexSubagentMode: true,
-    }),
-  );
+  return renderTruthDocumentSkillBody(config, {
+    includeCodexSubagentMode: true,
+  });
 };
 
 export const renderTruthmarkDocumentLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-document",
-    renderTruthDocumentSkillBody(config),
-  );
+  return renderTruthDocumentSkillBody(config);
 };
 
 export const renderTruthmarkDocumentClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-document",
-    renderTruthDocumentSkillBody(config, {
-      includeClaudeSubagentMode: true,
-    }),
-  );
+  return renderTruthDocumentSkillBody(config, {
+    includeClaudeSubagentMode: true,
+  });
 };
 
 export const renderTruthmarkDocumentSkillMetadata = (): string => {
@@ -1345,28 +1277,19 @@ truthmark:
 export const renderTruthmarkSyncSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-sync",
-    renderTruthSyncSkillBody(config, { includeCodexSubagentMode: true }),
-  );
+  return renderTruthSyncSkillBody(config, { includeCodexSubagentMode: true });
 };
 
 export const renderTruthmarkSyncLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-sync",
-    renderTruthSyncSkillBody(config),
-  );
+  return renderTruthSyncSkillBody(config);
 };
 
 export const renderTruthmarkSyncClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-sync",
-    renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true }),
-  );
+  return renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true });
 };
 
 export const renderTruthmarkSyncSkillMetadata = (): string => {
@@ -1453,10 +1376,7 @@ Verification:
 export const renderTruthmarkRealizeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-realize",
-    renderTruthmarkRealizeSkillBody(config),
-  );
+  return renderTruthmarkRealizeSkillBody(config);
 };
 
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
@@ -1479,19 +1399,13 @@ truthmark:
 export const renderTruthmarkPreviewSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-preview",
-    renderTruthPreviewSkillBody(config),
-  );
+  return renderTruthPreviewSkillBody(config);
 };
 
 export const renderTruthmarkPreviewLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-preview",
-    renderTruthPreviewSkillBody(config),
-  );
+  return renderTruthPreviewSkillBody(config);
 };
 
 export const renderTruthmarkPreviewSkillMetadata = (): string => {
@@ -1514,28 +1428,19 @@ truthmark:
 export const renderTruthmarkCheckSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-check",
-    renderTruthCheckSkillBody(config, { includeCodexSubagentMode: true }),
-  );
+  return renderTruthCheckSkillBody(config, { includeCodexSubagentMode: true });
 };
 
 export const renderTruthmarkCheckLocalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-check",
-    renderTruthCheckSkillBody(config),
-  );
+  return renderTruthCheckSkillBody(config);
 };
 
 export const renderTruthmarkCheckClaudeSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-check",
-    renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true }),
-  );
+  return renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true });
 };
 
 export const renderTruthmarkCheckSkillMetadata = (): string => {
@@ -1558,10 +1463,7 @@ truthmark:
 export const renderTruthmarkPortalSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  return insertOptionalLocalCliValidationAfterFrontmatter(
-    "truthmark-portal",
-    renderTruthmarkPortalSkillBody(config),
-  );
+  return renderTruthmarkPortalSkillBody(config);
 };
 
 export const renderTruthmarkPortalSkillMetadata = (): string => {
@@ -1588,10 +1490,7 @@ export const renderTruthmarkGeminiStructureCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-structure",
-      renderTruthStructureSkillBody(config),
-    ),
+    renderTruthStructureSkillBody(config),
   );
 };
 
@@ -1602,10 +1501,7 @@ export const renderTruthmarkGeminiDocumentCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-document",
-      renderTruthDocumentSkillBody(config),
-    ),
+    renderTruthDocumentSkillBody(config),
   );
 };
 
@@ -1616,10 +1512,7 @@ export const renderTruthmarkGeminiSyncCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-sync",
-      renderTruthSyncSkillBody(config),
-    ),
+    renderTruthSyncSkillBody(config),
   );
 };
 
@@ -1630,10 +1523,7 @@ export const renderTruthmarkGeminiRealizeCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-realize",
-      renderTruthmarkRealizeSkillBody(config),
-    ),
+    renderTruthmarkRealizeSkillBody(config),
   );
 };
 
@@ -1644,10 +1534,7 @@ export const renderTruthmarkGeminiCheckCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-check",
-      renderTruthCheckSkillBody(config),
-    ),
+    renderTruthCheckSkillBody(config),
   );
 };
 
@@ -1658,10 +1545,7 @@ export const renderTruthmarkGeminiPreviewCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-preview",
-      renderTruthPreviewSkillBody(config),
-    ),
+    renderTruthPreviewSkillBody(config),
   );
 };
 
@@ -1672,10 +1556,7 @@ export const renderTruthmarkGeminiPortalCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-portal",
-      renderTruthmarkPortalSkillBody(config),
-    ),
+    renderTruthmarkPortalSkillBody(config),
   );
 };
 
@@ -1686,12 +1567,9 @@ export const renderTruthmarkCopilotStructurePrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-structure",
-      renderTruthStructureSkillBody(config, {
-        includeCopilotCustomAgentMode: true,
-      }),
-    ),
+    renderTruthStructureSkillBody(config, {
+      includeCopilotCustomAgentMode: true,
+    }),
   );
 };
 
@@ -1702,12 +1580,9 @@ export const renderTruthmarkCopilotDocumentPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-document",
-      renderTruthDocumentSkillBody(config, {
-        includeCopilotCustomAgentMode: true,
-      }),
-    ),
+    renderTruthDocumentSkillBody(config, {
+      includeCopilotCustomAgentMode: true,
+    }),
   );
 };
 
@@ -1718,12 +1593,9 @@ export const renderTruthmarkCopilotSyncPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-sync",
-      renderTruthSyncSkillBody(config, {
-        includeCopilotCustomAgentMode: true,
-      }),
-    ),
+    renderTruthSyncSkillBody(config, {
+      includeCopilotCustomAgentMode: true,
+    }),
   );
 };
 
@@ -1734,10 +1606,7 @@ export const renderTruthmarkCopilotRealizePrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-realize",
-      renderTruthmarkRealizeSkillBody(config),
-    ),
+    renderTruthmarkRealizeSkillBody(config),
   );
 };
 
@@ -1748,12 +1617,9 @@ export const renderTruthmarkCopilotCheckPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-check",
-      renderTruthCheckSkillBody(config, {
-        includeCopilotCustomAgentMode: true,
-      }),
-    ),
+    renderTruthCheckSkillBody(config, {
+      includeCopilotCustomAgentMode: true,
+    }),
   );
 };
 
@@ -1764,10 +1630,7 @@ export const renderTruthmarkCopilotPreviewPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-preview",
-      renderTruthPreviewSkillBody(config),
-    ),
+    renderTruthPreviewSkillBody(config),
   );
 };
 
@@ -1778,9 +1641,6 @@ export const renderTruthmarkCopilotPortalPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    insertOptionalLocalCliValidationAfterFrontmatter(
-      "truthmark-portal",
-      renderTruthmarkPortalSkillBody(config),
-    ),
+    renderTruthmarkPortalSkillBody(config),
   );
 };

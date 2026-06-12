@@ -11,17 +11,6 @@ user-invocable: true
 truthmark-version: 2.1.0
 ---
 
-## Optional local CLI validation
-
-Use this checked-in workflow text as the contract. Inspect the checkout directly and open progressive-disclosure support files only when needed. Use the local Truthmark CLI only for focused validation after relevant work has been performed.
-
-When the local Truthmark CLI is available, use only focused validation commands that match work already performed:
-
-- run `truthmark check --json` and `truthmark index --json` when repository-truth health or routing/index health needs verification
-- treat CLI output as derived validation evidence; it never replaces direct checkout inspection, route files, truth docs, or workflow write boundaries
-
-If the local Truthmark CLI is unavailable or too old, use the checked-in workflow files as the contract and continue with direct checkout evidence. If the CLI is available but irrelevant to the current step, do not run it preemptively. Report skipped optional CLI validation only when a check, index, or helper validator was relevant and not run. Follow the route-first procedure: read only the config, route files, truth docs, and source evidence needed for the current changed surface, and stop on missing or ambiguous ownership instead of broadening reads or writes.
-
 Use this skill to design or repair Truthmark area structure.
 Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
 Truth Structure is agent-native:
