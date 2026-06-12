@@ -64,11 +64,17 @@ describe("truthmark CLI", () => {
       command: string;
       summary: string;
       diagnostics: unknown[];
+      data?: {
+        scorecard?: {
+          schemaVersion?: string;
+        };
+      };
     };
 
     expect(payload.command).toBe("check");
     expect(typeof payload.summary).toBe("string");
     expect(payload.summary.length).toBeGreaterThan(0);
     expect(Array.isArray(payload.diagnostics)).toBe(true);
+    expect(payload.data?.scorecard?.schemaVersion).toBe("truthmark-scorecard/v0");
   });
 });

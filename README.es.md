@@ -1,12 +1,12 @@
 # Truthmark
 
-**Tus agentes escriben código. Truthmark hace que su contexto sea revisable en Git.**
+**Tus agentes escriben código. Truthmark mantiene documentación orientada a humanos y revisable en Git.**
 
 [English](README.md) | [Deutsch](README.de.md) | [中文](README.zh.md) | Español | [Русский](README.ru.md)
 
 ![Banner de Truthmark](docs/assets/truthmark-banner.png)
 
-Los agentes de programación con IA pueden cambiar un repositorio más rápido de lo que las personas pueden mantener alineado su contexto.
+Los agentes de programación con IA pueden cambiar un repositorio más rápido de lo que las personas pueden mantener alineada su documentación.
 
 Truthmark arregla la parte que normalmente se rompe después de escribir el código: la verdad del repositorio.
 
@@ -33,9 +33,9 @@ La implementación cambia, pero la historia del repositorio se desvía:
 - las decisiones de producto desaparecen después del traspaso
 - quienes revisan ven diffs de código sin los diffs de verdad relacionados
 - las ramas desarrollan silenciosamente distintas versiones de “lo que es verdad”
-- cada sesión de agente tiene que redescubrir el contexto desde cero
+- cada sesión de agente tiene que redescubrir la verdad del repositorio desde cero
 
-Truthmark convierte ese contexto frágil en infraestructura del repositorio confirmada en Git.
+Truthmark convierte esa verdad frágil del repositorio en infraestructura confirmada en Git.
 
 En lugar de depender de que cada persona y cada agente recuerden el hábito correcto de documentación, Truthmark instala ese hábito en el repositorio.
 
@@ -66,7 +66,7 @@ Tiene dos superficies distintas, y la distinción importa.
 
 La CLI es para mantenedores, revisores y automatización.
 
-Úsala para configurar un repositorio, instalar o refrescar archivos de flujo de trabajo, validar artefactos de verdad y generar contexto opcional para revisión.
+Úsala para configurar un repositorio, instalar o refrescar archivos de flujo de trabajo, validar artefactos de verdad y generar material opcional para revisión.
 
 ```bash
 truthmark config
@@ -179,6 +179,14 @@ Pide a tu agente que divida la ruta amplia en áreas reales de producto, servici
 /truthmark-structure divide el área amplia repository en auth, billing y notifications
 ```
 
+Si el proyecto ya tiene features implementadas pero faltan documentos de verdad o son débiles, pide al flujo Truth Document instalado que documente un alcance enfocado:
+
+```text
+/truthmark-document documenta el comportamiento implementado de payment retry en src/billing/retry.ts y sus tests relacionados
+```
+
+Truth Document es el primer flujo más común para proyectos existentes. Inspecciona implementación, pruebas, rutas y documentación existente, y luego crea o repara documentos de verdad y rutas sin cambiar código funcional.
+
 Después usa tu agente de programación con IA normalmente.
 
 Cuando el agente cambia código funcional, Truth Sync actúa como guarda de cierre que revisa si los documentos de verdad asignados deben cambiar antes del traspaso.
@@ -188,7 +196,7 @@ Cuando el agente cambia código funcional, Truth Sync actúa como guarda de cier
 | Capacidad | Qué hace |
 | --- | --- |
 | Verdad nativa de Git | Mantiene la verdad del repositorio en Markdown y config confirmados. |
-| Contexto acotado a la rama | La verdad se mueve con la rama en lugar de vivir en una sesión privada. |
+| Documentación acotada a la rama | La verdad se mueve con la rama en lugar de vivir en una sesión privada. |
 | CLI humana | Da a mantenedores comandos de configuración, refresco, validación e inspección. |
 | Flujos orientados a IA | Da a los agentes flujos nativos del host para sincronización, documentación, estructura, preview, realización y auditoría. |
 | Rutas explícitas | Mapea áreas de código a documentos de verdad canónicos. |
@@ -229,10 +237,10 @@ Es útil cuando necesitas:
 - menos deriva de documentación
 - mejores traspasos
 - verdad de producto específica de cada rama
-- contexto duradero de arquitectura y API
+- documentación duradera de arquitectura y API
 - propiedad explícita entre documentos y código
 - límites de escritura más seguros para agentes
-- contexto revisable en lugar de memoria oculta
+- documentación revisable en lugar de memoria oculta
 - flujos de IA que sigan funcionando desde archivos confirmados del repo
 
 ## Dónde encaja Truthmark
@@ -248,7 +256,7 @@ Les da a esos flujos un lugar duradero donde aterrizar en Git.
 | Trabajo de funciones plan-first | Flujo de especificación |
 | Verdad acotada a la rama que viaja con el código | Truthmark |
 | Validar la corrección del comportamiento | Pruebas y revisión |
-| Revisar cambios de contexto asistidos por IA | Truthmark más revisión Git |
+| Revisar cambios de documentación asistidos por IA | Truthmark más revisión Git |
 
 El carril de Truthmark es estrecho por diseño:
 
@@ -305,7 +313,7 @@ truthmark init
 
 | Nombre de plataforma en config | Superficie generada | Forma de invocación |
 | --- | --- | --- |
-| `codex` | `.codex/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` o `$truthmark-*` |
+| `codex` | `.agents/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` o `$truthmark-*` |
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
 | `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` en IDEs de Copilot compatibles; agentes personalizados `@truth-*` en Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
@@ -365,11 +373,15 @@ La invocación directa sigue siendo útil para depurar, forzar una sincronizaci�
 
 ## Comportamiento existente sin docs
 
-Usa Truth Document cuando la implementación ya existe pero la verdad del repositorio está incompleta.
+Usa Truth Document cuando la implementación ya existe pero la verdad del repositorio está incompleta. Esta es la ruta normal para repositorios establecidos que adoptan Truthmark después de que la base de código ya existe.
 
 ```text
-/truthmark-document documenta el comportamiento implementado de timeout de sesión bajo docs/truth/authentication
+/truthmark-document documenta el comportamiento implementado de timeout de sesión en src/auth/session.ts, src/auth/middleware.ts y tests/auth/session.test.ts
 ```
+
+Indica el nombre del feature, rutas de código, rutas de pruebas o el área deseada de documentos de verdad. En hosts estilo OpenCode, llama al mismo flujo como `/skill truthmark-document ...`; en Gemini CLI, usa `/truthmark:document ...`.
+
+Para un repo grande que aún tiene una ruta placeholder amplia, ejecuta primero Truth Structure y luego invoca Truth Document para un feature o área acotada cada vez.
 
 Truth Document inspecciona implementación, pruebas, archivos de rutas y documentación existente como evidencia.
 
@@ -382,7 +394,7 @@ No debe cambiar código funcional.
 Usa Truth Realize cuando una decisión de producto o arquitectura empieza en documentos y el código debe actualizarse para coincidir.
 
 ```text
-/truthmark-realize realiza docs/truth/authentication/session-timeout.md como código
+/truthmark-realize realiza docs/truthmark/truth/authentication/session-timeout.md como código
 ```
 
 Truth Realize es doc-first.
@@ -429,7 +441,7 @@ La mayoría de los mantenedores empieza con tres comandos.
 | `truthmark init` | Instala o refresca superficies de flujo configuradas desde la config revisada. |
 | `truthmark check` | Valida configuración, autoridad, rutas, documentos con decisiones, frontmatter, enlaces internos, alcance de rama, superficies generadas, frescura y diagnósticos de cobertura. |
 
-Los ayudantes opcionales de inteligencia del repositorio generan contexto derivado para revisión sobre el checkout activo. Los paquetes de skill de flujo generados también pueden exponer manifests y policies de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado de helper omitido visible y hacen validación manual.
+Los ayudantes opcionales de inteligencia del repositorio generan material derivado para revisión sobre el checkout activo, como artefactos RepoIndex, RouteMap, ImpactSet y ContextPack acotados. Los paquetes de skill de flujo generados también pueden exponer manifests y policies de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado de helper omitido visible y hacen validación manual.
 
 No son fuentes de verdad.
 
@@ -456,10 +468,10 @@ Está separado deliberadamente del flujo central de verdad:
 Habilítalo con el bloque de configuración con espacio de nombres:
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 Luego vuelve a ejecutar:
@@ -498,14 +510,14 @@ Las áreas importantes de configuración incluyen:
 | --- | --- |
 | `version` | Versión del contrato de configuración. |
 | `platforms` | Hosts de agentes que deben recibir superficies generadas específicas de plataforma. |
-| `docs.layout` | Modo actual de layout de documentación. |
-| `docs.roots` | Raíces nombradas de documentación canónica. |
-| `docs.routing.root_index` | Ruta del índice raíz de rutas. |
-| `docs.routing.area_files_root` | Directorio para archivos de rutas secundarias delegadas. |
-| `docs.routing.default_area` | Nombre base de la ruta secundaria inicial generada. |
-| `docs.routing.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
-| `truthmark-portal` | Ajustes opcionales del flujo manual de presentación: `enabled`, `output` y `template`. |
-| `authority` | Documentos canónicos y globs ordenados usados como autoridad de verdad del repositorio. |
+| `truthmark.workspace` | Workspace propiedad de Truthmark para rutas, documentos de verdad, plantillas y salida de presentación generada. |
+| `truthmark.routes.index` | Ruta del índice raíz relativa a `truthmark.workspace`. |
+| `truthmark.routes.areas` | Directorio de rutas secundarias delegadas relativo a `truthmark.workspace`. |
+| `truthmark.routes.default_area` | Nombre base de la ruta secundaria inicial generada. |
+| `truthmark.routes.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
+| `truthmark.truth.root` | Raíz de documentos de verdad relativa a `truthmark.workspace`. |
+| `truthmark.templates.root` | Raíz de plantillas de documentos de verdad relativa a `truthmark.workspace`. |
+| `truthmark.generated.portal` | Activación opcional del flujo manual de presentación: `enabled`. |
 | `instruction_targets` | Archivos que reciben bloques de instrucciones administrados compartidos, como `AGENTS.md`. |
 | `frontmatter.required` | Campos de metadatos que producen diagnósticos de error cuando faltan. |
 | `frontmatter.recommended` | Campos de metadatos que producen diagnósticos de revisión cuando faltan. |
@@ -518,8 +530,8 @@ Truthmark mapea superficies de código a documentos de verdad.
 Los archivos principales de rutas son:
 
 ```text
-docs/truthmark/areas.md
-docs/truthmark/areas/**/*.md
+docs/truthmark/routes/areas.md
+docs/truthmark/routes/areas/**/*.md
 ```
 
 Una ruta le dice al agente:
@@ -549,7 +561,7 @@ Lo instala en cuatro capas:
 
 - config y routing para límites de ownership
 - documentos truth canónicos y plantillas iniciales
-- bloques de instrucciones administrados y compactos para contexto de agente en todo el repo
+- bloques de instrucciones administrados y compactos para instrucciones de agente en todo el repo
 - paquetes de workflow, comandos, prompts y agentes verificadores host-native para las plataformas habilitadas en la config
 
 Truthmark conserva el contenido manual fuera de los bloques de instrucciones administrados.
@@ -633,7 +645,7 @@ truthmark check
 ### Documentar comportamiento implementado
 
 ```text
-/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truth/authentication
+/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truthmark/truth/authentication
 ```
 
 ### Sincronizar después de cambios de código
@@ -645,7 +657,7 @@ truthmark check
 ### Realizar una decisión doc-first
 
 ```text
-/truthmark-realize realiza docs/truth/billing/invoice-retry-policy.md como código
+/truthmark-realize realiza docs/truthmark/truth/billing/invoice-retry-policy.md como código
 ```
 
 ### Auditar la salud de verdad desde la terminal
@@ -654,13 +666,13 @@ truthmark check
 truthmark check
 ```
 
-### Generar contexto de impacto de rama
+### Generar resumen de impacto de rama
 
 ```bash
 truthmark impact --base main
 ```
 
-### Generar contexto de workflow
+### Generar un ContextPack de workflow
 
 ```bash
 truthmark context --workflow truth-sync --base main --format markdown
@@ -669,10 +681,10 @@ truthmark context --workflow truth-sync --base main --format markdown
 ### Habilitar el flujo Portal opcional
 
 ```yaml
-truthmark-portal:
-  enabled: true
-  output: docs/truthmark-portal
-  template: default
+truthmark:
+  generated:
+    portal:
+      enabled: true
 ```
 
 ```bash
@@ -746,11 +758,11 @@ El README es el camino rápido para evaluación y configuración.
 El comportamiento actual detallado vive bajo `docs/`:
 
 - [Índice de documentación](docs/README.md)
-- [Resumen de arquitectura](docs/architecture/overview.md)
-- [Contratos de API y CLI](docs/truth/contracts.md)
-- [Comportamiento de init y scaffold](docs/truth/init-and-scaffold.md)
-- [Diagnósticos de check](docs/truth/check-diagnostics.md)
-- [Flujos instalados](docs/truth/workflows/overview.md)
+- [Resumen de arquitectura](docs/truthmark/truth/architecture/overview.md)
+- [Contratos de API y CLI](docs/truthmark/truth/contracts.md)
+- [Comportamiento de init y scaffold](docs/truthmark/truth/init-and-scaffold.md)
+- [Diagnósticos de check](docs/truthmark/truth/check-diagnostics.md)
+- [Flujos instalados](docs/truthmark/truth/workflows/overview.md)
 - [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
 
 ## Límites de diseño
@@ -787,7 +799,7 @@ Los equipos deberían seguir:
 - revisando diffs de superficies de flujo generadas después de upgrades
 - conservando propiedad humana sobre decisiones de producto y arquitectura
 
-Truthmark hace visible el contexto del agente. No reemplaza el juicio humano.
+Truthmark hace visible la verdad del repositorio orientada al agente. No reemplaza el juicio humano.
 
 ## Dirección de la hoja de ruta
 
@@ -807,7 +819,7 @@ El centro de gravedad se mantiene igual:
 verdad del repositorio
 flujos nativos para agentes
 revisión en Git
-contexto acotado a la rama
+documentación acotada a la rama
 ```
 
 ## Licencia

@@ -12,14 +12,14 @@ describe("checkFrontmatter", () => {
 
     try {
       await repo.writeFile(
-        "docs/truth/contracts.md",
+        "docs/truthmark/truth/contracts.md",
         `---
 status: active
 doc_type: contract
 truth_kind: behavior
 last_reviewed: 2026-05-14
 source_of_truth:
-  - docs/truthmark/areas/repository.md
+  - docs/truthmark/routes/areas/repository.md
 ---
 
 # Contracts
@@ -37,10 +37,10 @@ Current contract.
       const diagnostics = await checkFrontmatter(
         repo.rootDir,
         config,
-        ["docs/truth/contracts.md"],
+        ["docs/truthmark/truth/contracts.md"],
         [
           {
-            path: "docs/truth/contracts.md",
+            path: "docs/truthmark/truth/contracts.md",
             kind: "contract",
             kindSource: "explicit",
           },
@@ -51,7 +51,7 @@ Current contract.
         expect.objectContaining({
           category: "frontmatter",
           severity: "error",
-          file: "docs/truth/contracts.md",
+          file: "docs/truthmark/truth/contracts.md",
           message: expect.stringContaining("truth_kind"),
         }),
       ]);

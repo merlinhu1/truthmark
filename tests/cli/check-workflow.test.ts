@@ -18,3 +18,27 @@ describe("truthmark check workflow options", () => {
     expect(result.stderr.toLowerCase()).toContain("unknown option");
   });
 });
+
+describe("truthmark workflow command surface", () => {
+  it("exposes workflow status without workflow instructions", async () => {
+    const help = await runCli(["workflow", "--help"]);
+
+    expect(help.exitCode).toBe(0);
+    expect(help.stdout).toContain("status");
+    expect(help.stdout).not.toContain("instructions");
+  });
+
+  it("rejects removed workflow instructions invocations as unsupported", async () => {
+    const result = await runCli([
+      "workflow",
+      "instructions",
+      "--workflow",
+      "truthmark-sync",
+      "--json",
+    ]);
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr.toLowerCase()).toContain("unknown command");
+  });
+});

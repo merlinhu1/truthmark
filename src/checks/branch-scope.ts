@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import fg from "fast-glob";
 
 import { loadConfig } from "../config/load.js";
-import { DEFAULT_DOCS_HIERARCHY } from "../config/defaults.js";
+import { createDefaultConfig } from "../config/defaults.js";
 import { resolveWorktreePath, getGitRepository } from "../git/repository.js";
 import { hashText } from "../markdown/hash.js";
 
@@ -63,10 +63,10 @@ export const getBranchScopeData = async (cwd: string): Promise<BranchScopeData> 
   const repository = await getGitRepository(cwd);
   const relevantFileHashes: Record<string, string> = {};
   const loadResult = await loadConfig(repository.worktreePath);
-  const rootIndex =
-    loadResult.config?.docs.routing.rootIndex ?? DEFAULT_DOCS_HIERARCHY.routing.root_index;
+  const defaultConfig = createDefaultConfig();
+  const rootIndex = loadResult.config?.truthmark.paths.routesIndex ?? defaultConfig.truthmark.paths.routesIndex;
   const areaFilesRoot =
-    loadResult.config?.docs.routing.areaFilesRoot ?? DEFAULT_DOCS_HIERARCHY.routing.area_files_root;
+    loadResult.config?.truthmark.paths.routeAreasRoot ?? defaultConfig.truthmark.paths.routeAreasRoot;
   const relevantFiles = new Set<string>([...RELEVANT_BRANCH_SCOPE_FILES, rootIndex]);
   const routeFiles = await fg([`${areaFilesRoot}/**/*.md`], {
     cwd: repository.worktreePath,

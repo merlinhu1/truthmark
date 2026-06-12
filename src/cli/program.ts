@@ -12,6 +12,7 @@ import {
   runValidateDocumentReport,
   runValidateSyncReport,
   runValidateWriteLease,
+  runWorkflowStatus,
 } from "./handlers.js";
 import type { WorkflowHelperValidationResult } from "../agents/workflow-helper-validation.js";
 
@@ -38,6 +39,11 @@ type ContextOptions = OutputOptions & {
   format?: string;
 };
 
+type WorkflowOptions = OutputOptions & {
+  workflow?: string;
+  base?: string;
+};
+
 const markFailedWhenErrorDiagnosticsExist = (result: CommandResult): void => {
   if (result.diagnostics.some((diagnostic) => diagnostic.severity === "error")) {
     process.exitCode = 1;
@@ -50,7 +56,7 @@ const writeResult = (result: CommandResult, options: OutputOptions): void => {
   markFailedWhenErrorDiagnosticsExist(result);
 };
 const writeContextResult = (result: CommandResult, options: ContextOptions): void => {
-  if (!options.json && options.format === "markdown" && typeof result.data?.markdown === "string") {
+  if (!options.json && typeof result.data?.markdown === "string") {
     process.stdout.write(result.data.markdown);
     markFailedWhenErrorDiagnosticsExist(result);
     return;
@@ -153,13 +159,33 @@ export const buildProgram = (): Command => {
       .description("Generate a bounded workflow context pack.")
       .requiredOption("--workflow <workflow>", "Workflow name: truth-sync, truth-document, or truth-realize")
       .option("--base <ref>", "Base Git ref for impact-backed packs")
-      .option("--format <format>", "Output format: json or markdown", "json"),
+      .option("--format <format>", "Output format: markdown", "markdown"),
   ).action(async (options: ContextOptions) => {
     writeContextResult(
       await runContext({
         workflow: options.workflow,
         base: options.base,
         format: options.format,
+      }),
+      options,
+    );
+  });
+
+  const workflow = program
+    .command("workflow")
+    .description("Inspect agent-facing Truthmark workflow state.");
+
+  addJsonOption(
+    workflow
+      .command("status")
+      .description("Return schema-versioned workflow state for a canonical workflow ID.")
+      .option("--workflow <workflow>", "Canonical workflow ID, such as truthmark-sync")
+      .option("--base <ref>", "Base Git ref for impact-backed workflow state"),
+  ).action(async (options: WorkflowOptions) => {
+    writeResult(
+      await runWorkflowStatus({
+        workflow: options.workflow,
+        base: options.base,
       }),
       options,
     );

@@ -39,12 +39,12 @@ describe("renderTruthRealizePrompt", () => {
 
   it("uses the configured truth root in its example report", () => {
     const config = createDefaultConfig();
-    config.docs.roots.truth = "docs/product";
+    config.truthmark.paths.truthRoot = "docs/product";
 
     const prompt = renderTruthRealizePrompt(config);
 
     expect(prompt).toContain("docs/product/authentication/session-timeout.md");
-    expect(prompt).not.toContain("docs/truth/authentication/session-timeout.md");
+    expect(prompt).not.toContain("docs/truthmark/truth/authentication/session-timeout.md");
   });
 
   it("renders adjacent-workflow exclusions in generated skill metadata", () => {

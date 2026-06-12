@@ -7,7 +7,7 @@ const contextPack = {
   task: "truth-sync",
   changedFiles: ["src/auth/session.ts"],
   owningAreas: ["Authentication"],
-  relevantDocs: ["docs/truth/authentication/session-timeout.md"],
+  relevantDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
   evidenceSnippets: [
     {
       id: "E1",
@@ -23,7 +23,7 @@ const contextPack = {
 
 const validDraft = {
   status: "drafted",
-  targetDocs: ["docs/truth/authentication/session-timeout.md"],
+  targetDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
   claims: [
     {
       text: "Session timeout is 15 minutes.",
@@ -33,7 +33,7 @@ const validDraft = {
   ],
   patches: [
     {
-      path: "docs/truth/authentication/session-timeout.md",
+      path: "docs/truthmark/truth/authentication/session-timeout.md",
       section: "Current Behavior",
       operation: "append",
       markdown: "- Sessions expire after 15 minutes of inactivity.",
@@ -99,8 +99,8 @@ describe("parseTruthDocUpdateDraft", () => {
       parseTruthDocUpdateDraft(
         JSON.stringify({
           ...validDraft,
-          targetDocs: ["docs/truth/other.md"],
-          patches: [{ ...validDraft.patches[0], path: "docs/truth/other.md" }],
+          targetDocs: ["docs/truthmark/truth/other.md"],
+          patches: [{ ...validDraft.patches[0], path: "docs/truthmark/truth/other.md" }],
         }),
         contextPack,
       ),
@@ -125,7 +125,7 @@ describe("parseTruthDocUpdateDraft", () => {
       parseTruthDocUpdateDraft(
         JSON.stringify({
           ...validDraft,
-          targetDocs: ["docs/truth/authentication/session-timeout.md"],
+          targetDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
           patches: [],
         }),
         contextPack,

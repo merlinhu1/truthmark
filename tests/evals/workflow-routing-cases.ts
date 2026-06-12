@@ -48,7 +48,7 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
     id: "sync-skip-docs-only",
     userPrompt:
       "I only edited documentation prose and no functional code changed; do not run finish-time Sync.",
-    changedFiles: ["docs/truth/repository/overview.md"],
+    changedFiles: ["docs/truthmark/truth/repository/overview.md"],
     expectedWorkflow: "none",
     expectedReason: "documentation-only change",
     expectedManifestSignals: [
@@ -62,7 +62,7 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
     id: "structure-broad-routing-repair",
     userPrompt:
       "The repository route is a broad src/** catch-all and needs to be split into bounded Truthmark areas.",
-    changedFiles: ["docs/truthmark/areas.md"],
+    changedFiles: ["docs/truthmark/routes/areas.md"],
     expectedWorkflow: "truthmark-structure",
     expectedReason: "split broad repository routing into bounded areas",
     expectedManifestSignals: [
@@ -103,8 +103,8 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
   {
     id: "realize-explicit-doc-first",
     userPrompt:
-      "Use $truthmark-realize to realize docs/truth/authentication/session-timeout.md into code.",
-    changedFiles: ["docs/truth/authentication/session-timeout.md"],
+      "Use $truthmark-realize to realize docs/truthmark/truth/authentication/session-timeout.md into code.",
+    changedFiles: ["docs/truthmark/truth/authentication/session-timeout.md"],
     expectedWorkflow: "truthmark-realize",
     expectedReason: "explicitly realize truth docs into functional code",
     expectedManifestSignals: [
@@ -144,12 +144,12 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
   {
     id: "portal-explicit-refresh",
     userPrompt:
-      "Refresh the committed Truthmark Portal static HTML docs site under docs/truthmark-portal.",
+      "Refresh the committed Truthmark Portal static HTML docs site under docs/truthmark/generated/portal.",
     expectedWorkflow: "truthmark-portal",
     expectedReason: "generate or refresh the committed static HTML Portal",
     expectedManifestSignals: [
       "generate, refresh, or update the Truthmark Portal static HTML site",
-      "update docs/truthmark-portal",
+      "update the Truthmark Portal output",
     ],
     forbiddenWorkflows: ["truthmark-sync", "truthmark-check"],
     source: "manifest-positive",

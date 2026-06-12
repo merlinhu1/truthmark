@@ -4,8 +4,8 @@ import { resolveAreaRouting } from "../../src/routing/area-resolver.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const config = {
-  rootIndex: "docs/truthmark/areas.md",
-  areaFilesRoot: "docs/truthmark/areas",
+  rootIndex: "docs/truthmark/routes/areas.md",
+  areaFilesRoot: "docs/truthmark/routes/areas",
 };
 
 describe("resolveAreaRouting", () => {
@@ -14,13 +14,13 @@ describe("resolveAreaRouting", () => {
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Payments
 
 Area files:
-- docs/truthmark/areas/payments.md
+- docs/truthmark/routes/areas/payments.md
 
 Code surface:
 - services/payments/**
@@ -30,13 +30,13 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/areas/payments.md",
+        "docs/truthmark/routes/areas/payments.md",
         `# Payments Areas
 
 ## Checkout
 
 Truth documents:
-- docs/truth/payments/checkout.md
+- docs/truthmark/truth/payments/checkout.md
 
 Code surface:
 - services/payments/checkout/**
@@ -50,14 +50,14 @@ Update truth when:
 
       expect(result.diagnostics).toEqual([]);
       expect(result.routeFiles).toEqual([
-        "docs/truthmark/areas.md",
-        "docs/truthmark/areas/payments.md",
+        "docs/truthmark/routes/areas.md",
+        "docs/truthmark/routes/areas/payments.md",
       ]);
       expect(result.areas).toEqual([
         expect.objectContaining({
           name: "Checkout",
-          truthDocuments: ["docs/truth/payments/checkout.md"],
-          sourcePath: "docs/truthmark/areas/payments.md",
+          truthDocuments: ["docs/truthmark/truth/payments/checkout.md"],
+          sourcePath: "docs/truthmark/routes/areas/payments.md",
           parentName: "Payments",
         }),
       ]);
@@ -71,7 +71,7 @@ Update truth when:
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Payments
@@ -96,7 +96,7 @@ Update truth when:
             category: "area-index",
             severity: "error",
             file: "docs/payments.md",
-            message: expect.stringContaining("must live under docs/truthmark/areas"),
+            message: expect.stringContaining("must live under docs/truthmark/routes/areas"),
           }),
         ]),
       );
@@ -110,13 +110,13 @@ Update truth when:
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Payments
 
 Area files:
-- docs/truthmark/areas/payments.md
+- docs/truthmark/routes/areas/payments.md
 
 Code surface:
 - services/payments/**
@@ -126,13 +126,13 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/areas/payments.md",
+        "docs/truthmark/routes/areas/payments.md",
         `# Payments Areas
 
 ## Checkout
 
 Area files:
-- docs/truthmark/areas/payments/checkout.md
+- docs/truthmark/routes/areas/payments/checkout.md
 
 Code surface:
 - services/payments/checkout/**
@@ -150,7 +150,7 @@ Update truth when:
           expect.objectContaining({
             category: "area-index",
             severity: "error",
-            file: "docs/truthmark/areas/payments.md",
+            file: "docs/truthmark/routes/areas/payments.md",
             message: expect.stringContaining("Child area files must contain leaf areas only"),
           }),
         ]),
@@ -165,13 +165,13 @@ Update truth when:
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Payments
 
 Area files:
-- docs/truthmark/areas/payments.md
+- docs/truthmark/routes/areas/payments.md
 
 Code surface:
 - services/payments/**
@@ -181,13 +181,13 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/areas/payments.md",
+        "docs/truthmark/routes/areas/payments.md",
         `# Payments Areas
 
 ## Checkout
 
 Truth documents:
-- docs/truth/payments.md
+- docs/truthmark/truth/payments.md
 
 Code surface:
 - services/payments/checkout/**
@@ -198,7 +198,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/truth/payments-legacy.md
+- docs/truthmark/truth/payments-legacy.md
 
 Code surface:
 - services/payments/legacy-checkout/**
@@ -229,13 +229,13 @@ Update truth when:
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Payments
 
 Area files:
-- docs/truthmark/areas/payments.md
+- docs/truthmark/routes/areas/payments.md
 
 Code surface:
 - services/payments/**
@@ -245,13 +245,13 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/areas/payments.md",
+        "docs/truthmark/routes/areas/payments.md",
         `# Payments Areas
 
 ## Checkout
 
 Truth documents:
-- docs/truth/payments.md
+- docs/truthmark/truth/payments.md
 
 Code surface:
 - services/orders/**
@@ -268,7 +268,7 @@ Update truth when:
           expect.objectContaining({
             category: "area-index",
             severity: "review",
-            file: "docs/truthmark/areas/payments.md",
+            file: "docs/truthmark/routes/areas/payments.md",
             message: expect.stringContaining("outside parent area Payments code surface"),
           }),
         ]),
@@ -283,13 +283,13 @@ Update truth when:
 
     try {
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Apps
 
 Area files:
-- docs/truthmark/areas/apps.md
+- docs/truthmark/routes/areas/apps.md
 
 Code surface:
 - apps/*/src/**
@@ -299,13 +299,13 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/areas/apps.md",
+        "docs/truthmark/routes/areas/apps.md",
         `# Apps Areas
 
 ## Admin Docs
 
 Truth documents:
-- docs/truth/apps/admin-docs.md
+- docs/truthmark/truth/apps/admin-docs.md
 
 Code surface:
 - apps/admin/docs/**
@@ -322,7 +322,7 @@ Update truth when:
           expect.objectContaining({
             category: "area-index",
             severity: "review",
-            file: "docs/truthmark/areas/apps.md",
+            file: "docs/truthmark/routes/areas/apps.md",
             message: expect.stringContaining("outside parent area Apps code surface"),
           }),
         ]),

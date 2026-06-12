@@ -5,6 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { runConfig } from "../../src/config/command.js";
+import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const workspaceRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url)));
@@ -84,6 +86,8 @@ describe("built truthmark CLI", () => {
     const repo = await createTempRepo();
 
     try {
+      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await runInit(repo.rootDir);
       const result = await execa(
         process.execPath,
         [builtCliEntrypoint, "check", "--json", "--workflow", "truth-sync"],
@@ -100,4 +104,41 @@ describe("built truthmark CLI", () => {
       await repo.cleanup();
     }
   });
+
+  it("runs workflow status from the built artifact outside the source repo cwd", async () => {
+    const buildResult = await execa("npm", ["run", "build"], {
+      cwd: workspaceRoot,
+      reject: false,
+    });
+
+    expect(buildResult.exitCode).toBe(0);
+    expect(path.isAbsolute(builtCliEntrypoint)).toBe(true);
+
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await runInit(repo.rootDir);
+      const result = await execa(
+        process.execPath,
+        [builtCliEntrypoint, "workflow", "status", "--workflow", "truthmark-check", "--json"],
+        {
+          cwd: repo.rootDir,
+          reject: false,
+        },
+      );
+      const output = JSON.parse(result.stdout) as {
+        command: string;
+        data: { workflowState: { schemaVersion: string; workflow: string } };
+      };
+
+      expect(result.exitCode).toBe(0);
+      expect(output.command).toBe("workflow status");
+      expect(output.data.workflowState.schemaVersion).toBe("truthmark-workflow/v0");
+      expect(output.data.workflowState.workflow).toBe("truthmark-check");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
 });

@@ -24,19 +24,19 @@ describe("init and check workflow acceptance", () => {
       expect(initPayload.command).toBe("init");
 
       await expect(fs.stat(`${repo.rootDir}/.truthmark/config.yml`)).resolves.toBeTruthy();
-      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/areas.md`)).resolves.toBeTruthy();
+      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).resolves.toBeTruthy();
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-structure/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-structure/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-sync/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-realize/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-realize/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/.codex/skills/truthmark-check/SKILL.md`),
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-check/SKILL.md`),
       ).resolves.toBeTruthy();
       await expect(
         fs.stat(`${repo.rootDir}/.claude/skills/truthmark-sync/SKILL.md`),
@@ -80,17 +80,17 @@ describe("init and check workflow acceptance", () => {
       expect(initResult.exitCode).toBe(0);
 
       await repo.writeFile(
-        "docs/truth/authentication.md",
+        "docs/truthmark/truth/authentication.md",
         "---\nstatus: active\ndoc_type: behavior\ntruth_kind: behavior\nlast_reviewed: 2026-05-06\nsource_of_truth:\n  - ../../../src/auth/session.ts\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         `# Truthmark Areas
 
 ## Authentication
 
 Truth documents:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Code surface:
 - src/auth/**

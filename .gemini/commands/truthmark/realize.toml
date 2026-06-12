@@ -5,7 +5,7 @@ name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.1.0
 ---
 
 # Truthmark Realize
@@ -23,7 +23,7 @@ Truth Realize is doc-first:
 Workflow:
 
 1. Read the updated truth docs named by the user, or infer the relevant docs from configured route files when present.
-2. Inspect .truthmark/config.yml and configured route files (docs/truthmark/areas.md; docs/truthmark/areas/) only when they exist; then read tests and the relevant functional code.
+2. Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then read tests and the relevant functional code.
 3. Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 Truth-doc ownership gate:
@@ -37,9 +37,9 @@ Truth-doc ownership gate:
 7. Report changed code files and verification steps.
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/areas.md
-- Area route files, when present: docs/truthmark/areas/**/*.md
-- Truth docs, when present: docs/truth/**/*.md
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Truth docs, when present: docs/truthmark/truth/**/*.md
 
 Read and write boundaries:
 
@@ -53,7 +53,7 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- docs/truth/authentication/session-timeout.md
+- docs/truthmark/truth/authentication/session-timeout.md
 
 Code updated:
 - src/auth/session.ts

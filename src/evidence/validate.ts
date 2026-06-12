@@ -19,13 +19,25 @@ const pathExists = async (filePath: string): Promise<boolean> => {
 };
 
 const diagnosticFor = (reference: EvidenceReference, message: string): Diagnostic => ({
-  category: "freshness",
+  category: "source-traceability",
   severity: "error",
   message,
   file: reference.truthDocPath,
   data: {
     reference: reference.path,
     source: reference.source,
+  },
+});
+
+const parseDiagnosticFor = (truthDocPath: string, error: unknown): Diagnostic => ({
+  category: "source-traceability",
+  severity: "error",
+  message: `Malformed evidence YAML block in ${truthDocPath}: ${
+    error instanceof Error ? error.message : String(error)
+  }`,
+  file: truthDocPath,
+  data: {
+    source: "evidence-block",
   },
 });
 
@@ -159,7 +171,13 @@ export const validateEvidenceReferences = async (
   const diagnostics: Diagnostic[] = [];
 
   for (const truthDocPath of [...truthDocPaths].sort()) {
-    const references = await parseEvidenceReferences(rootDir, truthDocPath);
+    let references: EvidenceReference[];
+    try {
+      references = await parseEvidenceReferences(rootDir, truthDocPath);
+    } catch (error) {
+      diagnostics.push(parseDiagnosticFor(truthDocPath, error));
+      continue;
+    }
 
     for (const reference of references) {
       diagnostics.push(...(await validateReference(rootDir, reference)));

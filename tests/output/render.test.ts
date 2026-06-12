@@ -78,7 +78,7 @@ describe("output rendering", () => {
         },
       ],
       data: {
-        files: [".truthmark/config.yml", "docs/truthmark/areas.md"],
+        files: [".truthmark/config.yml", "docs/truthmark/routes/areas.md"],
       },
     };
 
@@ -102,7 +102,9 @@ describe("output rendering", () => {
       "repo-index",
       "impact",
       "freshness",
+      "source-traceability",
       "context-pack",
+      "workflow-state",
     ]);
   });
 });

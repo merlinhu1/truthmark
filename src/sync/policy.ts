@@ -19,12 +19,12 @@ export const TRUTH_SYNC_BOUNDARIES = {
     "changed functional code files",
     "nearby implementation context when needed to understand the changed surface",
     ".truthmark/config.yml",
-    "docs/truthmark/areas.md",
+    "configured Truthmark route files",
     "mapped truth docs",
   ],
   write: [
     "truth docs only",
-    "docs/truthmark/areas.md when creating or repairing truth routing",
+    "configured Truthmark route files when creating or repairing truth routing",
   ],
   prohibit: ["must not rewrite functional code"],
 } as const;

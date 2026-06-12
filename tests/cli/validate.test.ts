@@ -9,10 +9,10 @@ Changed code reviewed:
 - src/init/init.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truth/init-and-scaffold.md
+- docs/truthmark/truth/init-and-scaffold.md
 
 Evidence checked:
 - Claim: Init writes generated workflow files.
@@ -33,10 +33,10 @@ Implementation reviewed:
 - src/templates/workflow-surfaces.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truth/workflows/helpers.md
+- docs/truthmark/truth/workflows/helpers.md
 
 Evidence checked:
 - Claim: Helpers are optional.
@@ -145,8 +145,8 @@ describe("truthmark validate CLI helpers", () => {
   it("rejects write-lease path traversal and Windows absolute changed paths", async () => {
     const repo = await createTempRepo();
     try {
-      await repo.writeFile("lease.yml", "allowedWrites:\n  - docs/truth/**\nforbiddenWrites:\n  - src/**\n");
-      await repo.writeFile("changed-files.txt", "C:/repo/docs/truth/secret.md\n");
+      await repo.writeFile("lease.yml", "allowedWrites:\n  - docs/truthmark/truth/**\nforbiddenWrites:\n  - src/**\n");
+      await repo.writeFile("changed-files.txt", "C:/repo/docs/truthmark/truth/secret.md\n");
 
       const result = await runCli(
         ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],

@@ -37,7 +37,7 @@ describe("buildRepoIndex", () => {
       expect.objectContaining({ name: "sample", version: "1.0.0", manager: "npm" }),
     );
     expect(result.files.map((file) => file.path)).toContain("src/math.ts");
-    expect(result.docs.map((doc) => doc.path)).toContain("docs/truth/repository/overview.md");
+    expect(result.docs.map((doc) => doc.path)).toContain("docs/truthmark/truth/repository/overview.md");
     expect(result.files).toContainEqual(
       expect.objectContaining({ path: "AGENTS.md", kind: "generated" }),
     );

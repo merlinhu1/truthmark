@@ -21,13 +21,13 @@ describe("installed workflow contract", () => {
 
       const agents = await repo.readFile("AGENTS.md");
       const structureSkill = await repo.readFile(
-        ".codex/skills/truthmark-structure/SKILL.md",
+        ".agents/skills/truthmark-structure/SKILL.md",
       );
       const syncSkill = await repo.readFile(
-        ".codex/skills/truthmark-sync/SKILL.md",
+        ".agents/skills/truthmark-sync/SKILL.md",
       );
       const documentSkill = await repo.readFile(
-        ".codex/skills/truthmark-document/SKILL.md",
+        ".agents/skills/truthmark-document/SKILL.md",
       );
       const syncOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
@@ -36,16 +36,16 @@ describe("installed workflow contract", () => {
         ".claude/skills/truthmark-sync/SKILL.md",
       );
       const realizeSkill = await repo.readFile(
-        ".codex/skills/truthmark-realize/SKILL.md",
+        ".agents/skills/truthmark-realize/SKILL.md",
       );
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
       const previewSkill = await repo.readFile(
-        ".codex/skills/truthmark-preview/SKILL.md",
+        ".agents/skills/truthmark-preview/SKILL.md",
       );
       const checkSkill = await repo.readFile(
-        ".codex/skills/truthmark-check/SKILL.md",
+        ".agents/skills/truthmark-check/SKILL.md",
       );
       const routeAuditorAgent = await repo.readFile(
         ".codex/agents/truth-route-auditor.toml",
@@ -81,7 +81,7 @@ describe("installed workflow contract", () => {
       expect(structureSkill).toContain(
         "Follow repository instruction files that exist in this checkout",
       );
-      expect(structureSkill).toContain("docs/truthmark/areas.md");
+      expect(structureSkill).toContain("docs/truthmark/routes/areas.md");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain(
         "Follow repository instruction files that exist in this checkout",

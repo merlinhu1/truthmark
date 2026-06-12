@@ -179,7 +179,7 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     },
   ];
 
-  if (config.truthmarkPortal.enabled) {
+  if (config.truthmark.generated.portal.enabled) {
     files.push(
       ...renderTruthmarkSkillPackage({
         skillPath: TRUTHMARK_PORTAL_SKILL_PATH,
@@ -253,7 +253,7 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     },
   ];
 
-  if (config.truthmarkPortal.enabled) {
+  if (config.truthmark.generated.portal.enabled) {
     files.push(
       ...renderTruthmarkSkillPackage({
         skillPath: ".opencode/skills/truthmark-portal/SKILL.md",
@@ -327,7 +327,7 @@ const claudeFiles = (
     },
   ];
 
-  if (config.truthmarkPortal.enabled) {
+  if (config.truthmark.generated.portal.enabled) {
     files.push(
       ...renderTruthmarkSkillPackage({
         skillPath: ".claude/skills/truthmark-portal/SKILL.md",
@@ -425,7 +425,7 @@ const copilotFiles = (
     },
   ];
 
-  if (config.truthmarkPortal.enabled) {
+  if (config.truthmark.generated.portal.enabled) {
     files.push(
       ...renderTruthmarkSkillPackage({
         skillPath: ".github/skills/truthmark-portal/SKILL.md",
@@ -527,7 +527,7 @@ const geminiFiles = (
     },
   ];
 
-  if (config.truthmarkPortal.enabled) {
+  if (config.truthmark.generated.portal.enabled) {
     files.push(
       ...renderTruthmarkSkillPackage({
         skillPath: ".gemini/skills/truthmark-portal/SKILL.md",

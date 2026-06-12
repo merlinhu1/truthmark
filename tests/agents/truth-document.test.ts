@@ -45,7 +45,7 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("existing implemented behavior");
     expect(skill).toContain("no functional-code changes");
     expect(skill).toContain("must not write functional code");
-    expect(skill).toContain("docs/templates/<kind>-doc.md");
+    expect(skill).toContain("configured Truthmark templates root");
     expect(skill).toContain("When creating or updating a truth doc");
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
@@ -119,33 +119,20 @@ describe("renderTruthDocumentSkillBody", () => {
 
     expect(report).toContain("Truth Document: completed");
     expect(report).toContain("src/routing/area-resolver.ts");
-    expect(report).toContain("docs/truth/contracts.md");
+    expect(report).toContain("docs/truthmark/truth/contracts.md");
     expect(report).toContain("Evidence checked");
     expect(report).toContain("Claim:");
   });
 
   it("uses the provided hierarchy config in embedded report examples", () => {
-    const baseConfig = createDefaultConfig();
-    const config = {
-      ...baseConfig,
-      docs: {
-        ...baseConfig.docs,
-        roots: {
-          ...baseConfig.docs.roots,
-          truth: "docs/truth",
-        },
-        routing: {
-          ...baseConfig.docs.routing,
-          rootIndex: "docs/routes/index.md",
-          areaFilesRoot: "docs/routes/areas",
-        },
-      },
-    };
+    const config = createDefaultConfig();
+    config.truthmark.paths.routesIndex = "docs/routes/index.md";
+    config.truthmark.paths.routeAreasRoot = "docs/routes/areas";
 
     const skill = renderTruthDocumentSkillBody(config);
 
-    expect(skill).toContain("docs/truth/contracts.md");
-    expect(skill).toContain("docs/truth/check-diagnostics.md");
+    expect(skill).toContain("docs/truthmark/truth/contracts.md");
+    expect(skill).toContain("docs/truthmark/truth/check-diagnostics.md");
     expect(skill).toContain("docs/routes/index.md");
   });
 });

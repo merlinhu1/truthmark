@@ -32,10 +32,11 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 - `docs/ai/` for repository rules and agent onboarding
 - `docs/truthmark/` for routing metadata
 - `docs/standards/` for reusable constraints and completion rules
-- `docs/architecture/` for current system structure
-- `docs/truth/` for current behavior and invariants
-- `docs/templates/` for editable scaffold templates used to create new docs
-- `docs/truth/contracts.md` for stable contracts the CLI exposes
+- `docs/truthmark/truth/architecture/` for current system structure
+- `docs/architecture/` for repository-specific architecture guardrails
+- `docs/truthmark/truth/` for current behavior and invariants
+- `docs/truthmark/templates/` for editable scaffold templates used to create new docs
+- `docs/truthmark/truth/contracts.md` for stable contracts the CLI exposes
 
 ### Human-centric docs
 
@@ -48,9 +49,10 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 | `docs/ai/` | agent rules | agent | Repository-wide rules and fast onboarding |
 | `docs/truthmark/` | routing | both | Truth-routing metadata such as `areas.md` and `areas/**/*.md` |
 | `docs/standards/` | standard | agent | Reusable constraints, verification rules, completion gates |
-| `docs/architecture/` | architecture | agent | Current structure and module boundaries |
-| `docs/truth/` | truth | agent | Current behavior for init, check, contracts, and installed workflows |
-| `docs/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
+| `docs/truthmark/truth/architecture/` | architecture | agent | Current structure and module boundaries |
+| `docs/architecture/` | architecture | agent | Repository-specific architecture guardrails |
+| `docs/truthmark/truth/` | truth | agent | Current behavior for init, check, contracts, and installed workflows |
+| `docs/truthmark/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
 
 ## Frontmatter Policy
 
@@ -64,7 +66,7 @@ Canonical docs should include frontmatter and keep these fields current:
 ## Update Rules
 
 - When repository-wide agent policy changes, update [docs/ai/repo-rules.md](ai/repo-rules.md).
-- When code-to-doc routing changes, update [docs/truthmark/areas.md](truthmark/areas.md) in the same change.
+- When code-to-doc routing changes, update [docs/truthmark/routes/areas.md](truthmark/routes/areas.md) in the same change.
 - When package versions or release/version policy change, apply [docs/standards/versioning.md](standards/versioning.md) before accepting the version.
 - When PR or release source text is needed, write a `changes/` note using [docs/standards/change-notes.md](standards/change-notes.md).
 - When `truthmark init` or scaffolded files change, update the relevant truth or architecture doc, not only [README.md](../README.md).
@@ -85,18 +87,18 @@ New repositories should run `truthmark config` before `truthmark init` so teams 
 1. [README.md](../README.md)
 2. [.truthmark/config.yml](../.truthmark/config.yml)
 3. [docs/ai/repo-rules.md](ai/repo-rules.md)
-4. [docs/architecture/overview.md](architecture/overview.md)
+4. [docs/truthmark/truth/architecture/overview.md](truthmark/truth/architecture/overview.md)
 5. the relevant truth or standard doc for the area being changed
 
 ### For agents
 
 1. [docs/ai/repo-rules.md](ai/repo-rules.md)
 2. [docs/ai/agent-onboarding.md](ai/agent-onboarding.md), when routing is unclear or cross-area
-3. [docs/truthmark/areas.md](truthmark/areas.md), when mapping code to canonical truth
-4. [docs/architecture/module-map.md](architecture/module-map.md), when changing module boundaries
+3. [docs/truthmark/routes/areas.md](truthmark/routes/areas.md), when mapping code to canonical truth
+4. [docs/truthmark/truth/architecture/module-map.md](truthmark/truth/architecture/module-map.md), when changing module boundaries
 5. the relevant standard and truth docs for the task
 
-Use [docs/truth/routing-examples.md](truth/routing-examples.md) when designing areas for larger API, frontend, infrastructure, or monorepo repositories.
+Use [docs/truthmark/truth/routing-examples.md](truth/routing-examples.md) when designing areas for larger API, frontend, infrastructure, or monorepo repositories.
 
 ## Maintenance Principle
 

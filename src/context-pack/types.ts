@@ -7,6 +7,7 @@ export type ContextPackWorkflow = "truth-sync" | "truth-document" | "truth-reali
 export type ContextDocument = {
   path: string;
   content: string;
+  truncated: boolean;
 };
 
 export type ContextSourceFile = {

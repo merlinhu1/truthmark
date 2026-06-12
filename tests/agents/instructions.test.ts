@@ -50,24 +50,15 @@ describe("renderTruthSyncInstructions", () => {
   });
 
   it("uses the configured route index in the compact Sync reminder", () => {
-    const baseConfig = createDefaultConfig();
-    const config = {
-      ...baseConfig,
-      docs: {
-        ...baseConfig.docs,
-        routing: {
-          ...baseConfig.docs.routing,
-          rootIndex: "docs/routes/index.md",
-          areaFilesRoot: "docs/routes/areas",
-        },
-      },
-    };
+    const config = createDefaultConfig();
+    config.truthmark.paths.routesIndex = "docs/routes/index.md";
+    config.truthmark.paths.routeAreasRoot = "docs/routes/areas";
 
     const instructions = renderTruthSyncInstructions(config);
 
     expect(instructions).toContain("docs/routes/index.md; docs/routes/areas/");
     expect(instructions).toContain("only when present");
-    expect(instructions).not.toContain("docs/truthmark/areas.md; docs/truthmark/areas/");
+    expect(instructions).not.toContain("docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/");
   });
 });
 

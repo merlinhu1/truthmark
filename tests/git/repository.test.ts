@@ -71,8 +71,8 @@ describe("resolveWorktreePath", () => {
     try {
       const repository = await getGitRepository(repo.rootDir);
 
-      expect(resolveWorktreePath(repository, "docs/truthmark/areas.md")).toBe(
-        path.join(repo.rootDir, "docs", "truthmark", "areas.md"),
+      expect(resolveWorktreePath(repository, "docs/truthmark/routes/areas.md")).toBe(
+        path.join(repo.rootDir, "docs", "truthmark", "routes", "areas.md"),
       );
       expect(() => resolveWorktreePath(repository, "../outside.txt")).toThrow(
         "must stay inside the active worktree",

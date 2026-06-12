@@ -26,12 +26,12 @@ export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
 ].join("\n");
 
 export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
-  "When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.",
+  "When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.",
   "Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.",
   "Treat the HTML comments under each template section as normative authoring guidance for that section.",
   "Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.",
   "If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.",
-  "Teams may edit the template files under docs/templates/ to define their local truth-doc standards.",
+  "Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.",
 ].join("\n");
 
 export const renderTruthDocOwnershipGateSection = (
@@ -269,8 +269,8 @@ export const renderHierarchySummary = (config: TruthmarkConfig): string => {
   return [
     "Truthmark hierarchy hints:",
     "- Config, when present: .truthmark/config.yml",
-    `- Root route index, when present: ${config.docs.routing.rootIndex}`,
-    `- Area route files, when present: ${config.docs.routing.areaFilesRoot}/**/*.md`,
+    `- Root route index, when present: ${config.truthmark.paths.routesIndex}`,
+    `- Area route files, when present: ${config.truthmark.paths.routeAreasRoot}/**/*.md`,
     `- Truth docs, when present: ${truthRoot}/**/*.md`,
   ].join("\n");
 };

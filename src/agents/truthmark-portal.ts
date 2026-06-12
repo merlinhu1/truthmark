@@ -10,13 +10,13 @@ export const renderTruthmarkPortalSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-portal");
-  const output = config.truthmarkPortal.output;
-  const template = config.truthmarkPortal.template;
+  const output = config.truthmark.paths.portalOutput;
+  const template = config.truthmark.paths.portalTemplate;
 
   return `---
 name: truthmark-portal
 description: ${workflow.description}
-argument-hint: Optional output path, template, or portal generation focus
+argument-hint: Optional portal generation focus
 user-invocable: true
 truthmark-version: ${TRUTHMARK_VERSION}
 ---
@@ -32,9 +32,9 @@ Core rules:
 - Markdown remains canonical; generated HTML is presentation only.
 - Read Markdown directly from the checkout; the workflow does not require the truthmark CLI or package.
 - truthmark check/index may be used only as optional supporting evidence when available.
-- Default output is docs/truthmark-portal; configured output is ${output}.
-- Configured template is ${template}; use default built-in template instructions when the template is default.
-- The workflow may replace the entire output directory, but writes are limited to the configured Portal output directory only unless the user changes scope.
+- Determined Portal output is ${output}.
+- Determined Portal template path is ${template}; use built-in template instructions if that file is absent.
+- The workflow may replace the entire output directory, but writes are limited to the fixed Portal output directory only.
 - Portal writes are generated non-canonical static files for human browsing.
 - Generate a committed multi-page static HTML site with local CSS, JavaScript, assets, and search metadata under the output directory.
 - Use no remote dependencies by default: no remote scripts, analytics, fonts, CSS, or CDN assets.
@@ -46,8 +46,8 @@ Core rules:
 Workflow:
 
 1. Confirm the user explicitly requested Portal generation or refresh.
-2. Inspect .truthmark/config.yml and configured route docs only when they exist; read repository instruction files when present, truth docs, architecture docs, standards docs, and the configured Portal template when it is a repo-relative file.
-3. Validate the selected output path is repo-relative, non-empty, inside the repository, and does not overlap canonical docs, source roots, routing files, or instruction targets.
+2. Inspect .truthmark/config.yml and configured route docs only when they exist; read repository instruction files when present, truth docs, architecture docs, standards docs, and the determined Portal template when present.
+3. Validate the determined output path is repo-relative, non-empty, inside the repository, and does not overlap canonical docs, source roots, routing files, or instruction targets.
 4. Plan the generated page inventory, diagrams/assets, source docs reviewed, and skipped or ambiguous docs.
 5. Replace or write only under ${output}; do not edit canonical Markdown, routing, source code, or instruction files unless the user explicitly changes scope.
 6. Generate the multi-page static site with local assets/search metadata and visible source provenance.

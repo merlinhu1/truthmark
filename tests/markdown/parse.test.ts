@@ -35,20 +35,20 @@ describe("resolveAuthorityPaths", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("docs/truthmark/areas.md", "# Truthmark Areas\n");
+      await repo.writeFile("docs/truthmark/routes/areas.md", "# Truthmark Areas\n");
       await repo.writeFile("docs/guides/beta.md", "# Beta\n");
       await repo.writeFile("docs/guides/alpha.md", "# Alpha\n");
       await repo.writeFile("docs/api/authentication.md", "# Auth API\n");
 
       const result = await resolveAuthorityPaths(repo.rootDir, [
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         "docs/guides/*.md",
         "docs/api/*.md",
       ]);
 
       expect(result.diagnostics).toEqual([]);
       expect(result.paths).toEqual([
-        "docs/truthmark/areas.md",
+        "docs/truthmark/routes/areas.md",
         "docs/guides/alpha.md",
         "docs/guides/beta.md",
         "docs/api/authentication.md",

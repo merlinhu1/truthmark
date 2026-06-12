@@ -7,14 +7,14 @@ export const TRUTHMARK_BLOCK_END = "<!-- truthmark:end -->";
 
 const renderCompactHierarchySummary = (config: TruthmarkConfig): string => {
   const truthRoot = resolveTruthDocsRoot(config);
-  return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.docs.routing.rootIndex} and ${config.docs.routing.areaFilesRoot}/**/*.md when present; Truth docs: ${truthRoot}/**/*.md when present.`;
+  return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.truthmark.paths.routesIndex} and ${config.truthmark.paths.routeAreasRoot}/**/*.md when present; Truth docs: ${truthRoot}/**/*.md when present.`;
 };
 
 export const renderAgentsBlock = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const portalLine = config.truthmarkPortal.enabled
-    ? `Truthmark Portal is a separate manual-only presentation workflow. Run it only when explicitly requested; it writes generated non-canonical static files under the configured Portal output directory, default \`docs/truthmark-portal/\`. Markdown remains canonical.`
+  const portalLine = config.truthmark.generated.portal.enabled
+    ? `Truthmark Portal is a separate manual-only presentation workflow. Run it only when explicitly requested; it writes generated non-canonical static files under ${config.truthmark.paths.portalOutput}/. Markdown remains canonical.`
     : null;
 
   return [

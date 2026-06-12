@@ -24,13 +24,13 @@ describe("getBranchScopeData", () => {
       expect(branchScope.relevantFileHashes).toEqual(
         expect.objectContaining({
           ".truthmark/config.yml": expect.stringMatching(/^[0-9a-f]{64}$/),
-          "docs/truthmark/areas.md": expect.stringMatching(/^[0-9a-f]{64}$/),
+          "docs/truthmark/routes/areas.md": expect.stringMatching(/^[0-9a-f]{64}$/),
         }),
       );
       expect(Object.keys(branchScope.relevantFileHashes).sort()).toEqual([
         ".truthmark/config.yml",
-        "docs/truthmark/areas.md",
-        "docs/truthmark/areas/repository.md",
+        "docs/truthmark/routes/areas.md",
+        "docs/truthmark/routes/areas/repository.md",
       ]);
     } finally {
       await repo.cleanup();

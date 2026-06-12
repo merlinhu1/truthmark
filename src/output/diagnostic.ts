@@ -12,7 +12,9 @@ export const DIAGNOSTIC_CATEGORIES = [
   "repo-index",
   "impact",
   "freshness",
+  "source-traceability",
   "context-pack",
+  "workflow-state",
 ] as const;
 
 export type DiagnosticCategory = (typeof DIAGNOSTIC_CATEGORIES)[number];

@@ -85,8 +85,8 @@ export const checkAreas = async (
   config: TruthmarkConfig,
 ): Promise<AreasCheckResult> => {
   const routing = await resolveAreaRouting(rootDir, {
-    rootIndex: config.docs.routing.rootIndex,
-    areaFilesRoot: config.docs.routing.areaFilesRoot,
+    rootIndex: config.truthmark.paths.routesIndex,
+    areaFilesRoot: config.truthmark.paths.routeAreasRoot,
     truthDocsRoot: resolveTruthDocsRoot(config),
   });
 

@@ -7,6 +7,7 @@ import {
   getTruthmarkWorkflow,
   type TruthmarkWorkflowId,
 } from "../../src/agents/workflow-manifest.js";
+import { NO_CLI_FALLBACK_EVAL_CASES } from "./no-cli-fallback-cases.js";
 import { WORKFLOW_ROUTING_EVAL_CASES } from "./workflow-routing-cases.js";
 
 const WORKFLOW_COMMAND_PATHS: Record<TruthmarkWorkflowId, string> = {
@@ -20,7 +21,7 @@ const WORKFLOW_COMMAND_PATHS: Record<TruthmarkWorkflowId, string> = {
 };
 
 const WORKFLOW_SURFACE_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
-  `.codex/skills/${id}/SKILL.md`,
+  `.agents/skills/${id}/SKILL.md`,
   `.opencode/skills/${id}/SKILL.md`,
   `.claude/skills/${id}/SKILL.md`,
   `.github/prompts/${id}.prompt.md`,
@@ -28,7 +29,7 @@ const WORKFLOW_SURFACE_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
 ];
 
 const CODEX_METADATA_PATHS = (id: TruthmarkWorkflowId): string =>
-  `.codex/skills/${id}/agents/openai.yaml`;
+  `.agents/skills/${id}/agents/openai.yaml`;
 
 const WORKFLOW_SKILL_PACKAGE_PATHS = (
   hostSkillRoot: string,
@@ -52,7 +53,7 @@ const WORKFLOW_SKILL_PACKAGE_PATHS = (
 const WORKFLOW_CONTRACT_PATH_GROUPS = (
   id: TruthmarkWorkflowId,
 ): readonly (readonly string[])[] => [
-  WORKFLOW_SKILL_PACKAGE_PATHS(".codex/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
   [`.github/prompts/${id}.prompt.md`],
@@ -111,13 +112,30 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   ],
   "truthmark-portal": [
     "manual-only presentation workflow",
-    "configured Portal output directory only",
+    "fixed Portal output directory only",
     "Markdown remains canonical",
     "Truthmark Portal: completed",
     "Output path:",
     "Markdown canonical statement:",
   ],
 };
+
+const NO_CLI_FALLBACK_SCENARIOS = [
+  "single-file-one-truth-doc",
+  "multi-file-one-truth-doc",
+  "multi-route-multiple-truth-docs",
+  "ambiguous-unmapped-code-blocks",
+  "broad-index-truth-doc-triggers-structure",
+  "evidence-reference-stale-or-missing",
+  "preserve-product-decisions-rationale",
+] as const;
+
+const NO_CLI_FALLBACK_EQUIVALENCE_AXES = [
+  "same target docs",
+  "same block/apply decision",
+  "same write boundary",
+  "same evidence status",
+] as const;
 
 const manifestRoutingText = (id: TruthmarkWorkflowId): string => {
   const workflow = getTruthmarkWorkflow(id);
@@ -145,7 +163,7 @@ const candidateManifestText = (
 
 const buildGeneratedSurfaceMap = (): Map<string, string> => {
   const config = createDefaultConfig();
-  config.truthmarkPortal.enabled = true;
+  config.truthmark.generated.portal.enabled = true;
   return new Map(
     renderGeneratedSurfaces(config).map((surface) => [
       surface.path,
@@ -188,6 +206,31 @@ describe("workflow routing eval corpus", () => {
       }
     },
   );
+});
+
+describe("no-CLI fallback eval corpus", () => {
+  it("covers route-first fallback outcomes before any hard budget policy is added", () => {
+    const caseIds = NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.id);
+
+    expect(caseIds).toEqual(expect.arrayContaining([...NO_CLI_FALLBACK_SCENARIOS]));
+
+    for (const testCase of NO_CLI_FALLBACK_EVAL_CASES) {
+      expect(testCase.changedSurface.length).toBeGreaterThan(0);
+      expect(testCase.equivalenceAxes).toEqual([...NO_CLI_FALLBACK_EQUIVALENCE_AXES]);
+      expect(testCase.expectedCliOutcome).toEqual(
+        expect.objectContaining({
+          decision: expect.stringMatching(/^(apply|block|structure)$/u),
+          evidenceStatus: expect.stringMatching(
+            /^(current|missing-or-stale|requires-preservation-check)$/u,
+          ),
+        }),
+      );
+    }
+
+    expect(NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.scenario).join("\n")).not.toMatch(
+      /token budget|hard budget/iu,
+    );
+  });
 });
 
 describe("generated workflow surface conformance", () => {
@@ -242,5 +285,82 @@ describe("generated workflow surface conformance", () => {
         }
       }
     }
+  });
+
+  it("keeps write-workflow no-CLI fallback route-first and non-expansive", () => {
+    const writeWorkflowExpectations: Record<
+      | "truthmark-sync"
+      | "truthmark-structure"
+      | "truthmark-document"
+      | "truthmark-realize",
+      readonly string[]
+    > = {
+      "truthmark-sync": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect relevant canonical docs directly.",
+        "direct checkout inspection is the canonical path; do not require the truthmark binary.",
+        "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
+        "Read support/procedure.md before editing truth docs.",
+      ],
+      "truthmark-structure": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect current docs and relevant code directly.",
+        "Define areas by product or behavior ownership, not by mechanical directory mirroring.",
+        "Do not edit functional code.",
+        "Read support/procedure.md before writing route or starter truth-doc changes.",
+      ],
+      "truthmark-document": [
+        "Inspect .truthmark/config.yml and configured route files",
+        "only when they exist; then inspect existing canonical docs, implementation code, and tests directly.",
+        "Document current implemented behavior; do not invent future behavior.",
+        "May write canonical truth docs and truth routing files only; must not write functional code.",
+        "Read support/procedure.md before editing truth docs.",
+      ],
+      "truthmark-realize": [
+        "Read the source truth docs, inspect .truthmark/config.yml and configured route files",
+        "only when they exist, then inspect tests and relevant functional code directly.",
+        "Truth docs lead; code follows.",
+        "may write functional code only; must not edit truth docs or truth routing while realizing those docs.",
+        "Read support/procedure.md before changing code.",
+      ],
+    };
+
+    for (const [id, expectedTerms] of Object.entries(writeWorkflowExpectations)) {
+      const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
+
+      expect(content, `${id} Codex skill is generated`).toBeDefined();
+      expect(content).toContain(
+        "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
+      );
+      expect(content).not.toContain("## Optional local CLI validation");
+      expect(content).not.toContain(
+        "If the local Truthmark CLI is unavailable or too old",
+      );
+      expect(content).not.toContain(
+        "use the checked-in workflow files as the contract",
+      );
+      expect(content).not.toContain("Follow the route-first procedure");
+
+      for (const term of expectedTerms) {
+        expect(content).toContain(term);
+      }
+    }
+  });
+
+  it("labels non-main progressive-disclosure files as conditional", () => {
+    const syncSkill = surfaces.get(".agents/skills/truthmark-sync/SKILL.md");
+
+    expect(syncSkill).toContain(
+      "support/procedure.md — read before edits or detailed auditing; contains core quality gates",
+    );
+    expect(syncSkill).toContain(
+      "support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output",
+    );
+    expect(syncSkill).toContain(
+      "helper-manifest.yml — read only when invoking helper validators or validating helper registration",
+    );
+    expect(syncSkill).toContain(
+      "support/helper-policy.md — read only when invoking helper validators or reporting helper status",
+    );
   });
 });

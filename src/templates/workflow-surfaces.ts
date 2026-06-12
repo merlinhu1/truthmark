@@ -48,46 +48,46 @@ import {
 import { TRUTHMARK_VERSION } from "../version.js";
 
 export const TRUTHMARK_STRUCTURE_SKILL_PATH =
-  ".codex/skills/truthmark-structure/SKILL.md";
+  ".agents/skills/truthmark-structure/SKILL.md";
 
 export const TRUTHMARK_STRUCTURE_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-structure/agents/openai.yaml";
+  ".agents/skills/truthmark-structure/agents/openai.yaml";
 
 export const TRUTHMARK_DOCUMENT_SKILL_PATH =
-  ".codex/skills/truthmark-document/SKILL.md";
+  ".agents/skills/truthmark-document/SKILL.md";
 
 export const TRUTHMARK_DOCUMENT_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-document/agents/openai.yaml";
+  ".agents/skills/truthmark-document/agents/openai.yaml";
 
 export const TRUTHMARK_SYNC_SKILL_PATH =
-  ".codex/skills/truthmark-sync/SKILL.md";
+  ".agents/skills/truthmark-sync/SKILL.md";
 
 export const TRUTHMARK_SYNC_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-sync/agents/openai.yaml";
+  ".agents/skills/truthmark-sync/agents/openai.yaml";
 
 export const TRUTHMARK_REALIZE_SKILL_PATH =
-  ".codex/skills/truthmark-realize/SKILL.md";
+  ".agents/skills/truthmark-realize/SKILL.md";
 
 export const TRUTHMARK_REALIZE_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-realize/agents/openai.yaml";
+  ".agents/skills/truthmark-realize/agents/openai.yaml";
 
 export const TRUTHMARK_CHECK_SKILL_PATH =
-  ".codex/skills/truthmark-check/SKILL.md";
+  ".agents/skills/truthmark-check/SKILL.md";
 
 export const TRUTHMARK_CHECK_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-check/agents/openai.yaml";
+  ".agents/skills/truthmark-check/agents/openai.yaml";
 
 export const TRUTHMARK_PREVIEW_SKILL_PATH =
-  ".codex/skills/truthmark-preview/SKILL.md";
+  ".agents/skills/truthmark-preview/SKILL.md";
 
 export const TRUTHMARK_PREVIEW_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-preview/agents/openai.yaml";
+  ".agents/skills/truthmark-preview/agents/openai.yaml";
 
 export const TRUTHMARK_PORTAL_SKILL_PATH =
-  ".codex/skills/truthmark-portal/SKILL.md";
+  ".agents/skills/truthmark-portal/SKILL.md";
 
 export const TRUTHMARK_PORTAL_SKILL_METADATA_PATH =
-  ".codex/skills/truthmark-portal/agents/openai.yaml";
+  ".agents/skills/truthmark-portal/agents/openai.yaml";
 
 export const TRUTHMARK_ROUTE_AUDITOR_AGENT_PATH =
   ".codex/agents/truth-route-auditor.toml";
@@ -176,15 +176,15 @@ export const TRUTHMARK_COPILOT_PORTAL_PROMPT_PATH =
   ".github/prompts/truthmark-portal.prompt.md";
 
 export const TRUTHMARK_COPILOT_ROUTE_AUDITOR_AGENT_PATH =
-  ".github/agents/truth-route-auditor.agent.md";
+  ".github/agents/truth-route-auditor.md";
 
 export const TRUTHMARK_COPILOT_CLAIM_VERIFIER_AGENT_PATH =
-  ".github/agents/truth-claim-verifier.agent.md";
+  ".github/agents/truth-claim-verifier.md";
 
 export const TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH =
-  ".github/agents/truth-doc-reviewer.agent.md";
+  ".github/agents/truth-doc-reviewer.md";
 export const TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH =
-  ".github/agents/truth-doc-writer.agent.md";
+  ".github/agents/truth-doc-writer.md";
 
 const renderGeminiCommand = (description: string, prompt: string): string => {
   const promptWithArgs = `${prompt.trimEnd()}\nUser focus or arguments: {{args}}`;
@@ -242,7 +242,7 @@ const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.";
 
 const routeFilesHint = (config: TruthmarkConfig): string =>
-  `${config.docs.routing.rootIndex}; ${config.docs.routing.areaFilesRoot}/`;
+  `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
 
 const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   TruthmarkWorkflowId,
@@ -277,7 +277,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Document current implemented behavior; do not invent future behavior.",
       "May write canonical truth docs and truth routing files only; must not write functional code.",
       "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md before dispatching or accepting worker output.",
+      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule:
@@ -296,7 +296,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "direct checkout inspection is the canonical path; do not require the truthmark binary.",
       "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
       "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md before dispatching or accepting worker output.",
+      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule:
@@ -344,16 +344,15 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect canonical docs and relevant implementation directly.`,
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
-      "Direct checkout inspection is valid even when local tooling is unavailable.",
       "Read support/procedure.md before auditing details.",
-      "Read support/subagents-and-leases.md before dispatching verifier subagents.",
+      "Read support/subagents-and-leases.md only when dispatching verifier subagents.",
       "Read support/report-template.md before the final report.",
     ],
     parentRule: "Parent agent owns the final Truth Check report",
   },
   "truthmark-portal": {
     title: "Truthmark Portal",
-    argumentHint: "Optional output path, template, or portal generation focus",
+    argumentHint: "Optional portal generation focus",
     invocations: TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to generate or refresh the committed static HTML Truthmark Portal.",
@@ -363,8 +362,8 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Markdown remains canonical; generated HTML is non-canonical presentation only.",
       "Read Markdown directly; the workflow does not require the truthmark CLI or package.",
       "Generate committed, generated non-canonical static files for humans.",
-      `Write only under configured Portal output ${config.truthmarkPortal.output}; default output is docs/truthmark-portal.`,
-      `Use configured Portal template ${config.truthmarkPortal.template}; no .truthmark/index.json dependency.`,
+      `Write only under fixed Portal output ${config.truthmark.paths.portalOutput}.`,
+      `Use determined Portal template ${config.truthmark.paths.portalTemplate} when present; no .truthmark/index.json dependency.`,
       "Use no remote dependencies by default and include source provenance on every page.",
       "Read support/procedure.md before generating Portal output.",
       "Read support/report-template.md before the final report.",
@@ -497,8 +496,31 @@ const renderWorkflowEntrypoint = (
 ): string => {
   const workflow = getTruthmarkWorkflow(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
+  const supportFileUsage = (supportFile: string): string => {
+    if (supportFile === "support/procedure.md") {
+      return "read before edits or detailed auditing; contains core quality gates";
+    }
+
+    if (supportFile === "support/report-template.md") {
+      return "read before the final report";
+    }
+
+    if (supportFile === "support/subagents-and-leases.md") {
+      return "read only when using subagents, leases, or accepting worker output";
+    }
+
+    if (supportFile === "support/helper-policy.md") {
+      return "read only when invoking helper validators or reporting helper status";
+    }
+
+    if (supportFile === "helper-manifest.yml") {
+      return "read only when invoking helper validators or validating helper registration";
+    }
+
+    return "available when relevant to the current step";
+  };
   const supportFileList = supportFiles
-    .map((supportFile) => `- ${supportFile}`)
+    .map((supportFile) => `- ${supportFile} — ${supportFileUsage(supportFile)}`)
     .join("\n");
   const hostUsage =
     host === "github-copilot"
@@ -517,8 +539,7 @@ truthmark-version: ${TRUTHMARK_VERSION}
 
 # ${definition.title}
 
-${definition.use(config)}
-${hostUsage === undefined ? "" : `\n${hostUsage}\n`}
+${definition.use(config)}${hostUsage === undefined ? "" : `\n\n${hostUsage}`}
 
 Invocations: ${definition.invocations}
 
@@ -676,10 +697,10 @@ const renderOpenCodeWriterEditAllowRules = (
     resolveTruthDocsRoot(config),
   );
   const rootRouteIndex = normalizeOpenCodePermissionPath(
-    config.docs.routing.rootIndex,
+    config.truthmark.paths.routesIndex,
   );
   const areaFilesRoot = normalizeOpenCodePermissionPath(
-    config.docs.routing.areaFilesRoot,
+    config.truthmark.paths.routeAreasRoot,
   );
   const allowedPatterns = [
     appendOpenCodePermissionGlob(truthDocsRoot, "/**"),

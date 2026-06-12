@@ -39,7 +39,7 @@ The parent provides the task focus, explicit write lease, and any repository con
 Worker rules:
 - require a write lease with workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields before editing
 - inspect relevant staged, unstaged, and untracked functional code directly
-- inspect .truthmark/config.yml and configured route files (${config.docs.routing.rootIndex}; ${config.docs.routing.areaFilesRoot}/) only when they exist; then inspect canonical truth docs directly
+- inspect .truthmark/config.yml and configured route files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when they exist; then inspect canonical truth docs directly
 - Code verification is parent-owned; report what was run or why it was not run
 - may write only leased truth docs and leased truth routing files for Truth Sync alignment
 - must not rewrite functional code or generated host surfaces
@@ -173,12 +173,12 @@ Report completion in this shape:
 ${renderMarkdownExample(
     renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
-      ownershipReviewed: [config.docs.routing.rootIndex],
+      ownershipReviewed: [config.truthmark.paths.routesIndex],
       truthDocsUpdated: [`${truthDocsRoot}/repository/overview.md`],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the mapped repository truth doc.",
-          evidence: ["src/auth/session.ts:12", `${config.docs.routing.rootIndex}:11`],
+          evidence: ["src/auth/session.ts:12", `${config.truthmark.paths.routesIndex}:11`],
           result: "supported",
         },
       ],
@@ -190,7 +190,7 @@ Blocked report example:
 ${renderMarkdownExample(
   renderTruthSyncBlockedReport({
       reason: "routing repair is not allowed",
-      manualReviewFiles: [config.docs.routing.rootIndex],
+      manualReviewFiles: [config.truthmark.paths.routesIndex],
       nextAction: "update routing metadata and rerun Truth Sync",
     }),
   )}`;

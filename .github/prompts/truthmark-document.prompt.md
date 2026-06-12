@@ -8,7 +8,7 @@ name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 1.6.1
+truthmark-version: 2.1.0
 ---
 
 # Truthmark Document
@@ -23,7 +23,7 @@ Truth Document is manual and implementation-first:
 - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - document current implemented behavior; do not invent future behavior or planned endpoints
-- may write canonical truth docs and docs/truthmark/areas.md or relevant child route files only
+- may write canonical truth docs and docs/truthmark/routes/areas.md or relevant child route files only
 - must not write functional code
 - when routing is missing, stale, broad, overloaded, catch-all, or cannot map the behavior to a bounded truth owner, run Truth Structure first when routing repair is safe and in scope
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
@@ -63,12 +63,12 @@ Copilot custom-agent mode:
 Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
 If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
-When creating or updating a truth doc, inspect the routed truth kind and use the matching `docs/templates/<kind>-doc.md` template.
+When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
 Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
 Treat the HTML comments under each template section as normative authoring guidance for that section.
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
 If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
-Teams may edit the template files under docs/templates/ to define their local truth-doc standards.
+Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
 Truth-doc shape repair gate:
 - Truth Document may restructure only truth docs for the implemented behavior being documented.
 - repair shape in place only after the ownership gate confirms the doc is the right bounded owner
@@ -80,9 +80,9 @@ Maintain architecture docs only for structure-level changes: system structure, m
 Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/areas.md
-- Area route files, when present: docs/truthmark/areas/**/*.md
-- Truth docs, when present: docs/truth/**/*.md
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Truth docs, when present: docs/truthmark/truth/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Update Product Decisions and Rationale when a decision changes behavior.
@@ -106,23 +106,23 @@ Implementation reviewed:
 - src/routing/area-resolver.ts
 
 Ownership reviewed:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truth/contracts.md
+- docs/truthmark/truth/contracts.md
 
 Truth docs updated:
-- docs/truth/check-diagnostics.md
+- docs/truthmark/truth/check-diagnostics.md
 
 Truth docs restructured:
-- docs/truth/check-diagnostics.md
+- docs/truthmark/truth/check-diagnostics.md
 
 Routing updated:
-- docs/truthmark/areas.md
+- docs/truthmark/routes/areas.md
 
 Evidence checked:
 - Claim: Route resolution behavior is documented in the contracts truth doc.
-  Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/areas.md:9
+  Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/routes/areas.md:9
   Result: supported
 
 Helper scripts:

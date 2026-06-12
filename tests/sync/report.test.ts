@@ -11,14 +11,14 @@ describe("Truth Sync reporting", () => {
   it("renders completed handoff notes in the README shape", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
-      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
-      truthDocsUpdated: ["docs/truth/authentication.md"],
+      ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
+      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
           evidence: [
             "src/auth/session.ts:12",
-            "docs/truthmark/areas/repository.md:18",
+            "docs/truthmark/routes/areas/repository.md:18",
           ],
           result: "supported",
         },
@@ -32,14 +32,14 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Ownership reviewed:
-- docs/truthmark/areas/repository.md
+- docs/truthmark/routes/areas/repository.md
 
 Truth docs updated:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented in the authentication truth doc.
-  Evidence: src/auth/session.ts:12 / docs/truthmark/areas/repository.md:18
+  Evidence: src/auth/session.ts:12 / docs/truthmark/routes/areas/repository.md:18
   Result: supported
 
 Notes:
@@ -47,14 +47,14 @@ Notes:
     expect(parseTruthSyncReport(report)).toEqual({
       status: "completed",
       changedCode: ["src/auth/session.ts"],
-      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
-      truthDocsUpdated: ["docs/truth/authentication.md"],
+      ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
+      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
           evidence: [
             "src/auth/session.ts:12",
-            "docs/truthmark/areas/repository.md:18",
+            "docs/truthmark/routes/areas/repository.md:18",
           ],
           result: "supported",
         },
@@ -66,8 +66,8 @@ Notes:
   it("round-trips optional helper script statuses", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
-      ownershipReviewed: ["docs/truthmark/areas/repository.md"],
-      truthDocsUpdated: ["docs/truth/authentication.md"],
+      ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
+      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
@@ -103,7 +103,7 @@ Reason:
     expect(
       renderTruthSyncBlockedReport({
         reason: "relevant tests failed before sync",
-        manualReviewFiles: ["docs/truth/authentication.md"],
+        manualReviewFiles: ["docs/truthmark/truth/authentication.md"],
         nextAction: "fix the failing tests, then rerun Truth Sync",
       }),
     ).toBe(`Truth Sync: blocked
@@ -112,7 +112,7 @@ Reason:
 - relevant tests failed before sync
 
 Files requiring manual review:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Next action:
 - fix the failing tests, then rerun Truth Sync`);
@@ -126,7 +126,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Evidence checked:
 - Session timeout behavior was reviewed.
@@ -144,7 +144,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Evidence checked:
 - Claim:${"   "}
@@ -162,7 +162,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truth/authentication.md
+- docs/truthmark/truth/authentication.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented.

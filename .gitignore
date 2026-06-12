@@ -32,5 +32,6 @@ Thumbs.db
 *.swp
 *.swo
 *.swn
+.hermes/
 .lean-ctx/graph.db
 .lean-ctx/graph.meta.json

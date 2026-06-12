@@ -44,7 +44,7 @@ describe("buildImpactSet", () => {
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
 
-    const truthDocPath = "docs/truth/repository/overview.md";
+    const truthDocPath = "docs/truthmark/truth/repository/overview.md";
     await repo.writeFile(
       truthDocPath,
       `${await repo.readFile(truthDocPath)}\nUpdated direct truth-doc edit.\n`,
@@ -156,13 +156,13 @@ describe("buildImpactSet", () => {
     await runConfig(repo.rootDir, { force: false, stdout: false });
     await runInit(repo.rootDir);
     await repo.writeFile(
-      "docs/truthmark/areas.md",
+      "docs/truthmark/routes/areas.md",
       `# Truthmark Areas
 
 ## Old
 
 Truth documents:
-- docs/truth/old.md
+- docs/truthmark/truth/old.md
 
 Code surface:
 - src/old/**
@@ -173,7 +173,7 @@ Update truth when:
 ## New
 
 Truth documents:
-- docs/truth/new.md
+- docs/truthmark/truth/new.md
 
 Code surface:
 - src/new/**
@@ -182,8 +182,8 @@ Update truth when:
 - new behavior changes
 `,
     );
-    await repo.writeFile("docs/truth/old.md", "# Old\n");
-    await repo.writeFile("docs/truth/new.md", "# New\n");
+    await repo.writeFile("docs/truthmark/truth/old.md", "# Old\n");
+    await repo.writeFile("docs/truthmark/truth/new.md", "# New\n");
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
     await repo.runGit(["branch", "baseline"]);
@@ -199,7 +199,7 @@ Update truth when:
         status: "renamed",
       }),
     );
-    expect(impact.affectedTruthDocs).toEqual(["docs/truth/new.md", "docs/truth/old.md"]);
+    expect(impact.affectedTruthDocs).toEqual(["docs/truthmark/truth/new.md", "docs/truthmark/truth/old.md"]);
     expect(impact.changedPublicSymbols).toContainEqual({
       path: "src/old/api.ts",
       name: "oldApi",

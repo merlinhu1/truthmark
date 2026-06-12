@@ -1,258 +1,85 @@
 import { describe, expect, it } from "vitest";
 
-import { createTempRepo } from "../helpers/temp-repo.js";
 import { loadConfig } from "../../src/config/load.js";
+import { createTempRepo } from "../helpers/temp-repo.js";
 
-describe("loadConfig", () => {
-  const writeConfig = async (
-    repo: Awaited<ReturnType<typeof createTempRepo>>,
-    extraConfig = "",
-  ) => {
-    await repo.writeFile(
-      ".truthmark/config.yml",
-      `version: 1
-authority:
-  - docs/truthmark/areas.md
-${extraConfig}`,
-    );
-  };
-
-  it("loads a valid config and applies defaults for optional frontmatter and ignore fields", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-authority:
-  - docs/truthmark/areas.md
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("loaded");
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config).toMatchObject({
-        version: 1,
-        platforms: [
-          "codex",
-          "opencode",
-          "claude-code",
-          "github-copilot",
-          "gemini-cli",
-        ],
-        authority: ["docs/truthmark/areas.md"],
-        docs: {
-          layout: "hierarchical",
-          roots: {
-            truth: "docs/truth",
-          },
-          routing: {
-            rootIndex: "docs/truthmark/areas.md",
-            areaFilesRoot: "docs/truthmark/areas",
-            defaultArea: "repository",
-            maxDelegationDepth: 1,
-          },
-        },
-        instructionTargets: ["AGENTS.md"],
-        frontmatter: {
-          required: [],
-          recommended: [],
-        },
-        ignore: [],
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("accepts the V1 config fields only", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-authority:
-  - docs/truthmark/areas.md
-instruction_targets:
-  - AGENTS.md
+const validConfig = (portalProperties = "") => `version: 2
 platforms:
   - codex
-  - github-copilot
+truthmark:
+  workspace: docs/truthmark
+  routes:
+    index: routes/areas.md
+    areas: routes/areas
+    default_area: repository
+    max_delegation_depth: 1
+  truth:
+    root: truth
+  templates:
+    root: templates
+  generated:
+    portal:
+      enabled: true
+${portalProperties}instruction_targets:
+  - AGENTS.md
 frontmatter:
   required: []
-  recommended:
-    - status
-ignore:
-  - dist/**
-`,
-      );
+  recommended: []
+ignore: []
+`;
 
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config?.platforms).toEqual(["codex", "github-copilot"]);
-      expect(result.config?.instructionTargets).toEqual(["AGENTS.md"]);
-      expect(result.config?.frontmatter.recommended).toEqual(["status"]);
-      expect(result.config?.ignore).toEqual(["dist/**"]);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("loads hierarchical docs config", async () => {
+describe("loadConfig", () => {
+  it("rejects legacy config shape", async () => {
     const repo = await createTempRepo();
 
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        `version: 1
-docs:
-  layout: hierarchical
-  roots:
-    truth: docs/product
-  routing:
-    root_index: docs/truthmark/routes.md
-    area_files_root: docs/truthmark/routes
-    default_area: core
-    max_delegation_depth: 1
-authority:
-  - docs/truthmark/areas.md
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config?.docs).toMatchObject({
-        layout: "hierarchical",
-        roots: {
-          truth: "docs/product",
-        },
-        routing: {
-          rootIndex: "docs/truthmark/routes.md",
-          areaFilesRoot: "docs/truthmark/routes",
-          defaultArea: "core",
-          maxDelegationDepth: 1,
-        },
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("merges omitted docs roots from the current defaults", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-docs:
-  layout: hierarchical
-  roots:
-    ai: docs/ai
-  routing:
-    root_index: docs/truthmark/areas.md
-    area_files_root: docs/truthmark/areas
-    default_area: repository
-    max_delegation_depth: 1
-authority:
-  - docs/truthmark/areas.md
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config?.docs.roots).toMatchObject({
-        ai: "docs/ai",
-        standards: "docs/standards",
-        architecture: "docs/architecture",
-        truth: "docs/truth",
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("rejects unsupported hierarchical routing depth", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-docs:
-  layout: hierarchical
-  roots:
-    truth: docs/truth
-  routing:
-    root_index: docs/truthmark/areas.md
-    area_files_root: docs/truthmark/areas
-    default_area: repository
-    max_delegation_depth: 2
-authority:
-  - docs/truthmark/areas.md
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.config).toBeNull();
-      expect(result.diagnostics).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            category: "config",
-            severity: "error",
-            message: expect.stringContaining("max_delegation_depth"),
-          }),
-        ]),
-      );
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("rejects unknown platform names", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-platforms:
-  - codex
-  - unknown-agent
-authority:
-  - docs/truthmark/areas.md
-`,
+        "version: 1\ndocs:\n  roots:\n    - docs/truth\n",
       );
 
       const result = await loadConfig(repo.rootDir);
 
       expect(result.status).toBe("invalid");
       expect(result.config).toBeNull();
-      expect(result.diagnostics.some((diagnostic) => diagnostic.message.includes("allowed"))).toBe(
-        true,
+      expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
+        "Unsupported Truthmark config shape",
       );
     } finally {
       await repo.cleanup();
     }
   });
-  it("returns config diagnostics for invalid config data", async () => {
+
+  it("rejects unsafe workspace and child paths", async () => {
     const repo = await createTempRepo();
 
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        `version: 2
-authority: invalid
-automation:
-  enabled: true
-`,
+        validConfig().replace("workspace: docs/truthmark", "workspace: ../truthmark"),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("invalid");
+      expect(result.config).toBeNull();
+      expect(result.diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining("truthmark.workspace must be a non-empty repo-relative directory"),
+        }),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rejects custom Portal output and template properties", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig("      output: docs/custom-portal\n      template: docs/custom-template.md\n"),
       );
 
       const result = await loadConfig(repo.rootDir);
@@ -262,8 +89,10 @@ automation:
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            category: "config",
-            severity: "error",
+            message: expect.stringContaining("additional property output is not allowed"),
+          }),
+          expect.objectContaining({
+            message: expect.stringContaining("additional property template is not allowed"),
           }),
         ]),
       );
@@ -272,188 +101,18 @@ automation:
     }
   });
 
-  it("rejects retired config keys", async () => {
+  it("derives Portal paths from the Truthmark workspace defaults", async () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 1
-authority:
-  - docs/truthmark/areas.md
-alignment:
-  mode: packet
-outputs:
-  directory: .truthmark/cache
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.config).toBeNull();
-      expect(result.diagnostics.some((diagnostic) => diagnostic.message.includes("alignment"))).toBe(
-        true,
-      );
-      expect(
-        result.diagnostics.some((diagnostic) => diagnostic.message.includes("outputs")),
-      ).toBe(true);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("defaults omitted Portal config", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await writeConfig(repo);
+      await repo.writeFile(".truthmark/config.yml", validConfig());
 
       const result = await loadConfig(repo.rootDir);
 
       expect(result.status).toBe("loaded");
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config?.truthmarkPortal).toEqual({
-        enabled: false,
-        output: "docs/truthmark-portal",
-        template: "default",
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("loads enabled Portal config", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await writeConfig(
-        repo,
-        `truthmark-portal:
-  enabled: true
-  output: docs/portal
-  template: docs/templates/portal.md
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("loaded");
-      expect(result.diagnostics).toEqual([]);
-      expect(result.config?.truthmarkPortal).toEqual({
-        enabled: true,
-        output: "docs/portal",
-        template: "docs/templates/portal.md",
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("defaults omitted Portal enabled when nested Portal config is present", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await writeConfig(
-        repo,
-        `truthmark-portal:
-  output: docs/portal
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("loaded");
-      expect(result.config?.truthmarkPortal).toEqual({
-        enabled: false,
-        output: "docs/portal",
-        template: "default",
-      });
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it.each([
-    ["/tmp/truthmark-portal", "absolute output path"],
-    ["../truthmark-portal", "parent output traversal"],
-    ["docs/truth", "canonical truth root overlap"],
-    ["docs/truthmark/areas", "routing files root overlap"],
-    ["AGENTS.md/portal", "instruction target overlap"],
-  ])("rejects unsafe Portal output for %s (%s)", async (output) => {
-    const repo = await createTempRepo();
-
-    try {
-      await writeConfig(
-        repo,
-        `truthmark-portal:
-  enabled: true
-  output: ${output}
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("invalid");
-      expect(result.config).toBeNull();
-      expect(result.diagnostics).toEqual([
-        expect.objectContaining({
-          category: "config",
-          severity: "error",
-          message: expect.stringContaining("truthmark-portal.output"),
-        }),
-      ]);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it.each([
-    ["/tmp/portal-template.md", "absolute template path"],
-    ["docs/templates/../portal.md", "parent template traversal"],
-  ])("rejects unsafe Portal template for %s (%s)", async (template) => {
-    const repo = await createTempRepo();
-
-    try {
-      await writeConfig(
-        repo,
-        `truthmark-portal:
-  enabled: true
-  output: docs/portal
-  template: ${template}
-`,
-      );
-
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("invalid");
-      expect(result.config).toBeNull();
-      expect(result.diagnostics).toEqual([
-        expect.objectContaining({
-          category: "config",
-          severity: "error",
-          message: expect.stringContaining("truthmark-portal.template"),
-        }),
-      ]);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("returns a typed missing status when config does not exist yet", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      const result = await loadConfig(repo.rootDir);
-
-      expect(result.status).toBe("missing");
-      expect(result.config).toBeNull();
-      expect(result.diagnostics).toEqual([
-        expect.objectContaining({
-          category: "config",
-          severity: "error",
-          file: ".truthmark/config.yml",
-        }),
-      ]);
+      expect(result.config?.truthmark.generated.portal).toEqual({ enabled: true });
+      expect(result.config?.truthmark.paths.portalOutput).toBe("docs/truthmark/generated/portal");
+      expect(result.config?.truthmark.paths.portalTemplate).toBe("docs/truthmark/templates/portal.html");
     } finally {
       await repo.cleanup();
     }

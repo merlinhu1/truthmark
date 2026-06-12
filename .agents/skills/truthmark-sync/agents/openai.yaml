@@ -1,0 +1,11 @@
+interface:
+  display_name: "Truthmark Sync"
+  short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"
+  default_prompt: "Use $truthmark-sync after functional code changes; skip docs-only/no-code changes."
+
+policy:
+  allow_implicit_invocation: true
+
+truthmark:
+  version: "2.1.0"
+  refresh_command: "truthmark init"

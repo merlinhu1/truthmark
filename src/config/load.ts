@@ -6,11 +6,7 @@ import { parse } from "yaml";
 
 import type { Diagnostic } from "../output/diagnostic.js";
 import { resolveRepoPath } from "../fs/paths.js";
-import {
-  DEFAULT_DOCS_HIERARCHY,
-  DEFAULT_INSTRUCTION_TARGETS,
-  DEFAULT_TRUTHMARK_PORTAL,
-} from "./defaults.js";
+import { DEFAULT_INSTRUCTION_TARGETS } from "./defaults.js";
 import {
   DEFAULT_PLATFORMS,
   type RawTruthmarkConfig,
@@ -28,20 +24,16 @@ export type LoadConfigResult = {
   configPath: string;
 };
 
-const toConfigDiagnostic = (message: string, file: string): Diagnostic => {
-  return {
-    category: "config",
-    severity: "error",
-    message,
-    file,
-  };
-};
+const toConfigDiagnostic = (message: string, file: string): Diagnostic => ({
+  category: "config",
+  severity: "error",
+  message,
+  file,
+});
 
-const normalizeRepoRelativePath = (value: string): string => {
+export const normalizeRepoRelativePath = (value: string): string => {
   const slashNormalized = value.replace(/\\/gu, "/");
-  const pathNormalized = path.posix.normalize(slashNormalized).replace(/\/+$/u, "");
-
-  return pathNormalized;
+  return path.posix.normalize(slashNormalized).replace(/\/+$/u, "");
 };
 
 const isUnsafeRepoRelativePath = (value: string): boolean => {
@@ -62,6 +54,14 @@ const isUnsafeRepoRelativePath = (value: string): boolean => {
   );
 };
 
+const joinWorkspacePath = (workspace: string, childPath: string): string => {
+  return normalizeRepoRelativePath(`${workspace}/${childPath}`);
+};
+
+const portalOutputFor = (workspace: string): string => joinWorkspacePath(workspace, "generated/portal");
+
+const portalTemplateFor = (templatesRoot: string): string => joinWorkspacePath(templatesRoot, "portal.html");
+
 const pathsOverlap = (left: string, right: string): boolean => {
   const normalizedLeft = normalizeRepoRelativePath(left);
   const normalizedRight = normalizeRepoRelativePath(right);
@@ -73,59 +73,39 @@ const pathsOverlap = (left: string, right: string): boolean => {
   );
 };
 
-const portalForbiddenOutputRoots = (rawConfig: RawTruthmarkConfig): string[] => {
-  const rawDocs = rawConfig.docs;
-  const docsRoots = rawDocs?.roots ?? {};
-  const routing = rawDocs?.routing ?? DEFAULT_DOCS_HIERARCHY.routing;
+const CONFIG_PATH = ".truthmark/config.yml";
+const FORBIDDEN_WORKSPACE_OVERLAPS = [
+  ".git",
+  ".truthmark",
+  "package.json",
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "src",
+  "tests",
+] as const;
 
-  return [
-    "src",
-    DEFAULT_DOCS_HIERARCHY.roots.ai,
-    DEFAULT_DOCS_HIERARCHY.roots.standards,
-    DEFAULT_DOCS_HIERARCHY.roots.architecture,
-    DEFAULT_DOCS_HIERARCHY.roots.truth,
-    ...Object.values(docsRoots),
-    routing.root_index,
-    routing.area_files_root,
-    ".truthmark/config.yml",
-    "AGENTS.md",
-    "CLAUDE.md",
-    "GEMINI.md",
-    ".github/copilot-instructions.md",
-    ...(rawConfig.instruction_targets ?? DEFAULT_INSTRUCTION_TARGETS),
-  ];
-};
-
-const validatePortalConfig = (
-  rawConfig: RawTruthmarkConfig,
-  configPath: string,
-): Diagnostic[] => {
-  const portal = rawConfig["truthmark-portal"];
-
-  if (portal === undefined) {
+const unsupportedShapeDiagnostics = (parsedConfig: unknown, configPath: string): Diagnostic[] => {
+  if (!parsedConfig || typeof parsedConfig !== "object" || Array.isArray(parsedConfig)) {
     return [];
   }
 
+  const record = parsedConfig as Record<string, unknown>;
   const diagnostics: Diagnostic[] = [];
-  const output = portal.output ?? DEFAULT_TRUTHMARK_PORTAL.output;
-  const template = portal.template ?? DEFAULT_TRUTHMARK_PORTAL.template;
 
-  if (
-    isUnsafeRepoRelativePath(output) ||
-    portalForbiddenOutputRoots(rawConfig).some((forbidden) => pathsOverlap(output, forbidden))
-  ) {
+  if (record.version !== 2) {
     diagnostics.push(
       toConfigDiagnostic(
-        "truthmark-portal.output must be a non-empty repo-relative directory that does not overlap source, instruction, routing, or canonical docs roots.",
+        "Unsupported Truthmark config shape. This release requires version: 2 with a truthmark workspace block.",
         configPath,
       ),
     );
   }
 
-  if (template !== "default" && isUnsafeRepoRelativePath(template)) {
+  if ("docs" in record || "authority" in record) {
     diagnostics.push(
       toConfigDiagnostic(
-        "truthmark-portal.template must be 'default' or a non-empty repo-relative template path without absolute or parent traversal segments.",
+        "Unsupported Truthmark config shape. Remove old docs.roots and legacy authority settings; use version: 2 truthmark.workspace paths.",
         configPath,
       ),
     );
@@ -134,34 +114,122 @@ const validatePortalConfig = (
   return diagnostics;
 };
 
+const validateWorkspacePaths = (
+  rawConfig: RawTruthmarkConfig,
+  configPath: string,
+): Diagnostic[] => {
+  const diagnostics: Diagnostic[] = [];
+  const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
+  const childPaths = [
+    ["truthmark.routes.index", rawConfig.truthmark.routes.index],
+    ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
+    ["truthmark.truth.root", rawConfig.truthmark.truth.root],
+    ["truthmark.templates.root", rawConfig.truthmark.templates.root],
+  ] as const;
+
+  if (
+    isUnsafeRepoRelativePath(rawConfig.truthmark.workspace) ||
+    FORBIDDEN_WORKSPACE_OVERLAPS.some((forbidden) => pathsOverlap(workspace, forbidden))
+  ) {
+    diagnostics.push(
+      toConfigDiagnostic(
+        "truthmark.workspace must be a non-empty repo-relative directory that does not overlap repository control, package, source, test, or instruction paths.",
+        configPath,
+      ),
+    );
+  }
+
+  for (const [name, value] of childPaths) {
+    if (isUnsafeRepoRelativePath(value)) {
+      diagnostics.push(
+        toConfigDiagnostic(
+          `${name} must be a non-empty path relative to truthmark.workspace without absolute or parent traversal segments.`,
+          configPath,
+        ),
+      );
+    }
+  }
+
+  const portalOutput = normalizeRepoRelativePath("generated/portal");
+  const controlledWorkspaceChildren = [
+    ["truthmark.routes.index", rawConfig.truthmark.routes.index],
+    ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
+    ["truthmark.truth.root", rawConfig.truthmark.truth.root],
+    ["truthmark.templates.root", rawConfig.truthmark.templates.root],
+  ] as const;
+
+  for (const [name, value] of controlledWorkspaceChildren) {
+    if (pathsOverlap(portalOutput, value)) {
+      diagnostics.push(
+        toConfigDiagnostic(
+          `Truthmark Portal output ${portalOutputFor(workspace)} must not overlap ${name}; Portal output is generated and must stay outside controlled truth, routing, and template paths.`,
+          configPath,
+        ),
+      );
+    }
+  }
+
+  for (const target of rawConfig.instruction_targets ?? DEFAULT_INSTRUCTION_TARGETS) {
+    if (isUnsafeRepoRelativePath(target) || pathsOverlap(workspace, target)) {
+      diagnostics.push(
+        toConfigDiagnostic(
+          "instruction_targets must be repo-relative files outside truthmark.workspace.",
+          configPath,
+        ),
+      );
+    }
+  }
+
+  return diagnostics;
+};
+
 const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
-  const rawDocs = rawConfig.docs ?? {
-    layout: DEFAULT_DOCS_HIERARCHY.layout,
-    roots: { ...DEFAULT_DOCS_HIERARCHY.roots },
-    routing: { ...DEFAULT_DOCS_HIERARCHY.routing },
-  };
-  const roots: Record<string, string> = { ...DEFAULT_DOCS_HIERARCHY.roots, ...rawDocs.roots };
+  const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
+  const routesIndex = joinWorkspacePath(workspace, rawConfig.truthmark.routes.index);
+  const routeAreasRoot = joinWorkspacePath(workspace, rawConfig.truthmark.routes.areas);
+  const truthRoot = joinWorkspacePath(workspace, rawConfig.truthmark.truth.root);
+  const templatesRoot = joinWorkspacePath(workspace, rawConfig.truthmark.templates.root);
+  const portalOutput = portalOutputFor(workspace);
+  const portalTemplate = portalTemplateFor(templatesRoot);
 
   return {
     version: rawConfig.version,
     platforms: rawConfig.platforms ?? [...DEFAULT_PLATFORMS],
-    docs: {
-      layout: rawDocs.layout,
-      roots,
-      routing: {
-        rootIndex: rawDocs.routing.root_index,
-        areaFilesRoot: rawDocs.routing.area_files_root,
-        defaultArea: rawDocs.routing.default_area,
-        maxDelegationDepth: rawDocs.routing.max_delegation_depth,
+    truthmark: {
+      workspace,
+      routes: {
+        index: normalizeRepoRelativePath(rawConfig.truthmark.routes.index),
+        areas: normalizeRepoRelativePath(rawConfig.truthmark.routes.areas),
+        defaultArea: rawConfig.truthmark.routes.default_area,
+        maxDelegationDepth: rawConfig.truthmark.routes.max_delegation_depth,
       },
+      truth: {
+        root: normalizeRepoRelativePath(rawConfig.truthmark.truth.root),
+      },
+      templates: {
+        root: normalizeRepoRelativePath(rawConfig.truthmark.templates.root),
+      },
+      generated: {
+        portal: {
+          enabled: rawConfig.truthmark.generated.portal.enabled,
+        },
+      },
+      paths: {
+        routesIndex,
+        routeAreasRoot,
+        truthRoot,
+        templatesRoot,
+        portalOutput,
+        portalTemplate,
+      },
+      controlledPaths: [
+        routesIndex,
+        `${routeAreasRoot}/**/*.md`,
+        `${truthRoot}/**/*.md`,
+        `${templatesRoot}/*.md`,
+      ],
     },
-    authority: rawConfig.authority,
     instructionTargets: rawConfig.instruction_targets ?? [...DEFAULT_INSTRUCTION_TARGETS],
-    truthmarkPortal: {
-      enabled: rawConfig["truthmark-portal"]?.enabled ?? DEFAULT_TRUTHMARK_PORTAL.enabled,
-      output: rawConfig["truthmark-portal"]?.output ?? DEFAULT_TRUTHMARK_PORTAL.output,
-      template: rawConfig["truthmark-portal"]?.template ?? DEFAULT_TRUTHMARK_PORTAL.template,
-    },
     frontmatter: {
       required: rawConfig.frontmatter?.required ?? [],
       recommended: rawConfig.frontmatter?.recommended ?? [],
@@ -171,8 +239,7 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
 };
 
 export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => {
-  const configPath = ".truthmark/config.yml";
-  const absolutePath = resolveRepoPath(rootDir, configPath);
+  const absolutePath = resolveRepoPath(rootDir, CONFIG_PATH);
 
   let source: string;
 
@@ -183,8 +250,8 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
       return {
         status: "missing",
         config: null,
-        diagnostics: [toConfigDiagnostic("Missing .truthmark/config.yml.", configPath)],
-        configPath,
+        diagnostics: [toConfigDiagnostic("Missing .truthmark/config.yml.", CONFIG_PATH)],
+        configPath: CONFIG_PATH,
       };
     }
 
@@ -202,10 +269,20 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
       diagnostics: [
         toConfigDiagnostic(
           `Invalid YAML: ${error instanceof Error ? error.message : String(error)}`,
-          configPath,
+          CONFIG_PATH,
         ),
       ],
-      configPath,
+      configPath: CONFIG_PATH,
+    };
+  }
+
+  const unsupportedDiagnostics = unsupportedShapeDiagnostics(parsedConfig, CONFIG_PATH);
+  if (unsupportedDiagnostics.length > 0) {
+    return {
+      status: "invalid",
+      config: null,
+      diagnostics: unsupportedDiagnostics,
+      configPath: CONFIG_PATH,
     };
   }
 
@@ -225,23 +302,20 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
           ? `${propertyPath} additional property ${additionalProperty} is not allowed`
           : `${propertyPath} ${error.message ?? "is invalid"}`.trim();
 
-        return toConfigDiagnostic(message, configPath);
+        return toConfigDiagnostic(message, CONFIG_PATH);
       }),
-      configPath,
+      configPath: CONFIG_PATH,
     };
   }
 
-  const portalDiagnostics = validatePortalConfig(
-    parsedConfig as RawTruthmarkConfig,
-    configPath,
-  );
+  const pathDiagnostics = validateWorkspacePaths(parsedConfig as RawTruthmarkConfig, CONFIG_PATH);
 
-  if (portalDiagnostics.length > 0) {
+  if (pathDiagnostics.length > 0) {
     return {
       status: "invalid",
       config: null,
-      diagnostics: portalDiagnostics,
-      configPath,
+      diagnostics: pathDiagnostics,
+      configPath: CONFIG_PATH,
     };
   }
 
@@ -249,6 +323,6 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
     status: "loaded",
     config: normalizeConfig(parsedConfig as RawTruthmarkConfig),
     diagnostics: [],
-    configPath,
+    configPath: CONFIG_PATH,
   };
 };

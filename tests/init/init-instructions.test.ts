@@ -60,8 +60,8 @@ describe("runInit instruction integration", () => {
         ".truthmark/config.yml",
         `version: 1
 authority:
-  - docs/truthmark/areas.md
-  - docs/truthmark/areas/**/*.md
+  - docs/truthmark/routes/areas.md
+  - docs/truthmark/routes/areas/**/*.md
 instruction_targets:
   - AGENTS.md
 frontmatter:

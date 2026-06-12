@@ -28,15 +28,15 @@ export type AuthorityCheckResult = {
   diagnostics: Diagnostic[];
 };
 
-export const checkAuthority = async (
+export const checkControlledPaths = async (
   rootDir: string,
-  config: TruthmarkConfig,
+  controlledPaths: string[],
 ): Promise<AuthorityCheckResult> => {
   const diagnostics: Diagnostic[] = [];
   const orderedPaths: string[] = [];
   const seenPaths = new Set<string>();
 
-  for (const entry of config.authority) {
+  for (const entry of controlledPaths) {
     if (looksLikeGlob(entry)) {
       try {
         resolveRepoPath(rootDir, entry);
@@ -44,7 +44,7 @@ export const checkAuthority = async (
         diagnostics.push({
           category: "authority",
           severity: "error",
-          message: `Authority entry ${entry} must stay inside the repository root.`,
+          message: `Truthmark-controlled path ${entry} must stay inside the repository root.`,
           file: entry,
         });
         continue;
@@ -56,7 +56,7 @@ export const checkAuthority = async (
         diagnostics.push({
           category: "authority",
           severity: "review",
-          message: `Authority glob ${entry} did not match any files.`,
+          message: `Truthmark-controlled glob ${entry} did not match any files.`,
           file: entry,
         });
       }
@@ -69,7 +69,7 @@ export const checkAuthority = async (
           diagnostics.push({
             category: "authority",
             severity: "error",
-            message: `Authority path ${match} must stay inside the repository root.`,
+            message: `Truthmark-controlled path ${match} must stay inside the repository root.`,
             file: match,
           });
           continue;
@@ -93,7 +93,7 @@ export const checkAuthority = async (
       diagnostics.push({
         category: "authority",
         severity: "error",
-        message: `Authority entry ${entry} must stay inside the repository root.`,
+        message: `Truthmark-controlled path ${entry} must stay inside the repository root.`,
         file: entry,
       });
       continue;
@@ -103,7 +103,7 @@ export const checkAuthority = async (
       diagnostics.push({
         category: "authority",
         severity: "error",
-        message: `Missing authority file ${entry}.`,
+        message: `Missing Truthmark-controlled file ${entry}.`,
         file: entry,
       });
       continue;
@@ -119,4 +119,11 @@ export const checkAuthority = async (
     paths: orderedPaths,
     diagnostics,
   };
+};
+
+export const checkAuthority = async (
+  rootDir: string,
+  config: TruthmarkConfig,
+): Promise<AuthorityCheckResult> => {
+  return checkControlledPaths(rootDir, config.truthmark.controlledPaths);
 };

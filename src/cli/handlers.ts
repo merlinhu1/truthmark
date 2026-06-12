@@ -6,6 +6,11 @@ import { buildImpactSet } from "../impact/build.js";
 import { buildContextPack } from "../context-pack/build.js";
 import { renderContextPackMarkdown } from "../context-pack/render.js";
 import type { ContextPackWorkflow } from "../context-pack/types.js";
+import {
+  TRUTHMARK_WORKFLOW_IDS,
+  type TruthmarkWorkflowId,
+} from "../agents/workflow-manifest.js";
+import { buildWorkflowState } from "../workflow-state/build.js";
 import fs from "node:fs/promises";
 
 import {
@@ -77,9 +82,35 @@ const isContextPackWorkflow = (value: unknown): value is ContextPackWorkflow => 
   return value === "truth-sync" || value === "truth-document" || value === "truth-realize";
 };
 
-const isContextPackFormat = (value: unknown): value is "json" | "markdown" | undefined => {
-  return value === undefined || value === "json" || value === "markdown";
+const isContextMarkdownFormat = (value: unknown): value is "markdown" | undefined => {
+  return value === undefined || value === "markdown";
 };
+
+const isTruthmarkWorkflowId = (value: unknown): value is TruthmarkWorkflowId => {
+  return typeof value === "string" && TRUTHMARK_WORKFLOW_IDS.includes(value as TruthmarkWorkflowId);
+};
+
+const invalidWorkflowResult = (
+  command: "workflow status",
+  workflow: string | undefined,
+): CommandResult => ({
+  command,
+  summary: workflow
+    ? `Truthmark workflow requires a supported full workflow ID; received ${workflow}.`
+    : "Truthmark workflow requires --workflow.",
+  diagnostics: [
+    {
+      category: "workflow-state",
+      severity: "error",
+      message: workflow
+        ? `Unknown Truthmark workflow: ${workflow}. Use a canonical full manifest ID such as truthmark-sync or truthmark-check.`
+        : `truthmark ${command} requires --workflow <workflow>.`,
+    },
+  ],
+  data: {
+    request: workflow ? { workflow } : {},
+  },
+});
 
 const readHelperFile = async (filePath: string, helper: string): Promise<string | WorkflowHelperValidationResult> => {
   try {
@@ -140,7 +171,21 @@ export const runContext = async (options: {
     };
   }
 
-  if (!isContextPackFormat(options.format)) {
+  if (options.format === "json") {
+    return {
+      command: "context",
+      summary: "Truthmark context no longer supports JSON ContextPack output.",
+      diagnostics: [
+        {
+          category: "context-pack",
+          severity: "error",
+          message: "JSON ContextPack output was removed in v2; use --format markdown.",
+        },
+      ],
+    };
+  }
+
+  if (!isContextMarkdownFormat(options.format)) {
     return {
       command: "context",
       summary: "Truthmark context requires a supported --format value.",
@@ -148,7 +193,7 @@ export const runContext = async (options: {
         {
           category: "context-pack",
           severity: "error",
-          message: "truthmark context requires --format json or markdown.",
+          message: "truthmark context supports only --format markdown; JSON ContextPack output was removed in v2.",
         },
       ],
     };
@@ -160,13 +205,43 @@ export const runContext = async (options: {
   });
   const diagnostics = contextPack.warnings;
 
+  const summary = `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`;
+  const markdown = renderContextPackMarkdown(contextPack);
+
   return {
     command: "context",
-    summary: `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`,
+    summary,
     diagnostics,
     data: {
-      contextPack,
-      ...(options.format === "markdown" ? { markdown: renderContextPackMarkdown(contextPack) } : {}),
+      markdown,
+      summary,
+    },
+  };
+};
+
+export const runWorkflowStatus = async (options: {
+  workflow?: string;
+  base?: string;
+}): Promise<CommandResult> => {
+  if (!isTruthmarkWorkflowId(options.workflow)) {
+    return invalidWorkflowResult("workflow status", options.workflow);
+  }
+
+  const workflowState = await buildWorkflowState(process.cwd(), {
+    workflow: options.workflow,
+    ...(options.base ? { base: options.base } : {}),
+  });
+
+  return {
+    command: "workflow status",
+    summary: `Truthmark workflow status completed for ${options.workflow}.`,
+    diagnostics: workflowState.diagnostics,
+    data: {
+      request: {
+        workflow: options.workflow,
+        ...(options.base ? { base: options.base } : {}),
+      },
+      workflowState,
     },
   };
 };

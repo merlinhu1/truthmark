@@ -19,47 +19,62 @@ export const DEFAULT_PLATFORMS = [
 ] as const satisfies
   readonly TruthmarkPlatform[];
 
-type RawDocsHierarchyConfig = {
-  layout: "hierarchical";
-  roots: Record<string, string>;
-  routing: {
-    root_index: string;
-    area_files_root: string;
+type TruthmarkPortalConfig = {
+  enabled: boolean;
+};
+
+type RawTruthmarkWorkspaceConfig = {
+  workspace: string;
+  routes: {
+    index: string;
+    areas: string;
     default_area: string;
     max_delegation_depth: 1;
   };
-};
-
-type DocsHierarchyConfig = {
-  layout: "hierarchical";
-  roots: Record<string, string>;
-  routing: {
-    rootIndex: string;
-    areaFilesRoot: string;
-    defaultArea: string;
-    maxDelegationDepth: 1;
+  truth: {
+    root: string;
+  };
+  templates: {
+    root: string;
+  };
+  generated: {
+    portal: TruthmarkPortalConfig;
   };
 };
 
-type RawTruthmarkPortalConfig = {
-  enabled?: boolean;
-  output?: string;
-  template?: string;
-};
-
-type TruthmarkPortalConfig = {
-  enabled: boolean;
-  output: string;
-  template: string;
+type TruthmarkWorkspaceConfig = {
+  workspace: string;
+  routes: {
+    index: string;
+    areas: string;
+    defaultArea: string;
+    maxDelegationDepth: 1;
+  };
+  truth: {
+    root: string;
+  };
+  templates: {
+    root: string;
+  };
+  generated: {
+    portal: TruthmarkPortalConfig;
+  };
+  paths: {
+    routesIndex: string;
+    routeAreasRoot: string;
+    truthRoot: string;
+    templatesRoot: string;
+    portalOutput: string;
+    portalTemplate: string;
+  };
+  controlledPaths: string[];
 };
 
 export type RawTruthmarkConfig = {
-  version: 1;
+  version: 2;
   platforms?: TruthmarkPlatform[];
-  docs?: RawDocsHierarchyConfig;
-  authority: string[];
+  truthmark: RawTruthmarkWorkspaceConfig;
   instruction_targets?: string[];
-  "truthmark-portal"?: RawTruthmarkPortalConfig;
   frontmatter?: {
     required?: string[];
     recommended?: string[];
@@ -68,12 +83,10 @@ export type RawTruthmarkConfig = {
 };
 
 export type TruthmarkConfig = {
-  version: 1;
+  version: 2;
   platforms: TruthmarkPlatform[];
-  docs: DocsHierarchyConfig;
-  authority: string[];
+  truthmark: TruthmarkWorkspaceConfig;
   instructionTargets: string[];
-  truthmarkPortal: TruthmarkPortalConfig;
   frontmatter: {
     required: string[];
     recommended: string[];
@@ -84,11 +97,11 @@ export type TruthmarkConfig = {
 export const truthmarkConfigSchema = {
   type: "object",
   additionalProperties: false,
-  required: ["version", "authority"],
+  required: ["version", "truthmark"],
   properties: {
     version: {
       type: "integer",
-      const: 1,
+      const: 2,
     },
     platforms: {
       type: "array",
@@ -99,73 +112,63 @@ export const truthmarkConfigSchema = {
       },
       minItems: 1,
     },
-    docs: {
+    truthmark: {
       type: "object",
-      nullable: true,
       additionalProperties: false,
-      required: ["layout", "roots", "routing"],
+      required: ["workspace", "routes", "truth", "templates", "generated"],
       properties: {
-        layout: {
+        workspace: {
           type: "string",
-          const: "hierarchical",
         },
-        roots: {
-          type: "object",
-          required: [],
-          additionalProperties: {
-            type: "string",
-          },
-        },
-        routing: {
+        routes: {
           type: "object",
           additionalProperties: false,
-          required: ["root_index", "area_files_root", "default_area", "max_delegation_depth"],
+          required: ["index", "areas", "default_area", "max_delegation_depth"],
           properties: {
-            root_index: {
-              type: "string",
-            },
-            area_files_root: {
-              type: "string",
-            },
-            default_area: {
-              type: "string",
-            },
-            max_delegation_depth: {
-              type: "integer",
-              const: 1,
+            index: { type: "string" },
+            areas: { type: "string" },
+            default_area: { type: "string" },
+            max_delegation_depth: { type: "integer", const: 1 },
+          },
+        },
+        truth: {
+          type: "object",
+          additionalProperties: false,
+          required: ["root"],
+          properties: {
+            root: { type: "string" },
+          },
+        },
+        templates: {
+          type: "object",
+          additionalProperties: false,
+          required: ["root"],
+          properties: {
+            root: { type: "string" },
+          },
+        },
+        generated: {
+          type: "object",
+          additionalProperties: false,
+          required: ["portal"],
+          properties: {
+            portal: {
+              type: "object",
+              additionalProperties: false,
+              required: ["enabled"],
+              properties: {
+                enabled: { type: "boolean" },
+              },
             },
           },
         },
       },
-    },
-    authority: {
-      type: "array",
-      items: {
-        type: "string",
-      },
-      minItems: 1,
     },
     instruction_targets: {
       type: "array",
       nullable: true,
       items: {
         type: "string",
-      },
-    },
-    "truthmark-portal": {
-      type: "object",
-      additionalProperties: false,
-      required: [],
-      properties: {
-        enabled: {
-          type: "boolean",
-        },
-        output: {
-          type: "string",
-        },
-        template: {
-          type: "string",
-        },
       },
     },
     frontmatter: {

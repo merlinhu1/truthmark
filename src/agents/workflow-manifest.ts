@@ -348,7 +348,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "generate the Truthmark Portal",
       "refresh the committed HTML docs site",
       "create a browsable project map from Truthmark docs",
-      "update docs/truthmark-portal",
+      "update the Truthmark Portal output",
       "make a human-readable static site from the truth docs",
     ],
     negativeTriggers: [
@@ -362,7 +362,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     forbiddenAdjacency: [
       "must not run as a completion gate",
       "must not replace Truth Sync, Truth Check, Truth Document, Truth Realize, or Truth Structure",
-      "must not write outside the configured Portal output directory unless the user changes scope",
+      "must not write outside the fixed Portal output directory",
     ],
     requiredGates: [
       "manual-only invocation",
@@ -370,7 +370,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Markdown canonical statement",
       "source provenance",
     ],
-    allowedWrites: ["configured Portal output directory only"],
+    allowedWrites: ["fixed Portal output directory only"],
     reportSections: [
       "Output path",
       "Page count",

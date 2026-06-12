@@ -163,13 +163,17 @@ export const classifyPath = (
   }
 
   if (
+    normalizedPath.startsWith(".agents/skills/truthmark-") ||
     normalizedPath.startsWith(".claude/") ||
     normalizedPath.startsWith(".codex/") ||
+    normalizedPath.startsWith(".gemini/agents/truth-") ||
     normalizedPath.startsWith(".gemini/commands/") ||
+    normalizedPath.startsWith(".gemini/skills/truthmark-") ||
     normalizedPath.startsWith(".opencode/") ||
     normalizedPath === ".github/copilot-instructions.md" ||
     normalizedPath.startsWith(".github/agents/truth-") ||
     normalizedPath.startsWith(".github/prompts/truthmark-") ||
+    normalizedPath.startsWith(".github/skills/truthmark-") ||
     normalizedPath === "AGENTS.md" ||
     normalizedPath === "CLAUDE.md" ||
     normalizedPath === "GEMINI.md" ||

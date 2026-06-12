@@ -4,6 +4,8 @@ import path from "node:path";
 import fg from "fast-glob";
 
 import { buildImpactSet } from "../impact/build.js";
+import { createDefaultConfig } from "../config/defaults.js";
+import { loadConfig } from "../config/load.js";
 import type { ImpactSet } from "../impact/types.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import { buildRepoIndex } from "../repo-index/build.js";
@@ -47,14 +49,27 @@ const readIfExists = async (rootDir: string, filePath: string): Promise<string |
   }
 };
 
+const boundContent = (content: string): { content: string; truncated: boolean } => {
+  const lines = content.split("\n");
+
+  if (lines.length <= 200) {
+    return { content, truncated: false };
+  }
+
+  return {
+    content: [...lines.slice(0, 80), "...", ...lines.slice(-40)].join("\n"),
+    truncated: true,
+  };
+};
+
 const boundedContent = (
   filePath: string,
   content: string,
   warnings: Diagnostic[],
 ): ContextSourceFile => {
-  const lines = content.split("\n");
+  const bounded = boundContent(content);
 
-  if (lines.length <= 200) {
+  if (!bounded.truncated) {
     return { path: filePath, content, truncated: false };
   }
 
@@ -67,7 +82,7 @@ const boundedContent = (
 
   return {
     path: filePath,
-    content: [...lines.slice(0, 80), "...", ...lines.slice(-40)].join("\n"),
+    content: bounded.content,
     truncated: true,
   };
 };
@@ -75,13 +90,23 @@ const boundedContent = (
 const documentsFor = async (
   rootDir: string,
   paths: string[],
+  warnings: Diagnostic[],
 ): Promise<ContextDocument[]> => {
   const documents: ContextDocument[] = [];
 
   for (const filePath of uniqueSorted(paths)) {
     const content = await readIfExists(rootDir, filePath);
     if (content !== null) {
-      documents.push({ path: filePath, content });
+      const bounded = boundContent(content);
+      if (bounded.truncated) {
+        warnings.push({
+          category: "context-pack",
+          severity: "review",
+          message: `Context truth doc ${filePath} was truncated to fit ContextPack v0 bounds.`,
+          file: filePath,
+        });
+      }
+      documents.push({ path: filePath, content: bounded.content, truncated: bounded.truncated });
     }
   }
 
@@ -143,15 +168,16 @@ const sourceOfTruthPathsFor = async (
 
 const writePathsFor = (
   workflow: ContextPackOptions["workflow"],
+  routeIndexPath: string,
   truthDocs: string[],
   routes: ContextRoute[],
 ): string[] => {
   if (workflow === "truth-sync") {
-    return uniqueSorted(["docs/truthmark/areas.md", ...truthDocs]);
+    return uniqueSorted([routeIndexPath, ...truthDocs]);
   }
 
   if (workflow === "truth-document") {
-    return uniqueSorted(["docs/truthmark/areas.md", ...truthDocs]);
+    return uniqueSorted([routeIndexPath, ...truthDocs]);
   }
 
   return uniqueSorted(routes.flatMap((route) => route.codeSurface));
@@ -169,11 +195,13 @@ export const buildContextPack = async (
 ): Promise<ContextPack> => {
   const repoIndex = await buildRepoIndex(cwd);
   const rootDir = repoIndex.repository.root;
+  const loadResult = await loadConfig(rootDir);
+  const config = loadResult.config ?? (loadResult.status === "missing" ? createDefaultConfig() : null);
   const impactSet: ImpactSet | null = options.base
     ? await buildImpactSet(rootDir, { base: options.base })
     : null;
   const routeMap: RouteMap = impactSet ? repoIndex.routeMap : repoIndex.routeMap;
-  const warnings: Diagnostic[] = [];
+  const warnings: Diagnostic[] = loadResult.status === "invalid" ? [...loadResult.diagnostics] : [];
   const truthDocPaths =
     impactSet?.affectedTruthDocs ??
     (options.workflow === "truth-realize" ? [] : routeMap.routes.flatMap((route) => route.truthDocs));
@@ -198,8 +226,16 @@ export const buildContextPack = async (
     base: options.base ?? null,
     impactSet,
     routeMap,
-    allowedWritePaths: writePathsFor(options.workflow, truthDocPaths, contextRoutes),
-    truthDocs: await documentsFor(rootDir, truthDocPaths),
+    allowedWritePaths:
+      config === null
+        ? []
+        : writePathsFor(
+            options.workflow,
+            config.truthmark.paths.routesIndex,
+            truthDocPaths,
+            contextRoutes,
+          ),
+    truthDocs: await documentsFor(rootDir, truthDocPaths, warnings),
     sourceFiles: await sourceFilesFor(rootDir, sourceFilePaths, warnings),
     testCommands: testCommandsFor(impactSet?.affectedTests ?? []),
     warnings,

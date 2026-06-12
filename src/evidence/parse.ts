@@ -6,7 +6,8 @@ import { parse } from "yaml";
 
 import type { EvidenceReference } from "./types.js";
 
-const evidenceBlockPattern = /```ya?ml\s*\n([\s\S]*?)```/giu;
+const yamlFencePattern = /```ya?ml\s*\n([\s\S]*?)```/giu;
+const topLevelEvidenceMarkerPattern = /^evidence\s*:/imu;
 
 const repoRootPrefixes = [".codex/", ".github/", ".truthmark/", "docs/", "src/", "tests/"];
 
@@ -62,8 +63,13 @@ export const parseEvidenceReferences = async (
     });
   }
 
-  for (const match of parsed.content.matchAll(evidenceBlockPattern)) {
-    const block = parse(match[1] ?? "") as unknown;
+  for (const match of parsed.content.matchAll(yamlFencePattern)) {
+    const yamlBlock = match[1] ?? "";
+    if (!topLevelEvidenceMarkerPattern.test(yamlBlock)) {
+      continue;
+    }
+
+    const block = parse(yamlBlock) as unknown;
     const rawEvidence =
       block && typeof block === "object" && "evidence" in block
         ? (block as { evidence?: unknown }).evidence
