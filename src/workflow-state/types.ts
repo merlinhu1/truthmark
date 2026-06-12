@@ -2,7 +2,6 @@ import type {
   TruthmarkWorkflowHelper,
   TruthmarkWorkflowId,
 } from "../agents/workflow-manifest.js";
-import type { ContextPack } from "../context-pack/types.js";
 import type { ImpactFile, ImpactRoute } from "../impact/types.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import type { RouteMapRoute } from "../repo-index/types.js";
@@ -62,7 +61,6 @@ export type WorkflowState = {
   checks: WorkflowStateChecks;
   nextSteps: string[];
   reportSections: string[];
-  contextPack?: ContextPack;
 };
 
 export type BuildWorkflowStateOptions = {

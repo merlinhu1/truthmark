@@ -82,8 +82,8 @@ const isContextPackWorkflow = (value: unknown): value is ContextPackWorkflow => 
   return value === "truth-sync" || value === "truth-document" || value === "truth-realize";
 };
 
-const isContextPackFormat = (value: unknown): value is "json" | "markdown" | undefined => {
-  return value === undefined || value === "json" || value === "markdown";
+const isContextMarkdownFormat = (value: unknown): value is "markdown" | undefined => {
+  return value === undefined || value === "markdown";
 };
 
 const isTruthmarkWorkflowId = (value: unknown): value is TruthmarkWorkflowId => {
@@ -171,7 +171,21 @@ export const runContext = async (options: {
     };
   }
 
-  if (!isContextPackFormat(options.format)) {
+  if (options.format === "json") {
+    return {
+      command: "context",
+      summary: "Truthmark context no longer supports JSON ContextPack output.",
+      diagnostics: [
+        {
+          category: "context-pack",
+          severity: "error",
+          message: "JSON ContextPack output was removed in v2; use --format markdown.",
+        },
+      ],
+    };
+  }
+
+  if (!isContextMarkdownFormat(options.format)) {
     return {
       command: "context",
       summary: "Truthmark context requires a supported --format value.",
@@ -179,7 +193,7 @@ export const runContext = async (options: {
         {
           category: "context-pack",
           severity: "error",
-          message: "truthmark context requires --format json or markdown.",
+          message: "truthmark context supports only --format markdown; JSON ContextPack output was removed in v2.",
         },
       ],
     };
@@ -192,20 +206,16 @@ export const runContext = async (options: {
   const diagnostics = contextPack.warnings;
 
   const summary = `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`;
-  const markdown = options.format === "markdown" ? renderContextPackMarkdown(contextPack) : null;
+  const markdown = renderContextPackMarkdown(contextPack);
 
   return {
     command: "context",
     summary,
     diagnostics,
-    data: markdown
-      ? {
-          markdown,
-          summary,
-        }
-      : {
-          contextPack,
-        },
+    data: {
+      markdown,
+      summary,
+    },
   };
 };
 

@@ -56,7 +56,7 @@ const writeResult = (result: CommandResult, options: OutputOptions): void => {
   markFailedWhenErrorDiagnosticsExist(result);
 };
 const writeContextResult = (result: CommandResult, options: ContextOptions): void => {
-  if (!options.json && options.format === "markdown" && typeof result.data?.markdown === "string") {
+  if (!options.json && typeof result.data?.markdown === "string") {
     process.stdout.write(result.data.markdown);
     markFailedWhenErrorDiagnosticsExist(result);
     return;
@@ -159,7 +159,7 @@ export const buildProgram = (): Command => {
       .description("Generate a bounded workflow context pack.")
       .requiredOption("--workflow <workflow>", "Workflow name: truth-sync, truth-document, or truth-realize")
       .option("--base <ref>", "Base Git ref for impact-backed packs")
-      .option("--format <format>", "Output format: json or markdown", "json"),
+      .option("--format <format>", "Output format: markdown", "markdown"),
   ).action(async (options: ContextOptions) => {
     writeContextResult(
       await runContext({

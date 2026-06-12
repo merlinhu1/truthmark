@@ -6,8 +6,6 @@ import {
   type TruthmarkWorkflowId,
 } from "../agents/workflow-manifest.js";
 import { loadConfig } from "../config/load.js";
-import { buildContextPack } from "../context-pack/build.js";
-import type { ContextPack, ContextPackWorkflow } from "../context-pack/types.js";
 import { runCheck } from "../checks/check.js";
 import { buildImpactSet } from "../impact/build.js";
 import type { ImpactSet } from "../impact/types.js";
@@ -22,21 +20,6 @@ import type {
   WorkflowHelperValidationCommand,
   WorkflowState,
 } from "./types.js";
-
-const contextPackWorkflowFor = (
-  workflow: TruthmarkWorkflowId,
-): ContextPackWorkflow | null => {
-  if (workflow === "truthmark-sync") {
-    return "truth-sync";
-  }
-  if (workflow === "truthmark-document") {
-    return "truth-document";
-  }
-  if (workflow === "truthmark-realize") {
-    return "truth-realize";
-  }
-  return null;
-};
 
 const helperCommandsFor = (workflow: TruthmarkWorkflowId): WorkflowHelperValidationCommand[] =>
   ((TRUTHMARK_WORKFLOW_MANIFEST[workflow] as TruthmarkWorkflowManifestEntry).helpers ?? []).map((helper) => ({
@@ -122,7 +105,6 @@ const contextDataFor = (
   repoIndex: RepoIndex,
   config: Awaited<ReturnType<typeof loadConfig>>["config"],
   impactSet: ImpactSet | null,
-  contextPack: ContextPack | null,
 ): WorkflowActionContextData => {
   if (!config) {
     return {};
@@ -131,7 +113,6 @@ const contextDataFor = (
   const routeFiles = routeFilesFor(repoIndex);
   const truthDocs = uniqueSorted(
     impactSet?.affectedTruthDocs ??
-      contextPack?.truthDocs.map((document) => document.path) ??
       repoIndex.routeMap.routes.flatMap((route) => route.truthDocs),
   );
 
@@ -143,11 +124,7 @@ const contextDataFor = (
     starterTruthDocs: workflow === "truthmark-structure" ? truthDocs : [],
     codeWritePaths:
       workflow === "truthmark-realize"
-        ? uniqueSorted(
-            impactSet?.affectedRoutes.flatMap((route) => route.codeSurface) ??
-              contextPack?.allowedWritePaths ??
-              [],
-          )
+        ? uniqueSorted(impactSet?.affectedRoutes.flatMap((route) => route.codeSurface) ?? [])
         : [],
     portalEnabled: config.truthmark.generated.portal.enabled,
     portalOutputPath: config.truthmark.paths.portalOutput,
@@ -197,27 +174,18 @@ export const buildWorkflowState = async (
       ? await selectComparisonBase(rootDir)
       : null;
   const impactSet = comparisonBase ? await buildImpactSet(rootDir, { base: comparisonBase }) : null;
-  const contextWorkflow = contextPackWorkflowFor(options.workflow);
-  const contextPack =
-    contextWorkflow && (comparisonBase || options.workflow !== "truthmark-sync")
-      ? await buildContextPack(cwd, {
-          workflow: contextWorkflow,
-          ...(comparisonBase ? { base: comparisonBase } : {}),
-        })
-      : null;
   const checkResult = await runCheck(cwd, comparisonBase ? { base: comparisonBase } : {});
   const diagnostics = [
     ...loadResult.diagnostics,
     ...repoIndex.diagnostics,
     ...(impactSet?.diagnostics ?? []),
-    ...(contextPack?.warnings ?? []),
     ...checkResult.diagnostics,
   ];
   const applicability = applicabilityFor(options.workflow, diagnostics, impactSet);
   const actionData =
     applicability.state === "blocked" || applicability.state === "ambiguous"
       ? {}
-      : contextDataFor(options.workflow, repoIndex, loadResult.config, impactSet, contextPack);
+      : contextDataFor(options.workflow, repoIndex, loadResult.config, impactSet);
 
   return {
     schemaVersion: "truthmark-workflow/v0",
@@ -235,6 +203,5 @@ export const buildWorkflowState = async (
     },
     nextSteps: nextStepsFor(options.workflow, applicability, comparisonBase),
     reportSections: [...manifestEntry.reportSections],
-    ...(contextPack ? { contextPack } : {}),
   };
 };

@@ -19,31 +19,31 @@ This document protects WorkflowState v0 as the derived workflow-state artifact u
 
 ## Scope
 
-This document owns the WorkflowState contract and builder behavior under `src/workflow-state/**`. It hands lower-level repository facts to RepoIndex, ImpactSet, ContextPack, and Truthmark Check, and it hands installed workflow policy text to generated workflow surfaces through the manifest and renderer layers.
+This document owns the WorkflowState contract and builder behavior under `src/workflow-state/**`. It hands lower-level repository facts to RepoIndex, ImpactSet, config, and Truthmark Check, and it hands installed workflow policy text to generated workflow surfaces through the manifest and renderer layers.
 
 ## Current Behavior
 
-`buildWorkflowState(cwd, { workflow, base })` returns `schemaVersion: truthmark-workflow/v0` with a full manifest workflow ID such as `truthmark-sync`. It composes the installed workflow manifest, `.truthmark/config.yml`, RepoIndex, optional ImpactSet, supported ContextPack output, and Truthmark Check diagnostics into one internal state object.
+`buildWorkflowState(cwd, { workflow, base })` returns `schemaVersion: truthmark-workflow/v0` with a full manifest workflow ID such as `truthmark-sync`. It composes the installed workflow manifest, `.truthmark/config.yml`, RepoIndex, optional ImpactSet, and Truthmark Check diagnostics into one internal state object.
 
-WorkflowState includes applicability, action context, changed files, affected routes, target truth docs, merged diagnostics, required and recommended checks, helper validation commands, next steps, report sections, and a ContextPack when the selected workflow has a supported ContextPack mapping.
+WorkflowState includes applicability, action context, changed files, affected routes, target truth docs, merged diagnostics, required and recommended checks, helper validation commands, next steps, and report sections. WorkflowState does not carry ContextPack.
 
-`truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` exposes the full `truthmark-workflow/v0` state in `data.workflowState` for status-only or debug inspection. Caller-supplied request metadata such as `--base` is reported in the CLI envelope under `data.request` unless a later schema change explicitly adds it to WorkflowState.
+`truthmark workflow status --workflow <workflow-id> [--base <ref>] --json` exposes a manifest-only `truthmark-workflow/v0` state in `data.workflowState` for status-only or debug inspection. It does not include `workflowState.contextPack`, truth document content, source file content, or a full route map. Caller-supplied request metadata such as `--base` is reported in the CLI envelope under `data.request` unless a later schema change explicitly adds it to WorkflowState.
 
 ## Core Rules
 
 - WorkflowState is exposed through agent-facing `workflow status` CLI JSON for focused status/debug inspection, while generated workflows rely on checked-in workflow surfaces and direct checkout inspection as their execution contract.
-- Workflow IDs stay in the full manifest form (`truthmark-sync`, `truthmark-document`, `truthmark-realize`, and peers). The builder maps to ContextPack's shorter workflow IDs only for supported ContextPack calls. Pass 2 rejects short workflow aliases such as `truth-sync`; full manifest IDs are canonical.
+- Workflow IDs stay in the full manifest form (`truthmark-sync`, `truthmark-document`, `truthmark-realize`, and peers). Pass 2 rejects short ContextPack aliases such as `truth-sync`; full manifest IDs are canonical.
 - Read-only workflows (`truthmark-preview` and `truthmark-check`) have mode `read-only` and no allowed write paths.
 - Sync and document workflows use mode `truth-doc-write`; structure uses `route-write`; realize uses `code-write`; portal uses `portal-write` when portal output is configured.
 - Missing config, ambiguous route ownership, invalid workflow IDs, or missing branch comparison data fail closed instead of widening allowed writes.
 - `truthmark-sync` may select a cheap existing local Git base when the caller omits `--base`, but blocks with no allowed writes when no candidate base exists; `truthmark-realize` still blocks without `--base` because code-write paths must be derived from a bounded comparison.
 - Realize forbids writes to configured route and truth documentation paths.
 - Helper validation commands are copied from the workflow manifest into machine-readable action context and check metadata.
-- Full WorkflowState status output may include ContextPack truth document and source file content, subject to ContextPack truncation behavior for truth docs and source files, so generated surfaces must not ask agents to load it as a prerequisite.
+- WorkflowState output is manifest-only and has no ContextPack opt-in path.
 
 ## Flows And States
 
-The builder validates the workflow ID, loads config and RepoIndex, derives ImpactSet only when a base ref is supplied, derives ContextPack only for supported workflows, runs Truthmark Check, merges diagnostics, determines applicability, then derives action context from the manifest and bounded route/config/impact data.
+The builder validates the workflow ID, loads config and RepoIndex, derives ImpactSet only when a base ref is supplied, runs Truthmark Check, merges diagnostics, determines applicability, then derives action context from the manifest and bounded route/config/impact data.
 
 Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambiguous changed functional files leave target truth docs empty and direct the caller toward Truth Structure or route repair. Sync without a caller-supplied base performs cheap local base selection from existing upstream/main/master refs, and if none exists it is `blocked` with a next step to rerun with `--base <ref>` so truth-doc write paths remain bounded. Realize without a comparison base is `blocked` with a next step to rerun with `--base <ref>` so code-write paths remain bounded.
 
@@ -54,9 +54,10 @@ Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambi
 ## Product Decisions
 
 - Decision (2026-06-01): WorkflowState v0 remains an internal repository-intelligence artifact in Pass 1; it does not expose OpenSpec-like lifecycle commands through the Truthmark CLI.
-- Decision (2026-06-01): WorkflowState composes existing manifest, config, RepoIndex, ImpactSet, ContextPack, and Check systems instead of creating a separate workflow engine.
+- Decision (2026-06-01): WorkflowState composes existing manifest, config, RepoIndex, ImpactSet, and Check systems instead of creating a separate workflow engine.
 - Decision (2026-06-01): Fail-closed write boundaries are preferred over default or wildcard fallback paths whenever config, route ownership, or branch comparison data is ambiguous.
 - Decision (2026-06-12): Committed surfaces, support-file progressive disclosure, direct checkout inspection, and optional focused validation commands are the normal generated-workflow execution contract.
+- Decision (2026-06-12): WorkflowState does not carry ContextPack; public ContextPack JSON output was removed in v2.
 - Decision (2026-06-12): OpenSpec remains research input only; Truthmark must not add an OpenSpec dependency, committed OpenSpec workspace, OPSX command surface, or generated `openspec-*` agent skills.
 - Decision (2026-06-01): Pass 2 accepts only full manifest workflow IDs and rejects short ContextPack aliases instead of silently mapping them.
 
@@ -81,4 +82,4 @@ Primary implementation files:
 - `tests/workflow-state/build.test.ts`
 - `tests/cli/check-workflow.test.ts`
 
-Update this doc when the WorkflowState schema, applicability states, action-context mapping, fail-closed behavior, ContextPack composition behavior, or generated-surface CLI validation policy changes.
+Update this doc when the WorkflowState schema, applicability states, action-context mapping, fail-closed behavior, repository-intelligence composition behavior, or generated-surface CLI validation policy changes.

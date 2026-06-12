@@ -201,7 +201,7 @@ describe("buildWorkflowState", () => {
     await Promise.all(repos.splice(0).map((repo) => repo.cleanup()));
   });
 
-  it("composes repo index, impact, context pack, checks, and manifest sections", async () => {
+  it("composes repo index, impact, checks, and manifest sections without ContextPack", async () => {
     const repo = await setupConfiguredRepo();
     repos.push(repo);
 
@@ -228,6 +228,22 @@ describe("buildWorkflowState", () => {
     expect(state.reportSections).toEqual(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections);
     expect(Array.isArray(state.diagnostics)).toBe(true);
     expect("base" in state).toBe(false);
+    expect("contextPack" in state).toBe(false);
+  });
+
+  it("does not expose a legacy ContextPack opt-in path", async () => {
+    const repo = await setupConfiguredRepo();
+    repos.push(repo);
+
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+      base: "main",
+      // Legacy callers may still pass this at runtime; WorkflowState must ignore it.
+      includeContextPack: true,
+    } as Parameters<typeof buildWorkflowState>[1] & { includeContextPack: true });
+
+    expect("contextPack" in state).toBe(false);
+    expect(JSON.stringify(state)).not.toContain('"content":');
   });
 
   it("selects a simple local comparison base for sync when none is supplied", async () => {
