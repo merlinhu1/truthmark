@@ -85,6 +85,6 @@ Primary implementation files:
 - `src/workflow-state/build.ts`
 - `src/workflow-state/instructions.ts`
 - `tests/workflow-state/build.test.ts`
-- `tests/cli/workflow.test.ts`
+- `tests/cli/check-workflow.test.ts`
 
 Update this doc when the WorkflowState schema, applicability states, action-context mapping, fail-closed behavior, or ContextPack composition behavior changes.

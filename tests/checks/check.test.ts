@@ -574,20 +574,25 @@ Update truth when:
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        `version: 1
-docs:
-  layout: hierarchical
-  roots:
-    truth: docs/truth
-  routing:
-    root_index: docs/truthmark/routes/areas.md
-    area_files_root: docs/truthmark/routes/areas
+        `version: 2
+truthmark:
+  workspace: docs/truthmark
+  routes:
+    index: routes/areas.md
+    areas: routes/areas
     default_area: repository
     max_delegation_depth: 1
-authority:
-  - docs/truthmark/routes/areas.md
-  - docs/truthmark/routes/areas/**/*.md
-  - docs/truthmark/truth/**/*.md
+  truth:
+    root: truth
+  templates:
+    root: templates
+  generated:
+    portal:
+      enabled: false
+frontmatter:
+  required: []
+  recommended: []
+ignore: []
 `,
       );
       await repo.writeFile(
@@ -633,6 +638,11 @@ Update truth when:
 
       const result = await runCheck(repo.rootDir);
 
+      expect(
+        result.diagnostics.some(
+          (diagnostic) => diagnostic.category === "config" && diagnostic.severity === "error",
+        ),
+      ).toBe(false);
       expect(result.diagnostics).not.toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -1576,11 +1586,26 @@ Update truth when:
         "export const generated = true;\n",
       );
       await repo.writeFile(
+        "src/unmapped/manual.ts",
+        "export const manual = true;\n",
+      );
+      await repo.writeFile(
         ".truthmark/config.yml",
-        `version: 1
-authority:
-  - docs/truthmark/routes/areas.md
-  - docs/truthmark/truth/**/*.md
+        `version: 2
+truthmark:
+  workspace: docs/truthmark
+  routes:
+    index: routes/areas.md
+    areas: routes/areas
+    default_area: repository
+    max_delegation_depth: 1
+  truth:
+    root: truth
+  templates:
+    root: templates
+  generated:
+    portal:
+      enabled: false
 instruction_targets:
   - AGENTS.md
 frontmatter:
@@ -1609,14 +1634,17 @@ ignore:
       );
 
       const result = await runCheck(repo.rootDir);
+      const coverageFiles = result.diagnostics
+        .filter((diagnostic) => diagnostic.category === "coverage")
+        .map((diagnostic) => diagnostic.file);
 
       expect(
         result.diagnostics.some(
-          (diagnostic) =>
-            diagnostic.category === "coverage" &&
-            diagnostic.file === "src/generated/out.ts",
+          (diagnostic) => diagnostic.category === "config" && diagnostic.severity === "error",
         ),
       ).toBe(false);
+      expect(coverageFiles).toContain("src/unmapped/manual.ts");
+      expect(coverageFiles).not.toContain("src/generated/out.ts");
     } finally {
       await repo.cleanup();
     }

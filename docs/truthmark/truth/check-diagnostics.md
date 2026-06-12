@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-05-31
+last_reviewed: 2026-06-12
 source_of_truth:
   - ../../../src/config/load.ts
   - ../../../src/checks/check.ts
@@ -13,6 +13,7 @@ source_of_truth:
   - ../../../src/freshness/check.ts
   - ../../../src/impact/build.ts
   - ../../../src/evidence/validate.ts
+  - ../../../src/evidence/parse.ts
   - ../../../src/checks/frontmatter.ts
   - ../../../src/checks/links.ts
   - ../../../src/markdown/discovery.ts
@@ -187,7 +188,7 @@ Current severity behavior:
 
 ### Source Traceability
 
-Source traceability checks run whenever configured truth docs can be loaded; they are not gated on `--base <ref>`. They verify that truth-doc `source_of_truth` entries and optional evidence blocks still point at live checkout material. They do not prove claim semantics.
+Source traceability checks run whenever configured truth docs can be loaded; they are not gated on `--base <ref>`. They verify that truth-doc `source_of_truth` entries and optional evidence blocks still point at live checkout material. Fenced YAML is treated as an evidence block only when it contains a top-level `evidence:` marker, so illustrative non-evidence YAML examples are ignored even when malformed. They do not prove claim semantics.
 
 Current severity behavior:
 
