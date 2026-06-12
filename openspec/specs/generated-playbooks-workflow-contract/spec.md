@@ -1,7 +1,8 @@
 # generated-playbooks-workflow-contract Specification
 
 ## Purpose
-TBD - created by archiving change generated-playbooks-workflow-contract. Update Purpose after archive.
+Define the generated workflow-surface contract that points agents to live local workflow status/instructions preflight before using checked-in static playbook prose.
+
 ## Requirements
 ### Requirement: Generated workflow surfaces run live workflow preflight
 

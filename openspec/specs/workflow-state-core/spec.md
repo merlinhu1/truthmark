@@ -1,7 +1,8 @@
 # workflow-state-core Specification
 
 ## Purpose
-TBD - created by archiving change workflow-state-core. Update Purpose after archive.
+Define the internal schema-versioned workflow-state contract used to represent applicability, action context, diagnostics, route impact, checks, and report requirements for fixed Truthmark workflows.
+
 ## Requirements
 ### Requirement: Schema-versioned workflow state
 

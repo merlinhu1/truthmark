@@ -9,6 +9,7 @@ import { checkAreas } from "./areas.js";
 import { checkDecisionSections } from "./decisions.js";
 import { checkGeneratedSurfaces } from "./generated-surfaces.js";
 import { checkFreshness } from "../freshness/check.js";
+import { validateEvidenceReferences } from "../evidence/validate.js";
 import { buildTruthHealthScorecard } from "./scorecard.js";
 
 export type CheckOptions = {
@@ -35,6 +36,7 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
   if (!loadResult.config) {
     const scorecard = buildTruthHealthScorecard(loadResult.diagnostics, {
       branchFreshnessRan: false,
+      branchFreshnessNotRunReason: options.base ? "config unavailable" : "base not supplied",
       routingChecksRan: false,
       ownershipChecksRan: false,
       evidenceChecksRan: false,
@@ -71,6 +73,7 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
     areas.truthDocumentEntries,
   );
   const generatedSurfaces = await checkGeneratedSurfaces(rootDir, loadResult.config);
+  const sourceTraceability = await validateEvidenceReferences(rootDir, areas.truthDocumentPaths);
   const freshness = options.base
     ? await checkFreshness(rootDir, loadResult.config, areas.truthDocumentPaths, options.base)
     : null;
@@ -82,6 +85,7 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
     ...areas.diagnostics,
     ...decisionSections,
     ...generatedSurfaces,
+    ...sourceTraceability,
     ...(freshness?.diagnostics ?? []),
   ];
   const truthVisibility = {
@@ -100,6 +104,8 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
   };
   const scorecard = buildTruthHealthScorecard(diagnostics, {
     branchFreshnessRan: Boolean(freshness),
+    branchFreshnessNotRunReason: options.base ? "freshness checker skipped" : "base not supplied",
+    evidenceChecksRan: true,
   });
 
   return {

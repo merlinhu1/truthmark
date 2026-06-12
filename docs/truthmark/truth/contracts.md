@@ -126,7 +126,7 @@ Human-rendered output is intended for people. JSON output is the machine-facing 
 
 The Truth Health Scorecard dimensions are compact runtime objects:
 
-- `id`: one of `routing-coverage`, `ownership-clarity`, `evidence-support`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, or `decision-rationale-preservation`
+- `id`: one of `routing-coverage`, `ownership-clarity`, `source-traceability`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, or `decision-rationale-preservation`
 - `status`: `pass`, `warn`, `fail`, or `not-run`
 - `diagnosticIndexes`: indexes into the same raw `diagnostics` array returned by the command
 - `evidence`: optional, capped short snippets for non-pass states only

@@ -22,7 +22,7 @@ describe("validateEvidenceReferences", () => {
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({
-        category: "freshness",
+        category: "source-traceability",
         severity: "error",
         file: "docs/truthmark/truth/sample.md",
       }),
@@ -84,10 +84,44 @@ evidence:
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({
-        category: "freshness",
+        category: "source-traceability",
         severity: "error",
         file: "docs/truthmark/truth/sample.md",
         message: expect.stringContaining("outside the file"),
+      }),
+    );
+  });
+
+  it("reports malformed YAML evidence blocks instead of throwing", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+
+    await repo.writeFile("src/index.ts", "export const value = 1;\n");
+    await repo.writeFile(
+      "docs/truthmark/truth/sample.md",
+      `---
+status: active
+source_of_truth:
+  - ../../../src/index.ts
+---
+# Sample
+
+\`\`\`yaml
+evidence:
+  - path: ../../../src/index.ts
+    start_line: [
+\`\`\`
+`,
+    );
+
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
+
+    expect(diagnostics).toContainEqual(
+      expect.objectContaining({
+        category: "source-traceability",
+        severity: "error",
+        file: "docs/truthmark/truth/sample.md",
+        message: expect.stringContaining("Malformed evidence YAML block"),
       }),
     );
   });

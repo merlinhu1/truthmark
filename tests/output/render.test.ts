@@ -102,6 +102,7 @@ describe("output rendering", () => {
       "repo-index",
       "impact",
       "freshness",
+      "source-traceability",
       "context-pack",
       "workflow-state",
     ]);

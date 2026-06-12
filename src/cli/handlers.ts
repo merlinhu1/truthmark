@@ -246,6 +246,7 @@ export const runWorkflowInstructions = async (options: {
   const instructions = buildWorkflowInstructions(
     workflowState,
     TRUTHMARK_WORKFLOW_MANIFEST[options.workflow],
+    options.base ? { base: options.base } : {},
   );
 
   return {

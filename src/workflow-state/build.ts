@@ -1,3 +1,5 @@
+import { execa } from "execa";
+
 import {
   TRUTHMARK_WORKFLOW_MANIFEST,
   type TruthmarkWorkflowManifestEntry,
@@ -50,6 +52,26 @@ const uniqueSorted = (values: string[]): string[] =>
 const isWriteCapable = (workflow: TruthmarkWorkflowId): boolean =>
   !["truthmark-preview", "truthmark-check"].includes(workflow);
 
+const DEFAULT_BASE_CANDIDATES = ["@{upstream}", "origin/main", "main", "origin/master", "master"];
+
+const selectComparisonBase = async (rootDir: string, suppliedBase?: string): Promise<string | null> => {
+  if (suppliedBase) {
+    return suppliedBase;
+  }
+
+  for (const candidate of DEFAULT_BASE_CANDIDATES) {
+    const result = await execa("git", ["rev-parse", "--verify", `${candidate}^{commit}`], {
+      cwd: rootDir,
+      reject: false,
+    });
+    if ((result.exitCode ?? 1) === 0) {
+      return candidate;
+    }
+  }
+
+  return null;
+};
+
 const routeFilesFor = (repoIndex: RepoIndex): string[] =>
   uniqueSorted(repoIndex.routeMap.routes.map((route) => route.sourcePath));
 
@@ -62,7 +84,6 @@ const hasUnmappedFunctionalChange = (impactSet: ImpactSet | null): boolean =>
 
 const applicabilityFor = (
   workflow: TruthmarkWorkflowId,
-  options: BuildWorkflowStateOptions,
   diagnostics: Diagnostic[],
   impactSet: ImpactSet | null,
 ): WorkflowApplicability => {
@@ -76,11 +97,6 @@ const applicabilityFor = (
   if (hasUnmappedFunctionalChange(impactSet)) {
     reasons.push("Changed functional files have ambiguous or missing Truthmark route ownership.");
     return { state: "ambiguous", reasons };
-  }
-
-  if (workflow === "truthmark-sync" && !options.base) {
-    reasons.push("Missing branch comparison base; changed files were not derived.");
-    return { state: "blocked", reasons };
   }
 
   if (diagnostics.some((diagnostic) => diagnostic.severity === "error")) {
@@ -141,16 +157,21 @@ export const buildWorkflowState = async (
   const repoIndex = await buildRepoIndex(cwd);
   const rootDir = repoIndex.repository.root;
   const loadResult = await loadConfig(rootDir);
-  const impactSet = options.base ? await buildImpactSet(rootDir, { base: options.base }) : null;
+  const comparisonBase = options.base
+    ? options.base
+    : options.workflow === "truthmark-sync"
+      ? await selectComparisonBase(rootDir)
+      : null;
+  const impactSet = comparisonBase ? await buildImpactSet(rootDir, { base: comparisonBase }) : null;
   const contextWorkflow = contextPackWorkflowFor(options.workflow);
   const contextPack =
-    contextWorkflow && (options.base || options.workflow !== "truthmark-sync")
+    contextWorkflow && (comparisonBase || options.workflow !== "truthmark-sync")
       ? await buildContextPack(cwd, {
           workflow: contextWorkflow,
-          ...(options.base ? { base: options.base } : {}),
+          ...(comparisonBase ? { base: comparisonBase } : {}),
         })
       : null;
-  const checkResult = await runCheck(cwd, options.base ? { base: options.base } : {});
+  const checkResult = await runCheck(cwd, comparisonBase ? { base: comparisonBase } : {});
   const diagnostics = [
     ...loadResult.diagnostics,
     ...repoIndex.diagnostics,
@@ -158,7 +179,7 @@ export const buildWorkflowState = async (
     ...(contextPack?.warnings ?? []),
     ...checkResult.diagnostics,
   ];
-  const applicability = applicabilityFor(options.workflow, options, diagnostics, impactSet);
+  const applicability = applicabilityFor(options.workflow, diagnostics, impactSet);
   const actionData =
     applicability.state === "blocked" || applicability.state === "ambiguous"
       ? {}
@@ -167,7 +188,6 @@ export const buildWorkflowState = async (
   return {
     schemaVersion: "truthmark-workflow/v0",
     workflow: options.workflow,
-    ...(options.base ? { base: options.base } : {}),
     applicability,
     actionContext: buildWorkflowActionContext(manifestEntry, actionData),
     changedFiles: impactSet?.changedFiles ?? [],
@@ -182,9 +202,7 @@ export const buildWorkflowState = async (
     nextSteps:
       applicability.state === "ambiguous"
         ? ["Run Truth Structure or repair route ownership before writing truth docs."]
-        : options.workflow === "truthmark-sync" && !options.base
-          ? ["Provide --base to derive branch impact before running Truthmark Sync."]
-          : [],
+        : [],
     reportSections: [...manifestEntry.reportSections],
     ...(contextPack ? { contextPack } : {}),
   };

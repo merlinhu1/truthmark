@@ -1,7 +1,8 @@
 # truth-health-scorecard Specification
 
 ## Purpose
-TBD - created by archiving change truth-health-scorecard. Update Purpose after archive.
+Define the compact `truthmark check --json` scorecard contract that summarizes repository-truth health without replacing raw diagnostics or inflating workflow-state payloads.
+
 ## Requirements
 ### Requirement: Compact truth health scorecard contract
 
@@ -11,7 +12,7 @@ Truthmark MUST provide a compact schema-versioned Truth Health Scorecard contrac
 
 - **WHEN** a Truth Health Scorecard is built
 - **THEN** it includes `schemaVersion: "truthmark-scorecard/v0"`
-- **AND** it includes dimensions for routing coverage, ownership clarity, evidence support, branch freshness, generated-surface freshness, truth-doc structure, and decision/rationale preservation
+- **AND** it includes dimensions for routing coverage, ownership clarity, source traceability, branch freshness, generated-surface freshness, truth-doc structure, and decision/rationale preservation
 - **AND** each dimension includes a stable `id`, categorical `status`, and `diagnosticIndexes`
 - **AND** each dimension MAY include compact `evidence` only for non-pass states
 - **AND** the runtime JSON does not repeat long labels, remediation paragraphs, full diagnostic messages, or source/document excerpts for every dimension
@@ -41,10 +42,10 @@ Truthmark MUST derive scorecard dimensions from existing check diagnostics and e
 - **THEN** the scorecard maps them to routing coverage, ownership clarity, or both according to explicit mapping rules
 - **AND** ambiguous or unmapped functional ownership is visible as ownership clarity warning or failure rather than hidden in raw diagnostics only
 
-#### Scenario: Evidence and freshness diagnostics map to evidence dimensions
+#### Scenario: Source traceability and freshness diagnostics map to distinct dimensions
 
-- **WHEN** diagnostics with category `freshness`, broken source evidence links, missing source evidence targets, or other evidence-support diagnostics are present
-- **THEN** the scorecard maps them to evidence support and/or branch freshness as appropriate
+- **WHEN** diagnostics with category `source-traceability`, broken source evidence links, missing source evidence targets, or branch `freshness` diagnostics are present
+- **THEN** the scorecard maps source reference diagnostics to source traceability and branch freshness diagnostics to branch freshness as appropriate
 - **AND** branch freshness uses the same branch base context as `check --base`
 
 #### Scenario: Generated-surface diagnostics map to generated-surface freshness

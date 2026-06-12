@@ -1,7 +1,8 @@
 # workflow-agent-cli Specification
 
 ## Purpose
-TBD - created by archiving change workflow-agent-cli. Update Purpose after archive.
+Define the agent-facing workflow CLI JSON commands that expose workflow status and derived instructions for canonical Truthmark workflow IDs.
+
 ## Requirements
 ### Requirement: Workflow status CLI exposes workflow state
 

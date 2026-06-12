@@ -42,7 +42,7 @@ Initial dimensions:
 
 1. `routing-coverage`
 2. `ownership-clarity`
-3. `evidence-support`
+3. `source-traceability`
 4. `branch-freshness`
 5. `generated-surface-freshness`
 6. `truth-doc-structure`
@@ -111,7 +111,7 @@ Initial category-to-dimension mapping should be explicit and tested, but kept sm
 
 - `authority`, `area-index`, `coverage`, `repo-index` -> `routing-coverage`
 - `area-index`, `coverage`, `impact`, route ambiguity diagnostics -> `ownership-clarity`
-- `freshness`, broken links to source evidence, and missing source evidence diagnostics -> `evidence-support`
+- `source-traceability`, broken links to source evidence, and missing source evidence diagnostics -> `source-traceability`
 - `freshness` plus base-run context -> `branch-freshness`
 - `generated-surface` -> `generated-surface-freshness`
 - `frontmatter`, `links`, `doc-structure`, markdown-shape diagnostics -> `truth-doc-structure`

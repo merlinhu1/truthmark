@@ -247,6 +247,11 @@ const routeFilesHint = (config: TruthmarkConfig): string =>
 export const renderWorkflowCliPreflight = (
   workflowId: TruthmarkWorkflowId,
 ): string => {
+  const baseGuidance =
+    workflowId === "truthmark-sync"
+      ? "If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands. If not, the CLI performs cheap local base selection from existing Git refs (upstream, main, or master); do not stop solely because the caller omitted --base, and do not invent a remote branch that is not present locally."
+      : "If a caller supplies a comparison ref, preserve it with `--base <ref>` on both commands; do not invent a default branch.";
+
   return `## Live workflow preflight
 
 When the local Truthmark CLI is available, run the live workflow contract before acting:
@@ -256,7 +261,7 @@ truthmark workflow status --workflow ${workflowId} --json
 truthmark workflow instructions --workflow ${workflowId} --json
 \`\`\`
 
-If a caller supplies a comparison ref, preserve it with \`--base <ref>\` on both commands; do not invent a default branch.
+${baseGuidance}
 
 Before writes, parse the JSON command envelopes:
 

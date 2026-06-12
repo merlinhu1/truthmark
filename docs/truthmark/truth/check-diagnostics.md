@@ -184,6 +184,13 @@ Current severity behavior:
 - changed public API with no affected truth document: `review`
 - changed public API with affected truth docs that were not changed in the impact set: `review`
 - invalid base ref or failed base comparison: `error`
+
+### Source Traceability
+
+Source traceability checks run whenever configured truth docs can be loaded; they are not gated on `--base <ref>`. They verify that truth-doc `source_of_truth` entries and optional evidence blocks still point at live checkout material. They do not prove claim semantics.
+
+Current severity behavior:
+
 - deleted `source_of_truth` or evidence reference: `error`
 - `source_of_truth` glob reference with no matching files: `error`
 - evidence reference outside the repository root: `error`
@@ -197,7 +204,7 @@ Current severity behavior:
 1. Resolve the active repository and worktree.
 2. Load `.truthmark/config.yml` and configured authority roots.
 3. Build branch-scope metadata and relevant-file hashes for the current checkout.
-4. Run configured authority, area, frontmatter, link, generated-surface, coverage, decision-structure, and topology diagnostics.
+4. Run configured authority, area, frontmatter, link, generated-surface, source-traceability, coverage, decision-structure, and topology diagnostics.
 5. Render either human-readable output or the shared JSON command envelope.
 
 The command does not run Truth Sync, Truth Preview, Truth Realize, Truth Structure, or Truth Check workflows. It only reports the current repository-truth health it can derive from local checkout state.
@@ -212,7 +219,7 @@ The command does not run Truth Sync, Truth Preview, Truth Realize, Truth Structu
 - JSON output includes `data.impactSet` only when `--base <ref>` is supplied
 - JSON output does not include workflow payloads
 
-`data.scorecard` is a compact Truth Health Scorecard over the same raw diagnostics returned at top level. It includes seven dimensions: `routing-coverage`, `ownership-clarity`, `evidence-support`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, and `decision-rationale-preservation`. Each dimension contains `id`, categorical `status`, and `diagnosticIndexes`; non-pass dimensions may include capped short `evidence`. `diagnosticIndexes` always point into the final returned `diagnostics` array, so raw diagnostics remain the source of full messages, files, severities, and machine data.
+`data.scorecard` is a compact Truth Health Scorecard over the same raw diagnostics returned at top level. It includes seven dimensions: `routing-coverage`, `ownership-clarity`, `source-traceability`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, and `decision-rationale-preservation`. Each dimension contains `id`, categorical `status`, and `diagnosticIndexes`; non-pass dimensions may include capped short `evidence`. `diagnosticIndexes` always point into the final returned `diagnostics` array, so raw diagnostics remain the source of full messages, files, severities, and machine data.
 
 Status derivation is deterministic: any mapped `error` diagnostic makes the dimension `fail`, mapped non-error diagnostics make it `warn`, no mapped diagnostics after the relevant checker ran makes it `pass`, and unavailable or skipped context makes it `not-run`. `branch-freshness` is `not-run` when `--base` is omitted. Missing or invalid config still returns a parseable check envelope with `data.scorecard`; dimensions affected by config errors fail or report not-run instead of being omitted.
 

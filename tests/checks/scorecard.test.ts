@@ -55,27 +55,37 @@ describe("buildTruthHealthScorecard", () => {
   it("maps categories to the expected dimensions and caps compact evidence", () => {
     const diagnostics: Diagnostic[] = [
       diagnostic({ category: "area-index", file: "docs/truthmark/routes/areas.md" }),
-      diagnostic({ category: "freshness", file: "src/api.ts" }),
+      diagnostic({ category: "source-traceability", file: "docs/truthmark/truth/api.md" }),
+      diagnostic({
+        category: "freshness",
+        message: "Changed file src/api.ts is not routed to truth ownership.",
+        file: "src/api.ts",
+      }),
       diagnostic({ category: "generated-surface", file: "AGENTS.md" }),
       diagnostic({ category: "doc-structure", message: "Missing Product Decisions section", file: "docs/architecture/overview.md" }),
       diagnostic({ category: "doc-structure", message: "Missing Rationale section", file: "docs/architecture/overview.md" }),
       diagnostic({ category: "doc-structure", message: "Missing Scope section", file: "docs/architecture/overview.md" }),
-      diagnostic({ category: "doc-structure", message: "Missing Current Behavior section", file: "docs/truthmark/truth/check-diagnostics.md" }),
+      diagnostic({
+        category: "doc-structure",
+        message:
+          "Canonical truth doc docs/truthmark/truth/check-diagnostics.md should include Current Behavior section(s). Decisions should live beside current behavior, not in timestamped planning logs.",
+        file: "docs/truthmark/truth/check-diagnostics.md",
+      }),
     ];
 
     const scorecard = buildTruthHealthScorecard(diagnostics, { branchFreshnessRan: true });
 
     expect(dimension(scorecard.dimensions, "routing-coverage").diagnosticIndexes).toEqual([0]);
-    expect(dimension(scorecard.dimensions, "ownership-clarity").diagnosticIndexes).toEqual([0]);
-    expect(dimension(scorecard.dimensions, "evidence-support").diagnosticIndexes).toEqual([1]);
-    expect(dimension(scorecard.dimensions, "branch-freshness").diagnosticIndexes).toEqual([1]);
-    expect(dimension(scorecard.dimensions, "generated-surface-freshness").diagnosticIndexes).toEqual([2]);
+    expect(dimension(scorecard.dimensions, "ownership-clarity").diagnosticIndexes).toEqual([0, 2]);
+    expect(dimension(scorecard.dimensions, "source-traceability").diagnosticIndexes).toEqual([1]);
+    expect(dimension(scorecard.dimensions, "branch-freshness").diagnosticIndexes).toEqual([2]);
+    expect(dimension(scorecard.dimensions, "generated-surface-freshness").diagnosticIndexes).toEqual([3]);
     expect(dimension(scorecard.dimensions, "truth-doc-structure").diagnosticIndexes).toEqual([
-      3, 4, 5, 6,
+      4, 5, 6, 7,
     ]);
-    expect(dimension(scorecard.dimensions, "truth-doc-structure").evidence).toHaveLength(3);
+    expect(dimension(scorecard.dimensions, "truth-doc-structure").evidence).toHaveLength(2);
     expect(dimension(scorecard.dimensions, "decision-rationale-preservation").diagnosticIndexes).toEqual([
-      3, 4,
+      4, 5,
     ]);
   });
 

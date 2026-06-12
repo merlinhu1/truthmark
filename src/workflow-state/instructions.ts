@@ -36,19 +36,21 @@ const uniqueSorted = (values: string[]): string[] =>
 const renderWorkflowCommand = (
   workflowState: WorkflowState,
   command: "status" | "instructions",
+  base?: string,
 ): string =>
   [
     "truthmark workflow",
     command,
     "--workflow",
     workflowState.workflow,
-    ...(workflowState.base ? ["--base", workflowState.base] : []),
+    ...(base ? ["--base", base] : []),
     "--json",
   ].join(" ");
 
 export const buildWorkflowInstructions = (
   workflowState: WorkflowState,
   manifestEntry: TruthmarkWorkflowManifestEntry,
+  options: { base?: string } = {},
 ): WorkflowInstructions => {
   const requiredReads = uniqueSorted([
     ...workflowState.targetTruthDocs,
@@ -64,12 +66,12 @@ export const buildWorkflowInstructions = (
     workflow: workflowState.workflow,
     commandSequence: [
       {
-        command: renderWorkflowCommand(workflowState, "status"),
+        command: renderWorkflowCommand(workflowState, "status", options.base),
         when: "Before deciding whether to run the workflow.",
         required: true,
       },
       {
-        command: renderWorkflowCommand(workflowState, "instructions"),
+        command: renderWorkflowCommand(workflowState, "instructions", options.base),
         when: "Before reading, writing, validating, or reporting.",
         required: true,
       },

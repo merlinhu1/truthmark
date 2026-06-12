@@ -5,7 +5,7 @@ export const TRUTH_HEALTH_SCORECARD_SCHEMA_VERSION = "truthmark-scorecard/v0" as
 export const TRUTH_HEALTH_DIMENSION_IDS = [
   "routing-coverage",
   "ownership-clarity",
-  "evidence-support",
+  "source-traceability",
   "branch-freshness",
   "generated-surface-freshness",
   "truth-doc-structure",
@@ -30,6 +30,7 @@ export type TruthHealthScorecard = {
 
 export type TruthHealthScorecardContext = {
   branchFreshnessRan: boolean;
+  branchFreshnessNotRunReason?: string;
   routingChecksRan?: boolean;
   ownershipChecksRan?: boolean;
   evidenceChecksRan?: boolean;
@@ -38,7 +39,7 @@ export type TruthHealthScorecardContext = {
   decisionRationaleChecksRan?: boolean;
 };
 
-const EVIDENCE_LIMIT = 3;
+const EVIDENCE_LIMIT = 2;
 
 const textIncludesAny = (text: string, needles: string[]): boolean => {
   const normalized = text.toLowerCase();
@@ -60,22 +61,34 @@ const isRouteAmbiguityDiagnostic = (diagnostic: Diagnostic): boolean =>
     "allowed write",
   ]);
 
-const isSourceEvidenceDiagnostic = (diagnostic: Diagnostic): boolean =>
-  diagnostic.category === "links" &&
-  textIncludesAny(diagnosticText(diagnostic), [
-    "source_of_truth",
-    "source of truth",
-    "source evidence",
-    "evidence",
-  ]);
+const isSourceTraceabilityDiagnostic = (diagnostic: Diagnostic): boolean =>
+  diagnostic.category === "source-traceability" ||
+  (diagnostic.category === "links" &&
+    textIncludesAny(diagnosticText(diagnostic), [
+      "source_of_truth",
+      "source of truth",
+      "source evidence",
+      "evidence",
+    ]));
 
 const isMarkdownShapeDiagnostic = (diagnostic: Diagnostic): boolean =>
   diagnostic.category === "authority" &&
   textIncludesAny(diagnosticText(diagnostic), ["markdown", "heading", "section"]);
 
+const isOwnershipFreshnessDiagnostic = (diagnostic: Diagnostic): boolean =>
+  diagnostic.category === "freshness" &&
+  textIncludesAny(diagnosticText(diagnostic), [
+    "route",
+    "routing",
+    "ownership",
+    "truth owner",
+    "truth ownership",
+    "affected truth document",
+  ]);
+
 const isDecisionRationaleDiagnostic = (diagnostic: Diagnostic): boolean =>
   diagnostic.category === "doc-structure" &&
-  textIncludesAny(diagnosticText(diagnostic), ["decision", "rationale"]);
+  textIncludesAny(diagnosticText(diagnostic), ["product decisions", "rationale"]);
 
 const mapsToDimension = (
   diagnostic: Diagnostic,
@@ -89,14 +102,11 @@ const mapsToDimension = (
     case "ownership-clarity":
       return (
         ["config", "area-index", "coverage", "impact"].includes(diagnostic.category) ||
-        isRouteAmbiguityDiagnostic(diagnostic)
+        isRouteAmbiguityDiagnostic(diagnostic) ||
+        isOwnershipFreshnessDiagnostic(diagnostic)
       );
-    case "evidence-support":
-      return (
-        diagnostic.category === "config" ||
-        diagnostic.category === "freshness" ||
-        isSourceEvidenceDiagnostic(diagnostic)
-      );
+    case "source-traceability":
+      return isSourceTraceabilityDiagnostic(diagnostic);
     case "branch-freshness":
       return diagnostic.category === "freshness";
     case "generated-surface-freshness":
@@ -123,7 +133,7 @@ const checkerRanForDimension = (
       return context.routingChecksRan ?? true;
     case "ownership-clarity":
       return context.ownershipChecksRan ?? true;
-    case "evidence-support":
+    case "source-traceability":
       return context.evidenceChecksRan ?? true;
     case "branch-freshness":
       return context.branchFreshnessRan;
@@ -155,6 +165,7 @@ const evidenceForDiagnostics = (
   diagnosticIndexes: number[],
   status: TruthHealthDimensionStatus,
   dimensionId: TruthHealthDimensionId,
+  context: TruthHealthScorecardContext,
 ): string[] | undefined => {
   if (status === "pass") {
     return undefined;
@@ -162,7 +173,7 @@ const evidenceForDiagnostics = (
 
   if (diagnosticIndexes.length === 0) {
     if (dimensionId === "branch-freshness") {
-      return ["base not supplied"];
+      return [context.branchFreshnessNotRunReason ?? "base not supplied"];
     }
 
     return ["checker not run"];
@@ -194,6 +205,7 @@ export const buildTruthHealthScorecard = (
       diagnosticIndexes,
       status,
       dimensionId,
+      context,
     );
 
     return {

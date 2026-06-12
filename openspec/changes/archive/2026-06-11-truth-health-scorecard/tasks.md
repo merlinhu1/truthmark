@@ -1,6 +1,6 @@
 ## 1. Compact Contract And Mapper Tests
 
-- [x] 1.1 Create `tests/checks/scorecard.test.ts` and add a shape test for `TruthHealthScorecard` with `schemaVersion: "truthmark-scorecard/v0"` and the seven dimension IDs: `routing-coverage`, `ownership-clarity`, `evidence-support`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, and `decision-rationale-preservation`.
+- [x] 1.1 Create `tests/checks/scorecard.test.ts` and add a shape test for `TruthHealthScorecard` with `schemaVersion: "truthmark-scorecard/v0"` and the seven dimension IDs: `routing-coverage`, `ownership-clarity`, `source-traceability`, `branch-freshness`, `generated-surface-freshness`, `truth-doc-structure`, and `decision-rationale-preservation`.
 - [x] 1.2 Assert each dimension contains only the compact runtime fields: `id`, `status`, `diagnosticIndexes`, and optional capped `evidence`; do not require repeated labels, remediation text, or full diagnostic copies in JSON.
 - [x] 1.3 Add mapper tests proving `error` diagnostics produce `fail`, non-error mapped diagnostics produce `warn`, no mapped diagnostics after the relevant checker runs produces `pass`, and intentionally skipped context produces `not-run`.
 - [x] 1.4 Add category mapping tests for the minimal mappings in `design.md`, including branch freshness as `not-run` when no base was supplied.
