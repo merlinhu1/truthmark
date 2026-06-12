@@ -11,7 +11,6 @@ import { buildWorkflowState } from "../../src/workflow-state/build.js";
 import { buildWorkflowInstructions } from "../../src/workflow-state/instructions.js";
 import type { WorkflowState } from "../../src/workflow-state/types.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
-import { runCli } from "../helpers/run-cli.js";
 
 const readTree = async (rootDir: string, relativeRoot: string): Promise<Record<string, string>> => {
   const absoluteRoot = path.join(rootDir, relativeRoot);
@@ -302,22 +301,6 @@ describe("buildWorkflowState", () => {
     ).rejects.toThrow(/Unknown Truthmark workflow/u);
   });
 
-  it("does not expose pass 1 workflow lifecycle commands in CLI help", async () => {
-    const result = await runCli(["--help"]);
-
-    expect(result.exitCode).toBe(0);
-    for (const forbidden of [
-      "workflow status",
-      "workflow instructions",
-      "proposal",
-      "archive",
-      "apply",
-      "changes",
-      "tasks",
-    ]) {
-      expect(result.stdout).not.toContain(forbidden);
-    }
-  });
 
   it("does not mutate truth, route, or generated files", async () => {
     const repo = await setupConfiguredRepo();

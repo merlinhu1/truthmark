@@ -2,7 +2,7 @@
 status: active
 doc_type: behavior
 truth_kind: behavior
-last_reviewed: 2026-06-01
+last_reviewed: 2026-06-12
 source_of_truth:
   - ../../../../src/workflow-state/types.ts
   - ../../../../src/workflow-state/action-context.ts
@@ -39,6 +39,7 @@ WorkflowState includes applicability, action context, changed files, affected ro
 - Read-only workflows (`truthmark-preview` and `truthmark-check`) have mode `read-only` and no allowed write paths.
 - Sync and document workflows use mode `truth-doc-write`; structure uses `route-write`; realize uses `code-write`; portal uses `portal-write` when portal output is configured.
 - Missing config, ambiguous route ownership, invalid workflow IDs, or missing branch comparison data fail closed instead of widening allowed writes.
+- `truthmark-sync` may select a cheap existing local Git base when the caller omits `--base`; `truthmark-realize` still blocks without `--base` because code-write paths must be derived from a bounded comparison.
 - Realize forbids writes to configured route and truth documentation paths.
 - Helper validation commands are copied from the workflow manifest into machine-readable action context and check metadata.
 - Full WorkflowState output may include ContextPack truth document and source file content, subject to existing ContextPack truncation behavior.
@@ -47,7 +48,7 @@ WorkflowState includes applicability, action context, changed files, affected ro
 
 The builder validates the workflow ID, loads config and RepoIndex, derives ImpactSet only when a base ref is supplied, derives ContextPack only for supported workflows, runs Truthmark Check, merges diagnostics, determines applicability, then derives action context from the manifest and bounded route/config/impact data.
 
-Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambiguous changed functional files leave target truth docs empty and direct the caller toward Truth Structure or route repair. Missing branch comparison for sync leaves changed files empty and reports a next step to provide `--base`.
+Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambiguous changed functional files leave target truth docs empty and direct the caller toward Truth Structure or route repair. Sync without a caller-supplied base performs cheap local base selection from existing upstream/main/master refs. Realize without a comparison base is `blocked` with a next step to rerun with `--base <ref>` so code-write paths remain bounded.
 
 ## Contracts
 
@@ -61,6 +62,7 @@ Applicability is `applicable`, `not_applicable`, `blocked`, or `ambiguous`. Ambi
 - Decision (2026-06-01): WorkflowState composes existing manifest, config, RepoIndex, ImpactSet, ContextPack, and Check systems instead of creating a separate workflow engine.
 - Decision (2026-06-01): Fail-closed write boundaries are preferred over default or wildcard fallback paths whenever config, route ownership, or branch comparison data is ambiguous.
 - Decision (2026-06-01): Pass 2 exposes WorkflowState and derived instructions through agent-facing CLI JSON while keeping lifecycle concepts such as proposals, specs, tasks, archive, and apply outside Truthmark runtime behavior.
+- Decision (2026-06-12): OpenSpec remains research input only; Truthmark must not add an OpenSpec dependency, committed OpenSpec workspace, OPSX command surface, or generated `openspec-*` agent skills.
 - Decision (2026-06-01): Pass 2 accepts only full manifest workflow IDs and rejects short ContextPack aliases instead of silently mapping them.
 
 ## Rationale

@@ -94,6 +94,11 @@ const applicabilityFor = (
     return { state: isWriteCapable(workflow) ? "blocked" : "not_applicable", reasons };
   }
 
+  if (workflow === "truthmark-realize" && !impactSet) {
+    reasons.push("truthmark-realize requires --base to derive bounded allowed write paths.");
+    return { state: "blocked", reasons };
+  }
+
   if (hasUnmappedFunctionalChange(impactSet)) {
     reasons.push("Changed functional files have ambiguous or missing Truthmark route ownership.");
     return { state: "ambiguous", reasons };
@@ -143,6 +148,24 @@ const contextDataFor = (
     portalOutputPath: config.truthmark.paths.portalOutput,
     routes: repoIndex.routeMap.routes,
   };
+};
+
+const nextStepsFor = (
+  workflow: TruthmarkWorkflowId,
+  applicability: WorkflowApplicability,
+  comparisonBase: string | null,
+): string[] => {
+  if (applicability.state === "ambiguous") {
+    return ["Run Truth Structure or repair route ownership before writing truth docs."];
+  }
+
+  if (workflow === "truthmark-realize" && applicability.state === "blocked" && !comparisonBase) {
+    return [
+      "Rerun with --base <ref> so Truthmark can derive bounded allowed code-write paths.",
+    ];
+  }
+
+  return [];
 };
 
 export const buildWorkflowState = async (
@@ -199,10 +222,7 @@ export const buildWorkflowState = async (
       recommended: [...manifestEntry.positiveTriggers],
       helpers: helperCommandsFor(options.workflow),
     },
-    nextSteps:
-      applicability.state === "ambiguous"
-        ? ["Run Truth Structure or repair route ownership before writing truth docs."]
-        : [],
+    nextSteps: nextStepsFor(options.workflow, applicability, comparisonBase),
     reportSections: [...manifestEntry.reportSections],
     ...(contextPack ? { contextPack } : {}),
   };
