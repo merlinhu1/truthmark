@@ -1,21 +1,13 @@
 ---
-status: active
+status: deprecated
 doc_type: index
 last_reviewed: 2026-06-12
+migrated_to: docs/truthmark/engineering/legacy-truth/architecture/README.md
 ---
 
-# Architecture Truth Docs
+# Legacy Archived Document
 
-This directory indexes routed architecture truth docs in the configured Truthmark truth root.
+This document is archived and has been migrated to `docs/truthmark/engineering/legacy-truth/architecture/README.md`.
 
-README.md files are indexes, not Truth Sync targets. Keep architecture truth in bounded leaf docs in this directory.
+Use the canonical target for current behavior and workflow work.
 
-Current leaf docs:
-
-- [Overview](overview.md)
-- [Module Map](module-map.md)
-
-## Source References
-
-- ../../routes/areas/check-and-routing.md
-- ../../routes/areas/init-and-scaffold.md

@@ -1,23 +1,13 @@
 ---
-status: active
+status: deprecated
 doc_type: index
 last_reviewed: 2026-05-13
+migrated_to: docs/truthmark/engineering/legacy-truth/repository/README.md
 ---
 
-# Repository Truth Docs
+# Legacy Archived Document
 
-This directory indexes bounded repository truth docs.
+This document is archived and has been migrated to `docs/truthmark/engineering/legacy-truth/repository/README.md`.
 
-README.md files are indexes, not Truth Sync targets. Keep behavior truth in bounded leaf docs in this directory.
+Use the canonical target for current behavior and workflow work.
 
-Current leaf docs:
-
-- [Overview](overview.md)
-- [Context Pack](context-pack.md)
-- [Impact Set](impact-set.md)
-- [Repo Index](repo-index.md)
-- [Workflow State](workflow-state.md)
-
-## Source References
-
-- ../../routes/areas/init-and-scaffold.md

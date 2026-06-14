@@ -1,15 +1,13 @@
 ---
-status: active
+status: deprecated
 doc_type: index
 last_reviewed: 2026-05-09
+migrated_to: docs/truthmark/engineering/legacy-truth/README.md
 ---
 
-# Truth Docs
+# Legacy Archived Document
 
-This directory contains current truth docs organized by the configured Truthmark hierarchy.
+This document is archived and has been migrated to `docs/truthmark/engineering/legacy-truth/README.md`.
 
-`README.md` files in this tree are indexes. Keep current behavior truth in bounded leaf docs under domain folders such as `repository/overview.md`.
+Use the canonical target for current behavior and workflow work.
 
-## Source References
-
-- ../routes/areas.md
