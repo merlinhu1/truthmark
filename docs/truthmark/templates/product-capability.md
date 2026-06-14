@@ -3,7 +3,7 @@ status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
 realized_by:
-  - { { engineering_realization } }
+  - {{engineering_realization}}
 ---
 
 # {{title}}

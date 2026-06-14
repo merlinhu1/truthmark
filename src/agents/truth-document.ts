@@ -4,9 +4,10 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
+  resolveEngineeringTruthRoot,
+  renderLaneClassificationInstructions,
   defaultAgentConfig,
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
@@ -17,7 +18,6 @@ import {
   renderHierarchySummary,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
-  resolveEngineeringTruthRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -131,7 +131,7 @@ Truth Document is manual and implementation-first:
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- ${LANE_CLASSIFICATION_INSTRUCTIONS}
+- ${renderLaneClassificationInstructions(config)}
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and ${config.truthmark.paths.routesIndex} or relevant child route files only
 - must not write functional code

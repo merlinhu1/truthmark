@@ -2,10 +2,10 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import { renderTruthRealizeCompletedReport } from "../realize/report.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   defaultAgentConfig,
   renderHierarchySummary,
+  renderLaneClassificationInstructions,
   renderTruthDocOwnershipGateSection,
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
@@ -28,7 +28,7 @@ Doc first:
 - read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - ${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
-- ${LANE_CLASSIFICATION_INSTRUCTIONS}
+- ${renderLaneClassificationInstructions(config)}
 - use product truth as requirements and engineering truth as current implementation context; do not redefine product truth inside engineering docs
 ${renderTruthDocOwnershipGateSection(
     "source truth docs before writing code",

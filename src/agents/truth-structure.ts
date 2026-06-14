@@ -4,7 +4,6 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaudeSubagentModeSection,
@@ -16,6 +15,7 @@ import {
   renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
+  renderLaneClassificationInstructions,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -107,7 +107,7 @@ Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- ${LANE_CLASSIFICATION_INSTRUCTIONS}
+- ${renderLaneClassificationInstructions(config)}
 - inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair ${config.truthmark.paths.routesIndex}

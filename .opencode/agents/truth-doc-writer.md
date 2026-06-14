@@ -8,6 +8,7 @@ permission:
   glob: allow
   edit:
     "*": deny
+    "docs/truthmark/product/**": allow
     "docs/truthmark/engineering/**": allow
     "docs/truthmark/routes/areas.md": allow
     "docs/truthmark/routes/areas/**/*.md": allow

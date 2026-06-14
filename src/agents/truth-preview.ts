@@ -1,9 +1,9 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderHierarchySummary,
+  renderLaneClassificationInstructions,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -87,7 +87,7 @@ Read:
 - relevant child route files under ${config.truthmark.paths.routeAreasRoot}/, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- ${LANE_CLASSIFICATION_INSTRUCTIONS}
+- ${renderLaneClassificationInstructions(config)}
 
 Do not:
 - must not edit files

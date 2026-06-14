@@ -4,7 +4,6 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
@@ -14,6 +13,7 @@ import {
   renderOpenCodeSubagentModeSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
+  renderLaneClassificationInstructions,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
@@ -124,7 +124,7 @@ Parent workflow:
 2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
 4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-5. ${LANE_CLASSIFICATION_INSTRUCTIONS}
+5. ${renderLaneClassificationInstructions(config)}
 6. Update engineering truth first after code changes. Update product truth only when implemented user-visible product promise or capability boundary changed and explicit source/user evidence supports it; otherwise report product-lane review needed.
 7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.

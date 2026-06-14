@@ -1,13 +1,22 @@
 import type { TruthmarkConfig } from "../config/schema.js";
-import { defaultAgentConfig, resolveTruthDocsRoot } from "../agents/shared.js";
+import {
+  defaultAgentConfig,
+  resolveProductTruthRoot,
+  resolveEngineeringTruthRoot,
+} from "../agents/shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 
 export const TRUTHMARK_BLOCK_START = "<!-- truthmark:start -->";
 export const TRUTHMARK_BLOCK_END = "<!-- truthmark:end -->";
 
 const renderCompactHierarchySummary = (config: TruthmarkConfig): string => {
-  const truthRoot = resolveTruthDocsRoot(config);
-  return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.truthmark.paths.routesIndex} and ${config.truthmark.paths.routeAreasRoot}/**/*.md when present; Truth docs: ${truthRoot}/**/*.md when present.`;
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+  const truthDocRoots = Array.from(new Set([productTruthRoot, engineeringTruthRoot])).map(
+    (truthRoot) => `${truthRoot}/**/*.md`,
+  );
+
+  return `Hierarchy hints: config .truthmark/config.yml when present; routes ${config.truthmark.paths.routesIndex} and ${config.truthmark.paths.routeAreasRoot}/**/*.md when present; Truth docs: ${truthDocRoots.join(" and ")} when present.`;
 };
 
 export const renderAgentsBlock = (

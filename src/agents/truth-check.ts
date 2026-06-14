@@ -8,9 +8,9 @@ import {
   renderOpenCodeSubagentModeSection,
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
-  LANE_CLASSIFICATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderHierarchySummary,
+  renderLaneClassificationInstructions,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -120,7 +120,7 @@ Truth Check is agent-led:
 - report issues and suggested fixes without silently rewriting unrelated files
 - if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
-${LANE_CLASSIFICATION_INSTRUCTIONS}
+${renderLaneClassificationInstructions(config)}
 
 ${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

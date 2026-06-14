@@ -11,7 +11,8 @@ import {
   renderHierarchySummary,
   renderOpenCodeSubagentModeSection,
   renderTruthDocOwnershipGateSection,
-  resolveTruthDocsRoot,
+  resolveEngineeringTruthRoot,
+  resolveProductTruthRoot,
 } from "../agents/shared.js";
 import {
   TRUTH_CHECK_EXPLICIT_INVOCATIONS,
@@ -696,8 +697,11 @@ const appendOpenCodePermissionGlob = (root: string, glob: string): string => {
 const renderOpenCodeWriterEditAllowRules = (
   config: TruthmarkConfig,
 ): string => {
-  const truthDocsRoot = normalizeOpenCodePermissionPath(
-    resolveTruthDocsRoot(config),
+  const truthDocRoots = Array.from(
+    new Set([
+      normalizeOpenCodePermissionPath(resolveProductTruthRoot(config)),
+      normalizeOpenCodePermissionPath(resolveEngineeringTruthRoot(config)),
+    ]),
   );
   const rootRouteIndex = normalizeOpenCodePermissionPath(
     config.truthmark.paths.routesIndex,
@@ -706,7 +710,7 @@ const renderOpenCodeWriterEditAllowRules = (
     config.truthmark.paths.routeAreasRoot,
   );
   const allowedPatterns = [
-    appendOpenCodePermissionGlob(truthDocsRoot, "/**"),
+    ...truthDocRoots.map((root) => appendOpenCodePermissionGlob(root, "/**")),
     rootRouteIndex,
     appendOpenCodePermissionGlob(areaFilesRoot, "/**/*.md"),
   ];
@@ -1315,7 +1319,7 @@ truthmark:
 const renderTruthmarkRealizeSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const truthDocsRoot = resolveTruthDocsRoot(config);
+  const truthDocsRoot = resolveEngineeringTruthRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-realize");
 
   return `---
