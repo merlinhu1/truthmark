@@ -3,7 +3,7 @@ name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 2.1.0
+truthmark-version: 2.2.0
 ---
 
 # Truthmark Realize
