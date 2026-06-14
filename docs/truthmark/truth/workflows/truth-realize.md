@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/prompts.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/realize/report.ts
 ---
 
 # Truth Realize Workflow
@@ -79,3 +75,9 @@ Doc-first implementation is only reliable when the source truth has a bounded ow
 ## Maintenance Notes
 
 Update this doc when Realize invocation, source-doc checks, write boundaries, or report shape changes.
+
+## Source References
+
+- ../../../../src/agents/prompts.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/realize/report.ts

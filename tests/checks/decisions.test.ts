@@ -88,7 +88,7 @@ Agents inspect the checkout directly.
 
 Installed workflow surfaces provide the current runtime.
 
-## Source Evidence
+## Source References
 
 - AGENTS.md
 
@@ -139,7 +139,10 @@ Update when installed workflow surfaces change.
 
     try {
       await repo.writeFile("docs/notes/future.md", "# Future\n");
-      await repo.writeFile("docs/truthmark/engineering/README.md", "# Current Feature Docs\n");
+      await repo.writeFile(
+        "docs/truthmark/engineering/README.md",
+        "# Current Feature Docs\n",
+      );
 
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
@@ -197,7 +200,9 @@ Bounded truth docs are easier to maintain.
           message: expect.stringContaining("Scope"),
         }),
       ]);
-      expect(diagnostics[0]?.message).toContain("Current Implementation Behavior");
+      expect(diagnostics[0]?.message).toContain(
+        "Current Implementation Behavior",
+      );
     } finally {
       await repo.cleanup();
     }
@@ -247,7 +252,9 @@ Structured JSON output.
           message: expect.stringContaining("Purpose"),
         }),
       ]);
-      expect(diagnostics[0]?.message).toContain("Current Implementation Behavior");
+      expect(diagnostics[0]?.message).toContain(
+        "Current Implementation Behavior",
+      );
     } finally {
       await repo.cleanup();
     }
@@ -298,7 +305,7 @@ This keeps onboarding and current truth separate.
           category: "doc-structure",
           severity: "review",
           file: "docs/README.md",
-          message: expect.stringContaining("Source Evidence"),
+          message: expect.stringContaining("Source References"),
         }),
       ]);
     } finally {

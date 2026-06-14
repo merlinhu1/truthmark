@@ -6,7 +6,7 @@ import { parse } from "yaml";
 
 import type { Diagnostic } from "../output/diagnostic.js";
 import { resolveRepoPath } from "../fs/paths.js";
-import { DEFAULT_INSTRUCTION_TARGETS } from "./defaults.js";
+import { DEFAULT_INSTRUCTION_TARGETS, DERIVED_TRUTHMARK_PATHS } from "./defaults.js";
 import {
   DEFAULT_PLATFORMS,
   type RawTruthmarkConfig,
@@ -58,12 +58,8 @@ const joinWorkspacePath = (workspace: string, childPath: string): string => {
   return normalizeRepoRelativePath(`${workspace}/${childPath}`);
 };
 
-const portalOutputFor = (workspace: string): string => joinWorkspacePath(workspace, "generated/portal");
-
-const portalTemplateFor = (templatesRoot: string): string => joinWorkspacePath(templatesRoot, "portal.html");
-
-const PRODUCT_TRUTH_ROOT = "product";
-const ENGINEERING_TRUTH_ROOT = "engineering";
+const portalOutputFor = (workspace: string): string =>
+  joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.portalOutput);
 
 const pathsOverlap = (left: string, right: string): boolean => {
   const normalizedLeft = normalizeRepoRelativePath(left);
@@ -123,11 +119,6 @@ const validateWorkspacePaths = (
 ): Diagnostic[] => {
   const diagnostics: Diagnostic[] = [];
   const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
-  const childPaths = [
-    ["truthmark.routes.index", rawConfig.truthmark.routes.index],
-    ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
-    ["truthmark.templates.root", rawConfig.truthmark.templates.root],
-  ] as const;
 
   if (
     isUnsafeRepoRelativePath(rawConfig.truthmark.workspace) ||
@@ -139,37 +130,6 @@ const validateWorkspacePaths = (
         configPath,
       ),
     );
-  }
-
-  for (const [name, value] of childPaths) {
-    if (isUnsafeRepoRelativePath(value)) {
-      diagnostics.push(
-        toConfigDiagnostic(
-          `${name} must be a non-empty path relative to truthmark.workspace without absolute or parent traversal segments.`,
-          configPath,
-        ),
-      );
-    }
-  }
-
-  const portalOutput = normalizeRepoRelativePath("generated/portal");
-  const controlledWorkspaceChildren = [
-    ["truthmark.routes.index", rawConfig.truthmark.routes.index],
-    ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
-    ["truthmark.paths.productTruthRoot", PRODUCT_TRUTH_ROOT],
-    ["truthmark.paths.engineeringTruthRoot", ENGINEERING_TRUTH_ROOT],
-    ["truthmark.templates.root", rawConfig.truthmark.templates.root],
-  ] as const;
-
-  for (const [name, value] of controlledWorkspaceChildren) {
-    if (pathsOverlap(portalOutput, value)) {
-      diagnostics.push(
-        toConfigDiagnostic(
-          `Truthmark Portal output ${portalOutputFor(workspace)} must not overlap ${name}; Portal output is generated and must stay outside controlled truth, routing, and template paths.`,
-          configPath,
-        ),
-      );
-    }
   }
 
   for (const target of rawConfig.instruction_targets ?? DEFAULT_INSTRUCTION_TARGETS) {
@@ -188,13 +148,16 @@ const validateWorkspacePaths = (
 
 const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
   const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
-  const routesIndex = joinWorkspacePath(workspace, rawConfig.truthmark.routes.index);
-  const routeAreasRoot = joinWorkspacePath(workspace, rawConfig.truthmark.routes.areas);
-  const productTruthRoot = joinWorkspacePath(workspace, PRODUCT_TRUTH_ROOT);
-  const engineeringTruthRoot = joinWorkspacePath(workspace, ENGINEERING_TRUTH_ROOT);
-  const templatesRoot = joinWorkspacePath(workspace, rawConfig.truthmark.templates.root);
+  const routesIndex = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.routesIndex);
+  const routeAreasRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.routeAreasRoot);
+  const productTruthRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.productTruthRoot);
+  const engineeringTruthRoot = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.engineeringTruthRoot,
+  );
+  const templatesRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.templatesRoot);
   const portalOutput = portalOutputFor(workspace);
-  const portalTemplate = portalTemplateFor(templatesRoot);
+  const portalTemplate = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.portalTemplate);
 
   return {
     version: rawConfig.version,
@@ -202,17 +165,17 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
     truthmark: {
       workspace,
       routes: {
-        index: normalizeRepoRelativePath(rawConfig.truthmark.routes.index),
-        areas: normalizeRepoRelativePath(rawConfig.truthmark.routes.areas),
-        defaultArea: rawConfig.truthmark.routes.default_area,
-        maxDelegationDepth: rawConfig.truthmark.routes.max_delegation_depth,
+        index: DERIVED_TRUTHMARK_PATHS.routesIndex,
+        areas: DERIVED_TRUTHMARK_PATHS.routeAreasRoot,
+        defaultArea: DERIVED_TRUTHMARK_PATHS.defaultArea,
+        maxDelegationDepth: DERIVED_TRUTHMARK_PATHS.maxDelegationDepth,
       },
       truth: {
-        productRoot: PRODUCT_TRUTH_ROOT,
-        engineeringRoot: ENGINEERING_TRUTH_ROOT,
+        productRoot: DERIVED_TRUTHMARK_PATHS.productTruthRoot,
+        engineeringRoot: DERIVED_TRUTHMARK_PATHS.engineeringTruthRoot,
       },
       templates: {
-        root: normalizeRepoRelativePath(rawConfig.truthmark.templates.root),
+        root: DERIVED_TRUTHMARK_PATHS.templatesRoot,
       },
       generated: {
         portal: {

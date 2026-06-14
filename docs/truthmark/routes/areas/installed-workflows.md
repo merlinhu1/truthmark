@@ -2,10 +2,6 @@
 status: active
 doc_type: routing
 last_reviewed: 2026-05-16
-source_of_truth:
-  - ../areas.md
-  - ../../README.md
-  - ../../ai/repo-rules.md
 ---
 
 # Installed Workflows Areas
@@ -45,8 +41,8 @@ Code surface:
 - src/templates/generated-surfaces.ts
 - src/truth/\*\*
 - src/version.ts
-- tests/evals/**
-- tests/templates/**
+- tests/evals/\*\*
+- tests/templates/\*\*
 
 Update truth when:
 
@@ -54,3 +50,9 @@ Update truth when:
 - generated instruction block or skill content changes
 - workflow version markers or sync classification behavior changes
 - ownership gates, evidence gates, lane classification gates, decision/rationale preservation gates, or truth-doc split behavior changes
+
+## Source References
+
+- ../areas.md
+- ../../README.md
+- ../../ai/repo-rules.md

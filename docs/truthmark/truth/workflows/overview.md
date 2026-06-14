@@ -3,17 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-06-12
-source_of_truth:
-  - ../../../../.truthmark/config.yml
-  - ../../../../src/agents/instructions.ts
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/agents/workflow-helper-validation.ts
-  - ../../../../src/cli/program.ts
-  - ../../../../src/cli/handlers.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/generated-surfaces.ts
-  - ../../../../tests/evals/workflow-routing-cases.ts
-  - ../../../../tests/evals/no-cli-fallback-cases.ts
 ---
 
 # Installed Workflow Overview
@@ -60,23 +49,23 @@ Current behavior notes:
 
 The default platform list includes every supported platform. Teams should remove unused platforms from `.truthmark/config.yml` before rerunning `truthmark init`.
 
-| Platform         | Generated surface                                                                                                                                                | Invocation shape                                                                  |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `codex`          | `.agents/skills/truthmark-*/SKILL.md`, `.agents/skills/truthmark-*/support/*.md`, Codex metadata, and `.codex/agents/*.toml` verifier and leased doc-writer agents | `/truthmark-*` or `$truthmark-*`                                                  |
-| `opencode`       | `.opencode/skills/truthmark-*/SKILL.md`, `.opencode/skills/truthmark-*/support/*.md`, and `.opencode/agents/*.md` verifier and leased doc-writer subagents       | `/skill truthmark-*`                                                              |
-| `claude-code`    | `.claude/skills/truthmark-*/SKILL.md`, `.claude/skills/truthmark-*/support/*.md`, and `.claude/agents/*.md` verifier and leased doc-writer subagents             | `/truthmark-*`; named subagents such as `truth-route-auditor`                     |
+| Platform         | Generated surface                                                                                                                                                                          | Invocation shape                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `codex`          | `.agents/skills/truthmark-*/SKILL.md`, `.agents/skills/truthmark-*/support/*.md`, Codex metadata, and `.codex/agents/*.toml` verifier and leased doc-writer agents                         | `/truthmark-*` or `$truthmark-*`                                                  |
+| `opencode`       | `.opencode/skills/truthmark-*/SKILL.md`, `.opencode/skills/truthmark-*/support/*.md`, and `.opencode/agents/*.md` verifier and leased doc-writer subagents                                 | `/skill truthmark-*`                                                              |
+| `claude-code`    | `.claude/skills/truthmark-*/SKILL.md`, `.claude/skills/truthmark-*/support/*.md`, and `.claude/agents/*.md` verifier and leased doc-writer subagents                                       | `/truthmark-*`; named subagents such as `truth-route-auditor`                     |
 | `github-copilot` | `.github/skills/truthmark-*/SKILL.md`, `.github/skills/truthmark-*/support/*.md`, `.github/prompts/truthmark-*.prompt.md`, and `.github/agents/*.md` verifier and leased doc-writer agents | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
-| `gemini-cli`     | `.gemini/skills/truthmark-*/SKILL.md`, `.gemini/skills/truthmark-*/support/*.md`, `.gemini/commands/truthmark/*.toml`, and `.gemini/agents/*.md` verifier and leased doc-writer agents | `/truthmark:*`                                                                    |
+| `gemini-cli`     | `.gemini/skills/truthmark-*/SKILL.md`, `.gemini/skills/truthmark-*/support/*.md`, `.gemini/commands/truthmark/*.toml`, and `.gemini/agents/*.md` verifier and leased doc-writer agents     | `/truthmark:*`                                                                    |
 
 Official host documentation checked for these paths:
 
-| Platform | Official documentation | Path contract used by Truthmark |
-| -------- | ---------------------- | -------------------------------- |
-| `codex` | OpenAI Codex Skills: <https://developers.openai.com/codex/skills>; OpenAI Codex Subagents: <https://developers.openai.com/codex/subagents> | Codex scans repository skills from `.agents/skills` up to the repository root; project custom agents are standalone TOML files under `.codex/agents/`. |
-| `opencode` | OpenCode Agent Skills: <https://opencode.ai/docs/skills/>; OpenCode Agents: <https://opencode.ai/docs/agents/> | OpenCode supports project skills under `.opencode/skills/<name>/SKILL.md` and project markdown agents under `.opencode/agents/`. |
-| `claude-code` | Anthropic Claude Code Skills: <https://docs.anthropic.com/en/docs/claude-code/skills>; Anthropic Claude Code Subagents: <https://docs.anthropic.com/en/docs/claude-code/sub-agents> | Claude Code project skills load from `.claude/skills/`; project subagents use `.claude/agents/`. |
+| Platform         | Official documentation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Path contract used by Truthmark                                                                                                                                                                                                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `codex`          | OpenAI Codex Skills: <https://developers.openai.com/codex/skills>; OpenAI Codex Subagents: <https://developers.openai.com/codex/subagents>                                                                                                                                                                                                                                                                                                                                                                                 | Codex scans repository skills from `.agents/skills` up to the repository root; project custom agents are standalone TOML files under `.codex/agents/`.                                                                                                                                        |
+| `opencode`       | OpenCode Agent Skills: <https://opencode.ai/docs/skills/>; OpenCode Agents: <https://opencode.ai/docs/agents/>                                                                                                                                                                                                                                                                                                                                                                                                             | OpenCode supports project skills under `.opencode/skills/<name>/SKILL.md` and project markdown agents under `.opencode/agents/`.                                                                                                                                                              |
+| `claude-code`    | Anthropic Claude Code Skills: <https://docs.anthropic.com/en/docs/claude-code/skills>; Anthropic Claude Code Subagents: <https://docs.anthropic.com/en/docs/claude-code/sub-agents>                                                                                                                                                                                                                                                                                                                                        | Claude Code project skills load from `.claude/skills/`; project subagents use `.claude/agents/`.                                                                                                                                                                                              |
 | `github-copilot` | GitHub Copilot agent skills: <https://docs.github.com/en/copilot/concepts/agents/about-agent-skills>; GitHub Copilot prompt files: <https://docs.github.com/en/copilot/tutorials/customization-library/prompt-files/your-first-prompt-file>; GitHub Copilot custom agents: <https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-custom-agents>; GitHub Copilot repository instructions: <https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot> | Copilot supports project skills under `.github/skills`, `.claude/skills`, or `.agents/skills`; prompt files live in `.github/prompts/*.prompt.md`; repository custom agents live in `.github/agents/CUSTOM-AGENT-NAME.md`; repository instructions live in `.github/copilot-instructions.md`. |
-| `gemini-cli` | Gemini CLI skills: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md>; Gemini CLI custom commands: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/custom-commands.md>; Gemini CLI subagents: <https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md>; Gemini CLI context files: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md> | Gemini CLI supports workspace skills under `.gemini/skills/` or `.agents/skills/`, project commands under `.gemini/commands/`, project subagents under `.gemini/agents/*.md`, and repository context through `GEMINI.md`. |
+| `gemini-cli`     | Gemini CLI skills: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/skills.md>; Gemini CLI custom commands: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/custom-commands.md>; Gemini CLI subagents: <https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md>; Gemini CLI context files: <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md>                                                                                              | Gemini CLI supports workspace skills under `.gemini/skills/` or `.agents/skills/`, project commands under `.gemini/commands/`, project subagents under `.gemini/agents/*.md`, and repository context through `GEMINI.md`.                                                                     |
 
 Generated skill files, Gemini command files, Codex metadata, Codex custom-agent files, Claude Code subagent files, GitHub Copilot custom-agent files, Gemini subagent files, OpenCode subagent files, and managed instruction blocks include the package version from `package.json`. After upgrading Truthmark, rerun `truthmark init` and review generated workflow diffs.
 
@@ -140,3 +129,16 @@ Compact managed instruction blocks and compact skill entrypoints protect ordinar
 ## Maintenance Notes
 
 Update this doc when supported platforms, generated surface locations, invocation shapes, description routing behavior, or the installed runtime model change.
+
+## Source References
+
+- ../../../../.truthmark/config.yml
+- ../../../../src/agents/instructions.ts
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/agents/workflow-helper-validation.ts
+- ../../../../src/cli/program.ts
+- ../../../../src/cli/handlers.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/generated-surfaces.ts
+- ../../../../tests/evals/workflow-routing-cases.ts
+- ../../../../tests/evals/no-cli-fallback-cases.ts

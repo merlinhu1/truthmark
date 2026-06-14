@@ -2,9 +2,6 @@
 status: active
 doc_type: index
 last_reviewed: 2026-06-12
-source_of_truth:
-  - ../../routes/areas/check-and-routing.md
-  - ../../routes/areas/init-and-scaffold.md
 ---
 
 # Architecture Truth Docs
@@ -17,3 +14,8 @@ Current leaf docs:
 
 - [Overview](overview.md)
 - [Module Map](module-map.md)
+
+## Source References
+
+- ../../routes/areas/check-and-routing.md
+- ../../routes/areas/init-and-scaffold.md

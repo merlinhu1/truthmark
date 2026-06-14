@@ -3,11 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/truth-check.ts
-  - ../../../../src/checks/**
-  - ../../../../src/agents/shared.ts
-  - ../../../../src/templates/workflow-surfaces.ts
 ---
 
 # Truth Check Workflow
@@ -84,3 +79,10 @@ Audits must identify ownership drift, not only stale claims. Reporting mixed-own
 ## Maintenance Notes
 
 Update this doc when Check audit scope, evidence requirements, topology finding behavior, or report shape changes.
+
+## Source References
+
+- ../../../../src/agents/truth-check.ts
+- ../../../../src/checks/\*\*
+- ../../../../src/agents/shared.ts
+- ../../../../src/templates/workflow-surfaces.ts

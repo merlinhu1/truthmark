@@ -3,21 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-12
-source_of_truth:
-  - ../../../src/config/load.ts
-  - ../../../src/checks/check.ts
-  - ../../../src/checks/scorecard.ts
-  - ../../../src/checks/authority.ts
-  - ../../../src/checks/areas.ts
-  - ../../../src/checks/branch-scope.ts
-  - ../../../src/freshness/check.ts
-  - ../../../src/impact/build.ts
-  - ../../../src/evidence/validate.ts
-  - ../../../src/evidence/parse.ts
-  - ../../../src/checks/frontmatter.ts
-  - ../../../src/checks/links.ts
-  - ../../../src/markdown/discovery.ts
-  - ../../../src/routing/areas.ts
 ---
 
 # Check Diagnostics
@@ -188,12 +173,12 @@ Current severity behavior:
 
 ### Source Traceability
 
-Source traceability checks run whenever configured truth docs can be loaded; they are not gated on `--base <ref>`. They verify that truth-doc `source_of_truth` entries and optional evidence blocks still point at live checkout material. Fenced YAML is treated as an evidence block only when it contains a top-level `evidence:` marker, so illustrative non-evidence YAML examples are ignored even when malformed. They do not prove claim semantics.
+Source traceability checks run whenever configured truth docs can be loaded; they are not gated on `--base <ref>`. They verify that truth-doc final `Source References` entries and optional evidence blocks still point at live checkout material. Fenced YAML is treated as an evidence block only when it contains a top-level `evidence:` marker, so illustrative non-evidence YAML examples are ignored even when malformed. They do not prove claim semantics.
 
 Current severity behavior:
 
-- deleted `source_of_truth` or evidence reference: `error`
-- `source_of_truth` glob reference with no matching files: `error`
+- deleted `Source References` or evidence reference: `error`
+- `Source References` glob reference with no matching files: `error`
 - evidence reference outside the repository root: `error`
 - missing evidence symbol, invalid evidence span, or stale evidence hash: `error`
 - evidence line spans are validated even when the evidence block does not include a content hash
@@ -273,3 +258,20 @@ Primary implementation files:
 - `src/checks/branch-scope.ts`
 
 Update this doc when check diagnostics, JSON data shape, branch-scope behavior, generated-surface diagnostics, topology diagnostics, or severity rules change.
+
+## Source References
+
+- ../../../src/config/load.ts
+- ../../../src/checks/check.ts
+- ../../../src/checks/scorecard.ts
+- ../../../src/checks/authority.ts
+- ../../../src/checks/areas.ts
+- ../../../src/checks/branch-scope.ts
+- ../../../src/freshness/check.ts
+- ../../../src/impact/build.ts
+- ../../../src/evidence/validate.ts
+- ../../../src/evidence/parse.ts
+- ../../../src/checks/frontmatter.ts
+- ../../../src/checks/links.ts
+- ../../../src/markdown/discovery.ts
+- ../../../src/routing/areas.ts

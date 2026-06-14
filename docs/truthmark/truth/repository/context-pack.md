@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
-source_of_truth:
-  - ../../../../src/context-pack/build.ts
-  - ../../../../src/context-pack/render.ts
-  - ../../../../src/impact/build.ts
 ---
 
 # ContextPack
@@ -32,7 +28,7 @@ The internal ContextPack model includes `schemaVersion: context-pack/v0`. It is 
 - Truth Sync and Truth Document write paths include the active configured route index and selected truth docs, including non-default workspace layouts. Truth Realize write paths include the matched route code surfaces because Realize may write functional code but not truth docs or routing.
 - If `.truthmark/config.yml` exists but is invalid, ContextPack includes config diagnostics as warnings and leaves `allowedWritePaths` empty instead of falling back to default write paths.
 - Truth Realize without `--base` cannot infer matched code surfaces, so selected truth docs, source files, and `allowedWritePaths` are empty and ContextPack emits a review warning instead of widening to every route.
-- Source files include changed files from ImpactSet when a base ref is supplied and `source_of_truth` references from selected truth docs. Glob references are expanded against the checkout. Selected truth docs and source files are content-bounded before markdown rendering.
+- Source files include changed files from ImpactSet when a base ref is supplied and final `Source References` entries from selected truth docs. Glob references are expanded against the checkout. Selected truth docs and source files are content-bounded before markdown rendering.
 - ContextPack-only text is not evidence. Generated docs must cite checkout files, route files, truth docs, tests, schemas, or explicit evidence blocks.
 - If ContextPack conflicts with the current checkout, the checkout wins.
 
@@ -72,3 +68,9 @@ Primary implementation files:
 - `src/impact/build.ts`
 
 Update this doc when the command output, schema version, derived inputs, fallback behavior, or workflow relationship changes.
+
+## Source References
+
+- ../../../../src/context-pack/build.ts
+- ../../../../src/context-pack/render.ts
+- ../../../../src/impact/build.ts

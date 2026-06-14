@@ -3,19 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
-source_of_truth:
-  - ../../../src/config/defaults.ts
-  - ../../../src/fs/paths.ts
-  - ../../../src/init/init.ts
-  - ../../../src/init/hierarchy.ts
-  - ../../../src/templates/init-files.ts
-  - ../../../src/templates/agents-block.ts
-  - ../../../src/agents/workflow-manifest.ts
-  - ../../../src/agents/workflow-helper-validation.ts
-  - ../../../src/cli/program.ts
-  - ../../../src/cli/handlers.ts
-  - ../../../src/templates/workflow-surfaces.ts
-  - ../../../src/templates/generated-surfaces.ts
 ---
 
 # Init And Scaffold
@@ -182,20 +169,19 @@ Repository-specific instructions should therefore live outside the managed block
 
 Truthmark does not create `OPENCODE.md` in V1. OpenCode-compatible behavior is installed through shared `AGENTS.md` guidance and project skill files under `.opencode/skills/`.
 
-Hierarchy is configured in `.truthmark/config.yml`:
+Hierarchy is derived from `.truthmark/config.yml`:
 
 - `truthmark.workspace` is the workspace root for Truthmark-owned routing, truth, templates, and generated output
-- `truthmark.routes.index` is the route index path relative to the workspace
-- `truthmark.routes.areas` is the directory for child route files relative to the workspace
-- `truthmark.routes.default_area` is the initial scaffolded child route basename
-- `truthmark.routes.max_delegation_depth` must currently be `1`
+- routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`
+- the default child route basename is the product invariant `repository`
+- max route delegation depth is the product invariant `1`
 - product truth always lives under `product/` and engineering truth under `engineering/` relative to the workspace
-- `truthmark.templates.root` is the template root relative to the workspace
+- truth-doc templates always live under `templates/` relative to the workspace
 
-`truthmark init` creates missing structure for that hierarchy, but child route files stay governed by the root route index: if an authored non-empty root index no longer delegates the configured default child route, rerunning init does not recreate that unreferenced child route. Init does not silently move, delete, reinterpret, or emit compatibility diagnostics for legacy truth-doc placement when teams change the configured roots.
+`truthmark init` creates missing structure for that hierarchy, but child route files stay governed by the root route index: if an authored non-empty root index no longer delegates the fixed default child route, rerunning init does not recreate that unreferenced child route. Init does not silently move, delete, reinterpret, or emit compatibility diagnostics for legacy truth-doc placement when teams move the workspace.
 The default scaffold treats truth `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the fixed engineering lane root, such as `<workspace>/engineering/<domain>/<behavior>.md`; product capability truth belongs under `<workspace>/product/`.
 `truthmark init` creates [docs/truthmark/templates/engineering-behavior.md](../templates/engineering-behavior.md) when it is missing or empty and refreshes all eight templates under `docs/truthmark/templates/*.md` on rerun. Template refreshes replace Truthmark-owned default sections with the current professional guidance baseline, including evidence, boundary, capability, current-state, contract, operational, verification, decision, rationale, non-goal, and maintenance prompts. Existing template preambles/frontmatter are preserved so repository-owned metadata, custom titles, source-of-truth defaults, and local introductory guidance do not churn during section refresh. Project-specific custom `##` sections are preserved and reinserted before the next default section that followed them in the authored file; trailing custom sections remain trailing. Fenced code blocks are ignored while finding `##` template sections, so examples can contain Markdown headings without being split or mistaken for Truthmark-owned sections. The default child route references the seeded leaf truth doc with fenced YAML `truth_documents` metadata and `kind: engineering-behavior` rather than relying on path inference.
-When creating the default bounded behavior truth doc, init reads the repository's merged behavior template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{source_of_truth}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, and `{{template_path}}`. The seeded leaf uses `doc_type: behavior` and `truth_kind: behavior`. Existing non-empty truth docs are preserved; existing template files are merged rather than blindly overwritten so teams can keep local truth-doc standard sections while receiving updated default guidance.
+When creating the default bounded behavior truth doc, init reads the repository's merged behavior template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, `{{source_references}}`, and `{{template_path}}`. The seeded leaf uses compact frontmatter plus a final `## Source References` section for traceability. Existing non-empty truth docs are preserved; existing template files are merged rather than blindly overwritten so teams can keep local truth-doc standard sections while receiving updated default guidance.
 
 Important current defaults:
 
@@ -286,3 +272,18 @@ Primary implementation files:
 - `src/fs/paths.ts`
 
 Update this doc when scaffold targets, managed-surface categories, template refresh behavior, generated platform surfaces, config defaults, or init diagnostics change.
+
+## Source References
+
+- ../../../src/config/defaults.ts
+- ../../../src/fs/paths.ts
+- ../../../src/init/init.ts
+- ../../../src/init/hierarchy.ts
+- ../../../src/templates/init-files.ts
+- ../../../src/templates/agents-block.ts
+- ../../../src/agents/workflow-manifest.ts
+- ../../../src/agents/workflow-helper-validation.ts
+- ../../../src/cli/program.ts
+- ../../../src/cli/handlers.ts
+- ../../../src/templates/workflow-surfaces.ts
+- ../../../src/templates/generated-surfaces.ts

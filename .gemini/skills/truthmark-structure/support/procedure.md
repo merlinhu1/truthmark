@@ -19,7 +19,7 @@ Implementation code and canonical truth docs are inspected evidence for current 
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair docs/truthmark/routes/areas.md
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
-- Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, last_reviewed, and source_of_truth inside that frontmatter.
+- Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, and last_reviewed inside that frontmatter. Put source references in the final ## Source References section, not in frontmatter.
 - Starter truth docs must use lane-specific templates and keep product and engineering truth in separate files.
 
 When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.

@@ -3,16 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/truth-sync.ts
-  - ../../../../src/agents/write-lease.ts
-  - ../../../../src/sync/report.ts
-  - ../../../../src/agents/shared.ts
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/agents/workflow-helper-validation.ts
-  - ../../../../src/cli/program.ts
-  - ../../../../src/cli/handlers.ts
-  - ../../../../src/templates/workflow-surfaces.ts
 ---
 
 # Truth Sync Workflow
@@ -114,3 +104,15 @@ Truth Sync is the finish-time bridge from code to truth, so it must protect rout
 ## Maintenance Notes
 
 Update this doc when Sync triggers, skip reasons, report shape, delegation language, template-authoring guidance, or ownership handoff behavior changes.
+
+## Source References
+
+- ../../../../src/agents/truth-sync.ts
+- ../../../../src/agents/write-lease.ts
+- ../../../../src/sync/report.ts
+- ../../../../src/agents/shared.ts
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/agents/workflow-helper-validation.ts
+- ../../../../src/cli/program.ts
+- ../../../../src/cli/handlers.ts
+- ../../../../src/templates/workflow-surfaces.ts

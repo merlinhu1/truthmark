@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-behavior
 last_reviewed: 2026-05-30
-source_of_truth:
-  - ../../routes/areas/repository.md
 ---
 
 # Repository Overview
@@ -13,7 +11,7 @@ source_of_truth:
 <!--
 State the user/system outcome this behavior protects and why it exists.
 Include the problem boundary and durable value; exclude roadmap, implementation plan, and historical narrative.
-List the code, config, docs, or tests that support the claim in source_of_truth rather than prose-only assertion.
+List the code, config, docs, or tests that support the claim in Source References rather than prose-only assertion.
 -->
 
 Describe why the default repository behavior surface exists and what outcome it protects.
@@ -36,7 +34,7 @@ This doc was created from the editable engineering-behavior template at docs/tru
 <!--
 Describe only current implemented behavior in present tense.
 Cover observable behavior, important defaults, and user/system-visible effects; exclude desired future behavior and speculative design.
-Every non-obvious claim should be checkable from source_of_truth evidence.
+Every non-obvious claim should be checkable from Source References.
 -->
 
 - Document current behavior here when implementation changes make repository truth incomplete.
@@ -67,10 +65,6 @@ Avoid duplicating a separate canonical contract doc; link to it when contract ow
 -->
 
 - External contracts should link to the nearest canonical contract doc when one exists.
-
-## Source Evidence
-
-- ../../routes/areas/repository.md
 
 ## Product Truth Links
 
@@ -120,3 +114,7 @@ Keep this operational and current-state focused, not historical.
 -->
 
 - Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.
+
+## Source References
+
+- ../../routes/areas/repository.md

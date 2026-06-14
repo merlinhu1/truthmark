@@ -2,11 +2,6 @@
 status: active
 truth_kind: engineering-architecture
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/cli/handlers.ts
-  - ../../../../src/config/load.ts
-  - ../../../../src/routing/areas.ts
-  - ../../../../src/templates/generated-surfaces.ts
 realizes:
   - docs/truthmark/product/capabilities/lane-separated-truth.md
 ---
@@ -42,13 +37,6 @@ Truthmark is a local CLI and generated-surface renderer. It reads checkout files
 - Workflow manifest and generated surface renderer
 - RepoIndex, RouteMap, ImpactSet, ContextPack, and WorkflowState builders
 
-## Source Evidence
-
-- `src/cli/handlers.ts`
-- `src/config/load.ts`
-- `src/routing/areas.ts`
-- `src/templates/generated-surfaces.ts`
-
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/lane-separated-truth.md`
@@ -60,3 +48,14 @@ Truthmark is a local CLI and generated-surface renderer. It reads checkout files
 ## Maintenance Notes
 
 Update when module boundaries, generated-surface ownership, or command architecture changes.
+
+## Source References
+
+- ../../../../src/cli/handlers.ts
+- ../../../../src/config/load.ts
+- ../../../../src/routing/areas.ts
+- ../../../../src/templates/generated-surfaces.ts
+- `src/cli/handlers.ts`
+- `src/config/load.ts`
+- `src/routing/areas.ts`
+- `src/templates/generated-surfaces.ts`

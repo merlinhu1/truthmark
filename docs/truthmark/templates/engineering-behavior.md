@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-behavior
 last_reviewed: 2026-06-14
-source_of_truth:
-  - {{source_of_truth}}
 ---
 
 # {{title}}
@@ -13,7 +11,7 @@ source_of_truth:
 <!--
 State the user/system outcome this behavior protects and why it exists.
 Include the problem boundary and durable value; exclude roadmap, implementation plan, and historical narrative.
-List the code, config, docs, or tests that support the claim in source_of_truth rather than prose-only assertion.
+List the code, config, docs, or tests that support the claim in Source References rather than prose-only assertion.
 -->
 
 {{purpose}}
@@ -36,7 +34,7 @@ This doc was created from the editable engineering-behavior template at {{templa
 <!--
 Describe only current implemented behavior in present tense.
 Cover observable behavior, important defaults, and user/system-visible effects; exclude desired future behavior and speculative design.
-Every non-obvious claim should be checkable from source_of_truth evidence.
+Every non-obvious claim should be checkable from Source References.
 -->
 
 {{current_implementation_behavior}}
@@ -67,14 +65,6 @@ Avoid duplicating a separate canonical contract doc; link to it when contract ow
 -->
 
 {{contracts}}
-
-## Source Evidence
-
-<!--
-List source files, tests, configs, generated templates, or route files that support current implementation claims.
--->
-
-{{source_evidence}}
 
 ## Product Truth Links
 
@@ -120,3 +110,11 @@ Keep this operational and current-state focused, not historical.
 -->
 
 {{maintenance_notes}}
+
+## Source References
+
+<!--
+List source files, tests, configs, generated templates, route files, or product instructions that support current claims.
+-->
+
+{{source_references}}

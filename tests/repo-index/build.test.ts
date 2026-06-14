@@ -19,14 +19,21 @@ describe("buildRepoIndex", () => {
     repos.push(repo);
     await repo.writeFile(
       "package.json",
-      JSON.stringify({ name: "sample", version: "1.0.0", scripts: { test: "vitest" } }, null, 2),
+      JSON.stringify(
+        { name: "sample", version: "1.0.0", scripts: { test: "vitest" } },
+        null,
+        2,
+      ),
     );
     await repo.writeFile(
       "src/math.ts",
       "export function add(left: number, right: number) { return left + right; }\n",
     );
     await repo.writeFile("src/index.ts", "export { add } from './math.js';\n");
-    await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\n");
+    await repo.writeFile(
+      "tests/math.test.ts",
+      "import { add } from '../src/math.js';\n",
+    );
     await runConfig(repo.rootDir, { force: false, stdout: false });
     await runInit(repo.rootDir);
 
@@ -34,34 +41,58 @@ describe("buildRepoIndex", () => {
 
     expect(result.schemaVersion).toBe("repo-index/v0");
     expect(result.packages).toContainEqual(
-      expect.objectContaining({ name: "sample", version: "1.0.0", manager: "npm" }),
+      expect.objectContaining({
+        name: "sample",
+        version: "1.0.0",
+        manager: "npm",
+      }),
     );
     expect(result.files.map((file) => file.path)).toContain("src/math.ts");
-    expect(result.docs.map((doc) => doc.path)).toContain("docs/truthmark/engineering/repository/overview.md");
+    expect(result.docs.map((doc) => doc.path)).toContain(
+      "docs/truthmark/engineering/repository/overview.md",
+    );
     expect(result.files).toContainEqual(
       expect.objectContaining({ path: "AGENTS.md", kind: "generated" }),
     );
     expect(result.docs.map((doc) => doc.path)).not.toContain("AGENTS.md");
-    expect(result.tests.map((file) => file.path)).toContain("tests/math.test.ts");
-    expect(result.exports).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
-    expect(result.publicSymbols).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
-    expect(result.routeMap.routes.some((route) => route.truthDocs.length > 0)).toBe(true);
+    expect(result.tests.map((file) => file.path)).toContain(
+      "tests/math.test.ts",
+    );
+    expect(result.exports).toContainEqual({
+      path: "src/math.ts",
+      name: "add",
+      kind: "function",
+    });
+    expect(result.publicSymbols).toContainEqual({
+      path: "src/math.ts",
+      name: "add",
+      kind: "function",
+    });
+    expect(
+      result.routeMap.routes.some((route) => route.truthDocs.length > 0),
+    ).toBe(true);
   });
 
-  it("derives truth doc lane and doc type from truth_kind when frontmatter omits them", async () => {
+  it("derives truth doc lane, doc type, and source references from compact truth docs", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
+    await repo.writeFile(
+      "docs/truthmark/routes/areas/repository.md",
+      "# Repository Route\n",
+    );
     await repo.writeFile(
       "docs/truthmark/engineering/contracts/api.md",
       `---
 status: active
 truth_kind: engineering-contract
 last_reviewed: 2026-05-14
-source_of_truth:
-  - docs/truthmark/routes/areas/repository.md
 ---
 
 # API Contract
+
+## Source References
+
+- ../../routes/areas/repository.md
 `,
     );
 
@@ -73,6 +104,7 @@ source_of_truth:
         docType: "contract",
         truthKind: "engineering-contract",
         truthLane: "engineering",
+        sourceOfTruth: ["docs/truthmark/routes/areas/repository.md"],
       }),
     );
   });
@@ -87,8 +119,12 @@ source_of_truth:
 
     const result = await buildRepoIndex(repo.rootDir);
 
-    expect(result.files.map((file) => file.path)).not.toContain("src/deleted.ts");
-    expect(result.exports.map((entry) => entry.path)).not.toContain("src/deleted.ts");
+    expect(result.files.map((file) => file.path)).not.toContain(
+      "src/deleted.ts",
+    );
+    expect(result.exports.map((entry) => entry.path)).not.toContain(
+      "src/deleted.ts",
+    );
   });
 
   it("excludes files ignored by gitignore", async () => {
@@ -102,6 +138,8 @@ source_of_truth:
 
     const result = await buildRepoIndex(repo.rootDir);
 
-    expect(result.files.map((file) => file.path)).not.toContain(".lean-ctx/graph.meta.json");
+    expect(result.files.map((file) => file.path)).not.toContain(
+      ".lean-ctx/graph.meta.json",
+    );
   });
 });

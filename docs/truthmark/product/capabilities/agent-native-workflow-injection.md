@@ -2,10 +2,6 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/generated-surfaces.ts
 realized_by:
   - docs/truthmark/engineering/workflows/installed-workflow-runtime.md
   - docs/truthmark/engineering/contracts/generated-host-surfaces.md
@@ -47,3 +43,9 @@ Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gem
 ## Non-Goals
 
 - No mandatory helper payload or runtime packet before an agent can act.
+
+## Source References
+
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/generated-surfaces.ts

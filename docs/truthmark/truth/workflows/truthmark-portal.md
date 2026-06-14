@@ -3,14 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-06-01
-source_of_truth:
-  - ../../../../src/agents/truthmark-portal.ts
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/templates/generated-surfaces.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/agents-block.ts
-  - ../../../../src/config/schema.ts
-  - ../../../../src/config/load.ts
 ---
 
 # Truthmark Portal Workflow
@@ -101,3 +93,13 @@ Large repositories need a human browsable entrypoint over routed truth docs, but
 ## Maintenance Notes
 
 Update this document when Portal config, generated surfaces, write boundaries, default output/template behavior, or generated-site safety rules change.
+
+## Source References
+
+- ../../../../src/agents/truthmark-portal.ts
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/templates/generated-surfaces.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/agents-block.ts
+- ../../../../src/config/schema.ts
+- ../../../../src/config/load.ts

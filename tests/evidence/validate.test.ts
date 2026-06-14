@@ -18,7 +18,9 @@ describe("validateEvidenceReferences", () => {
       "---\nstatus: active\nsource_of_truth:\n  - ../../src/missing.ts\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/sample.md",
+    ]);
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({
@@ -39,7 +41,9 @@ describe("validateEvidenceReferences", () => {
       "---\nstatus: active\nsource_of_truth:\n  - ../../../src/**/*.ts\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/sample.md",
+    ]);
 
     expect(diagnostics).toEqual([]);
   });
@@ -54,9 +58,74 @@ describe("validateEvidenceReferences", () => {
       "---\nstatus: active\nsource_of_truth:\n  - overview.md\n---\n# Sample\n",
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/sample.md",
+    ]);
 
     expect(diagnostics).toEqual([]);
+  });
+
+  it("validates final Source References bullets as traceability evidence", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+
+    await repo.writeFile("src/index.ts", "export const value = 1;\n");
+    await repo.writeFile(
+      "docs/truthmark/truth/valid.md",
+      `---
+status: active
+truth_kind: engineering-behavior
+last_reviewed: 2026-06-14
+---
+
+# Valid
+
+## Current Implementation Behavior
+
+Uses the current source file.
+
+## Source References
+
+- ../../../src/index.ts
+`,
+    );
+    await repo.writeFile(
+      "docs/truthmark/truth/missing.md",
+      `---
+status: active
+truth_kind: engineering-behavior
+last_reviewed: 2026-06-14
+---
+
+# Missing
+
+## Current Implementation Behavior
+
+References a missing file.
+
+## Source References
+
+- ../../../src/missing.ts
+`,
+    );
+
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/valid.md",
+      "docs/truthmark/truth/missing.md",
+    ]);
+
+    expect(diagnostics).toContainEqual(
+      expect.objectContaining({
+        category: "source-traceability",
+        severity: "error",
+        file: "docs/truthmark/truth/missing.md",
+      }),
+    );
+    expect(diagnostics).not.toContainEqual(
+      expect.objectContaining({
+        file: "docs/truthmark/truth/valid.md",
+      }),
+    );
   });
 
   it("reports evidence line spans outside the file even without a content hash", async () => {
@@ -80,7 +149,9 @@ evidence:
 `,
     );
 
-    const diagnostics = await validateEvidenceReferences(repo.rootDir, ["docs/truthmark/truth/sample.md"]);
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/sample.md",
+    ]);
 
     expect(diagnostics).toContainEqual(
       expect.objectContaining({

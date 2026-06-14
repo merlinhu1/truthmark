@@ -3,11 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-16
-source_of_truth:
-  - ../../../../src/repo-index/build.ts
-  - ../../../../src/repo-index/file-tree.ts
-  - ../../../../src/repo-index/route-map.ts
-  - ../../../../src/repo-index/types.ts
 ---
 
 # RepoIndex
@@ -73,3 +68,10 @@ Primary implementation files:
 - `src/repo-index/types.ts`
 
 Update this doc when the command output, schema version, derived inputs, fallback behavior, or workflow relationship changes.
+
+## Source References
+
+- ../../../../src/repo-index/build.ts
+- ../../../../src/repo-index/file-tree.ts
+- ../../../../src/repo-index/route-map.ts
+- ../../../../src/repo-index/types.ts

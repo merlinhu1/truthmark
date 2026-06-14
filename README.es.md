@@ -511,12 +511,9 @@ Las áreas importantes de configuración incluyen:
 | `version` | Versión del contrato de configuración. |
 | `platforms` | Hosts de agentes que deben recibir interfaces generadas específicas de plataforma. |
 | `truthmark.workspace` | Workspace propiedad de Truthmark para rutas, documentos de verdad, plantillas y salida de presentación generada. |
-| `truthmark.routes.index` | Ruta del índice raíz relativa a `truthmark.workspace`. |
-| `truthmark.routes.areas` | Directorio de rutas secundarias delegadas relativo a `truthmark.workspace`. |
-| `truthmark.routes.default_area` | Nombre base de la ruta secundaria inicial generada. |
-| `truthmark.routes.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
+| Rutas fijas | Las rutas viven en `routes/areas.md` y `routes/areas/` dentro de `truthmark.workspace`; el área predeterminada es `repository` y la profundidad de delegación es `1`. |
 | Carriles de verdad fijos | La verdad de producto vive en `product/` y la verdad de ingeniería en `engineering/` dentro de `truthmark.workspace`. |
-| `truthmark.templates.root` | Raíz de plantillas de documentos de verdad relativa a `truthmark.workspace`. |
+| Plantillas fijas | Las plantillas de documentos de verdad viven en `templates/` dentro de `truthmark.workspace`. |
 | `truthmark.generated.portal` | Activación opcional del flujo manual de presentación: `enabled`. |
 | `instruction_targets` | Archivos que reciben bloques de instrucciones administrados compartidos, como `AGENTS.md`. |
 | `frontmatter.required` | Campos de metadatos que producen diagnósticos de error cuando faltan. |

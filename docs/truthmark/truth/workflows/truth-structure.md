@@ -3,11 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/truth-structure.ts
-  - ../../../../src/agents/shared.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/routing/**
 ---
 
 # Truth Structure Workflow
@@ -61,7 +56,7 @@ In Codex, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode, Truth Structure
 
 Before splitting or restructuring truth docs, Truth Structure inventories Product Decisions and Rationale in every source doc. It moves each current entry into the bounded owner doc it governs, removes or narrows entries only with checkout evidence, and blocks with manual-review files when ownership is unclear.
 
-Starter truth docs use closed YAML frontmatter with `status`, `truth_kind`, `last_reviewed`, and `source_of_truth`, and use lane-specific product or engineering template sections. When a routed template exists, Structure follows the HTML comments under each template section as the authoring guidance for starter or repaired section content rather than treating the template as headings only.
+Starter truth docs use closed YAML frontmatter with `status`, `truth_kind`, and `last_reviewed`, put traceability in the final `## Source References` section, and use lane-specific product or engineering template sections. When a routed template exists, Structure follows the HTML comments under each template section as the authoring guidance for starter or repaired section content rather than treating the template as headings only.
 New area setup must not edit functional code, perform full behavior documentation unless evidence is inspected and the task explicitly asks for it, patch broad or mixed-owner docs in place, create generic catch-all docs, or treat README files as Sync targets.
 
 Completed reports include `Topology reviewed`, `Areas reviewed`, `Routing updated`, `Initial truth boundary`, `Truth docs created`, `Truth docs split`, `Truth docs restructured`, `Evidence checked`, `Topology decisions`, and `Notes`.
@@ -96,3 +91,10 @@ Ownership repair needs a workflow that can change route topology and create boun
 ## Maintenance Notes
 
 Update this doc when topology pressure signals, split behavior, starter-doc template guidance, Structure subagent behavior, or Structure report shape changes.
+
+## Source References
+
+- ../../../../src/agents/truth-structure.ts
+- ../../../../src/agents/shared.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/routing/\*\*

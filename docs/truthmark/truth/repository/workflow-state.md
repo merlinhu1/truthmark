@@ -3,12 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-12
-source_of_truth:
-  - ../../../../src/workflow-state/types.ts
-  - ../../../../src/workflow-state/action-context.ts
-  - ../../../../src/workflow-state/build.ts
-  - ../../../../tests/workflow-state/build.test.ts
-  - ../../../../tests/cli/check-workflow.test.ts
 ---
 
 # WorkflowState
@@ -81,3 +75,11 @@ Primary implementation files:
 - `tests/cli/check-workflow.test.ts`
 
 Update this doc when the WorkflowState schema, applicability states, action-context mapping, fail-closed behavior, repository-intelligence composition behavior, or generated-surface CLI validation policy changes.
+
+## Source References
+
+- ../../../../src/workflow-state/types.ts
+- ../../../../src/workflow-state/action-context.ts
+- ../../../../src/workflow-state/build.ts
+- ../../../../tests/workflow-state/build.test.ts
+- ../../../../tests/cli/check-workflow.test.ts

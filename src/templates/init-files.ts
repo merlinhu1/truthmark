@@ -97,8 +97,6 @@ export const renderHierarchicalAreasIndexTemplate = (
     "status: active",
     "doc_type: route-index",
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    `  - ${sourceOfTruth}`,
     "---",
     "",
     "# Truthmark Areas",
@@ -114,6 +112,10 @@ export const renderHierarchicalAreasIndexTemplate = (
     "Update truth when:",
     "- behavior changes affect the routed truth documents",
     "- API contracts or current feature behavior changes",
+    "",
+    "## Source References",
+    "",
+    `- ${sourceOfTruth}`,
     "",
   ].join("\n");
 };
@@ -134,8 +136,6 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
     "status: active",
     "doc_type: area-route",
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    `  - ${sourceOfTruth}`,
     "---",
     "",
     `# ${title} Areas`,
@@ -156,6 +156,10 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
     "Update truth when:",
     "- behavior changes affect repository truth",
     "",
+    "## Source References",
+    "",
+    `- ${sourceOfTruth}`,
+    "",
   ].join("\n");
 };
 
@@ -173,8 +177,6 @@ export const renderTruthRootReadmeTemplate = (
     "status: active",
     "doc_type: index",
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    `  - ${sourceOfTruth}`,
     "---",
     "",
     "# Truth Docs",
@@ -182,6 +184,10 @@ export const renderTruthRootReadmeTemplate = (
     "This directory is an index for current truth docs organized by the configured Truthmark hierarchy.",
     "",
     "README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.",
+    "",
+    "## Source References",
+    "",
+    `- ${sourceOfTruth}`,
     "",
   ].join("\n");
 };
@@ -202,8 +208,6 @@ export const renderTruthDomainReadmeTemplate = (
     "status: active",
     "doc_type: index",
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    `  - ${sourceOfTruth}`,
     "---",
     "",
     `# ${title} Truth Docs`,
@@ -215,6 +219,10 @@ export const renderTruthDomainReadmeTemplate = (
     "Current leaf docs:",
     "",
     "- [Overview](overview.md)",
+    "",
+    "## Source References",
+    "",
+    `- ${sourceOfTruth}`,
     "",
   ].join("\n");
 };
@@ -333,10 +341,49 @@ const parseTemplateSections = (
 
 const LEGACY_MANAGED_TEMPLATE_HEADINGS = new Map<string, string>([
   ["## Current Behavior", "## Current Implementation Behavior"],
+  ["## Source Evidence", "## Source References"],
 ]);
 
 const resolveManagedTemplateHeading = (heading: string): string => {
   return LEGACY_MANAGED_TEMPLATE_HEADINGS.get(heading) ?? heading;
+};
+
+const stripManagedFrontmatterFields = (preamble: string): string => {
+  if (!preamble.startsWith("---\n")) {
+    return preamble;
+  }
+
+  const lines = preamble.split("\n");
+  const closingIndex = lines.findIndex(
+    (line, index) => index > 0 && line.trim() === "---",
+  );
+  if (closingIndex < 0) {
+    return preamble;
+  }
+
+  const fieldsToRemove = new Set(["source_of_truth", "doc_type", "truth_lane"]);
+  const keptFrontmatterLines: string[] = [];
+  let skippingManagedField = false;
+
+  for (const line of lines.slice(1, closingIndex)) {
+    const keyMatch = /^([A-Za-z0-9_-]+):(\s|$)/u.exec(line);
+    if (keyMatch) {
+      skippingManagedField = fieldsToRemove.has(keyMatch[1] ?? "");
+    }
+
+    if (!skippingManagedField) {
+      keptFrontmatterLines.push(line);
+    }
+  }
+
+  return [
+    "---",
+    ...keptFrontmatterLines,
+    "---",
+    ...lines.slice(closingIndex + 1),
+  ]
+    .join("\n")
+    .trimEnd();
 };
 
 export const mergeTruthDocTemplate = (
@@ -385,7 +432,7 @@ export const mergeTruthDocTemplate = (
   ]);
 
   return [
-    existingParsed.preamble,
+    stripManagedFrontmatterFields(existingParsed.preamble),
     ...mergedSections.map((section) => section.block),
     ...trailingCustomSections.map((section) => section.block),
     "",
@@ -400,8 +447,6 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "status: active",
     "truth_kind: engineering-behavior",
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    "  - {{source_of_truth}}",
     "---",
     "",
     "# {{title}}",
@@ -411,7 +456,7 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "<!--",
     "State the user/system outcome this behavior protects and why it exists.",
     "Include the problem boundary and durable value; exclude roadmap, implementation plan, and historical narrative.",
-    "List the code, config, docs, or tests that support the claim in source_of_truth rather than prose-only assertion.",
+    "List the code, config, docs, or tests that support the claim in Source References rather than prose-only assertion.",
     "-->",
     "",
     "{{purpose}}",
@@ -434,7 +479,7 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "<!--",
     "Describe only current implemented behavior in present tense.",
     "Cover observable behavior, important defaults, and user/system-visible effects; exclude desired future behavior and speculative design.",
-    "Every non-obvious claim should be checkable from source_of_truth evidence.",
+    "Every non-obvious claim should be checkable from Source References.",
     "-->",
     "",
     "{{current_implementation_behavior}}",
@@ -465,14 +510,6 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "-->",
     "",
     "{{contracts}}",
-    "",
-    "## Source Evidence",
-    "",
-    "<!--",
-    "List source files, tests, configs, generated templates, or route files that support current implementation claims.",
-    "-->",
-    "",
-    "{{source_evidence}}",
     "",
     "## Product Truth Links",
     "",
@@ -519,6 +556,14 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "",
     "{{maintenance_notes}}",
     "",
+    "## Source References",
+    "",
+    "<!--",
+    "List source files, tests, configs, generated templates, route files, or product instructions that support current claims.",
+    "-->",
+    "",
+    "{{source_references}}",
+    "",
   ].join("\n");
 };
 
@@ -531,7 +576,7 @@ const sectionSpec = (
 const PURPOSE_SECTION = sectionSpec("## Purpose", [
   "State the software-engineering outcome this document protects and why the documented surface exists.",
   "Include durable value, impacted users/systems, and the problem boundary; exclude roadmap, implementation plans, and historical narrative.",
-  "Keep claims traceable to source_of_truth evidence rather than prose-only assertion.",
+  "Keep claims traceable to Source References rather than prose-only assertion.",
 ]);
 
 const SCOPE_SECTION = sectionSpec("## Scope", [
@@ -574,6 +619,14 @@ const MAINTENANCE_NOTES_SECTION = sectionSpec("## Maintenance Notes", [
   "Keep this operational and current-state focused, not historical.",
 ]);
 
+const SOURCE_REFERENCES_SECTION = sectionSpec(
+  "## Source References",
+  [
+    "List source files, tests, configs, generated templates, route files, or product instructions that support current claims.",
+  ],
+  "source_references",
+);
+
 const renderTypedTruthDocTemplate = (
   truthKind: string,
   title: string,
@@ -584,8 +637,6 @@ const renderTypedTruthDocTemplate = (
     "status: active",
     `truth_kind: ${truthKind}`,
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    "  - {{source_of_truth}}",
     "---",
     "",
     `# ${title}`,
@@ -597,6 +648,7 @@ const renderTypedTruthDocTemplate = (
     ...renderTemplateSection(RATIONALE_SECTION),
     ...renderTemplateSection(NON_GOALS_SECTION),
     ...renderTemplateSection(MAINTENANCE_NOTES_SECTION),
+    ...renderTemplateSection(SOURCE_REFERENCES_SECTION),
   ].join("\n");
 };
 
@@ -614,8 +666,6 @@ const renderProductTruthDocTemplate = (
     "status: active",
     `truth_kind: ${truthKind}`,
     `last_reviewed: ${currentDate()}`,
-    "source_of_truth:",
-    "  - {{source_of_truth}}",
     "realized_by:",
     "  - {{engineering_realization}}",
     "---",
@@ -640,6 +690,7 @@ const renderProductTruthDocTemplate = (
       ),
     ),
     ...(includeNonGoals ? renderTemplateSection(NON_GOALS_SECTION) : []),
+    ...renderTemplateSection(SOURCE_REFERENCES_SECTION),
   ].join("\n");
 };
 
@@ -662,7 +713,7 @@ export const renderProductCapabilityDocTemplateFile = (): string => {
       ]),
       sectionSpec("## Current Product Behavior", [
         "Describe current implemented user-visible behavior in present tense.",
-        "Code files may appear in source_of_truth when they directly prove current behavior.",
+        "Code files may appear in Source References when they directly prove current behavior.",
       ]),
       sectionSpec("## Acceptance Criteria", [
         "List observable criteria that show the capability promise is currently satisfied.",
@@ -860,8 +911,7 @@ export const renderBehaviorLeafDocTemplate = (
       "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
     product_truth_links: "- None.",
     scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
-    source_of_truth: sourceOfTruth,
-    source_evidence: `- ${sourceOfTruth}`,
+    source_references: `- ${sourceOfTruth}`,
     template_path: BEHAVIOR_DOC_TEMPLATE_PATH,
     title: `${title} Overview`,
     truth_kind: "engineering-behavior",

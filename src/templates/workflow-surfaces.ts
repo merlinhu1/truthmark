@@ -435,7 +435,8 @@ const renderHelperPolicySupport = (
   helpers: TruthmarkWorkflowHelper[],
 ): string => {
   const reportHelperId =
-    helpers.find((helper) => helper.id.endsWith("-report"))?.id ?? helpers[0]?.id;
+    helpers.find((helper) => helper.id.endsWith("-report"))?.id ??
+    helpers[0]?.id;
   const helperLines = helpers
     .map(
       (helper) =>
@@ -627,7 +628,9 @@ export const renderTruthmarkSkillPackage = ({
     "support/procedure.md",
     "support/report-template.md",
     ...(subagents === undefined ? [] : ["support/subagents-and-leases.md"]),
-    ...(helpers.length === 0 ? [] : ["helper-manifest.yml", "support/helper-policy.md"]),
+    ...(helpers.length === 0
+      ? []
+      : ["helper-manifest.yml", "support/helper-policy.md"]),
   ];
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const files: TruthmarkSkillPackageFile[] = [
@@ -767,7 +770,7 @@ Return JSON only with keys: scope, filesReviewed, claimsChecked, evidence, unsup
       "Read-only Truthmark doc reviewer for shape, decision, rationale, and evidence hygiene.",
     nicknameCandidates: ["Doc Audit", "Doc Shape", "Doc Check"],
     instructions: `Stay read-only.
-Review assigned canonical truth docs for frontmatter, source_of_truth, required template sections, Evidence checked entries, Product Decisions, and Rationale.
+Review assigned canonical truth docs for compact frontmatter, required template sections, final Source References entries, Evidence checked entries, Product Decisions, and Rationale.
 Flag README.md files used as behavior truth targets, mixed-owner docs, and shape repairs that should move to Truth Structure.
 Do not edit files, stage changes, or rewrite docs.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.

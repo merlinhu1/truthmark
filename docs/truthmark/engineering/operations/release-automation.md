@@ -2,9 +2,6 @@
 status: active
 truth_kind: engineering-operations
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../.github/workflows/ci.yml
-  - ../../../../src/templates/github-action.ts
 ---
 
 # Release Automation
@@ -30,11 +27,6 @@ Release and CI behavior is implemented through checked-in GitHub workflow files 
 
 Automation runs in GitHub Actions. There is no Truthmark daemon or persistent runtime service.
 
-## Source Evidence
-
-- `.github/workflows/**`
-- `src/templates/github-action.ts`
-
 ## Product Truth Links
 
 - None.
@@ -46,3 +38,10 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 ## Maintenance Notes
 
 Update when CI triggers, release prerequisites, publish steps, or action templates change.
+
+## Source References
+
+- ../../../../.github/workflows/ci.yml
+- ../../../../src/templates/github-action.ts
+- `.github/workflows/**`
+- `src/templates/github-action.ts`

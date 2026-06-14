@@ -25,15 +25,6 @@ type TruthmarkPortalConfig = {
 
 type RawTruthmarkWorkspaceConfig = {
   workspace: string;
-  routes: {
-    index: string;
-    areas: string;
-    default_area: string;
-    max_delegation_depth: 1;
-  };
-  templates: {
-    root: string;
-  };
   generated: {
     portal: TruthmarkPortalConfig;
   };
@@ -115,29 +106,10 @@ export const truthmarkConfigSchema = {
     truthmark: {
       type: "object",
       additionalProperties: false,
-      required: ["workspace", "routes", "templates", "generated"],
+      required: ["workspace", "generated"],
       properties: {
         workspace: {
           type: "string",
-        },
-        routes: {
-          type: "object",
-          additionalProperties: false,
-          required: ["index", "areas", "default_area", "max_delegation_depth"],
-          properties: {
-            index: { type: "string" },
-            areas: { type: "string" },
-            default_area: { type: "string" },
-            max_delegation_depth: { type: "integer", const: 1 },
-          },
-        },
-        templates: {
-          type: "object",
-          additionalProperties: false,
-          required: ["root"],
-          properties: {
-            root: { type: "string" },
-          },
         },
         generated: {
           type: "object",

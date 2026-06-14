@@ -2,10 +2,6 @@
 status: active
 truth_kind: engineering-behavior
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/init/hierarchy.ts
-  - ../../../../src/templates/init-files.ts
-  - ../../../../src/config/defaults.ts
 realizes:
   - docs/truthmark/product/capabilities/lane-separated-truth.md
 ---
@@ -22,15 +18,9 @@ It covers config defaults, lane root creation, template files, and starter route
 
 ## Current Implementation Behavior
 
-Defaults scaffold product truth under `docs/truthmark/product` and engineering truth under `docs/truthmark/engineering`. Editable truth templates are installed under `docs/truthmark/templates` with filenames that match `truth_kind` values directly: `product-capability.md`, `engineering-behavior.md`, `engineering-contract.md`, `engineering-architecture.md`, `engineering-workflow.md`, `engineering-operations.md`, and `engineering-test-behavior.md`. Generated truth-doc frontmatter includes `truth_kind` and does not include `doc_type` or `truth_lane`.
+Defaults derive all scaffold paths from `truthmark.workspace`. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`; the default scaffolded route area is `repository`; max route delegation depth is `1`; product truth is fixed at `<workspace>/product`; engineering truth is fixed at `<workspace>/engineering`; editable truth templates are fixed at `<workspace>/templates`. Template filenames match `truth_kind` values directly: `product-capability.md`, `engineering-behavior.md`, `engineering-contract.md`, `engineering-architecture.md`, `engineering-workflow.md`, `engineering-operations.md`, and `engineering-test-behavior.md`. Generated truth-doc frontmatter includes `truth_kind` and does not include `doc_type` or `truth_lane`.
 
 Init reads the default seeded behavior leaf from `engineering-behavior.md`. Downstream product truth uses the `product-capability` template only. Capability docs own a single user-visible capability promise, users/value, scope including boundary constraints and adjacent systems, current product behavior, acceptance criteria, decisions, realization links, and non-goals.
-
-## Source Evidence
-
-- `src/config/defaults.ts`
-- `src/init/hierarchy.ts`
-- `src/templates/init-files.ts`
 
 ## Product Truth Links
 
@@ -40,7 +30,17 @@ Init reads the default seeded behavior leaf from `engineering-behavior.md`. Down
 
 - Decision (2026-06-14): New scaffold targets do not create `docs/truthmark/truth` as the canonical target root.
 - Decision (2026-06-14): Editable template filenames match `truth_kind` values directly so generated docs do not point agents at legacy `*-doc.md` names.
+- Decision (2026-06-14): Init scaffolds routes, templates, product truth, and engineering truth at fixed workspace-derived paths rather than accepting route or template roots from config.
 
 ## Maintenance Notes
 
 Update when init writes new files, changes default paths, changes template filenames, or changes template shape.
+
+## Source References
+
+- ../../../../src/init/hierarchy.ts
+- ../../../../src/templates/init-files.ts
+- ../../../../src/config/defaults.ts
+- `src/config/defaults.ts`
+- `src/init/hierarchy.ts`
+- `src/templates/init-files.ts`

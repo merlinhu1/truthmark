@@ -2,10 +2,6 @@
 status: active
 truth_kind: engineering-contract
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/templates/generated-surfaces.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/agents-block.ts
 realizes:
   - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
@@ -40,12 +36,6 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 - Host-native workflow files and optional helper manifests
 - Managed instruction blocks with the Truthmark version marker
 
-## Source Evidence
-
-- `src/templates/generated-surfaces.ts`
-- `src/templates/workflow-surfaces.ts`
-- `src/templates/agents-block.ts`
-
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/agent-native-workflow-injection.md`
@@ -57,3 +47,12 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 ## Maintenance Notes
 
 Update when platform paths, supported hosts, helper manifests, or managed block content changes.
+
+## Source References
+
+- ../../../../src/templates/generated-surfaces.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/agents-block.ts
+- `src/templates/generated-surfaces.ts`
+- `src/templates/workflow-surfaces.ts`
+- `src/templates/agents-block.ts`

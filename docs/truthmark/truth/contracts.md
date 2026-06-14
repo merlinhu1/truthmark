@@ -3,18 +3,6 @@ status: active
 doc_type: contract
 truth_kind: contract
 last_reviewed: 2026-06-01
-source_of_truth:
-  - ../../../src/config/schema.ts
-  - ../../../src/checks/check.ts
-  - ../../../src/checks/scorecard.ts
-  - ../../../src/templates/init-files.ts
-  - ../../../src/templates/generated-surfaces.ts
-  - ../../../src/init/init.ts
-  - ../../../src/output/diagnostic.ts
-  - ../../../src/output/render.ts
-  - ../../../src/cli/handlers.ts
-  - ../../../src/cli/program.ts
-  - ../../../src/agents/workflow-helper-validation.ts
 ---
 
 # Contracts
@@ -46,12 +34,9 @@ Current fields:
 - `version`: must be `2`
 - `platforms`: optional list of agent harnesses to initialize; defaults to all supported platforms
 - `truthmark.workspace`: workspace root for Truthmark-owned routing, truth, templates, and generated output
-- `truthmark.routes.index`: root area index path relative to `truthmark.workspace`
-- `truthmark.routes.areas`: child route directory relative to `truthmark.workspace`
-- `truthmark.routes.default_area`: default child route file basename used by scaffold
-- `truthmark.routes.max_delegation_depth`: currently must be `1`
+- fixed routes: the root route index is `${truthmark.workspace}/routes/areas.md`, child route files live under `${truthmark.workspace}/routes/areas`, the default area basename is `repository`, and max delegation depth is the product invariant `1`
 - fixed truth lanes: product truth lives under `product/` and engineering truth under `engineering/` relative to `truthmark.workspace`
-- `truthmark.templates.root`: template root relative to `truthmark.workspace`
+- fixed templates: truth-doc templates live under `templates/` relative to `truthmark.workspace`
 - `truthmark.generated.portal.enabled`: whether `truthmark init` renders optional Portal workflow surfaces
 - `instruction_targets`: files that receive installed instructions; defaults to `AGENTS.md`
 - `frontmatter.required`: frontmatter fields that produce `error` diagnostics when missing
@@ -302,7 +287,7 @@ Current agent-native scaffold targets include:
 
 Generated `SKILL.md` files use closed YAML frontmatter with `name`, `description`, `argument-hint`, `user-invocable`, and `truthmark-version` fields so Codex-style, Claude Code, GitHub Copilot, Gemini CLI, and OpenCode-style skill indexers can parse every generated workflow surface. For those skill-package hosts, `SKILL.md` is the compact routing and quick-procedure entrypoint; detailed procedure text, report templates, and subagent or lease reference material live in generated sibling `support/*.md` files. Public workflow entrypoints, generated GitHub Copilot prompt files, and generated Gemini command files use checked-in workflow text as the execution contract: agents inspect the checkout directly, open progressive-disclosure support files only when needed, and use local CLI checks only as focused validation after relevant work has been performed. Helper-capable workflows also emit `helper-manifest.yml` and `support/helper-policy.md` files that call installed `truthmark validate ... --json` CLI validators; generated packages do not bundle repo-local helper scripts. Generated Copilot prompt files use `.github/prompts/*.prompt.md` files with `agent` and `description` frontmatter so supported Copilot IDEs can expose `/truthmark-*` prompts. Generated verifier agents are read-only and context-bounded to parent-assigned shards, while generated `truth-doc-writer` agents are write-capable only through parent-provided leases and parent diff validation. Generated Codex metadata includes a `truthmark.version` marker plus `truthmark.refresh_command: "truthmark init"`. Managed instruction blocks also render the Truthmark package version, and `package.json` is the single maintained version source for those markers. Generated Gemini command files use project-scoped TOML custom commands so `truthmark init` can install `/truthmark:structure`, `/truthmark:document`, `/truthmark:sync`, `/truthmark:preview`, `/truthmark:realize`, and `/truthmark:check` alongside `GEMINI.md`; each command prompt ends with an explicit `User focus or arguments: {{args}}` handoff. Re-running `truthmark init` after a package upgrade refreshes configured committed surfaces and exposes staleness through ordinary Git diffs. Removing a platform from config stops future refreshes for that platform; it does not delete previously generated files.
 
-The OpenCode `truth-doc-writer` edit allow-list is rendered from the active `truthmark.workspace`, fixed product and engineering truth lanes, `truthmark.routes.index`, and `truthmark.routes.areas` config paths so valid leases remain writable when the Truthmark workspace moves.
+The OpenCode `truth-doc-writer` edit allow-list is rendered from the active `truthmark.workspace` plus fixed product, engineering, route, and template paths so valid leases remain writable when the Truthmark workspace moves.
 
 `truthmark check --json` returns:
 
@@ -349,6 +334,8 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 ## Compatibility Rules
 
 - `version` remains `2` in the committed config contract.
+- User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are unsupported additional properties.
+- Route layout, template layout, default area `repository`, and max delegation depth `1` are fixed product invariants derived from `truthmark.workspace`, not config knobs.
 - Product and engineering truth lane names are fixed as `product/` and `engineering/` under `truthmark.workspace`; custom truth lane roots are unsupported config.
 - Repositories refresh generated workflow surfaces through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
 - Truth Realize has no config switch; selected platforms receive its explicit manual workflow surface.
@@ -358,7 +345,7 @@ For normal branches, `identity` is branch name plus HEAD SHA. For detached check
 
 ## Versioning And Migration
 
-- The committed config contract is `version: 2` with a required `truthmark.workspace` hierarchy.
+- The committed config contract is `version: 2` with a required `truthmark.workspace` hierarchy and fixed derived routes, templates, and truth lanes.
 - Route metadata accepts both legacy Markdown truth-document lists and fenced YAML `truth_documents` arrays for compatibility with existing repositories.
 - Repositories refresh generated workflow surfaces and templates through `truthmark init`; removing a platform from config stops future refreshes but does not delete previously generated files.
 - New command data fields should be additive where possible and remain nested under the shared command envelope.
@@ -389,3 +376,17 @@ Keeping workflow execution verbs out of the CLI preserves the agent-native model
 ## Maintenance Notes
 
 Update this doc when `.truthmark/config.yml` schema, route metadata forms, command names/options, JSON envelopes, command-specific `data` payloads, diagnostic categories/severities, helper validator envelopes, or compatibility guarantees change.
+
+## Source References
+
+- ../../../src/config/schema.ts
+- ../../../src/checks/check.ts
+- ../../../src/checks/scorecard.ts
+- ../../../src/templates/init-files.ts
+- ../../../src/templates/generated-surfaces.ts
+- ../../../src/init/init.ts
+- ../../../src/output/diagnostic.ts
+- ../../../src/output/render.ts
+- ../../../src/cli/handlers.ts
+- ../../../src/cli/program.ts
+- ../../../src/agents/workflow-helper-validation.ts

@@ -32,7 +32,7 @@ const ENGINEERING_REQUIRED_HEADINGS = [
   "Purpose",
   "Scope",
   "Current Implementation Behavior",
-  "Source Evidence",
+  "Source References",
   "Product Truth Links",
   "Maintenance Notes",
 ];

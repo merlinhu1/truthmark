@@ -2,11 +2,6 @@
 status: active
 truth_kind: engineering-behavior
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/checks/check.ts
-  - ../../../../src/checks/areas.ts
-  - ../../../../src/checks/decisions.ts
-  - ../../../../src/checks/frontmatter.ts
 realizes:
   - docs/truthmark/product/capabilities/lane-separated-truth.md
 ---
@@ -36,13 +31,6 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 - Traceability links must exist and point to the opposite lane when using `realized_by` or `realizes`.
 - Check reports structure and evidence only; it does not judge product strategy.
 
-## Source Evidence
-
-- `src/checks/areas.ts`
-- `src/checks/decisions.ts`
-- `src/checks/frontmatter.ts`
-- `src/output/diagnostic.ts`
-
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/lane-separated-truth.md`
@@ -55,3 +43,14 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 ## Maintenance Notes
 
 Update when check categories, severity rules, lane audit behavior, or product kind section requirements change.
+
+## Source References
+
+- ../../../../src/checks/check.ts
+- ../../../../src/checks/areas.ts
+- ../../../../src/checks/decisions.ts
+- ../../../../src/checks/frontmatter.ts
+- `src/checks/areas.ts`
+- `src/checks/decisions.ts`
+- `src/checks/frontmatter.ts`
+- `src/output/diagnostic.ts`

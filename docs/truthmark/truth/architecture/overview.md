@@ -2,13 +2,6 @@
 status: active
 doc_type: architecture
 last_reviewed: 2026-05-16
-source_of_truth:
-  - ../../../../.truthmark/config.yml
-  - ../contracts.md
-  - ../init-and-scaffold.md
-  - ../check-diagnostics.md
-  - ../workflows/overview.md
-  - ../workflows/shared-gates.md
 ---
 
 # Architecture Overview
@@ -140,3 +133,12 @@ Current automatic coverage discovery scans common roots such as `src/`, `api/`, 
 Separating hierarchy definition from workflow installation reduces accidental churn and makes generated agent behavior easier to reason about. Limiting routing delegation to one level keeps path resolution and diagnostics simple enough to audit. Keeping decisions in canonical docs improves reconstruction and maintenance because the current why lives beside the current what.
 
 Avoiding generated context artifacts keeps the repository itself reviewable and prevents stale helper output from becoming a shadow source of truth.
+
+## Source References
+
+- ../../../../.truthmark/config.yml
+- ../contracts.md
+- ../init-and-scaffold.md
+- ../check-diagnostics.md
+- ../workflows/overview.md
+- ../workflows/shared-gates.md

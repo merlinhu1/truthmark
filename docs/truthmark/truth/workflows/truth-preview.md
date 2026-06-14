@@ -3,11 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/truth-preview.ts
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/generated-surfaces.ts
 ---
 
 # Truth Preview
@@ -86,3 +81,10 @@ Preview improves agent performance only when it prevents unnecessary workflow lo
 ## Maintenance Notes
 
 Update this doc when Preview triggers, read boundaries, report shape, generated surfaces, or handoff behavior change.
+
+## Source References
+
+- ../../../../src/agents/truth-preview.ts
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/generated-surfaces.ts

@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../routes/areas/release-automation.md
-  - ../../../../.github/workflows/ci.yml
-  - ../../../../.github/workflows/publish.yml
 ---
 
 # Release Automation
@@ -86,3 +82,9 @@ Workflow contracts:
 - Both workflows install Node 24 through `actions/setup-node@v6`.
 - The CI workflow constrains `GITHUB_TOKEN` to `contents: read`.
 - The publish workflow requires `contents: read`, `id-token: write`, and npm registry access through the configured GitHub Actions environment.
+
+## Source References
+
+- ../../routes/areas/release-automation.md
+- ../../../../.github/workflows/ci.yml
+- ../../../../.github/workflows/publish.yml

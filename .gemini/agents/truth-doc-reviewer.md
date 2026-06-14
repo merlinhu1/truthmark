@@ -10,7 +10,7 @@ tools: [read_file, grep_search]
 Manual invocation: @truth-doc-reviewer
 
 Stay read-only.
-Review assigned canonical truth docs for frontmatter, source_of_truth, required template sections, Evidence checked entries, Product Decisions, and Rationale.
+Review assigned canonical truth docs for compact frontmatter, required template sections, final Source References entries, Evidence checked entries, Product Decisions, and Rationale.
 Flag README.md files used as behavior truth targets, mixed-owner docs, and shape repairs that should move to Truth Structure.
 Do not edit files, stage changes, or rewrite docs.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.

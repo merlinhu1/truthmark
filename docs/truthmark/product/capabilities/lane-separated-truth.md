@@ -2,11 +2,6 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/config/defaults.ts
-  - ../../../../src/routing/areas.ts
-  - ../../../../src/init/hierarchy.ts
-  - ../../../../src/templates/init-files.ts
 realized_by:
   - docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
   - docs/truthmark/engineering/behaviors/check-diagnostics.md
@@ -53,3 +48,10 @@ Route metadata supports explicit `lane`, `realized_by`, `realizes`, and `depends
 ## Non-Goals
 
 - No automated business correctness, priority, or desirability judgment.
+
+## Source References
+
+- ../../../../src/config/defaults.ts
+- ../../../../src/routing/areas.ts
+- ../../../../src/init/hierarchy.ts
+- ../../../../src/templates/init-files.ts

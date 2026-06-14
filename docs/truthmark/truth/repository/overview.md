@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-06-01
-source_of_truth:
-  - ../../routes/areas/init-and-scaffold.md
-  - ../../../../src/init/init.ts
-  - ../../../../src/templates/init-files.ts
 ---
 
 # Repository Overview
@@ -58,3 +54,9 @@ Bounded seed docs give new repositories an immediately routeable truth target wh
 
 - Keep this doc aligned with `docs/truthmark/templates/engineering-behavior.md` when the engineering-behavior standard changes.
 - Update this doc when the default area leaf path or seeded content rules change.
+
+## Source References
+
+- ../../routes/areas/init-and-scaffold.md
+- ../../../../src/init/init.ts
+- ../../../../src/templates/init-files.ts

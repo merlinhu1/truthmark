@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-workflow
 last_reviewed: 2026-06-14
-source_of_truth:
-  - {{source_of_truth}}
 ---
 
 # {{title}}
@@ -13,7 +11,7 @@ source_of_truth:
 <!--
 State the software-engineering outcome this document protects and why the documented surface exists.
 Include durable value, impacted users/systems, and the problem boundary; exclude roadmap, implementation plans, and historical narrative.
-Keep claims traceable to source_of_truth evidence rather than prose-only assertion.
+Keep claims traceable to Source References rather than prose-only assertion.
 -->
 
 {{purpose}}
@@ -117,3 +115,11 @@ Keep this operational and current-state focused, not historical.
 -->
 
 {{maintenance_notes}}
+
+## Source References
+
+<!--
+List source files, tests, configs, generated templates, route files, or product instructions that support current claims.
+-->
+
+{{source_references}}

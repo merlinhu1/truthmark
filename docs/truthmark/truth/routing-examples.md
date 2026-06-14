@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-09
-source_of_truth:
-  - ../../../src/checks/areas.ts
-  - ../../../src/sync/classify.ts
-  - ../../../src/routing/area-resolver.ts
 ---
 
 # Routing Examples
@@ -80,3 +76,9 @@ Agents need routeable evidence for the code surfaces that change production beha
 ## Maintenance Notes
 
 Update this doc when Truthmark routing guidance changes for frontend apps, API schemas, infrastructure-as-code, workflow code, or service monorepos.
+
+## Source References
+
+- ../../../src/checks/areas.ts
+- ../../../src/sync/classify.ts
+- ../../../src/routing/area-resolver.ts

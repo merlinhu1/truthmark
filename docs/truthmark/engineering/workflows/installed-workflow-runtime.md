@@ -2,11 +2,6 @@
 status: active
 truth_kind: engineering-workflow
 last_reviewed: 2026-06-14
-source_of_truth:
-  - ../../../../src/agents/instructions.ts
-  - ../../../../src/agents/workflow-manifest.ts
-  - ../../../../src/templates/workflow-surfaces.ts
-  - ../../../../src/templates/generated-surfaces.ts
 realizes:
   - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
@@ -35,12 +30,6 @@ The source manifest and renderers generate host-specific skills, prompts, comman
 
 Committed workflow files are the runtime contract. The CLI installs and validates surfaces but does not act as daemon, database, or workflow orchestrator.
 
-## Source Evidence
-
-- `src/agents/workflow-manifest.ts`
-- `src/templates/workflow-surfaces.ts`
-- `src/templates/generated-surfaces.ts`
-
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/agent-native-workflow-injection.md`
@@ -52,3 +41,13 @@ Committed workflow files are the runtime contract. The CLI installs and validate
 ## Maintenance Notes
 
 Update this doc when workflow manifest fields, generated surface paths, helper metadata, or managed instruction behavior changes.
+
+## Source References
+
+- ../../../../src/agents/instructions.ts
+- ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/templates/workflow-surfaces.ts
+- ../../../../src/templates/generated-surfaces.ts
+- `src/agents/workflow-manifest.ts`
+- `src/templates/workflow-surfaces.ts`
+- `src/templates/generated-surfaces.ts`

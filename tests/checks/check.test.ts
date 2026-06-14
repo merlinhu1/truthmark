@@ -577,13 +577,6 @@ Update truth when:
         `version: 2
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -729,13 +722,6 @@ platforms:
   - github-copilot
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -803,13 +789,6 @@ platforms:
   - gemini-cli
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -1029,13 +1008,6 @@ Update truth when:
         `version: 2
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -1586,13 +1558,6 @@ Update truth when:
         `version: 2
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false

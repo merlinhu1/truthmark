@@ -14,7 +14,13 @@ import {
   type TruthDocumentKind,
 } from "../routing/areas.js";
 import { classifyPath } from "../sync/classify.js";
-import type { RepoDocEntry, RepoFileEntry, RepoFileKind, RepoTestEntry } from "./types.js";
+import { parseSourceReferences } from "../truth/source-references.js";
+import type {
+  RepoDocEntry,
+  RepoFileEntry,
+  RepoFileKind,
+  RepoTestEntry,
+} from "./types.js";
 
 const languageByExtension = new Map<string, string>([
   [".ts", "typescript"],
@@ -30,7 +36,14 @@ const languageByExtension = new Map<string, string>([
   [".toml", "toml"],
 ]);
 
-const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
+const sourceExtensions = new Set([
+  ".ts",
+  ".tsx",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
+]);
 
 export const isJavaScriptLikePath = (filePath: string): boolean => {
   return sourceExtensions.has(path.posix.extname(filePath));
@@ -70,13 +83,17 @@ const fileKind = (filePath: string, ignore: string[]): RepoFileKind => {
 
 const targetHintsForTest = (filePath: string): string[] => {
   const hints = new Set<string>();
-  const basename = path.posix.basename(filePath).replace(/\.(test|spec)\.[cm]?[jt]sx?$/u, "");
+  const basename = path.posix
+    .basename(filePath)
+    .replace(/\.(test|spec)\.[cm]?[jt]sx?$/u, "");
   if (basename.length > 0) {
     hints.add(basename);
   }
 
   const segments = filePath.split("/");
-  const testRootIndex = segments.findIndex((segment) => segment === "tests" || segment === "__tests__");
+  const testRootIndex = segments.findIndex(
+    (segment) => segment === "tests" || segment === "__tests__",
+  );
   if (testRootIndex >= 0) {
     for (const segment of segments.slice(testRootIndex + 1, -1)) {
       if (segment.length > 0) {
@@ -90,7 +107,8 @@ const targetHintsForTest = (filePath: string): string[] => {
 
 const defaultIgnore = [".git/**", "node_modules/**", "dist/**", "build/**"];
 
-const normalizePath = (filePath: string): string => filePath.replaceAll("\\", "/").replace(/^\.\/+/u, "");
+const normalizePath = (filePath: string): string =>
+  filePath.replaceAll("\\", "/").replace(/^\.\/+/u, "");
 
 const isTruthDocumentKind = (value: unknown): value is TruthDocumentKind => {
   return (
@@ -99,7 +117,9 @@ const isTruthDocumentKind = (value: unknown): value is TruthDocumentKind => {
   );
 };
 
-const gitDiscoverableFiles = async (rootDir: string): Promise<string[] | null> => {
+const gitDiscoverableFiles = async (
+  rootDir: string,
+): Promise<string[] | null> => {
   const result = await execa(
     "git",
     ["ls-files", "--cached", "--others", "--exclude-standard", "--deduplicate"],
@@ -124,7 +144,11 @@ const isIgnoredPath = (filePath: string, ignore: string[]): boolean => {
 export const discoverRepoFiles = async (
   rootDir: string,
   ignore: string[],
-): Promise<{ files: RepoFileEntry[]; docs: RepoDocEntry[]; tests: RepoTestEntry[] }> => {
+): Promise<{
+  files: RepoFileEntry[];
+  docs: RepoDocEntry[];
+  tests: RepoTestEntry[];
+}> => {
   const discoveredFiles =
     (await gitDiscoverableFiles(rootDir)) ??
     (await fg(["**/*"], {
@@ -138,12 +162,18 @@ export const discoverRepoFiles = async (
   const docs: RepoDocEntry[] = [];
   const tests: RepoTestEntry[] = [];
 
-  for (const filePath of discoveredFiles.filter((entry) => !isIgnoredPath(entry, ignore)).sort()) {
+  for (const filePath of discoveredFiles
+    .filter((entry) => !isIgnoredPath(entry, ignore))
+    .sort()) {
     let stat: Awaited<ReturnType<typeof fs.stat>>;
     try {
       stat = await fs.stat(path.join(rootDir, filePath));
     } catch (error: unknown) {
-      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
         continue;
       }
       throw error;
@@ -173,21 +203,31 @@ export const discoverRepoFiles = async (
       const source = await fs.readFile(path.join(rootDir, filePath), "utf8");
       const parsed = matter(source);
       const markdown = parseMarkdownDocument(parsed.content);
-      const title = markdown.headings.find((heading) => heading.depth === 1)?.text ?? null;
-      const sourceOfTruth = Array.isArray(parsed.data.source_of_truth)
-        ? parsed.data.source_of_truth.filter((entry: unknown): entry is string => typeof entry === "string")
-        : [];
+      const title =
+        markdown.headings.find((heading) => heading.depth === 1)?.text ?? null;
+      const sourceOfTruth = parseSourceReferences(source, filePath);
       const realizedBy = Array.isArray(parsed.data.realized_by)
-        ? parsed.data.realized_by.filter((entry: unknown): entry is string => typeof entry === "string")
+        ? parsed.data.realized_by.filter(
+            (entry: unknown): entry is string => typeof entry === "string",
+          )
         : [];
       const realizes = Array.isArray(parsed.data.realizes)
-        ? parsed.data.realizes.filter((entry: unknown): entry is string => typeof entry === "string")
+        ? parsed.data.realizes.filter(
+            (entry: unknown): entry is string => typeof entry === "string",
+          )
         : [];
       const dependsOn = Array.isArray(parsed.data.depends_on)
-        ? parsed.data.depends_on.filter((entry: unknown): entry is string => typeof entry === "string")
+        ? parsed.data.depends_on.filter(
+            (entry: unknown): entry is string => typeof entry === "string",
+          )
         : [];
-      const truthKind = typeof parsed.data.truth_kind === "string" ? parsed.data.truth_kind : null;
-      const derivedTruthKind = isTruthDocumentKind(truthKind) ? truthKind : null;
+      const truthKind =
+        typeof parsed.data.truth_kind === "string"
+          ? parsed.data.truth_kind
+          : null;
+      const derivedTruthKind = isTruthDocumentKind(truthKind)
+        ? truthKind
+        : null;
 
       docs.push({
         path: filePath,

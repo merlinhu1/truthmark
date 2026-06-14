@@ -2,10 +2,6 @@
 status: active
 doc_type: routing
 last_reviewed: 2026-05-14
-source_of_truth:
-  - ../areas.md
-  - ../../README.md
-  - ../../ai/repo-rules.md
 ---
 
 # Initialization And Scaffold Areas
@@ -45,3 +41,9 @@ Update truth when:
 - `truthmark init` scaffolds or refreshes files differently
 - default canonical docs or generated surface lists change
 - configured hierarchy scaffold behavior changes
+
+## Source References
+
+- ../areas.md
+- ../../README.md
+- ../../ai/repo-rules.md

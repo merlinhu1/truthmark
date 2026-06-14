@@ -39,7 +39,7 @@ describe("renderTruthStructureSkillBody", () => {
     expect(lines[0]).toBe("---");
     expect(lines[6]).toBe("---");
     expect(skill).toContain(
-      "Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, last_reviewed, and source_of_truth inside that frontmatter.",
+      "Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, and last_reviewed inside that frontmatter. Put source references in the final ## Source References section, not in frontmatter.",
     );
     expect(skill).toContain(
       "Starter truth docs must use lane-specific templates and keep product and engineering truth in separate files.",
@@ -54,9 +54,7 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership",
     );
-    expect(skill).toContain(
-      "Decision/Rationale preservation gate",
-    );
+    expect(skill).toContain("Decision/Rationale preservation gate");
     expect(skill).toContain(
       "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
     );
@@ -107,16 +105,14 @@ describe("renderTruthStructureSkillBody", () => {
       "If an existing canonical doc has wrong-lane sections, split or move them into the correct product or engineering lane.",
     );
     expect(skill).toContain("Evidence Gate");
-    expect(skill).toContain(
-      "apply the Evidence Gate before finishing",
-    );
+    expect(skill).toContain("apply the Evidence Gate before finishing");
     expect(skill).toContain(
       "support ownership/behavior claims with topology or primary checkout evidence",
     );
+    expect(skill).toContain("remove, narrow, or block unsupported claims");
     expect(skill).toContain(
-      "remove, narrow, or block unsupported claims",
+      "date active decisions inline when added or changed",
     );
-    expect(skill).toContain("date active decisions inline when added or changed");
     expect(skill).toContain("Topology Governance");
     expect(skill).toContain("Topology pressure signals");
     expect(skill).toContain("one area maps broad code");
@@ -142,9 +138,7 @@ describe("renderTruthStructureSkillBody", () => {
       "a new package, controller, domain, or product area lacks bounded truth ownership",
     );
     expect(skill).toContain("inspect the named code area");
-    expect(skill).toContain(
-      "infer bounded product or behavior ownership",
-    );
+    expect(skill).toContain("infer bounded product or behavior ownership");
     expect(skill).toContain(
       "choose the owning route when ownership is clear; otherwise propose the route and block for review",
     );
@@ -164,7 +158,9 @@ describe("renderTruthStructureSkillBody", () => {
       "report Truth docs split when one broad or mixed-owner truth doc becomes multiple bounded docs",
     );
     expect(skill).toContain("bounded truth docs");
-    expect(skill).toContain("product/capabilities or product/decisions and engineering docs under engineering/<kind>/<surface>.md");
+    expect(skill).toContain(
+      "product/capabilities or product/decisions and engineering docs under engineering/<kind>/<surface>.md",
+    );
     expect(skill).toContain("If this skill surface is unavailable");
     expect(skill).toContain("Topology decisions");
     expect(skill).toContain("Truth Structure: completed");
@@ -186,7 +182,9 @@ describe("renderTruthStructureSkillBody", () => {
 
     expect(report).toContain("product docs root: docs/truthmark/product");
     expect(report).toContain("docs/routes/index.md");
-    expect(report).toContain("docs/truthmark/product/capabilities/authentication-session.md");
+    expect(report).toContain(
+      "docs/truthmark/product/capabilities/authentication-session.md",
+    );
   });
 
   it("uses the default truth root consistently when current truth root are absent", () => {
@@ -195,7 +193,9 @@ describe("renderTruthStructureSkillBody", () => {
     const skill = renderTruthStructureSkillBody(config);
 
     expect(skill).toContain("managed semantic root");
-    expect(skill).toContain("Product truth docs, when present: docs/truthmark/product/**/*.md");
+    expect(skill).toContain(
+      "Product truth docs, when present: docs/truthmark/product/**/*.md",
+    );
     expect(skill).not.toContain("legacy feature-root label");
   });
 });

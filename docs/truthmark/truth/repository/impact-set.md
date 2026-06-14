@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: behavior
 last_reviewed: 2026-05-16
-source_of_truth:
-  - ../../../../src/impact/build.ts
-  - ../../../../src/impact/git-diff.ts
-  - ../../../../src/repo-index/build.ts
 ---
 
 # ImpactSet
@@ -73,3 +69,9 @@ Primary implementation files:
 - `src/repo-index/build.ts`
 
 Update this doc when the command output, schema version, derived inputs, fallback behavior, or workflow relationship changes.
+
+## Source References
+
+- ../../../../src/impact/build.ts
+- ../../../../src/impact/git-diff.ts
+- ../../../../src/repo-index/build.ts

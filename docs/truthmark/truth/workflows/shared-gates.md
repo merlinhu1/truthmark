@@ -3,10 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/agents/shared.ts
-  - ../../../../src/truth/**
-  - ../../../../src/sync/report.ts
 ---
 
 # Shared Workflow Gates
@@ -119,3 +115,9 @@ Treating section comments as authoring guidance keeps templates lightweight whil
 ## Maintenance Notes
 
 Update this doc when shared gate wording, template-comment guidance, template rules, decision-truth behavior, evidence reporting, or ownership/split behavior changes.
+
+## Source References
+
+- ../../../../src/agents/shared.ts
+- ../../../../src/truth/\*\*
+- ../../../../src/sync/report.ts

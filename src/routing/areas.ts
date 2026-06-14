@@ -533,8 +533,9 @@ export const parseAreasMarkdown = (
     const areaHeadingMatch = line.match(/^\s{0,3}##\s+(.*)$/u);
 
     if (areaHeadingMatch) {
+      const heading = areaHeadingMatch[1]?.trim() ?? null;
       flushArea();
-      currentAreaName = areaHeadingMatch[1]?.trim() ?? null;
+      currentAreaName = heading === "Source References" ? null : heading;
       continue;
     }
 

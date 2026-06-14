@@ -2,10 +2,8 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-source_of_truth:
-  - {{source_of_truth}}
 realized_by:
-  - {{engineering_realization}}
+  - { { engineering_realization } }
 ---
 
 # {{title}}
@@ -46,7 +44,7 @@ Capture important scope limits, ownership boundaries, and non-goal pointers here
 
 <!--
 Describe current implemented user-visible behavior in present tense.
-Code files may appear in source_of_truth when they directly prove current behavior.
+Code files may appear in Source References when they directly prove current behavior.
 -->
 
 {{current_product_behavior}}
@@ -88,3 +86,11 @@ Use this section to prevent scope creep and duplicate truth ownership.
 -->
 
 {{non_goals}}
+
+## Source References
+
+<!--
+List source files, tests, configs, generated templates, route files, or product instructions that support current claims.
+-->
+
+{{source_references}}

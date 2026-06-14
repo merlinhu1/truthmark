@@ -21,15 +21,10 @@ describe("runConfig", () => {
       expect(config).not.toHaveProperty("docs");
       expect(config).not.toHaveProperty("authority");
       expect(config.truthmark).not.toHaveProperty("truth");
+      expect(config.truthmark).not.toHaveProperty("routes");
+      expect(config.truthmark).not.toHaveProperty("templates");
       expect(config.truthmark).toEqual({
         workspace: "docs/truthmark",
-        routes: {
-          index: "routes/areas.md",
-          areas: "routes/areas",
-          default_area: "repository",
-          max_delegation_depth: 1,
-        },
-        templates: { root: "templates" },
         generated: {
           portal: {
             enabled: false,
@@ -43,6 +38,8 @@ describe("runConfig", () => {
       expect(JSON.stringify(config)).not.toContain("product_root");
       expect(JSON.stringify(config)).not.toContain("engineering_root");
       expect(JSON.stringify(config)).not.toContain("docs/templates");
+      expect(configText).not.toContain("routes:");
+      expect(configText).not.toContain("templates:");
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
       await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).rejects.toThrow();
       expect(result.diagnostics).toEqual(

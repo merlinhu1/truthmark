@@ -2,8 +2,6 @@
 status: active
 doc_type: architecture
 last_reviewed: 2026-05-14
-source_of_truth:
-  - overview.md
 ---
 
 # Module Map
@@ -25,25 +23,25 @@ This doc covers the current module grouping of the Truthmark codebase and the pr
 
 ## Source Layout
 
-| Path | Responsibility |
-| --- | --- |
-| `src/cli/` | Commander program setup and command dispatch |
-| `src/init/` | Config-aware repository scaffold orchestration plus hierarchy migration checks |
-| `src/templates/` | Text templates for scaffolded files, the AGENTS block, generated-surface manifests, and generated host-specific explicit surfaces |
-| `src/checks/` | Validation passes for authority, areas, generated surfaces, decision-bearing docs, frontmatter, links, and branch scope |
-| `src/config/` | `.truthmark/config.yml` schema and loader |
-| `src/routing/` | Parsing of the root route index and delegated child route files |
-| `src/markdown/` | Markdown discovery, parsing, and hashing helpers |
-| `src/fs/` | Repository-safe path resolution and file writes shared by init and diagnostics |
-| `src/generation/` | Source-internal content prompt contracts, JSON-safe prompt rendering, and structured draft validation |
-| `src/truth/` | Neutral helpers for truth root resolution and evidence report formatting shared by scaffold, checks, sync, and agent renderers |
-| `src/git/` | Git repository and worktree resolution plus change listing |
-| `src/sync/` | Truth Sync policy and completed, skipped, or blocked report rendering |
-| `src/agents/` | Installed Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
-| `src/realize/` | Truth Realize report rendering |
-| `src/output/` | Diagnostic types plus human and JSON rendering shared by CLI and check flows |
-| `src/types/` | Local type shims |
-| `tests/` | Vitest coverage for CLI, checks, routing, templates, and helpers |
+| Path              | Responsibility                                                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/cli/`        | Commander program setup and command dispatch                                                                                                                          |
+| `src/init/`       | Config-aware repository scaffold orchestration plus hierarchy migration checks                                                                                        |
+| `src/templates/`  | Text templates for scaffolded files, the AGENTS block, generated-surface manifests, and generated host-specific explicit surfaces                                     |
+| `src/checks/`     | Validation passes for authority, areas, generated surfaces, decision-bearing docs, frontmatter, links, and branch scope                                               |
+| `src/config/`     | `.truthmark/config.yml` schema and loader                                                                                                                             |
+| `src/routing/`    | Parsing of the root route index and delegated child route files                                                                                                       |
+| `src/markdown/`   | Markdown discovery, parsing, and hashing helpers                                                                                                                      |
+| `src/fs/`         | Repository-safe path resolution and file writes shared by init and diagnostics                                                                                        |
+| `src/generation/` | Source-internal content prompt contracts, JSON-safe prompt rendering, and structured draft validation                                                                 |
+| `src/truth/`      | Neutral helpers for truth root resolution and evidence report formatting shared by scaffold, checks, sync, and agent renderers                                        |
+| `src/git/`        | Git repository and worktree resolution plus change listing                                                                                                            |
+| `src/sync/`       | Truth Sync policy and completed, skipped, or blocked report rendering                                                                                                 |
+| `src/agents/`     | Installed Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check instruction text plus shared worker and skill contract fragments |
+| `src/realize/`    | Truth Realize report rendering                                                                                                                                        |
+| `src/output/`     | Diagnostic types plus human and JSON rendering shared by CLI and check flows                                                                                          |
+| `src/types/`      | Local type shims                                                                                                                                                      |
+| `tests/`          | Vitest coverage for CLI, checks, routing, templates, and helpers                                                                                                      |
 
 ## Practical Routing
 
@@ -71,3 +69,7 @@ This doc covers the current module grouping of the Truthmark codebase and the pr
 This split keeps layout contract, route ownership, validation, and generated workflow text in predictable places. Agents and maintainers can change one surface without rediscovering unrelated behavior hidden elsewhere.
 
 The generation layer is source-internal in this slice because current packaging builds only the CLI entrypoint. Keeping prompt contracts separate from installed workflow renderers preserves the existing workflow authority model while giving future workflow code a tested draft-contract layer to consume.
+
+## Source References
+
+- overview.md

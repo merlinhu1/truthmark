@@ -511,12 +511,9 @@ truthmark init
 | `version` | 配置契约版本。 |
 | `platforms` | 应接收平台专属生成接口的代理宿主。 |
 | `truthmark.workspace` | Truthmark 拥有的工作区，用于路由、事实文档、模板和生成的展示输出。 |
-| `truthmark.routes.index` | 相对于 `truthmark.workspace` 的根路由索引路径。 |
-| `truthmark.routes.areas` | 相对于 `truthmark.workspace` 的委托子路由目录。 |
-| `truthmark.routes.default_area` | 初始脚手架子路由 basename。 |
-| `truthmark.routes.max_delegation_depth` | 当前最大路由委托深度。 |
+| 固定路由 | 路由固定在 `truthmark.workspace` 内的 `routes/areas.md` 和 `routes/areas/`；默认 area 是 `repository`，委托深度为 `1`。 |
 | 固定事实分区 | 产品事实位于 `truthmark.workspace` 内的 `product/`，工程事实位于 `engineering/`。 |
-| `truthmark.templates.root` | 相对于 `truthmark.workspace` 的事实文档模板根。 |
+| 固定模板 | 事实文档模板固定在 `truthmark.workspace` 内的 `templates/`。 |
 | `truthmark.generated.portal` | 可选手动展示工作流启用设置：`enabled`。 |
 | `instruction_targets` | 接收共享受管指令块的文件，例如 `AGENTS.md`。 |
 | `frontmatter.required` | 缺失时产生错误诊断的元数据字段。 |

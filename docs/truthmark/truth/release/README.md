@@ -2,8 +2,6 @@
 status: active
 doc_type: index
 last_reviewed: 2026-05-13
-source_of_truth:
-  - ../../routes/areas/release-automation.md
 ---
 
 # Release Truth Docs
@@ -15,3 +13,7 @@ README.md files are indexes, not Truth Sync targets. Keep behavior truth in boun
 Current leaf docs:
 
 - [Automation](automation.md)
+
+## Source References
+
+- ../../routes/areas/release-automation.md

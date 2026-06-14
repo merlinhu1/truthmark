@@ -57,12 +57,13 @@ Truth docs split:
 Truth docs restructured:
 - docs/truthmark/truth/authentication/README.md
 ${renderClaimEvidenceCheckedSection([
-    {
-      claim: "Session behavior belongs to a dedicated Authentication truth owner.",
-      evidence: ["src/auth/**", `${config.truthmark.paths.routesIndex}:7`],
-      result: "supported",
-    },
-  ])}
+  {
+    claim:
+      "Session behavior belongs to a dedicated Authentication truth owner.",
+    evidence: ["src/auth/**", `${config.truthmark.paths.routesIndex}:7`],
+    result: "supported",
+  },
+])}
 Topology decisions:
 - Added an Authentication area because session behavior has a distinct code surface and truth owner.
 Notes:
@@ -111,7 +112,7 @@ Truth Structure is agent-native:
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair ${config.truthmark.paths.routesIndex}
 - create starter truth docs when useful and when they belong in the canonical current-truth surface
-- Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, last_reviewed, and source_of_truth inside that frontmatter.
+- Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, and last_reviewed inside that frontmatter. Put source references in the final ## Source References section, not in frontmatter.
 - Starter truth docs must use lane-specific templates and keep product and engineering truth in separate files.
 ${subagentMode}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}

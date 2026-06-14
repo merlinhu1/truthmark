@@ -2,10 +2,6 @@
 status: active
 doc_type: routing
 last_reviewed: 2026-05-14
-source_of_truth:
-  - ../areas.md
-  - ../../README.md
-  - ../../ai/repo-rules.md
 ---
 
 # Check And Routing Areas
@@ -53,3 +49,9 @@ Update truth when:
 - validation or area-resolution behavior changes
 - branch-scope or repository discovery behavior changes
 - routed code coverage expectations change
+
+## Source References
+
+- ../areas.md
+- ../../README.md
+- ../../ai/repo-rules.md

@@ -3,8 +3,6 @@ status: active
 doc_type: behavior
 truth_kind: workflow
 last_reviewed: 2026-05-31
-source_of_truth:
-  - ../../../../src/generation/**
 ---
 
 # Workflow Content Generation
@@ -71,3 +69,7 @@ Separating draft generation from workflow authority prevents helper prompts from
 ## Maintenance Notes
 
 Update this doc when `src/generation/**` changes prompt contracts, schemas, validation, or runtime relationship to installed workflows.
+
+## Source References
+
+- ../../../../src/generation/\*\*

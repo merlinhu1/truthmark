@@ -2,8 +2,6 @@
 status: active
 doc_type: index
 last_reviewed: 2026-05-13
-source_of_truth:
-  - ../../routes/areas/init-and-scaffold.md
 ---
 
 # Repository Truth Docs
@@ -19,3 +17,7 @@ Current leaf docs:
 - [Impact Set](impact-set.md)
 - [Repo Index](repo-index.md)
 - [Workflow State](workflow-state.md)
+
+## Source References
+
+- ../../routes/areas/init-and-scaffold.md
