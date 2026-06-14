@@ -9,12 +9,47 @@ import type { Diagnostic } from "../output/diagnostic.js";
 import {
   TRUTH_DOCUMENT_KINDS,
   inferTruthDocumentKindFromPath,
+  laneForTruthDocumentKind,
   type TruthDocumentEntry,
   type TruthDocumentKind,
 } from "../routing/areas.js";
-import { resolveTruthDocsRoot } from "../truth/docs.js";
+import {
+  resolveEngineeringTruthRoot,
+  resolveProductTruthRoot,
+} from "../truth/docs.js";
 
-const REQUIRED_DECISION_HEADINGS = ["Scope", "Product Decisions", "Rationale"];
+const PRODUCT_CAPABILITY_REQUIRED_HEADINGS = [
+  "Capability Promise",
+  "Users And Value",
+  "Capability Scope",
+  "Current Product Behavior",
+  "Acceptance Criteria",
+  "Product Decisions",
+  "Engineering Realization Links",
+  "Non-Goals",
+];
+const ENGINEERING_REQUIRED_HEADINGS = [
+  "Purpose",
+  "Scope",
+  "Current Implementation Behavior",
+  "Source Evidence",
+  "Product Truth Links",
+  "Maintenance Notes",
+];
+const FORBIDDEN_PRODUCT_HEADINGS = [
+  "Execution Flow",
+  "Execution Model",
+  "Generated File Inventory",
+  "CLI Envelope Details",
+  "Data And Control Flow",
+];
+const FORBIDDEN_ENGINEERING_HEADINGS = [
+  "Product Promise",
+  "User / Stakeholder Value",
+  "Product Decisions",
+  "Product Rationale",
+  "Business Boundary",
+];
 
 const isTruthDocumentKind = (value: string): value is TruthDocumentKind => {
   return TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind);
@@ -25,7 +60,9 @@ const escapeRegExp = (value: string): string => {
 };
 
 const hasHeading = (source: string, heading: string): boolean => {
-  return new RegExp(`^#{2,3}\\s+${escapeRegExp(heading)}\\s*$`, "mu").test(source);
+  return new RegExp(`^#{2,3}\\s+${escapeRegExp(heading)}\\s*$`, "mu").test(
+    source,
+  );
 };
 
 const kindSpecificHeadingMessages = (
@@ -36,11 +73,13 @@ const kindSpecificHeadingMessages = (
     return [];
   }
 
-  if (kind === "behavior") {
-    return hasHeading(source, "Current Behavior") ? [] : ["Current Behavior"];
+  if (kind === "engineering-behavior") {
+    return hasHeading(source, "Current Implementation Behavior")
+      ? []
+      : ["Current Implementation Behavior"];
   }
 
-  if (kind === "contract") {
+  if (kind === "engineering-contract") {
     const missingMessages: string[] = [];
 
     if (!hasHeading(source, "Contract Surface")) {
@@ -58,13 +97,13 @@ const kindSpecificHeadingMessages = (
     return missingMessages;
   }
 
-  if (kind === "architecture") {
+  if (kind === "engineering-architecture") {
     return hasHeading(source, "Boundaries") || hasHeading(source, "Components")
       ? []
       : ["Boundaries or Components"];
   }
 
-  if (kind === "workflow") {
+  if (kind === "engineering-workflow") {
     const missingMessages: string[] = [];
 
     if (!hasHeading(source, "Triggers")) {
@@ -78,13 +117,14 @@ const kindSpecificHeadingMessages = (
     return missingMessages;
   }
 
-  if (kind === "operations") {
-    return hasHeading(source, "Runtime Topology") || hasHeading(source, "Configuration")
+  if (kind === "engineering-operations") {
+    return hasHeading(source, "Runtime Topology") ||
+      hasHeading(source, "Configuration")
       ? []
       : ["Runtime Topology or Configuration"];
   }
 
-  if (kind === "test-behavior") {
+  if (kind === "engineering-test-behavior") {
     const missingMessages: string[] = [];
 
     if (!hasHeading(source, "Execution Model")) {
@@ -95,7 +135,9 @@ const kindSpecificHeadingMessages = (
       !hasHeading(source, "Fixtures And Data Model") &&
       !hasHeading(source, "Assertions And Invariants")
     ) {
-      missingMessages.push("Fixtures And Data Model or Assertions And Invariants");
+      missingMessages.push(
+        "Fixtures And Data Model or Assertions And Invariants",
+      );
     }
 
     return missingMessages;
@@ -104,12 +146,29 @@ const kindSpecificHeadingMessages = (
   return [];
 };
 
-const decisionTruthGlobs = (config: TruthmarkConfig): string[] => {
-  return [`${resolveTruthDocsRoot(config)}/**/*.md`];
+const productRequiredHeadings = (kind: TruthDocumentKind | null): string[] => {
+  if (kind === "product-capability") {
+    return PRODUCT_CAPABILITY_REQUIRED_HEADINGS;
+  }
+
+  return PRODUCT_CAPABILITY_REQUIRED_HEADINGS;
 };
 
-const isDecisionTruthCandidate = (config: TruthmarkConfig, filePath: string): boolean => {
-  return !filePath.endsWith("/README.md") && micromatch.isMatch(filePath, decisionTruthGlobs(config));
+const decisionTruthGlobs = (config: TruthmarkConfig): string[] => {
+  return [
+    `${resolveProductTruthRoot(config)}/**/*.md`,
+    `${resolveEngineeringTruthRoot(config)}/**/*.md`,
+  ];
+};
+
+const isDecisionTruthCandidate = (
+  config: TruthmarkConfig,
+  filePath: string,
+): boolean => {
+  return (
+    !filePath.endsWith("/README.md") &&
+    micromatch.isMatch(filePath, decisionTruthGlobs(config))
+  );
 };
 
 export const checkDecisionSections = async (
@@ -125,12 +184,16 @@ export const checkDecisionSections = async (
   const candidatePaths = [...new Set(markdownPaths)]
     .filter(
       (filePath) =>
-        truthDocumentMap.has(filePath) || isDecisionTruthCandidate(config, filePath),
+        truthDocumentMap.has(filePath) ||
+        isDecisionTruthCandidate(config, filePath),
     )
     .sort();
 
   for (const filePath of candidatePaths) {
-    const source = await fs.readFile(resolveRepoPath(rootDir, filePath), "utf8");
+    const source = await fs.readFile(
+      resolveRepoPath(rootDir, filePath),
+      "utf8",
+    );
     const document = parseMarkdownDocument(source);
     const routedTruthDocument = truthDocumentMap.get(filePath);
     const frontmatterTruthKind =
@@ -138,27 +201,58 @@ export const checkDecisionSections = async (
         ? document.frontmatter.truth_kind
         : null;
     const routedTruthKind =
-      routedTruthDocument?.kindSource === "defaulted" ? null : routedTruthDocument?.kind;
+      routedTruthDocument?.kindSource === "defaulted"
+        ? null
+        : routedTruthDocument?.kind;
     const truthKind =
       routedTruthKind ??
       (frontmatterTruthKind && isTruthDocumentKind(frontmatterTruthKind)
         ? frontmatterTruthKind
         : inferTruthDocumentKindFromPath(filePath));
-    const missingHeadings = REQUIRED_DECISION_HEADINGS.filter(
+    const lane =
+      routedTruthDocument?.lane ??
+      (truthKind
+        ? laneForTruthDocumentKind(truthKind)
+        : filePath.startsWith(resolveProductTruthRoot(config))
+          ? "product"
+          : "engineering");
+    const requiredHeadings =
+      lane === "product"
+        ? productRequiredHeadings(truthKind)
+        : ENGINEERING_REQUIRED_HEADINGS;
+    const missingHeadings = requiredHeadings.filter(
       (heading) => !hasHeading(source, heading),
     );
-    missingHeadings.push(...kindSpecificHeadingMessages(source, truthKind));
+    if (lane === "engineering") {
+      missingHeadings.push(...kindSpecificHeadingMessages(source, truthKind));
+    }
+    const forbiddenHeadings = (
+      lane === "product"
+        ? FORBIDDEN_PRODUCT_HEADINGS
+        : FORBIDDEN_ENGINEERING_HEADINGS
+    ).filter((heading) => hasHeading(source, heading));
 
-    if (missingHeadings.length === 0) {
+    if (missingHeadings.length === 0 && forbiddenHeadings.length === 0) {
       continue;
     }
 
-    diagnostics.push({
-      category: "doc-structure",
-      severity: "review",
-      message: `Canonical truth doc ${filePath} should include ${missingHeadings.join(" and ")} section(s). Decisions should live beside current behavior, not in timestamped planning logs.`,
-      file: filePath,
-    });
+    if (missingHeadings.length > 0) {
+      diagnostics.push({
+        category: "doc-structure",
+        severity: "review",
+        message: `Canonical ${lane} truth doc ${filePath} should include ${missingHeadings.join(" and ")} section(s). Product truth says what must be true and why; engineering truth says how the repository currently realizes it.`,
+        file: filePath,
+      });
+    }
+
+    if (forbiddenHeadings.length > 0) {
+      diagnostics.push({
+        category: "lane-drift",
+        severity: "error",
+        message: `Canonical ${lane} truth doc ${filePath} contains wrong-lane section(s): ${forbiddenHeadings.join(", ")}.`,
+        file: filePath,
+      });
+    }
   }
 
   return diagnostics;

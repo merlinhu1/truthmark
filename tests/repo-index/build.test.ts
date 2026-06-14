@@ -37,7 +37,7 @@ describe("buildRepoIndex", () => {
       expect.objectContaining({ name: "sample", version: "1.0.0", manager: "npm" }),
     );
     expect(result.files.map((file) => file.path)).toContain("src/math.ts");
-    expect(result.docs.map((doc) => doc.path)).toContain("docs/truthmark/truth/repository/overview.md");
+    expect(result.docs.map((doc) => doc.path)).toContain("docs/truthmark/engineering/repository/overview.md");
     expect(result.files).toContainEqual(
       expect.objectContaining({ path: "AGENTS.md", kind: "generated" }),
     );
@@ -46,6 +46,35 @@ describe("buildRepoIndex", () => {
     expect(result.exports).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
     expect(result.publicSymbols).toContainEqual({ path: "src/math.ts", name: "add", kind: "function" });
     expect(result.routeMap.routes.some((route) => route.truthDocs.length > 0)).toBe(true);
+  });
+
+  it("derives truth doc lane and doc type from truth_kind when frontmatter omits them", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+    await repo.writeFile(
+      "docs/truthmark/engineering/contracts/api.md",
+      `---
+status: active
+truth_kind: engineering-contract
+last_reviewed: 2026-05-14
+source_of_truth:
+  - docs/truthmark/routes/areas/repository.md
+---
+
+# API Contract
+`,
+    );
+
+    const result = await buildRepoIndex(repo.rootDir);
+
+    expect(result.docs).toContainEqual(
+      expect.objectContaining({
+        path: "docs/truthmark/engineering/contracts/api.md",
+        docType: "contract",
+        truthKind: "engineering-contract",
+        truthLane: "engineering",
+      }),
+    );
   });
 
   it("skips tracked files that are deleted from the worktree", async () => {

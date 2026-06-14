@@ -515,7 +515,7 @@ Important config areas include:
 | `truthmark.routes.areas` | Directory for delegated child route files relative to `truthmark.workspace`. |
 | `truthmark.routes.default_area` | Initial scaffolded child route basename. |
 | `truthmark.routes.max_delegation_depth` | Current maximum route delegation depth. |
-| `truthmark.truth.root` | Truth doc root relative to `truthmark.workspace`. |
+| Fixed truth lanes | Product truth lives under `product/` and engineering truth under `engineering/` inside `truthmark.workspace`. |
 | `truthmark.templates.root` | Truth-doc template root relative to `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
 | `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
@@ -749,7 +749,7 @@ Useful scripts:
 | `npm run check` | Run lint, typecheck, tests, and build. |
 | `npm run release:check` | Run release-oriented validation. |
 
-When changing Truthmark itself, see [CONTRIBUTORS.md](CONTRIBUTORS.md).
+When changing Truthmark itself, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Documentation
 

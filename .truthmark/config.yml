@@ -12,8 +12,6 @@ truthmark:
     areas: routes/areas
     default_area: repository
     max_delegation_depth: 1
-  truth:
-    root: truth
   templates:
     root: templates
   generated:
@@ -25,7 +23,6 @@ frontmatter:
   required: []
   recommended:
     - status
-    - doc_type
     - last_reviewed
     - source_of_truth
 ignore:

@@ -19,6 +19,7 @@ Truth Preview is read-only. Its report is intended, not authorized.
 
 Purpose:
 - preview the likely Truthmark workflow, route owner, target files, expected write classes, suggested subagent use, and blocking ambiguity before edits happen
+- report likely product lane impact, engineering lane impact, target docs, and ambiguity before edits
 - hand off to the selected workflow after user approval
 - keep the selector thin so agents can avoid loading or acting through heavier workflows prematurely
 
@@ -29,6 +30,13 @@ Read:
 - relevant truth docs and implementation files needed to preview ownership
 - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
+- Lane classification gate:
+- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
+- product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
+- engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
+- both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
+- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+- Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 
 Do not:
 - must not edit files
@@ -49,7 +57,8 @@ Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
 - Root route index, when present: docs/truthmark/routes/areas.md
 - Area route files, when present: docs/truthmark/routes/areas/**/*.md
-- Truth docs, when present: docs/truthmark/truth/**/*.md
+- Product truth docs, when present: docs/truthmark/product/**/*.md
+- Engineering truth docs, when present: docs/truthmark/engineering/**/*.md
 
 Report completion in this shape:
 ```md
@@ -68,14 +77,16 @@ Why this workflow:
 
 Likely route owner:
 - route file: docs/truthmark/routes/areas.md
-- truth doc: docs/truthmark/truth/example.md
+- likely lane impact: engineering-lane
+- product target docs: none identified
+- engineering target docs: docs/truthmark/engineering/behaviors/example.md
 - confidence: medium
 
 Expected write classes:
 - truth docs
 
 Expected target files:
-- docs/truthmark/truth/example.md
+- docs/truthmark/engineering/behaviors/example.md
 
 Suggested subagent use:
 - read-only verifiers: truth_route_auditor

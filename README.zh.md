@@ -515,7 +515,7 @@ truthmark init
 | `truthmark.routes.areas` | 相对于 `truthmark.workspace` 的委托子路由目录。 |
 | `truthmark.routes.default_area` | 初始脚手架子路由 basename。 |
 | `truthmark.routes.max_delegation_depth` | 当前最大路由委托深度。 |
-| `truthmark.truth.root` | 相对于 `truthmark.workspace` 的事实文档根。 |
+| 固定事实分区 | 产品事实位于 `truthmark.workspace` 内的 `product/`，工程事实位于 `engineering/`。 |
 | `truthmark.templates.root` | 相对于 `truthmark.workspace` 的事实文档模板根。 |
 | `truthmark.generated.portal` | 可选手动展示工作流启用设置：`enabled`。 |
 | `instruction_targets` | 接收共享受管指令块的文件，例如 `AGENTS.md`。 |
@@ -749,7 +749,7 @@ npm run check
 | `npm run check` | 运行 lint、typecheck、测试和 build。 |
 | `npm run release:check` | 运行面向发布的验证。 |
 
-修改 Truthmark 本身时，请参阅 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
+修改 Truthmark 本身时，请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 文档
 

@@ -515,7 +515,7 @@ Las áreas importantes de configuración incluyen:
 | `truthmark.routes.areas` | Directorio de rutas secundarias delegadas relativo a `truthmark.workspace`. |
 | `truthmark.routes.default_area` | Nombre base de la ruta secundaria inicial generada. |
 | `truthmark.routes.max_delegation_depth` | Profundidad máxima actual de delegación de rutas. |
-| `truthmark.truth.root` | Raíz de documentos de verdad relativa a `truthmark.workspace`. |
+| Carriles de verdad fijos | La verdad de producto vive en `product/` y la verdad de ingeniería en `engineering/` dentro de `truthmark.workspace`. |
 | `truthmark.templates.root` | Raíz de plantillas de documentos de verdad relativa a `truthmark.workspace`. |
 | `truthmark.generated.portal` | Activación opcional del flujo manual de presentación: `enabled`. |
 | `instruction_targets` | Archivos que reciben bloques de instrucciones administrados compartidos, como `AGENTS.md`. |
@@ -749,7 +749,7 @@ Scripts útiles:
 | `npm run check` | Ejecuta lint, typecheck, pruebas y build. |
 | `npm run release:check` | Ejecuta validación orientada a release. |
 
-Cuando cambies Truthmark en sí, consulta [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Cuando cambies Truthmark en sí, consulta [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Documentación
 

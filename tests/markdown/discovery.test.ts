@@ -117,21 +117,21 @@ describe("init templates", () => {
     });
     expect(config.frontmatter).toMatchObject({
       required: [],
-      recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
+      recommended: ["status", "last_reviewed", "source_of_truth"],
     });
     expect(config).not.toHaveProperty("docs");
     expect(config).not.toHaveProperty("authority");
     expect(config.truthmark).toMatchObject({
       workspace: "docs/truthmark",
-      truth: { root: "truth" },
       templates: { root: "templates" },
     });
+    expect(config.truthmark).not.toHaveProperty("truth");
   });
 
   it("seeds docs/truthmark/routes/areas.md from discovered docs without moving them", () => {
     const areas = renderAreasTemplate([
       {
-        path: "docs/truthmark/truth/authentication.md",
+        path: "docs/truthmark/engineering/behaviors/authentication.md",
         title: "Authentication",
         hasFrontmatter: false,
       },
@@ -142,15 +142,15 @@ describe("init templates", () => {
       },
     ]);
 
-    expect(areas).toContain("docs/truthmark/truth/authentication.md");
+    expect(areas).toContain("docs/truthmark/engineering/behaviors/authentication.md");
     expect(areas).toContain("docs/api/authentication.md");
     expect(areas).toContain("Truth documents:");
     expect(areas).toContain("```yaml");
-    expect(areas).toContain("kind: behavior");
-    expect(areas).not.toContain("kind: contract");
+    expect(areas).toContain("kind: engineering-behavior");
+    expect(areas).not.toContain("kind: engineering-contract");
     expect(areas).toContain("Code surface:");
     expect(areas).toContain("Update truth when:");
-    expect(areas).not.toContain("- docs/truthmark/truth/authentication.md");
+    expect(areas).not.toContain("- docs/truthmark/engineering/behaviors/authentication.md");
   });
 
   it("renders a managed AGENTS.md block with stable markers and workflow boundaries", () => {

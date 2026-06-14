@@ -1,4 +1,4 @@
-# Contributors
+# Contributing
 
 This guide is for people contributing to Truthmark itself from this checkout.
 

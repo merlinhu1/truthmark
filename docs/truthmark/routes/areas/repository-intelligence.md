@@ -15,14 +15,11 @@ source_of_truth:
 Truth documents:
 ```yaml
 truth_documents:
-  - path: docs/truthmark/truth/repository/repo-index.md
-    kind: behavior
-  - path: docs/truthmark/truth/repository/impact-set.md
-    kind: behavior
-  - path: docs/truthmark/truth/repository/context-pack.md
-    kind: behavior
-  - path: docs/truthmark/truth/repository/workflow-state.md
-    kind: behavior
+  - path: docs/truthmark/engineering/repository/repository-intelligence.md
+    kind: engineering-behavior
+    lane: engineering
+    realizes:
+      - docs/truthmark/product/capabilities/lane-separated-truth.md
 ```
 
 Code surface:

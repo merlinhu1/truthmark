@@ -515,7 +515,7 @@ truthmark init
 | `truthmark.routes.areas` | Директория делегированных дочерних маршрутов относительно `truthmark.workspace`. |
 | `truthmark.routes.default_area` | Базовое имя начального scaffolded дочернего маршрута. |
 | `truthmark.routes.max_delegation_depth` | Текущая максимальная глубина делегирования routing. |
-| `truthmark.truth.root` | Корень документов истины относительно `truthmark.workspace`. |
+| Фиксированные дорожки истины | Product truth находится в `product/`, а engineering truth в `engineering/` внутри `truthmark.workspace`. |
 | `truthmark.templates.root` | Корень шаблонов документов истины относительно `truthmark.workspace`. |
 | `truthmark.generated.portal` | Опциональное включение ручного презентационного workflow: `enabled`. |
 | `instruction_targets` | Файлы, которые получают общие управляемые блоки инструкций, например `AGENTS.md`. |
@@ -749,7 +749,7 @@ npm run check
 | `npm run check` | Запускает lint, typecheck, tests и build. |
 | `npm run release:check` | Запускает release-oriented validation. |
 
-Когда меняете сам Truthmark, смотрите [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Когда меняете сам Truthmark, смотрите [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Документация
 

@@ -13,8 +13,6 @@ truthmark:
     areas: routes/areas
     default_area: repository
     max_delegation_depth: 1
-  truth:
-    root: truth
   templates:
     root: templates
   generated:
@@ -44,6 +42,32 @@ describe("loadConfig", () => {
       expect(result.config).toBeNull();
       expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
         "Unsupported Truthmark config shape",
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rejects unsupported truth config blocks", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace(
+          "  templates:\n",
+          "  truth:\n    root: truth\n    product_root: custom-product\n    engineering_root: custom-engineering\n  templates:\n",
+        ),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("invalid");
+      expect(result.config).toBeNull();
+      expect(result.diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining("additional property truth is not allowed"),
+        }),
       );
     } finally {
       await repo.cleanup();
@@ -113,6 +137,29 @@ describe("loadConfig", () => {
       expect(result.config?.truthmark.generated.portal).toEqual({ enabled: true });
       expect(result.config?.truthmark.paths.portalOutput).toBe("docs/truthmark/generated/portal");
       expect(result.config?.truthmark.paths.portalTemplate).toBe("docs/truthmark/templates/portal.html");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("derives fixed product and engineering truth roots from the workspace", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace("workspace: docs/truthmark", "workspace: docs/custom-truthmark"),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.config?.truthmark.truth.productRoot).toBe("product");
+      expect(result.config?.truthmark.truth.engineeringRoot).toBe("engineering");
+      expect(result.config?.truthmark.paths.productTruthRoot).toBe("docs/custom-truthmark/product");
+      expect(result.config?.truthmark.paths.engineeringTruthRoot).toBe(
+        "docs/custom-truthmark/engineering",
+      );
     } finally {
       await repo.cleanup();
     }

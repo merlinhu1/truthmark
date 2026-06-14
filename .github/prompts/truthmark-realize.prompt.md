@@ -42,7 +42,8 @@ Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
 - Root route index, when present: docs/truthmark/routes/areas.md
 - Area route files, when present: docs/truthmark/routes/areas/**/*.md
-- Truth docs, when present: docs/truthmark/truth/**/*.md
+- Product truth docs, when present: docs/truthmark/product/**/*.md
+- Engineering truth docs, when present: docs/truthmark/engineering/**/*.md
 
 Read and write boundaries:
 
@@ -56,7 +57,7 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- docs/truthmark/truth/authentication/session-timeout.md
+- docs/truthmark/engineering/authentication/session-timeout.md
 
 Code updated:
 - src/auth/session.ts

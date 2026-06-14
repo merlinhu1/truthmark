@@ -51,15 +51,16 @@ Current scaffold targets:
 - `.truthmark/config.yml` via `truthmark config`
 - [docs/truthmark/routes/areas.md](../routes/areas.md)
 - configured child route files referenced by the root route index under `docs/truthmark/routes/areas/**/*.md`
-- configured truth-root README files such as `docs/truthmark/truth/README.md`
-- configured default-area index README files such as `docs/truthmark/truth/repository/README.md`
-- [docs/truthmark/templates/behavior-doc.md](../templates/behavior-doc.md)
-- [docs/truthmark/templates/contract-doc.md](../templates/contract-doc.md)
-- [docs/truthmark/templates/architecture-doc.md](../templates/architecture-doc.md)
-- [docs/truthmark/templates/workflow-doc.md](../templates/workflow-doc.md)
-- [docs/truthmark/templates/operations-doc.md](../templates/operations-doc.md)
-- [docs/truthmark/templates/test-behavior-doc.md](../templates/test-behavior-doc.md)
-- configured default-area bounded leaf truth docs such as `docs/truthmark/truth/repository/overview.md`
+- fixed lane README files such as `docs/truthmark/product/README.md` and `docs/truthmark/engineering/README.md`
+- configured default-area index README files under the fixed engineering lane, such as `docs/truthmark/engineering/repository/README.md`
+- [docs/truthmark/templates/engineering-behavior.md](../templates/engineering-behavior.md)
+- [docs/truthmark/templates/engineering-contract.md](../templates/engineering-contract.md)
+- [docs/truthmark/templates/engineering-architecture.md](../templates/engineering-architecture.md)
+- [docs/truthmark/templates/engineering-workflow.md](../templates/engineering-workflow.md)
+- [docs/truthmark/templates/engineering-operations.md](../templates/engineering-operations.md)
+- [docs/truthmark/templates/engineering-test-behavior.md](../templates/engineering-test-behavior.md)
+- [docs/truthmark/templates/product-capability.md](../templates/product-capability.md)
+- configured default-area bounded leaf truth docs such as `docs/truthmark/engineering/repository/overview.md`
 - the managed block inside [AGENTS.md](../../../AGENTS.md)
 - [CLAUDE.md](../../../CLAUDE.md)
 - `.agents/skills/truthmark-structure/SKILL.md`
@@ -188,19 +189,19 @@ Hierarchy is configured in `.truthmark/config.yml`:
 - `truthmark.routes.areas` is the directory for child route files relative to the workspace
 - `truthmark.routes.default_area` is the initial scaffolded child route basename
 - `truthmark.routes.max_delegation_depth` must currently be `1`
-- `truthmark.truth.root` is the truth-doc root relative to the workspace
+- product truth always lives under `product/` and engineering truth under `engineering/` relative to the workspace
 - `truthmark.templates.root` is the template root relative to the workspace
 
 `truthmark init` creates missing structure for that hierarchy, but child route files stay governed by the root route index: if an authored non-empty root index no longer delegates the configured default child route, rerunning init does not recreate that unreferenced child route. Init does not silently move, delete, reinterpret, or emit compatibility diagnostics for legacy truth-doc placement when teams change the configured roots.
-The default scaffold treats truth `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the configured truth root, such as `<truth-root>/<domain>/<behavior>.md`.
-`truthmark init` creates [docs/truthmark/templates/behavior-doc.md](../templates/behavior-doc.md) when it is missing or empty and refreshes all six templates under `docs/truthmark/templates/*.md` on rerun. Template refreshes replace Truthmark-owned default sections with the current professional guidance baseline, including evidence, boundary, current-state, contract, operational, verification, decision, rationale, non-goal, and maintenance prompts. Existing template preambles/frontmatter are preserved so repository-owned metadata, custom titles, source-of-truth defaults, and local introductory guidance do not churn during section refresh. Project-specific custom `##` sections are preserved and reinserted before the next default section that followed them in the authored file; trailing custom sections remain trailing. Fenced code blocks are ignored while finding `##` template sections, so examples can contain Markdown headings without being split or mistaken for Truthmark-owned sections. The default child route references the seeded leaf truth doc with fenced YAML `truth_documents` metadata and `kind: behavior` rather than relying on path inference.
+The default scaffold treats truth `README.md` files as indexes. Current behavior truth belongs in bounded leaf docs under the fixed engineering lane root, such as `<workspace>/engineering/<domain>/<behavior>.md`; product capability truth belongs under `<workspace>/product/`.
+`truthmark init` creates [docs/truthmark/templates/engineering-behavior.md](../templates/engineering-behavior.md) when it is missing or empty and refreshes all eight templates under `docs/truthmark/templates/*.md` on rerun. Template refreshes replace Truthmark-owned default sections with the current professional guidance baseline, including evidence, boundary, capability, current-state, contract, operational, verification, decision, rationale, non-goal, and maintenance prompts. Existing template preambles/frontmatter are preserved so repository-owned metadata, custom titles, source-of-truth defaults, and local introductory guidance do not churn during section refresh. Project-specific custom `##` sections are preserved and reinserted before the next default section that followed them in the authored file; trailing custom sections remain trailing. Fenced code blocks are ignored while finding `##` template sections, so examples can contain Markdown headings without being split or mistaken for Truthmark-owned sections. The default child route references the seeded leaf truth doc with fenced YAML `truth_documents` metadata and `kind: engineering-behavior` rather than relying on path inference.
 When creating the default bounded behavior truth doc, init reads the repository's merged behavior template and expands supported placeholders such as `{{title}}`, `{{area}}`, `{{source_of_truth}}`, `{{purpose}}`, `{{scope}}`, `{{current_behavior}}`, `{{core_rules}}`, `{{flows_and_states}}`, `{{contracts}}`, `{{decision}}`, `{{rationale}}`, `{{non_goals}}`, `{{maintenance_notes}}`, and `{{template_path}}`. The seeded leaf uses `doc_type: behavior` and `truth_kind: behavior`. Existing non-empty truth docs are preserved; existing template files are merged rather than blindly overwritten so teams can keep local truth-doc standard sections while receiving updated default guidance.
 
 Important current defaults:
 
 - default authority includes the canonical doc classes under `docs/`
 - default code surface in the scaffolded root and child route files starts as `src/**`
-- default truth scaffolding creates an index at `<truth-root>/README.md`, an index at `<truth-root>/<default-area>/README.md`, six editable and refreshable templates under `docs/truthmark/templates/*.md`, and a bounded leaf truth doc at `<truth-root>/<default-area>/overview.md` routed through explicit `{ path, kind }` metadata
+- default truth scaffolding creates indexes and bounded leaf truth docs under the fixed `product/` and `engineering/` lane roots, eight editable and refreshable templates under `docs/truthmark/templates/*.md`, and route entries through explicit `{ path, kind }` metadata
 - default platforms are `codex`, `opencode`, `claude-code`, `github-copilot`, and `gemini-cli`
 - shared instruction targets are refreshed independently of platform-specific surfaces
 - explicit Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, and Truth Check surfaces are installed only for configured platforms
@@ -253,7 +254,7 @@ Current init JSON reporting uses:
 - Managed instruction blocks are compact automatic-Sync indexes; generated skill support files, prompt files, and command files own explicit workflow procedure.
 - Decision (2026-05-15): Repository instruction preambles make docs-map and onboarding reads conditional, and managed instruction blocks omit platform-specific workflow invocation strings so ordinary sessions load less context.
 - Decision (2026-05-13): `.truthmark/config.yml` and route files are the committed hierarchy contract, so init no longer creates a low-value top-level note.
-- Decision (2026-05-14): Truth-doc templates are kind-specific under `docs/truthmark/templates/*.md`; `docs/truthmark/templates/behavior-doc.md` is the default bounded behavior template and the other five typed templates carry kind-specific required sections.
+- Decision (2026-06-14): Truth-doc templates are kind-specific under `docs/truthmark/templates/*.md`; filenames match `truth_kind` values directly, with `docs/truthmark/templates/engineering-behavior.md` as the default bounded behavior template and `product-capability` as the only downstream product truth template.
 - Decision (2026-05-30): `truthmark init` refreshes Truthmark-owned default sections in existing `docs/truthmark/templates/*.md` files while preserving project-specific custom `##` sections and their authored relative order.
 - Decision (2026-05-14): Truth Realize stays manual-only through explicit generated surfaces and is no longer configurable with `realization.enabled`.
 - Decision (2026-05-13): Default standards define architecture docs as structure and ownership truth, not a place for ordinary product behavior.

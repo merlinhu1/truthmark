@@ -7,6 +7,12 @@ import matter from "gray-matter";
 import micromatch from "micromatch";
 
 import { parseMarkdownDocument } from "../markdown/parse.js";
+import {
+  TRUTH_DOCUMENT_KINDS,
+  docTypeForTruthDocumentKind,
+  laneForTruthDocumentKind,
+  type TruthDocumentKind,
+} from "../routing/areas.js";
 import { classifyPath } from "../sync/classify.js";
 import type { RepoDocEntry, RepoFileEntry, RepoFileKind, RepoTestEntry } from "./types.js";
 
@@ -86,6 +92,13 @@ const defaultIgnore = [".git/**", "node_modules/**", "dist/**", "build/**"];
 
 const normalizePath = (filePath: string): string => filePath.replaceAll("\\", "/").replace(/^\.\/+/u, "");
 
+const isTruthDocumentKind = (value: unknown): value is TruthDocumentKind => {
+  return (
+    typeof value === "string" &&
+    TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind)
+  );
+};
+
 const gitDiscoverableFiles = async (rootDir: string): Promise<string[] | null> => {
   const result = await execa(
     "git",
@@ -164,13 +177,38 @@ export const discoverRepoFiles = async (
       const sourceOfTruth = Array.isArray(parsed.data.source_of_truth)
         ? parsed.data.source_of_truth.filter((entry: unknown): entry is string => typeof entry === "string")
         : [];
+      const realizedBy = Array.isArray(parsed.data.realized_by)
+        ? parsed.data.realized_by.filter((entry: unknown): entry is string => typeof entry === "string")
+        : [];
+      const realizes = Array.isArray(parsed.data.realizes)
+        ? parsed.data.realizes.filter((entry: unknown): entry is string => typeof entry === "string")
+        : [];
+      const dependsOn = Array.isArray(parsed.data.depends_on)
+        ? parsed.data.depends_on.filter((entry: unknown): entry is string => typeof entry === "string")
+        : [];
+      const truthKind = typeof parsed.data.truth_kind === "string" ? parsed.data.truth_kind : null;
+      const derivedTruthKind = isTruthDocumentKind(truthKind) ? truthKind : null;
 
       docs.push({
         path: filePath,
         title,
-        docType: typeof parsed.data.doc_type === "string" ? parsed.data.doc_type : null,
-        truthKind: typeof parsed.data.truth_kind === "string" ? parsed.data.truth_kind : null,
+        docType:
+          typeof parsed.data.doc_type === "string"
+            ? parsed.data.doc_type
+            : derivedTruthKind
+              ? docTypeForTruthDocumentKind(derivedTruthKind)
+              : null,
+        truthKind,
+        truthLane:
+          typeof parsed.data.truth_lane === "string"
+            ? parsed.data.truth_lane
+            : derivedTruthKind
+              ? laneForTruthDocumentKind(derivedTruthKind)
+              : null,
         sourceOfTruth: sourceOfTruth.sort(),
+        realizedBy: realizedBy.sort(),
+        realizes: realizes.sort(),
+        dependsOn: dependsOn.sort(),
       });
     }
   }

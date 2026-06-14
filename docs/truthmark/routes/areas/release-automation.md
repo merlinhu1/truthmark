@@ -15,8 +15,9 @@ source_of_truth:
 Truth documents:
 ```yaml
 truth_documents:
-  - path: docs/truthmark/truth/release/automation.md
-    kind: workflow
+  - path: docs/truthmark/engineering/operations/release-automation.md
+    kind: engineering-operations
+    lane: engineering
 ```
 
 Code surface:

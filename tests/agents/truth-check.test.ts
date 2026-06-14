@@ -62,7 +62,6 @@ describe("renderTruthCheckSkillBody", () => {
     );
     expect(skill).toContain("Truthmark hierarchy hints:");
     expect(skill).toContain("Product Decisions");
-    expect(skill).toContain("Rationale");
     expect(skill).toContain("Truth Check: completed");
     expect(skill).toContain("Files reviewed");
     expect(skill).toContain("Issues found");
@@ -208,7 +207,8 @@ describe("Truth Check generated surfaces", () => {
     const claudeWriter = renderTruthmarkClaudeDocWriterAgent();
     const copilotWriter = renderTruthmarkCopilotDocWriterAgent();
     const customConfig = createDefaultConfig();
-    customConfig.truthmark.paths.truthRoot = "product/truth";
+    customConfig.truthmark.paths.productTruthRoot = "product/truth";
+    customConfig.truthmark.paths.engineeringTruthRoot = "product/engineering";
     customConfig.truthmark.paths.routesIndex = "product/routes/index.md";
     customConfig.truthmark.paths.routeAreasRoot = "product/routes/areas";
     const customOpenCodeWriter = renderTruthmarkOpenCodeDocWriterAgent(customConfig);
@@ -219,17 +219,17 @@ describe("Truth Check generated surfaces", () => {
     expect(codexWriter).not.toContain(readOnlyContextBoundary);
     expect(codexWriter).toContain("Return YAML only");
     expect(openCodeWriter).toContain("mode: subagent");
-    expect(openCodeWriter).toContain('"docs/truthmark/truth/**": allow');
+    expect(openCodeWriter).toContain('"docs/truthmark/engineering/**": allow');
     expect(openCodeWriter).toContain('"docs/truthmark/routes/areas.md": allow');
     expect(openCodeWriter).toContain("@truth-doc-writer");
-    expect(customOpenCodeWriter).toContain('"product/truth/**": allow');
+    expect(customOpenCodeWriter).toContain('"product/engineering/**": allow');
     expect(customOpenCodeWriter).toContain(
       '"product/routes/index.md": allow',
     );
     expect(customOpenCodeWriter).toContain(
       '"product/routes/areas/**/*.md": allow',
     );
-    expect(customOpenCodeWriter).not.toContain('"docs/truthmark/truth/**": allow');
+    expect(customOpenCodeWriter).not.toContain('"docs/truthmark/engineering/**": allow');
     expect(claudeWriter).toContain("name: truth-doc-writer");
     expect(claudeWriter).toContain("tools: Read, Grep, Glob, LS, Edit, MultiEdit");
     expect(copilotWriter).toContain("name: truth-doc-writer");

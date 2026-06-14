@@ -47,7 +47,7 @@ Generated workflow surfaces are committed repository files with Truthmark versio
 - The CLI owns committed config, routing, diagnostics, scaffolded files, and generated workflow surfaces inside the active repository.
 - Repository truth stays in Git-tracked Markdown and managed instruction surfaces rather than off-repo caches, daemons, or hosted services.
 - Architecture docs own structure and ownership boundaries; behavior and contract docs own ordinary product behavior and machine-facing contracts.
-- [Product Boundary](../../../architecture/product-boundary.md) is the mandatory architecture guardrail for new designs and plans; proposals must check the North Star, in-scope surfaces, explicit non-goals, optional-helper rule, and fail-closed write boundaries before implementation.
+- [Product Boundary](../../../architecture/product-boundary.md) is this repository's local architecture guardrail for Truthmark designs and plans; downstream scaffolds must not create it. Proposals in this checkout must check the North Star, in-scope surfaces, explicit non-goals, optional-helper rule, and fail-closed write boundaries before implementation.
 
 ## Core Pipelines
 

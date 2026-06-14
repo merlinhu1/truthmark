@@ -1,0 +1,40 @@
+name: Feature request
+description: Propose a Truthmark behavior, workflow, or documentation improvement
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep proposals aligned with Truthmark's local-first, Git-reviewable repository-truth boundary.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user, maintainer, reviewer, or agent workflow problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful change.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Product-boundary check
+      description: Explain how this stays local-first, host-native, branch-scoped, and Git-reviewable.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional; include workarounds or rejected designs.
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification idea
+      description: What test, fixture, generated diff, or validation command would prove this works?

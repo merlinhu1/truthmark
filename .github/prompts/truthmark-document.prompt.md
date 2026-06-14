@@ -22,6 +22,13 @@ Truth Document is manual and implementation-first:
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
 Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
+- Lane classification gate:
+- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
+- product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
+- engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
+- both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
+- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+- Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and docs/truthmark/routes/areas.md or relevant child route files only
 - must not write functional code
@@ -29,7 +36,10 @@ Implementation code and canonical truth docs are inspected evidence for current 
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
 - keep feature README.md files as indexes rather than truth-document targets
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
-- keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
+- write product capability/boundary truth under docs/truthmark/product when documenting product promise, boundary, rationale, or user/stakeholder value
+- write engineering truth under docs/truthmark/engineering when documenting implementation behavior, contracts, architecture, workflows, operations, or tests
+- for both-lane documentation requests, write separate product and engineering docs and cross-link them with realized_by and realizes
+- keep engineering behavior truth behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content
 Truth-doc ownership gate:
@@ -37,15 +47,15 @@ Truth-doc ownership gate:
 - if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
 - if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, run Truth Structure first when safe and in scope; otherwise block and recommend Truth Structure
 - report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason as applicable
-Product Decisions/Rationale preservation gate:
-- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections in every source or touched truth doc
-- preserve each current decision and rationale in the bounded owner doc it governs; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
+Decision/Rationale preservation gate:
+- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections in every source or touched truth doc
+- preserve each current decision and rationale in the correct product or engineering lane owner; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
 - remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
 - if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing
-- after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
+- after the edit, verify every touched truth doc keeps lane-appropriate decision/rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
 Evidence Gate:
 - route-first: map the documented behavior to bounded route owners and primary canonical docs
-- review new or changed behavior-bearing claims only in touched docs, route ownership, Product Decisions, and Rationale
+- review new or changed behavior-bearing claims only in touched docs, route ownership, lane-specific decisions, and rationale
 - support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions
 - tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
 - remove, narrow, or block unsupported claims
@@ -64,10 +74,10 @@ Repository intelligence artifacts are optional derived context: RepoIndex, Route
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
 If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
 When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
-Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
+Supported kinds: product-capability, engineering-behavior, engineering-contract, engineering-architecture, engineering-workflow, engineering-operations, and engineering-test-behavior.
 Treat the HTML comments under each template section as normative authoring guidance for that section.
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
-If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
+If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
 Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
 Truth-doc shape repair gate:
 - Truth Document may restructure only truth docs for the implemented behavior being documented.
@@ -82,10 +92,11 @@ Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
 - Root route index, when present: docs/truthmark/routes/areas.md
 - Area route files, when present: docs/truthmark/routes/areas/**/*.md
-- Truth docs, when present: docs/truthmark/truth/**/*.md
+- Product truth docs, when present: docs/truthmark/product/**/*.md
+- Engineering truth docs, when present: docs/truthmark/engineering/**/*.md
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
-Update Product Decisions and Rationale when a decision changes behavior.
+Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.
 Helper status reporting:
 - Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
 - After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
@@ -109,13 +120,13 @@ Ownership reviewed:
 - docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truthmark/truth/contracts.md
+- docs/truthmark/engineering/contracts/routing.md
 
 Truth docs updated:
-- docs/truthmark/truth/check-diagnostics.md
+- docs/truthmark/engineering/behaviors/check-diagnostics.md
 
 Truth docs restructured:
-- docs/truthmark/truth/check-diagnostics.md
+- docs/truthmark/engineering/behaviors/check-diagnostics.md
 
 Routing updated:
 - docs/truthmark/routes/areas.md

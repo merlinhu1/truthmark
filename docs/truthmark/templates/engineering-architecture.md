@@ -1,8 +1,7 @@
 ---
 status: active
-doc_type: architecture
-truth_kind: architecture
-last_reviewed: 2026-05-30
+truth_kind: engineering-architecture
+last_reviewed: 2026-06-14
 source_of_truth:
   - {{source_of_truth}}
 ---
@@ -82,15 +81,15 @@ Tie constraints to source evidence, tests, standards, or operational requirement
 
 {{cross_cutting_constraints}}
 
-## Product Decisions
+## Engineering Decisions
 
 <!--
-Keep active decisions only, dated inline when added or changed.
-Capture decisions that shape behavior, interfaces, boundaries, compatibility, risk acceptance, or migration constraints.
+Keep active engineering, architecture, contract, workflow, or operational decisions only, dated inline when added or changed.
+Do not restate product promises, product rationale, or business decisions here; link product truth instead.
 Replace stale decisions instead of appending historical logs.
 -->
 
-{{decision}}
+{{engineering_decisions}}
 
 ## Rationale
 

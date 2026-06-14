@@ -57,13 +57,13 @@ describe("renderTruthDocumentSkillBody", () => {
       "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason",
     );
     expect(skill).toContain(
-      "Product Decisions/Rationale preservation gate",
+      "Decision/Rationale preservation gate",
     );
     expect(skill).toContain(
-      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections",
+      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
     );
     expect(skill).toContain(
-      "preserve each current decision and rationale in the bounded owner doc it governs",
+      "preserve each current decision and rationale in the correct product or engineering lane owner",
     );
     expect(skill).toContain(
       "if ownership of a decision or rationale is unclear, block with manual-review files",
@@ -119,7 +119,7 @@ describe("renderTruthDocumentSkillBody", () => {
 
     expect(report).toContain("Truth Document: completed");
     expect(report).toContain("src/routing/area-resolver.ts");
-    expect(report).toContain("docs/truthmark/truth/contracts.md");
+    expect(report).toContain("docs/truthmark/engineering/contracts/routing.md");
     expect(report).toContain("Evidence checked");
     expect(report).toContain("Claim:");
   });
@@ -131,8 +131,8 @@ describe("renderTruthDocumentSkillBody", () => {
 
     const skill = renderTruthDocumentSkillBody(config);
 
-    expect(skill).toContain("docs/truthmark/truth/contracts.md");
-    expect(skill).toContain("docs/truthmark/truth/check-diagnostics.md");
+    expect(skill).toContain("docs/truthmark/engineering/contracts/routing.md");
+    expect(skill).toContain("docs/truthmark/engineering/behaviors/check-diagnostics.md");
     expect(skill).toContain("docs/routes/index.md");
   });
 });

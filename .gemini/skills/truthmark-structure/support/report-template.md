@@ -7,7 +7,8 @@ Report completion in this shape:
 Truth Structure: completed
 Topology reviewed:
 - controllers: src/auth/**
-- docs root: docs/truthmark/truth
+- product docs root: docs/truthmark/product
+- engineering docs root: docs/truthmark/engineering
 - route files: docs/truthmark/routes/areas.md
 Areas reviewed:
 - src/auth/**
@@ -16,12 +17,14 @@ Routing updated:
 Initial truth boundary:
 - Area: Authentication
 - Code: src/auth/**
-- Truth owner: docs/truthmark/truth/authentication/session.md
+- Product owner: docs/truthmark/product/capabilities/authentication-session.md
+- Engineering owner: docs/truthmark/engineering/behaviors/authentication-session.md
 - Scope: session behavior only
 Truth docs created:
-- docs/truthmark/truth/authentication/session.md
+- docs/truthmark/product/capabilities/authentication-session.md
+- docs/truthmark/engineering/behaviors/authentication-session.md
 Truth docs split:
-- docs/truthmark/truth/authentication/README.md -> docs/truthmark/truth/authentication/session.md
+- docs/truthmark/truth/authentication/README.md -> docs/truthmark/product/capabilities/authentication-session.md and docs/truthmark/engineering/behaviors/authentication-session.md
 Truth docs restructured:
 - docs/truthmark/truth/authentication/README.md
 Evidence checked:

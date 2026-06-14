@@ -7,6 +7,6 @@ describe("resolveTruthDocsRoot", () => {
   it("returns the normalized configured truth root", () => {
     const config = createDefaultConfig();
 
-    expect(resolveTruthDocsRoot(config)).toBe("docs/truthmark/truth");
+    expect(resolveTruthDocsRoot(config)).toBe("docs/truthmark/engineering");
   });
 });

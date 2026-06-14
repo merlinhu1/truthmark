@@ -1,8 +1,7 @@
 ---
 status: active
-doc_type: behavior
-truth_kind: behavior
-last_reviewed: 2026-05-30
+truth_kind: engineering-behavior
+last_reviewed: 2026-06-14
 source_of_truth:
   - {{source_of_truth}}
 ---
@@ -30,9 +29,9 @@ Keep README.md files as indexes only.
 
 {{scope}}
 
-This doc was created from the editable behavior-doc template at {{template_path}}.
+This doc was created from the editable engineering-behavior template at {{template_path}}.
 
-## Current Behavior
+## Current Implementation Behavior
 
 <!--
 Describe only current implemented behavior in present tense.
@@ -40,7 +39,7 @@ Cover observable behavior, important defaults, and user/system-visible effects; 
 Every non-obvious claim should be checkable from source_of_truth evidence.
 -->
 
-{{current_behavior}}
+{{current_implementation_behavior}}
 
 ## Core Rules
 
@@ -69,14 +68,31 @@ Avoid duplicating a separate canonical contract doc; link to it when contract ow
 
 {{contracts}}
 
-## Product Decisions
+## Source Evidence
+
+<!--
+List source files, tests, configs, generated templates, or route files that support current implementation claims.
+-->
+
+{{source_evidence}}
+
+## Product Truth Links
+
+<!--
+Link product truth docs this engineering doc realizes using realizes frontmatter when applicable.
+Use 'None.' when this is purely internal engineering behavior.
+-->
+
+{{product_truth_links}}
+
+## Engineering Decisions
 
 <!--
 Keep active decisions only, dated inline when added or changed.
 Explain decisions that shape behavior, boundaries, rejected alternatives, or migration constraints; replace stale decisions instead of appending historical logs.
 -->
 
-{{decision}}
+{{engineering_decisions}}
 
 ## Rationale
 

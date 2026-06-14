@@ -1,4 +1,5 @@
 import type { Diagnostic } from "../output/diagnostic.js";
+import type { TruthDocumentEntry } from "../routing/areas.js";
 
 export type PackageMetadata = {
   path: string;
@@ -22,7 +23,11 @@ export type RepoDocEntry = {
   title: string | null;
   docType: string | null;
   truthKind: string | null;
+  truthLane: string | null;
   sourceOfTruth: string[];
+  realizedBy: string[];
+  realizes: string[];
+  dependsOn: string[];
 };
 
 export type RepoTestEntry = {
@@ -62,6 +67,7 @@ export type RouteMapRoute = {
   parentName?: string;
   codeSurface: string[];
   truthDocs: string[];
+  truthDocumentEntries: TruthDocumentEntry[];
   updateTruthWhen: string[];
 };
 

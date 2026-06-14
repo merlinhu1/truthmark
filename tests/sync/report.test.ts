@@ -12,7 +12,7 @@ describe("Truth Sync reporting", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
+      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
@@ -35,7 +35,7 @@ Ownership reviewed:
 - docs/truthmark/routes/areas/repository.md
 
 Truth docs updated:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented in the authentication truth doc.
@@ -48,7 +48,7 @@ Notes:
       status: "completed",
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
+      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
@@ -67,7 +67,7 @@ Notes:
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/truth/authentication.md"],
+      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
@@ -103,7 +103,7 @@ Reason:
     expect(
       renderTruthSyncBlockedReport({
         reason: "relevant tests failed before sync",
-        manualReviewFiles: ["docs/truthmark/truth/authentication.md"],
+        manualReviewFiles: ["docs/truthmark/engineering/behaviors/authentication.md"],
         nextAction: "fix the failing tests, then rerun Truth Sync",
       }),
     ).toBe(`Truth Sync: blocked
@@ -112,7 +112,7 @@ Reason:
 - relevant tests failed before sync
 
 Files requiring manual review:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Next action:
 - fix the failing tests, then rerun Truth Sync`);
@@ -126,7 +126,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Evidence checked:
 - Session timeout behavior was reviewed.
@@ -144,7 +144,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Evidence checked:
 - Claim:${"   "}
@@ -162,7 +162,7 @@ Changed code reviewed:
 - src/auth/session.ts
 
 Truth docs updated:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented.

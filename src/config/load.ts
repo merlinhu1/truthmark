@@ -62,6 +62,9 @@ const portalOutputFor = (workspace: string): string => joinWorkspacePath(workspa
 
 const portalTemplateFor = (templatesRoot: string): string => joinWorkspacePath(templatesRoot, "portal.html");
 
+const PRODUCT_TRUTH_ROOT = "product";
+const ENGINEERING_TRUTH_ROOT = "engineering";
+
 const pathsOverlap = (left: string, right: string): boolean => {
   const normalizedLeft = normalizeRepoRelativePath(left);
   const normalizedRight = normalizeRepoRelativePath(right);
@@ -123,7 +126,6 @@ const validateWorkspacePaths = (
   const childPaths = [
     ["truthmark.routes.index", rawConfig.truthmark.routes.index],
     ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
-    ["truthmark.truth.root", rawConfig.truthmark.truth.root],
     ["truthmark.templates.root", rawConfig.truthmark.templates.root],
   ] as const;
 
@@ -154,7 +156,8 @@ const validateWorkspacePaths = (
   const controlledWorkspaceChildren = [
     ["truthmark.routes.index", rawConfig.truthmark.routes.index],
     ["truthmark.routes.areas", rawConfig.truthmark.routes.areas],
-    ["truthmark.truth.root", rawConfig.truthmark.truth.root],
+    ["truthmark.paths.productTruthRoot", PRODUCT_TRUTH_ROOT],
+    ["truthmark.paths.engineeringTruthRoot", ENGINEERING_TRUTH_ROOT],
     ["truthmark.templates.root", rawConfig.truthmark.templates.root],
   ] as const;
 
@@ -187,7 +190,8 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
   const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
   const routesIndex = joinWorkspacePath(workspace, rawConfig.truthmark.routes.index);
   const routeAreasRoot = joinWorkspacePath(workspace, rawConfig.truthmark.routes.areas);
-  const truthRoot = joinWorkspacePath(workspace, rawConfig.truthmark.truth.root);
+  const productTruthRoot = joinWorkspacePath(workspace, PRODUCT_TRUTH_ROOT);
+  const engineeringTruthRoot = joinWorkspacePath(workspace, ENGINEERING_TRUTH_ROOT);
   const templatesRoot = joinWorkspacePath(workspace, rawConfig.truthmark.templates.root);
   const portalOutput = portalOutputFor(workspace);
   const portalTemplate = portalTemplateFor(templatesRoot);
@@ -204,7 +208,8 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
         maxDelegationDepth: rawConfig.truthmark.routes.max_delegation_depth,
       },
       truth: {
-        root: normalizeRepoRelativePath(rawConfig.truthmark.truth.root),
+        productRoot: PRODUCT_TRUTH_ROOT,
+        engineeringRoot: ENGINEERING_TRUTH_ROOT,
       },
       templates: {
         root: normalizeRepoRelativePath(rawConfig.truthmark.templates.root),
@@ -217,7 +222,8 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
       paths: {
         routesIndex,
         routeAreasRoot,
-        truthRoot,
+        productTruthRoot,
+        engineeringTruthRoot,
         templatesRoot,
         portalOutput,
         portalTemplate,
@@ -225,7 +231,8 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
       controlledPaths: [
         routesIndex,
         `${routeAreasRoot}/**/*.md`,
-        `${truthRoot}/**/*.md`,
+        `${productTruthRoot}/**/*.md`,
+        `${engineeringTruthRoot}/**/*.md`,
         `${templatesRoot}/*.md`,
       ],
     },

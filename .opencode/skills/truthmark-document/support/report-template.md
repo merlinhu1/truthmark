@@ -13,13 +13,13 @@ Ownership reviewed:
 - docs/truthmark/routes/areas.md
 
 Truth docs created:
-- docs/truthmark/truth/contracts.md
+- docs/truthmark/engineering/contracts/routing.md
 
 Truth docs updated:
-- docs/truthmark/truth/check-diagnostics.md
+- docs/truthmark/engineering/behaviors/check-diagnostics.md
 
 Truth docs restructured:
-- docs/truthmark/truth/check-diagnostics.md
+- docs/truthmark/engineering/behaviors/check-diagnostics.md
 
 Routing updated:
 - docs/truthmark/routes/areas.md

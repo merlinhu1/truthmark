@@ -14,19 +14,30 @@ import {
   renderTruthRootReadmeTemplate,
   renderHierarchicalAreasIndexTemplate,
   renderOperationsDocTemplateFile,
+  renderProductCapabilityDocTemplateFile,
   renderBehaviorLeafDocTemplate,
   renderTestBehaviorDocTemplateFile,
   renderWorkflowDocTemplateFile,
 } from "../templates/init-files.js";
 
 const truthRoot = resolveTruthDocsRoot;
+const BEHAVIOR_DOC_TEMPLATE_FILE_NAME = "engineering-behavior.md";
+const CONTRACT_DOC_TEMPLATE_FILE_NAME = "engineering-contract.md";
+const ARCHITECTURE_DOC_TEMPLATE_FILE_NAME = "engineering-architecture.md";
+const WORKFLOW_DOC_TEMPLATE_FILE_NAME = "engineering-workflow.md";
+const OPERATIONS_DOC_TEMPLATE_FILE_NAME = "engineering-operations.md";
+const TEST_BEHAVIOR_DOC_TEMPLATE_FILE_NAME = "engineering-test-behavior.md";
+const PRODUCT_CAPABILITY_DOC_TEMPLATE_FILE_NAME = "product-capability.md";
 
 const rootIndexReferencesChildRoute = async (
   rootDir: string,
   rootIndexPath: string,
   childRoutePath: string,
 ): Promise<boolean> => {
-  const rootIndexSource = await fs.readFile(resolveRepoPath(rootDir, rootIndexPath), "utf8");
+  const rootIndexSource = await fs.readFile(
+    resolveRepoPath(rootDir, rootIndexPath),
+    "utf8",
+  );
   const parsedRootIndex = parseAreasMarkdown(rootIndexSource);
 
   return parsedRootIndex.areaFileReferences.some((areaReference) =>
@@ -34,7 +45,10 @@ const rootIndexReferencesChildRoute = async (
   );
 };
 
-const truthTemplatePath = (config: TruthmarkConfig, fileName: string): string => {
+const truthTemplatePath = (
+  config: TruthmarkConfig,
+  fileName: string,
+): string => {
   return `${config.truthmark.paths.templatesRoot}/${fileName}`;
 };
 
@@ -44,7 +58,10 @@ const readBehaviorDocTemplate = async (
 ): Promise<string> => {
   try {
     return await fs.readFile(
-      resolveRepoPath(rootDir, truthTemplatePath(config, "behavior-doc.md")),
+      resolveRepoPath(
+        rootDir,
+        truthTemplatePath(config, BEHAVIOR_DOC_TEMPLATE_FILE_NAME),
+      ),
       "utf8",
     );
   } catch (error: unknown) {
@@ -60,14 +77,24 @@ const ensureOrUpdateTruthDocTemplate = async (
   templatePath: string,
   defaultTemplate: string,
 ): Promise<FileWriteResult> => {
-  const seededResult = await ensureRepoFile(rootDir, templatePath, defaultTemplate);
+  const seededResult = await ensureRepoFile(
+    rootDir,
+    templatePath,
+    defaultTemplate,
+  );
 
   if (seededResult.status !== "unchanged") {
     return seededResult;
   }
 
-  const existingTemplate = await fs.readFile(resolveRepoPath(rootDir, templatePath), "utf8");
-  const mergedTemplate = mergeTruthDocTemplate(existingTemplate, defaultTemplate);
+  const existingTemplate = await fs.readFile(
+    resolveRepoPath(rootDir, templatePath),
+    "utf8",
+  );
+  const mergedTemplate = mergeTruthDocTemplate(
+    existingTemplate,
+    defaultTemplate,
+  );
 
   return writeRepoFile(rootDir, templatePath, mergedTemplate);
 };
@@ -89,14 +116,31 @@ export const scaffoldHierarchy = async (
     ),
   );
   if (
-    await rootIndexReferencesChildRoute(rootDir, config.truthmark.paths.routesIndex, childRoutePath)
+    await rootIndexReferencesChildRoute(
+      rootDir,
+      config.truthmark.paths.routesIndex,
+      childRoutePath,
+    )
   ) {
-    results.push(await ensureRepoFile(rootDir, childRoutePath, renderChildAreaTemplate(config)));
+    results.push(
+      await ensureRepoFile(
+        rootDir,
+        childRoutePath,
+        renderChildAreaTemplate(config),
+      ),
+    );
   }
   results.push(
     await ensureRepoFile(
       rootDir,
       `${truthDocsRoot}/README.md`,
+      renderTruthRootReadmeTemplate(config),
+    ),
+  );
+  results.push(
+    await ensureRepoFile(
+      rootDir,
+      `${config.truthmark.paths.productTruthRoot}/README.md`,
       renderTruthRootReadmeTemplate(config),
     ),
   );
@@ -110,43 +154,50 @@ export const scaffoldHierarchy = async (
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "behavior-doc.md"),
+      truthTemplatePath(config, BEHAVIOR_DOC_TEMPLATE_FILE_NAME),
       renderBehaviorDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "contract-doc.md"),
+      truthTemplatePath(config, CONTRACT_DOC_TEMPLATE_FILE_NAME),
       renderContractDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "architecture-doc.md"),
+      truthTemplatePath(config, ARCHITECTURE_DOC_TEMPLATE_FILE_NAME),
       renderArchitectureDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "workflow-doc.md"),
+      truthTemplatePath(config, WORKFLOW_DOC_TEMPLATE_FILE_NAME),
       renderWorkflowDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "operations-doc.md"),
+      truthTemplatePath(config, OPERATIONS_DOC_TEMPLATE_FILE_NAME),
       renderOperationsDocTemplateFile(),
     ),
   );
   results.push(
     await ensureOrUpdateTruthDocTemplate(
       rootDir,
-      truthTemplatePath(config, "test-behavior-doc.md"),
+      truthTemplatePath(config, TEST_BEHAVIOR_DOC_TEMPLATE_FILE_NAME),
       renderTestBehaviorDocTemplateFile(),
+    ),
+  );
+  results.push(
+    await ensureOrUpdateTruthDocTemplate(
+      rootDir,
+      truthTemplatePath(config, PRODUCT_CAPABILITY_DOC_TEMPLATE_FILE_NAME),
+      renderProductCapabilityDocTemplateFile(),
     ),
   );
   const behaviorDocTemplate = await readBehaviorDocTemplate(rootDir, config);

@@ -15,8 +15,11 @@ source_of_truth:
 Truth documents:
 ```yaml
 truth_documents:
-  - path: docs/truthmark/truth/contracts.md
-    kind: contract
+  - path: docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
+    kind: engineering-contract
+    lane: engineering
+    realizes:
+      - docs/truthmark/product/capabilities/lane-separated-truth.md
 ```
 
 Code surface:

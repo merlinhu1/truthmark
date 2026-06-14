@@ -10,10 +10,14 @@ describe("init and check workflow acceptance", () => {
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], { cwd: repo.rootDir });
+      const configResult = await runCli(["config", "--json"], {
+        cwd: repo.rootDir,
+      });
       expect(configResult.exitCode).toBe(0);
 
-      const initResult = await runCli(["init", "--json"], { cwd: repo.rootDir });
+      const initResult = await runCli(["init", "--json"], {
+        cwd: repo.rootDir,
+      });
 
       expect(initResult.exitCode).toBe(0);
 
@@ -23,8 +27,63 @@ describe("init and check workflow acceptance", () => {
 
       expect(initPayload.command).toBe("init");
 
-      await expect(fs.stat(`${repo.rootDir}/.truthmark/config.yml`)).resolves.toBeTruthy();
-      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).resolves.toBeTruthy();
+      await expect(
+        fs.stat(`${repo.rootDir}/.truthmark/config.yml`),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/product-capability.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-behavior.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-contract.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-architecture.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-workflow.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-operations.md`,
+        ),
+      ).resolves.toBeTruthy();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/engineering-test-behavior.md`,
+        ),
+      ).resolves.toBeTruthy();
+      const oldBehaviorTemplateName = ["behavior", "doc.md"].join("-");
+      const oldProductBoundaryTemplateName = [
+        "product",
+        "boundary",
+        "doc.md",
+      ].join("-");
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/${oldBehaviorTemplateName}`,
+        ),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/docs/truthmark/templates/${oldProductBoundaryTemplateName}`,
+        ),
+      ).rejects.toThrow();
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeTruthy();
       await expect(
         fs.stat(`${repo.rootDir}/.agents/skills/truthmark-structure/SKILL.md`),
@@ -42,7 +101,9 @@ describe("init and check workflow acceptance", () => {
         fs.stat(`${repo.rootDir}/.claude/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
 
-      const checkResult = await runCli(["check", "--json"], { cwd: repo.rootDir });
+      const checkResult = await runCli(["check", "--json"], {
+        cwd: repo.rootDir,
+      });
 
       expect(checkResult.exitCode).toBe(0);
 
@@ -58,9 +119,11 @@ describe("init and check workflow acceptance", () => {
       };
 
       expect(checkPayload.command).toBe("check");
-      expect(checkPayload.diagnostics.filter((diagnostic) => diagnostic.severity === "error")).toHaveLength(
-        0,
-      );
+      expect(
+        checkPayload.diagnostics.filter(
+          (diagnostic) => diagnostic.severity === "error",
+        ),
+      ).toHaveLength(0);
       expect(checkPayload.data?.branchScope?.identity).toBe("unborn:main");
       expect(checkPayload.data?.branchScope?.worktreePath).toBe(repo.rootDir);
     } finally {
@@ -72,16 +135,20 @@ describe("init and check workflow acceptance", () => {
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], { cwd: repo.rootDir });
+      const configResult = await runCli(["config", "--json"], {
+        cwd: repo.rootDir,
+      });
       expect(configResult.exitCode).toBe(0);
 
-      const initResult = await runCli(["init", "--json"], { cwd: repo.rootDir });
+      const initResult = await runCli(["init", "--json"], {
+        cwd: repo.rootDir,
+      });
 
       expect(initResult.exitCode).toBe(0);
 
       await repo.writeFile(
-        "docs/truthmark/truth/authentication.md",
-        "---\nstatus: active\ndoc_type: behavior\ntruth_kind: behavior\nlast_reviewed: 2026-05-06\nsource_of_truth:\n  - ../../../src/auth/session.ts\n---\n\n# Authentication\n",
+        "docs/truthmark/engineering/behaviors/authentication.md",
+        "---\nstatus: active\ndoc_type: behavior\ntruth_kind: engineering-behavior\nlast_reviewed: 2026-05-06\nsource_of_truth:\n  - ../../../../src/auth/session.ts\n---\n\n# Authentication\n",
       );
       await repo.writeFile(
         "docs/truthmark/routes/areas.md",
@@ -90,7 +157,7 @@ describe("init and check workflow acceptance", () => {
 ## Authentication
 
 Truth documents:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Code surface:
 - src/auth/**
@@ -99,9 +166,14 @@ Update truth when:
 - authentication behavior changes
 `,
       );
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
 
-      const checkResult = await runCli(["check", "--json"], { cwd: repo.rootDir });
+      const checkResult = await runCli(["check", "--json"], {
+        cwd: repo.rootDir,
+      });
 
       expect(checkResult.exitCode).toBe(0);
 

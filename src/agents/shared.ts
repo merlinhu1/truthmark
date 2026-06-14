@@ -1,8 +1,12 @@
 import { createDefaultConfig } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
-import { resolveTruthDocsRoot } from "../truth/docs.js";
+import { resolveEngineeringTruthRoot, resolveProductTruthRoot } from "../truth/docs.js";
 
-export { resolveTruthDocsRoot } from "../truth/docs.js";
+export {
+  resolveEngineeringTruthRoot,
+  resolveProductTruthRoot,
+  resolveTruthDocsRoot,
+} from "../truth/docs.js";
 export {
   renderAuditEvidenceCheckedSection,
   renderClaimEvidenceCheckedSection,
@@ -11,7 +15,20 @@ export {
 export const DECISION_TRUTH_INSTRUCTIONS = [
   "Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.",
   "Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.",
-  "Update Product Decisions and Rationale when a decision changes behavior.",
+  "Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.",
+].join("\n");
+
+export const LANE_INVARIANT =
+  "Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.";
+
+export const LANE_CLASSIFICATION_INSTRUCTIONS = [
+  "Lane classification gate:",
+  "- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous",
+  "- product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria",
+  "- engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests",
+  "- both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes",
+  "- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document",
+  `- ${LANE_INVARIANT}`,
 ].join("\n");
 
 export const EVIDENCE_AUTHORITY_INSTRUCTIONS = [
@@ -27,10 +44,10 @@ export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
 
 export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
   "When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.",
-  "Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.",
+  "Supported kinds: product-capability, engineering-behavior, engineering-contract, engineering-architecture, engineering-workflow, engineering-operations, and engineering-test-behavior.",
   "Treat the HTML comments under each template section as normative authoring guidance for that section.",
   "Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.",
-  "If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.",
+  "If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.",
   "Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.",
 ].join("\n");
 
@@ -48,12 +65,12 @@ export const renderTruthDocOwnershipGateSection = (
 };
 
 export const TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS = [
-  "Product Decisions/Rationale preservation gate:",
-  "- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections in every source or touched truth doc",
-  "- preserve each current decision and rationale in the bounded owner doc it governs; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index",
+  "Decision/Rationale preservation gate:",
+  "- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections in every source or touched truth doc",
+  "- preserve each current decision and rationale in the correct product or engineering lane owner; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index",
   "- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result",
   "- if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing",
-  "- after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked",
+  "- after the edit, verify every touched truth doc keeps lane-appropriate decision/rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked",
 ].join("\n");
 
 export const renderTruthDocRestructureGateSection = (scope: string): string => {
@@ -80,7 +97,7 @@ export const renderRouteFirstEvidenceGateSection = (
   return [
     "Evidence Gate:",
     `- route-first: map ${subject} to bounded route owners and primary canonical docs`,
-    "- review new or changed behavior-bearing claims only in touched docs, route ownership, Product Decisions, and Rationale",
+    "- review new or changed behavior-bearing claims only in touched docs, route ownership, lane-specific decisions, and rationale",
     "- support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions",
     "- tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts",
     "- remove, narrow, or block unsupported claims",
@@ -91,7 +108,7 @@ export const renderRouteFirstEvidenceGateSection = (
 export const renderTopologyEvidenceGateSection = (): string => {
   return [
     "Evidence Gate:",
-    "- apply the Evidence Gate before finishing when Truth Structure writes routed docs, ownership claims, Product Decisions, or Rationale",
+    "- apply the Evidence Gate before finishing when Truth Structure writes routed docs, ownership claims, lane-specific decisions, or rationale",
     "- support ownership/behavior claims with topology or primary checkout evidence from layout, implementation boundaries, docs, config, route files, tests, templates, schemas, or contracts",
     "- tests/examples/canonical docs corroborate; remove, narrow, or block unsupported claims",
   ].join("\n");
@@ -264,13 +281,15 @@ export const defaultAgentConfig = (): TruthmarkConfig => {
 };
 
 export const renderHierarchySummary = (config: TruthmarkConfig): string => {
-  const truthRoot = resolveTruthDocsRoot(config);
+  const productRoot = resolveProductTruthRoot(config);
+  const engineeringRoot = resolveEngineeringTruthRoot(config);
 
   return [
     "Truthmark hierarchy hints:",
     "- Config, when present: .truthmark/config.yml",
     `- Root route index, when present: ${config.truthmark.paths.routesIndex}`,
     `- Area route files, when present: ${config.truthmark.paths.routeAreasRoot}/**/*.md`,
-    `- Truth docs, when present: ${truthRoot}/**/*.md`,
+    `- Product truth docs, when present: ${productRoot}/**/*.md`,
+    `- Engineering truth docs, when present: ${engineeringRoot}/**/*.md`,
   ].join("\n");
 };

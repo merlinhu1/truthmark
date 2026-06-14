@@ -1,6 +1,6 @@
 import { loadConfig } from "../config/load.js";
 import { resolveAreaRouting } from "../routing/area-resolver.js";
-import { resolveTruthDocsRoot } from "../truth/docs.js";
+import { resolveEngineeringTruthRoot, resolveProductTruthRoot } from "../truth/docs.js";
 import type { RouteMap } from "./types.js";
 
 export const buildRouteMap = async (rootDir: string): Promise<RouteMap> => {
@@ -17,7 +17,8 @@ export const buildRouteMap = async (rootDir: string): Promise<RouteMap> => {
   const routing = await resolveAreaRouting(rootDir, {
     rootIndex: loadResult.config.truthmark.paths.routesIndex,
     areaFilesRoot: loadResult.config.truthmark.paths.routeAreasRoot,
-    truthDocsRoot: resolveTruthDocsRoot(loadResult.config),
+    productTruthRoot: resolveProductTruthRoot(loadResult.config),
+    engineeringTruthRoot: resolveEngineeringTruthRoot(loadResult.config),
   });
 
   return {
@@ -31,6 +32,9 @@ export const buildRouteMap = async (rootDir: string): Promise<RouteMap> => {
         parentName: area.parentName,
         codeSurface: [...area.codeSurface].sort(),
         truthDocs: [...area.truthDocuments].sort(),
+        truthDocumentEntries: [...area.truthDocumentEntries].sort((left, right) =>
+          left.path.localeCompare(right.path),
+        ),
         updateTruthWhen: [...area.updateTruthWhen],
       }))
       .sort((left, right) => left.key.localeCompare(right.key)),

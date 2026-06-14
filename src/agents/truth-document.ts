@@ -4,6 +4,7 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
+  LANE_CLASSIFICATION_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
@@ -16,7 +17,7 @@ import {
   renderHierarchySummary,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
-  resolveTruthDocsRoot,
+  resolveEngineeringTruthRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -31,7 +32,7 @@ export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
 export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const truthDocsRoot = resolveTruthDocsRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
   const helperScripts = ["validate-write-lease: skipped, no write lease used"];
 
   return `Truth Document: completed
@@ -43,13 +44,13 @@ Ownership reviewed:
 - ${config.truthmark.paths.routesIndex}
 
 Truth docs created:
-- ${truthDocsRoot}/contracts.md
+- ${engineeringTruthRoot}/contracts/routing.md
 
 Truth docs updated:
-- ${truthDocsRoot}/check-diagnostics.md
+- ${engineeringTruthRoot}/behaviors/check-diagnostics.md
 
 Truth docs restructured:
-- ${truthDocsRoot}/check-diagnostics.md
+- ${engineeringTruthRoot}/behaviors/check-diagnostics.md
 
 Routing updated:
 - ${config.truthmark.paths.routesIndex}
@@ -130,6 +131,7 @@ Truth Document is manual and implementation-first:
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
+- ${LANE_CLASSIFICATION_INSTRUCTIONS}
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and ${config.truthmark.paths.routesIndex} or relevant child route files only
 - must not write functional code
@@ -137,7 +139,10 @@ Truth Document is manual and implementation-first:
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
 - keep feature README.md files as indexes rather than truth-document targets
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
-- keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
+- write product capability/boundary truth under ${config.truthmark.paths.productTruthRoot} when documenting product promise, boundary, rationale, or user/stakeholder value
+- write engineering truth under ${config.truthmark.paths.engineeringTruthRoot} when documenting implementation behavior, contracts, architecture, workflows, operations, or tests
+- for both-lane documentation requests, write separate product and engineering docs and cross-link them with realized_by and realizes
+- keep engineering behavior truth behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content
 ${renderTruthDocOwnershipGateSection(

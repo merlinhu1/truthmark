@@ -46,7 +46,7 @@ describe("renderTruthSyncInstructions", () => {
     const lines = instructions.split("\n");
 
     expect(lines.slice(0, 4).join("\n")).toContain("Truth Sync");
-    expect(lines.length).toBeLessThanOrEqual(18);
+    expect(lines.length).toBeLessThanOrEqual(24);
   });
 
   it("uses the configured route index in the compact Sync reminder", () => {

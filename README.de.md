@@ -515,7 +515,7 @@ Wichtige Config-Bereiche sind:
 | `truthmark.routes.areas` | Verzeichnis für delegierte untergeordnete Routendateien relativ zu `truthmark.workspace`. |
 | `truthmark.routes.default_area` | Dateiname des initial erzeugten untergeordneten Routings ohne Erweiterung. |
 | `truthmark.routes.max_delegation_depth` | Aktuelle maximale Routing-Delegationstiefe. |
-| `truthmark.truth.root` | Truth-Dokumentwurzel relativ zu `truthmark.workspace`. |
+| Feste Truth-Lanes | Product-Truth liegt unter `product/` und Engineering-Truth unter `engineering/` innerhalb von `truthmark.workspace`. |
 | `truthmark.templates.root` | Truth-Dokumentvorlagenwurzel relativ zu `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optionale manuelle Präsentations-Workflow-Aktivierung: `enabled`. |
 | `instruction_targets` | Dateien, die gemeinsam verwaltete Instruktionsblöcke erhalten, etwa `AGENTS.md`. |
@@ -749,7 +749,7 @@ Nützliche Skripte:
 | `npm run check` | Führt Lint, Typecheck, Tests und Build aus. |
 | `npm run release:check` | Führt release-orientierte Validierung aus. |
 
-Wenn du Truthmark selbst änderst, siehe [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Wenn du Truthmark selbst änderst, siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Dokumentation
 

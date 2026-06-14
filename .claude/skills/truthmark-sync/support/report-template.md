@@ -13,7 +13,7 @@ Ownership reviewed:
 - docs/truthmark/routes/areas.md
 
 Truth docs updated:
-- docs/truthmark/truth/repository/overview.md
+- docs/truthmark/engineering/repository/overview.md
 
 Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.

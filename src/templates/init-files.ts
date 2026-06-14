@@ -43,9 +43,17 @@ export const renderAreasTemplate = (
     documents.length > 0
       ? documents.map((document) => ({
           path: document.path,
-          kind: inferTruthDocumentKindFromPath(document.path) ?? "behavior",
+          kind:
+            inferTruthDocumentKindFromPath(document.path) ??
+            "engineering-behavior",
         }))
-      : [{ path: `${createDefaultConfig().truthmark.paths.truthRoot}/**/*.md`, kind: "behavior" }];
+      : [
+          {
+            path: `${createDefaultConfig().truthmark.paths.engineeringTruthRoot}/**/*.md`,
+            kind: "engineering-behavior",
+            lane: "engineering",
+          },
+        ];
 
   return [
     "# Truthmark Areas",
@@ -116,7 +124,10 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
   const truthDocsRoot = truthRoot(config);
   const leafTruthDoc = `${truthDocsRoot}/${defaultArea}/overview.md`;
   const templatePath = `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`;
-  const sourceOfTruth = resolveRelativePath(templatePath, ".truthmark/config.yml");
+  const sourceOfTruth = resolveRelativePath(
+    templatePath,
+    ".truthmark/config.yml",
+  );
 
   return [
     "---",
@@ -135,7 +146,8 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
     "```yaml",
     "truth_documents:",
     `  - path: ${leafTruthDoc}`,
-    "    kind: behavior",
+    "    kind: engineering-behavior",
+    "    lane: engineering",
     "```",
     "",
     "Code surface:",
@@ -174,7 +186,9 @@ export const renderTruthRootReadmeTemplate = (
   ].join("\n");
 };
 
-export const renderTruthDomainReadmeTemplate = (config: TruthmarkConfig): string => {
+export const renderTruthDomainReadmeTemplate = (
+  config: TruthmarkConfig,
+): string => {
   const defaultArea = config.truthmark.routes.defaultArea;
   const title = titleCase(defaultArea);
   const templatePath = `${truthRoot(config)}/${defaultArea}/README.md`;
@@ -205,12 +219,20 @@ export const renderTruthDomainReadmeTemplate = (config: TruthmarkConfig): string
   ].join("\n");
 };
 
-export const BEHAVIOR_DOC_TEMPLATE_PATH = "docs/truthmark/templates/behavior-doc.md";
-export const CONTRACT_DOC_TEMPLATE_PATH = "docs/truthmark/templates/contract-doc.md";
-export const ARCHITECTURE_DOC_TEMPLATE_PATH = "docs/truthmark/templates/architecture-doc.md";
-export const WORKFLOW_DOC_TEMPLATE_PATH = "docs/truthmark/templates/workflow-doc.md";
-export const OPERATIONS_DOC_TEMPLATE_PATH = "docs/truthmark/templates/operations-doc.md";
-export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH = "docs/truthmark/templates/test-behavior-doc.md";
+export const BEHAVIOR_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-behavior.md";
+export const CONTRACT_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-contract.md";
+export const ARCHITECTURE_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-architecture.md";
+export const WORKFLOW_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-workflow.md";
+export const OPERATIONS_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-operations.md";
+export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/engineering-test-behavior.md";
+export const PRODUCT_CAPABILITY_DOC_TEMPLATE_PATH =
+  "docs/truthmark/templates/product-capability.md";
 
 type TemplateSectionSpec = {
   heading: string;
@@ -244,7 +266,9 @@ const titleToPlaceholder = (title: string): string => {
     .replace(/^_+|_+$/g, "");
 };
 
-const findTemplateSectionHeadings = (template: string): Array<{ heading: string; index: number }> => {
+const findTemplateSectionHeadings = (
+  template: string,
+): Array<{ heading: string; index: number }> => {
   const matches: Array<{ heading: string; index: number }> = [];
   let fencedCodeMarker: "`" | "~" | null = null;
   let fencedCodeLength = 0;
@@ -281,7 +305,9 @@ const findTemplateSectionHeadings = (template: string): Array<{ heading: string;
   return matches;
 };
 
-const parseTemplateSections = (template: string): { preamble: string; sections: ParsedTemplateSection[] } => {
+const parseTemplateSections = (
+  template: string,
+): { preamble: string; sections: ParsedTemplateSection[] } => {
   const matches = findTemplateSectionHeadings(template);
 
   if (matches.length === 0) {
@@ -305,30 +331,48 @@ const parseTemplateSections = (template: string): { preamble: string; sections: 
   };
 };
 
-export const mergeTruthDocTemplate = (existingTemplate: string, defaultTemplate: string): string => {
+const LEGACY_MANAGED_TEMPLATE_HEADINGS = new Map<string, string>([
+  ["## Current Behavior", "## Current Implementation Behavior"],
+]);
+
+const resolveManagedTemplateHeading = (heading: string): string => {
+  return LEGACY_MANAGED_TEMPLATE_HEADINGS.get(heading) ?? heading;
+};
+
+export const mergeTruthDocTemplate = (
+  existingTemplate: string,
+  defaultTemplate: string,
+): string => {
   if (existingTemplate.trim().length === 0) {
     return defaultTemplate;
   }
 
   const defaultParsed = parseTemplateSections(defaultTemplate);
   const existingParsed = parseTemplateSections(existingTemplate);
-  const defaultHeadings = new Set(defaultParsed.sections.map((section) => section.heading));
+  const defaultHeadings = new Set(
+    defaultParsed.sections.map((section) => section.heading),
+  );
   const customBeforeDefault = new Map<string, ParsedTemplateSection[]>();
   const trailingCustomSections: ParsedTemplateSection[] = [];
 
   existingParsed.sections.forEach((section, index) => {
-    if (defaultHeadings.has(section.heading)) {
+    if (defaultHeadings.has(resolveManagedTemplateHeading(section.heading))) {
       return;
     }
 
     const nextDefaultSection = existingParsed.sections
       .slice(index + 1)
-      .find((candidate) => defaultHeadings.has(candidate.heading));
+      .find((candidate) =>
+        defaultHeadings.has(resolveManagedTemplateHeading(candidate.heading)),
+      );
 
     if (nextDefaultSection) {
-      const bucket = customBeforeDefault.get(nextDefaultSection.heading) ?? [];
+      const nextDefaultHeading = resolveManagedTemplateHeading(
+        nextDefaultSection.heading,
+      );
+      const bucket = customBeforeDefault.get(nextDefaultHeading) ?? [];
       bucket.push(section);
-      customBeforeDefault.set(nextDefaultSection.heading, bucket);
+      customBeforeDefault.set(nextDefaultHeading, bucket);
       return;
     }
 
@@ -354,8 +398,7 @@ export const renderBehaviorDocTemplateFile = (): string => {
   return [
     "---",
     "status: active",
-    "doc_type: behavior",
-    "truth_kind: behavior",
+    "truth_kind: engineering-behavior",
     `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
     "  - {{source_of_truth}}",
@@ -384,9 +427,9 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "",
     "{{scope}}",
     "",
-    "This doc was created from the editable behavior-doc template at {{template_path}}.",
+    "This doc was created from the editable engineering-behavior template at {{template_path}}.",
     "",
-    "## Current Behavior",
+    "## Current Implementation Behavior",
     "",
     "<!--",
     "Describe only current implemented behavior in present tense.",
@@ -394,7 +437,7 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "Every non-obvious claim should be checkable from source_of_truth evidence.",
     "-->",
     "",
-    "{{current_behavior}}",
+    "{{current_implementation_behavior}}",
     "",
     "## Core Rules",
     "",
@@ -423,14 +466,31 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "",
     "{{contracts}}",
     "",
-    "## Product Decisions",
+    "## Source Evidence",
+    "",
+    "<!--",
+    "List source files, tests, configs, generated templates, or route files that support current implementation claims.",
+    "-->",
+    "",
+    "{{source_evidence}}",
+    "",
+    "## Product Truth Links",
+    "",
+    "<!--",
+    "Link product truth docs this engineering doc realizes using realizes frontmatter when applicable.",
+    "Use 'None.' when this is purely internal engineering behavior.",
+    "-->",
+    "",
+    "{{product_truth_links}}",
+    "",
+    "## Engineering Decisions",
     "",
     "<!--",
     "Keep active decisions only, dated inline when added or changed.",
     "Explain decisions that shape behavior, boundaries, rejected alternatives, or migration constraints; replace stale decisions instead of appending historical logs.",
     "-->",
     "",
-    "{{decision}}",
+    "{{engineering_decisions}}",
     "",
     "## Rationale",
     "",
@@ -479,11 +539,25 @@ const SCOPE_SECTION = sectionSpec("## Scope", [
   "Call out important out-of-scope boundaries here or in Non-Goals; split the doc when it mixes distinct outcomes, lifecycles, contracts, or owners.",
 ]);
 
-const PRODUCT_DECISIONS_SECTION = sectionSpec("## Product Decisions", [
-  "Keep active decisions only, dated inline when added or changed.",
-  "Capture decisions that shape behavior, interfaces, boundaries, compatibility, risk acceptance, or migration constraints.",
-  "Replace stale decisions instead of appending historical logs.",
-], "decision");
+const PRODUCT_DECISIONS_SECTION = sectionSpec(
+  "## Product Decisions",
+  [
+    "Keep active decisions only, dated inline when added or changed.",
+    "Capture decisions that shape behavior, interfaces, boundaries, compatibility, risk acceptance, or migration constraints.",
+    "Replace stale decisions instead of appending historical logs.",
+  ],
+  "decision",
+);
+
+const ENGINEERING_DECISIONS_SECTION = sectionSpec(
+  "## Engineering Decisions",
+  [
+    "Keep active engineering, architecture, contract, workflow, or operational decisions only, dated inline when added or changed.",
+    "Do not restate product promises, product rationale, or business decisions here; link product truth instead.",
+    "Replace stale decisions instead of appending historical logs.",
+  ],
+  "engineering_decisions",
+);
 
 const RATIONALE_SECTION = sectionSpec("## Rationale", [
   "Explain why the current behavior, structure, or contract is this way, including tradeoffs and constraints.",
@@ -502,14 +576,12 @@ const MAINTENANCE_NOTES_SECTION = sectionSpec("## Maintenance Notes", [
 
 const renderTypedTruthDocTemplate = (
   truthKind: string,
-  docType: string,
   title: string,
   sections: TemplateSectionSpec[],
 ): string => {
   return [
     "---",
     "status: active",
-    `doc_type: ${docType}`,
     `truth_kind: ${truthKind}`,
     `last_reviewed: ${currentDate()}`,
     "source_of_truth:",
@@ -521,15 +593,89 @@ const renderTypedTruthDocTemplate = (
     ...renderTemplateSection(PURPOSE_SECTION),
     ...renderTemplateSection(SCOPE_SECTION),
     ...sections.flatMap(renderTemplateSection),
-    ...renderTemplateSection(PRODUCT_DECISIONS_SECTION),
+    ...renderTemplateSection(ENGINEERING_DECISIONS_SECTION),
     ...renderTemplateSection(RATIONALE_SECTION),
     ...renderTemplateSection(NON_GOALS_SECTION),
     ...renderTemplateSection(MAINTENANCE_NOTES_SECTION),
   ].join("\n");
 };
 
+const CORE_LANE_INVARIANT =
+  "Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.";
+
+const renderProductTruthDocTemplate = (
+  truthKind: "product-capability",
+  title: string,
+  sections: TemplateSectionSpec[],
+  includeNonGoals: boolean,
+): string => {
+  return [
+    "---",
+    "status: active",
+    `truth_kind: ${truthKind}`,
+    `last_reviewed: ${currentDate()}`,
+    "source_of_truth:",
+    "  - {{source_of_truth}}",
+    "realized_by:",
+    "  - {{engineering_realization}}",
+    "---",
+    "",
+    `# ${title}`,
+    "",
+    "<!--",
+    CORE_LANE_INVARIANT,
+    "Product docs may cite code directly when code proves current product behavior, but keep implementation flow, renderer internals, CLI envelopes, and generated file inventories in engineering truth.",
+    "-->",
+    "",
+    ...sections.flatMap(renderTemplateSection),
+    ...renderTemplateSection(PRODUCT_DECISIONS_SECTION),
+    ...renderTemplateSection(
+      sectionSpec(
+        "## Engineering Realization Links",
+        [
+          "Link engineering truth that realizes this product truth using realized_by frontmatter.",
+          "Do not summarize those engineering docs.",
+        ],
+        "engineering_realization_links",
+      ),
+    ),
+    ...(includeNonGoals ? renderTemplateSection(NON_GOALS_SECTION) : []),
+  ].join("\n");
+};
+
+export const renderProductCapabilityDocTemplateFile = (): string => {
+  return renderProductTruthDocTemplate(
+    "product-capability",
+    "{{title}}",
+    [
+      sectionSpec("## Capability Promise", [
+        "State the single user-visible capability and what must be true for users or stakeholders.",
+        "Do not describe implementation mechanics here.",
+      ]),
+      sectionSpec("## Users And Value", [
+        "Describe who benefits from the capability and the durable value it protects.",
+        "Tie claims to repository evidence, explicit user instruction, or current behavior.",
+      ]),
+      sectionSpec("## Capability Scope", [
+        "Define what this capability includes and excludes, including product boundary constraints and adjacent systems.",
+        "Capture important scope limits, ownership boundaries, and non-goal pointers here; keep technical contracts in engineering truth.",
+      ]),
+      sectionSpec("## Current Product Behavior", [
+        "Describe current implemented user-visible behavior in present tense.",
+        "Code files may appear in source_of_truth when they directly prove current behavior.",
+      ]),
+      sectionSpec("## Acceptance Criteria", [
+        "List observable criteria that show the capability promise is currently satisfied.",
+        "Include criteria that review whether the capability stays within its stated scope and boundary.",
+        "Use criteria that can be reviewed from repository evidence or explicit product instruction.",
+      ]),
+    ],
+    true,
+  );
+};
+
 export const renderContractDocTemplateFile = (): string => {
-  return renderTypedTruthDocTemplate("contract", "contract", "{{title}}", [
+  return renderTypedTruthDocTemplate("engineering-contract", "{{title}}", [
     sectionSpec("## Contract Surface", [
       "Identify the owned API, CLI, file format, event, protocol, permission boundary, or integration surface.",
       "State consumers/producers, stability level, and the source files/tests that define the contract.",
@@ -558,7 +704,7 @@ export const renderContractDocTemplateFile = (): string => {
 };
 
 export const renderArchitectureDocTemplateFile = (): string => {
-  return renderTypedTruthDocTemplate("architecture", "architecture", "{{title}}", [
+  return renderTypedTruthDocTemplate("engineering-architecture", "{{title}}", [
     sectionSpec("## System Role", [
       "Describe the current architectural role of this subsystem/component in the larger system.",
       "State the primary responsibilities, consumers, providers, and why this boundary exists now.",
@@ -587,7 +733,7 @@ export const renderArchitectureDocTemplateFile = (): string => {
 };
 
 export const renderWorkflowDocTemplateFile = (): string => {
-  return renderTypedTruthDocTemplate("workflow", "behavior", "{{title}}", [
+  return renderTypedTruthDocTemplate("engineering-workflow", "{{title}}", [
     sectionSpec("## Triggers", [
       "List events, commands, schedules, user actions, webhooks, or dependency signals that start this workflow.",
       "Include preconditions, authorization requirements, debounce/coalescing behavior, and disabled states when applicable.",
@@ -616,7 +762,7 @@ export const renderWorkflowDocTemplateFile = (): string => {
 };
 
 export const renderOperationsDocTemplateFile = (): string => {
-  return renderTypedTruthDocTemplate("operations", "behavior", "{{title}}", [
+  return renderTypedTruthDocTemplate("engineering-operations", "{{title}}", [
     sectionSpec("## Operational Surface", [
       "Describe what operators, maintainers, or automated systems can observe or control for this surface.",
       "Include commands, dashboards, alerts, runbooks, jobs, or operational APIs that define current operations.",
@@ -645,7 +791,7 @@ export const renderOperationsDocTemplateFile = (): string => {
 };
 
 export const renderTestBehaviorDocTemplateFile = (): string => {
-  return renderTypedTruthDocTemplate("test-behavior", "behavior", "{{title}}", [
+  return renderTypedTruthDocTemplate("engineering-test-behavior", "{{title}}", [
     sectionSpec("## Test Surface", [
       "Define the behavior, contract, architecture, or workflow surface these tests verify.",
       "Link the canonical truth docs and code paths the tests are meant to protect.",
@@ -673,7 +819,10 @@ export const renderTestBehaviorDocTemplateFile = (): string => {
   ]);
 };
 
-const renderTemplate = (template: string, values: Record<string, string>): string => {
+const renderTemplate = (
+  template: string,
+  values: Record<string, string>,
+): string => {
   return Object.entries(values).reduce((rendered, [key, value]) => {
     return rendered.split(`{{${key}}}`).join(value);
   }, template);
@@ -698,9 +847,9 @@ export const renderBehaviorLeafDocTemplate = (
       "- External contracts should link to the nearest canonical contract doc when one exists.",
     core_rules:
       "- Truth README files are indexes; behavior truth belongs in bounded leaf docs.",
-    current_behavior:
+    current_implementation_behavior:
       "- Document current behavior here when implementation changes make repository truth incomplete.",
-    decision: `- Decision (${today}): Truth README files are indexes; behavior truth belongs in bounded leaf docs.`,
+    engineering_decisions: `- Decision (${today}): Truth README files are indexes; behavior truth belongs in bounded leaf docs.`,
     flows_and_states: "- None beyond current behavior.",
     maintenance_notes:
       "- Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.",
@@ -709,10 +858,12 @@ export const renderBehaviorLeafDocTemplate = (
     purpose: `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
     rationale:
       "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
+    product_truth_links: "- None.",
     scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
     source_of_truth: sourceOfTruth,
+    source_evidence: `- ${sourceOfTruth}`,
     template_path: BEHAVIOR_DOC_TEMPLATE_PATH,
     title: `${title} Overview`,
-    truth_kind: "behavior",
+    truth_kind: "engineering-behavior",
   });
 };

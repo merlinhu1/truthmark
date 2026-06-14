@@ -9,7 +9,7 @@ describe("parseAreasMarkdown Markdown glob handling", () => {
 ## Authentication
 
 Truth documents:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/behaviors/authentication.md
 
 Code surface:
 - src/auth/\\*\\*

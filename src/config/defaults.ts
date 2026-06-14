@@ -8,9 +8,6 @@ export const DEFAULT_TRUTHMARK_WORKSPACE = {
     default_area: "repository",
     max_delegation_depth: 1,
   },
-  truth: {
-    root: "truth",
-  },
   templates: {
     root: "templates",
   },
@@ -29,7 +26,6 @@ export const createDefaultRawConfig = () => ({
   truthmark: {
     workspace: DEFAULT_TRUTHMARK_WORKSPACE.workspace,
     routes: { ...DEFAULT_TRUTHMARK_WORKSPACE.routes },
-    truth: { ...DEFAULT_TRUTHMARK_WORKSPACE.truth },
     templates: { ...DEFAULT_TRUTHMARK_WORKSPACE.templates },
     generated: {
       portal: { ...DEFAULT_TRUTHMARK_WORKSPACE.generated.portal },
@@ -38,7 +34,7 @@ export const createDefaultRawConfig = () => ({
   instruction_targets: [...DEFAULT_INSTRUCTION_TARGETS],
   frontmatter: {
     required: [],
-    recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
+    recommended: ["status", "last_reviewed", "source_of_truth"],
   },
   ignore: ["node_modules/**", "vendor/**", "dist/**", "build/**"],
 });
@@ -54,7 +50,10 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
       defaultArea: DEFAULT_TRUTHMARK_WORKSPACE.routes.default_area,
       maxDelegationDepth: DEFAULT_TRUTHMARK_WORKSPACE.routes.max_delegation_depth,
     },
-    truth: { root: DEFAULT_TRUTHMARK_WORKSPACE.truth.root },
+    truth: {
+      productRoot: "product",
+      engineeringRoot: "engineering",
+    },
     templates: { root: DEFAULT_TRUTHMARK_WORKSPACE.templates.root },
     generated: {
       portal: { ...DEFAULT_TRUTHMARK_WORKSPACE.generated.portal },
@@ -62,7 +61,8 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
     paths: {
       routesIndex: "docs/truthmark/routes/areas.md",
       routeAreasRoot: "docs/truthmark/routes/areas",
-      truthRoot: "docs/truthmark/truth",
+      productTruthRoot: "docs/truthmark/product",
+      engineeringTruthRoot: "docs/truthmark/engineering",
       templatesRoot: "docs/truthmark/templates",
       portalOutput: "docs/truthmark/generated/portal",
       portalTemplate: "docs/truthmark/templates/portal.html",
@@ -70,14 +70,15 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
     controlledPaths: [
       "docs/truthmark/routes/areas.md",
       "docs/truthmark/routes/areas/**/*.md",
-      "docs/truthmark/truth/**/*.md",
+      "docs/truthmark/product/**/*.md",
+      "docs/truthmark/engineering/**/*.md",
       "docs/truthmark/templates/*.md",
     ],
   },
   instructionTargets: [...DEFAULT_INSTRUCTION_TARGETS],
   frontmatter: {
     required: [],
-    recommended: ["status", "doc_type", "last_reviewed", "source_of_truth"],
+    recommended: ["status", "last_reviewed", "source_of_truth"],
   },
   ignore: ["node_modules/**", "vendor/**", "dist/**", "build/**"],
 });

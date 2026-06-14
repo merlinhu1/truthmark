@@ -8,6 +8,7 @@ import {
   renderOpenCodeSubagentModeSection,
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
+  LANE_CLASSIFICATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderHierarchySummary,
 } from "./shared.js";
@@ -105,14 +106,21 @@ Truth Check is agent-led:
 - ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
 - check that current docs describe current code rather than historical plans
+- check lane root/kind alignment for product truth under ${config.truthmark.paths.productTruthRoot} and engineering truth under ${config.truthmark.paths.engineeringTruthRoot}
+- check cross-lane realized_by and realizes links for existence and lane compatibility
+- report missing product links for user-visible engineering docs as review diagnostics, not hard errors
+- check product docs do not contain engineering execution flow, generated file inventories, or CLI envelope mechanics
+- check engineering docs do not contain product promises, product rationale, or Product Decisions sections
+- never judge whether a product decision is commercially correct, valuable, prioritized, or desirable
 - check that route files map code surfaces to canonical truth docs when route files exist
 - check for broad, catch-all, index-like, or mixed-owner truth docs and report them as topology issues requiring Truth Structure
-- check that canonical behavior docs keep active Product Decisions and Rationale sections
+- check that canonical docs keep lane-appropriate decisions and rationale sections
 - optionally run truthmark check when local tooling is available
 - must not require the truthmark binary; direct inspection is always valid
 - report issues and suggested fixes without silently rewriting unrelated files
 - if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
+${LANE_CLASSIFICATION_INSTRUCTIONS}
 
 ${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

@@ -6,6 +6,7 @@ import { parseMarkdownDocument } from "../markdown/parse.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import {
   TRUTH_DOCUMENT_KINDS,
+  laneForTruthDocumentKind,
   type TruthDocumentEntry,
   type TruthDocumentKind,
 } from "../routing/areas.js";
@@ -74,6 +75,20 @@ export const checkFrontmatter = async (
 
     const routedTruthDocument = truthDocumentMap.get(markdownPath);
     const truthKind = document.frontmatter.truth_kind;
+    const truthLane = document.frontmatter.truth_lane;
+
+    if (
+      truthLane !== undefined &&
+      truthLane !== "product" &&
+      truthLane !== "engineering"
+    ) {
+      diagnostics.push({
+        category: "frontmatter",
+        severity: "error",
+        message: "Frontmatter truth_lane must be product or engineering.",
+        file: markdownPath,
+      });
+    }
 
     if (truthKind !== undefined) {
       if (typeof truthKind !== "string" || !isTruthDocumentKind(truthKind)) {
@@ -95,6 +110,21 @@ export const checkFrontmatter = async (
           category: "frontmatter",
           severity: "error",
           message: `Frontmatter truth_kind ${truthKind} must match routed truth kind ${routedTruthDocument.kind}.`,
+          file: markdownPath,
+        });
+      }
+
+      if (
+        typeof truthKind === "string" &&
+        isTruthDocumentKind(truthKind) &&
+        truthLane !== undefined &&
+        (truthLane === "product" || truthLane === "engineering") &&
+        truthLane !== laneForTruthDocumentKind(truthKind)
+      ) {
+        diagnostics.push({
+          category: "frontmatter",
+          severity: "error",
+          message: `Frontmatter truth_lane ${truthLane} must match truth_kind ${truthKind}.`,
           file: markdownPath,
         });
       }

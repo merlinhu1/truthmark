@@ -31,9 +31,6 @@ type RawTruthmarkWorkspaceConfig = {
     default_area: string;
     max_delegation_depth: 1;
   };
-  truth: {
-    root: string;
-  };
   templates: {
     root: string;
   };
@@ -51,7 +48,8 @@ type TruthmarkWorkspaceConfig = {
     maxDelegationDepth: 1;
   };
   truth: {
-    root: string;
+    productRoot: string;
+    engineeringRoot: string;
   };
   templates: {
     root: string;
@@ -62,7 +60,9 @@ type TruthmarkWorkspaceConfig = {
   paths: {
     routesIndex: string;
     routeAreasRoot: string;
-    truthRoot: string;
+    productTruthRoot: string;
+    engineeringTruthRoot: string;
+    truthRoot?: string;
     templatesRoot: string;
     portalOutput: string;
     portalTemplate: string;
@@ -115,7 +115,7 @@ export const truthmarkConfigSchema = {
     truthmark: {
       type: "object",
       additionalProperties: false,
-      required: ["workspace", "routes", "truth", "templates", "generated"],
+      required: ["workspace", "routes", "templates", "generated"],
       properties: {
         workspace: {
           type: "string",
@@ -129,14 +129,6 @@ export const truthmarkConfigSchema = {
             areas: { type: "string" },
             default_area: { type: "string" },
             max_delegation_depth: { type: "integer", const: 1 },
-          },
-        },
-        truth: {
-          type: "object",
-          additionalProperties: false,
-          required: ["root"],
-          properties: {
-            root: { type: "string" },
           },
         },
         templates: {

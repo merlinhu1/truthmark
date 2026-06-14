@@ -39,7 +39,7 @@ This doc covers the seed `docs/truthmark/truth/repository/overview.md` behavior 
 ## Contracts
 
 - The default leaf path is `docs/truthmark/truth/<default-area>/overview.md` when the configured workspace is `docs/truthmark`, the truth root is `truth`, and the default area is `repository`.
-- The editable content standard for this leaf comes from `docs/truthmark/templates/behavior-doc.md`.
+- The editable content standard for this leaf comes from `docs/truthmark/templates/engineering-behavior.md`.
 
 ## Product Decisions
 
@@ -56,5 +56,5 @@ Bounded seed docs give new repositories an immediately routeable truth target wh
 
 ## Maintenance Notes
 
-- Keep this doc aligned with `docs/truthmark/templates/behavior-doc.md` when the behavior-doc standard changes.
+- Keep this doc aligned with `docs/truthmark/templates/engineering-behavior.md` when the engineering-behavior standard changes.
 - Update this doc when the default area leaf path or seeded content rules change.
