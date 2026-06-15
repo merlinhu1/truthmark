@@ -1270,6 +1270,338 @@ Update truth when:
     }
   });
 
+  it("does not report missing product links for engineering-only route areas", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/engineering/contracts/internal-cache.md",
+        "# Internal Cache\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Internal Cache
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/engineering/contracts/internal-cache.md
+    kind: engineering-contract
+\`\`\`
+
+Code surface:
+- src/cache/**
+
+Update truth when:
+- internal cache contracts change
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "traceability" &&
+            diagnostic.severity === "review" &&
+            diagnostic.file ===
+              "docs/truthmark/engineering/contracts/internal-cache.md" &&
+            diagnostic.message.includes(
+              "User-visible engineering truth document",
+            ),
+        ),
+      ).toEqual([]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports missing product links when an engineering doc shares an area with product truth", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/product/payments/checkout.md",
+        "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/engineering/behaviors/checkout.md",
+        "# Checkout Behavior\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "traceability",
+            severity: "review",
+            file: "docs/truthmark/engineering/behaviors/checkout.md",
+            message: expect.stringContaining(
+              "User-visible engineering truth document",
+            ),
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports product realized_by links without reciprocal engineering realizes links", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/product/payments/checkout.md",
+        "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/engineering/behaviors/checkout.md",
+        "# Checkout Behavior\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+    realized_by:
+      - docs/truthmark/engineering/behaviors/checkout.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+      const reciprocalDiagnostics = result.diagnostics.filter(
+        (diagnostic) =>
+          diagnostic.category === "traceability" &&
+          diagnostic.severity === "error" &&
+          diagnostic.file === "docs/truthmark/product/payments/checkout.md" &&
+          diagnostic.message.includes("must reciprocate with realizes"),
+      );
+
+      expect(reciprocalDiagnostics).toHaveLength(1);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports engineering realizes links without reciprocal product realized_by links", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/product/payments/checkout.md",
+        "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/engineering/behaviors/checkout.md",
+        "# Checkout Behavior\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/checkout.md
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+      const reciprocalDiagnostics = result.diagnostics.filter(
+        (diagnostic) =>
+          diagnostic.category === "traceability" &&
+          diagnostic.severity === "error" &&
+          diagnostic.file ===
+            "docs/truthmark/engineering/behaviors/checkout.md" &&
+          diagnostic.message.includes("must reciprocate with realized_by"),
+      );
+
+      expect(reciprocalDiagnostics).toHaveLength(1);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports duplicate route entries with divergent relationship metadata", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/product/payments/checkout.md",
+        "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/engineering/behaviors/checkout.md",
+        "# Checkout Behavior\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+    realized_by:
+      - docs/truthmark/engineering/behaviors/checkout.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/checkout.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+      const duplicateDiagnostics = result.diagnostics.filter(
+        (diagnostic) =>
+          diagnostic.category === "area-index" &&
+          diagnostic.severity === "error" &&
+          diagnostic.file ===
+            "docs/truthmark/engineering/behaviors/checkout.md" &&
+          diagnostic.message.includes("conflicting relationship metadata"),
+      );
+
+      expect(duplicateDiagnostics).toHaveLength(1);
+      expect(duplicateDiagnostics[0]?.message).toContain(
+        "realizes=[docs/truthmark/product/payments/checkout.md]",
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("allows duplicate route entries with matching relationship metadata", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "docs/truthmark/product/payments/checkout.md",
+        "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/engineering/behaviors/checkout.md",
+        "# Checkout Behavior\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+    realized_by:
+      - docs/truthmark/engineering/behaviors/checkout.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/checkout.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/checkout.md
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "area-index" &&
+            diagnostic.file ===
+              "docs/truthmark/engineering/behaviors/checkout.md" &&
+            diagnostic.message.includes("conflicting relationship metadata"),
+        ),
+      ).toEqual([]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("propagates explicit truth kind metadata from glob routes to matched docs", async () => {
     const repo = await createTempRepo();
 

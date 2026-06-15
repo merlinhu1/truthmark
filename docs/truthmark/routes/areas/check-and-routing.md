@@ -16,8 +16,11 @@ truth_documents:
     kind: product-capability
     lane: product
     realized_by:
-      - docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
+      - docs/truthmark/engineering/architecture/overview.md
       - docs/truthmark/engineering/behaviors/check-diagnostics.md
+      - docs/truthmark/engineering/behaviors/init-and-scaffold.md
+      - docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
+      - docs/truthmark/engineering/repository/repository-intelligence.md
   - path: docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
     kind: engineering-contract
     lane: engineering

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-14
+last_reviewed: 2026-06-15
 ---
 
 # Config, Route, And Check Contracts
@@ -16,7 +16,7 @@ It covers config normalization, route `truth_documents` metadata, diagnostic cat
 
 ## Current Implementation Behavior
 
-Default config exposes `truthmark.workspace` and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`.
+Default config exposes `truthmark.workspace` and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`; product `realized_by` and engineering `realizes` links are valid only when the opposite lane entry reciprocates the relationship. Duplicate route entries for the same path and kind must declare matching relationship metadata for `realized_by`, `realizes`, and `depends_on`; divergent duplicate metadata is reported as an area-index error.
 
 ## Contract Surface
 

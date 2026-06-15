@@ -80,7 +80,44 @@ const isBroadCodeSurface = (pattern: string): boolean => {
   return BROAD_CODE_SURFACES.has(pattern.replace(/\/\*\*\/\*$/u, "/**"));
 };
 
+const PRODUCT_LINK_REVIEW_KINDS = new Set([
+  "engineering-behavior",
+  "engineering-workflow",
+  "engineering-contract",
+]);
+
 const normalizeRoot = (value: string): string => value.replaceAll("\\", "/").replace(/\/+$/u, "");
+
+const uniqueSorted = (values: string[]): string[] =>
+  [...new Set(values)].sort();
+
+const relationshipFields = [
+  ["realized_by", "realizedBy"],
+  ["realizes", "realizes"],
+  ["depends_on", "dependsOn"],
+] as const;
+
+const hasDivergentRelationshipMetadata = (
+  first: TruthDocumentEntry,
+  second: TruthDocumentEntry,
+): boolean =>
+  relationshipFields.some(([, property]) => {
+    const firstValues = uniqueSorted(first[property]);
+    const secondValues = uniqueSorted(second[property]);
+
+    return (
+      firstValues.length !== secondValues.length ||
+      firstValues.some((value, index) => value !== secondValues[index])
+    );
+  });
+
+const relationshipMetadataSummary = (entry: TruthDocumentEntry): string =>
+  relationshipFields
+    .map(
+      ([field, property]) =>
+        `${field}=[${uniqueSorted(entry[property]).join(", ")}]`,
+    )
+    .join(", ");
 
 const validateLaneShape = (
   entry: TruthDocumentEntry,
@@ -149,6 +186,13 @@ const validateRelationshipTargets = (
           message: `Product truth document ${entry.path} realized_by target ${target} must point to engineering truth.`,
           file: entry.path,
         });
+      } else if (!targetEntry.realizes.includes(entry.path)) {
+        diagnostics.push({
+          category: "traceability",
+          severity: "error",
+          message: `Product truth document ${entry.path} realized_by target ${target} must reciprocate with realizes.`,
+          file: entry.path,
+        });
       }
     }
 
@@ -168,14 +212,39 @@ const validateRelationshipTargets = (
           message: `Engineering truth document ${entry.path} realizes target ${target} must point to product truth.`,
           file: entry.path,
         });
+      } else if (!targetEntry.realizedBy.includes(entry.path)) {
+        diagnostics.push({
+          category: "traceability",
+          severity: "error",
+          message: `Engineering truth document ${entry.path} realizes target ${target} must reciprocate with realized_by.`,
+          file: entry.path,
+        });
       }
     }
+  }
 
+  return diagnostics;
+};
+
+const validateMissingProductLinkReviews = (
+  entries: TruthDocumentEntry[],
+  reportedPaths: Set<string>,
+): Diagnostic[] => {
+  const diagnostics: Diagnostic[] = [];
+  const hasProductTruth = entries.some((entry) => entry.lane === "product");
+
+  if (!hasProductTruth) {
+    return diagnostics;
+  }
+
+  for (const entry of entries) {
     if (
       entry.lane === "engineering" &&
-      ["engineering-behavior", "engineering-workflow", "engineering-contract"].includes(entry.kind) &&
-      entry.realizes.length === 0
+      PRODUCT_LINK_REVIEW_KINDS.has(entry.kind) &&
+      entry.realizes.length === 0 &&
+      !reportedPaths.has(entry.path)
     ) {
+      reportedPaths.add(entry.path);
       diagnostics.push({
         category: "traceability",
         severity: "review",
@@ -213,6 +282,7 @@ export const checkAreas = async (
   const truthDocumentPaths: string[] = [];
   const seenTruthDocumentPaths = new Set<string>();
   const truthDocumentEntryMap = new Map<string, TruthDocumentEntry>();
+  const reportedMissingProductLinkPaths = new Set<string>();
   const areaCoverage = routing.areas.map((area) => ({
     area,
     valid: true,
@@ -233,7 +303,10 @@ export const checkAreas = async (
 
   for (const area of truthReferences) {
     let areaHasTruthDocumentErrors = false;
-    const registerTruthDocumentEntry = (truthDocumentEntry: TruthDocumentEntry): boolean => {
+    const areaTruthDocumentEntries: TruthDocumentEntry[] = [];
+    const registerTruthDocumentEntry = (
+      truthDocumentEntry: TruthDocumentEntry,
+    ): boolean => {
       const existingEntry = truthDocumentEntryMap.get(truthDocumentEntry.path);
 
       if (existingEntry && existingEntry.kind !== truthDocumentEntry.kind) {
@@ -247,20 +320,39 @@ export const checkAreas = async (
         return false;
       }
 
+      if (
+        existingEntry &&
+        hasDivergentRelationshipMetadata(existingEntry, truthDocumentEntry)
+      ) {
+        diagnostics.push({
+          category: "area-index",
+          severity: "error",
+          message: `Truth document ${truthDocumentEntry.path} is routed multiple times with conflicting relationship metadata: first ${relationshipMetadataSummary(existingEntry)}; later ${relationshipMetadataSummary(truthDocumentEntry)}.`,
+          area: area.name,
+          file: truthDocumentEntry.path,
+        });
+        return false;
+      }
+
       if (!existingEntry) {
         truthDocumentEntryMap.set(truthDocumentEntry.path, truthDocumentEntry);
       }
 
-      diagnostics.push(...validateLaneShape(truthDocumentEntry, config, area.name));
+      areaTruthDocumentEntries.push(truthDocumentEntry);
+      diagnostics.push(
+        ...validateLaneShape(truthDocumentEntry, config, area.name),
+      );
 
       return true;
     };
 
-    for (const truthDocument of area.truthDocuments) {
+    for (const [
+      truthDocumentIndex,
+      truthDocument,
+    ] of area.truthDocuments.entries()) {
+      const routedEntry = area.truthDocumentEntries[truthDocumentIndex];
+
       if (looksLikeGlob(truthDocument)) {
-        const routedGlobEntry = area.truthDocumentEntries.find(
-          (entry) => entry.path === truthDocument,
-        );
         const matches = (await fg([truthDocument], { cwd: rootDir, onlyFiles: true })).sort();
 
         if (matches.length === 0) {
@@ -296,9 +388,9 @@ export const checkAreas = async (
             truthDocumentPaths.push(match);
           }
           if (
-            routedGlobEntry &&
+            routedEntry &&
             !registerTruthDocumentEntry({
-              ...routedGlobEntry,
+              ...routedEntry,
               path: match,
             })
           ) {
@@ -343,8 +435,6 @@ export const checkAreas = async (
         truthDocumentPaths.push(truthDocument);
       }
 
-      const routedEntry = area.truthDocumentEntries.find((entry) => entry.path === truthDocument);
-
       if (routedEntry && !registerTruthDocumentEntry(routedEntry)) {
         areaHasTruthDocumentErrors = true;
       }
@@ -363,6 +453,13 @@ export const checkAreas = async (
         matchingArea.valid = false;
       }
     }
+
+    diagnostics.push(
+      ...validateMissingProductLinkReviews(
+        areaTruthDocumentEntries,
+        reportedMissingProductLinkPaths,
+      ),
+    );
   }
 
   for (const entry of areaCoverage) {
