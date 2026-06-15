@@ -15,7 +15,9 @@ const initializeRepo = async (rootDir: string): Promise<void> => {
   await runInit(rootDir);
 };
 
-const scorecardFrom = (result: Awaited<ReturnType<typeof runCheck>>): TruthHealthScorecard => {
+const scorecardFrom = (
+  result: Awaited<ReturnType<typeof runCheck>>,
+): TruthHealthScorecard => {
   const scorecard = result.data?.scorecard;
   expect(scorecard).toBeDefined();
   return scorecard as TruthHealthScorecard;
@@ -25,7 +27,9 @@ const scorecardDimension = (
   scorecard: TruthHealthScorecard,
   id: TruthHealthScorecard["dimensions"][number]["id"],
 ) => {
-  const dimension = scorecard.dimensions.find((candidate) => candidate.id === id);
+  const dimension = scorecard.dimensions.find(
+    (candidate) => candidate.id === id,
+  );
   expect(dimension).toBeDefined();
   return dimension!;
 };
@@ -50,8 +54,12 @@ describe("runCheck", () => {
       const scorecard = scorecardFrom(result);
       expect(scorecard.schemaVersion).toBe("truthmark-scorecard/v0");
       expect(scorecard.dimensions).toHaveLength(7);
-      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe("pass");
-      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe("not-run");
+      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe(
+        "pass",
+      );
+      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe(
+        "not-run",
+      );
       expect(result.data).toHaveProperty("truthVisibility");
     } finally {
       await repo.cleanup();
@@ -99,7 +107,9 @@ describe("runCheck", () => {
           (diagnostic) => diagnostic.category === "links",
         ),
       ).toBe(true);
-      expect(scorecardDimension(scorecardFrom(result), "truth-doc-structure").status).toBe("fail");
+      expect(
+        scorecardDimension(scorecardFrom(result), "truth-doc-structure").status,
+      ).toBe("fail");
     } finally {
       await repo.cleanup();
     }
@@ -127,7 +137,8 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "docs/truthmark/engineering/repository/overview.md",
+            diagnostic.file ===
+              "docs/truthmark/engineering/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -168,7 +179,8 @@ describe("runCheck", () => {
         result.diagnostics.some(
           (diagnostic) =>
             diagnostic.category === "links" &&
-            diagnostic.file === "docs/truthmark/engineering/repository/overview.md",
+            diagnostic.file ===
+              "docs/truthmark/engineering/repository/overview.md",
         ),
       ).toBe(true);
     } finally {
@@ -242,14 +254,17 @@ ignore: []
       ).toBe(true);
       expect(
         result.diagnostics.some(
-          (diagnostic) =>
-            diagnostic.category === "authority",
+          (diagnostic) => diagnostic.category === "authority",
         ),
       ).toBe(false);
 
       const scorecard = scorecardFrom(result);
-      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe("fail");
-      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe("not-run");
+      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe(
+        "fail",
+      );
+      expect(scorecardDimension(scorecard, "branch-freshness").status).toBe(
+        "not-run",
+      );
     } finally {
       await fs.rm(
         path.resolve(repo.rootDir, "..", "truthmark-outside-authority.md"),
@@ -359,8 +374,7 @@ ignore: []
       ).toBe(true);
       expect(
         result.diagnostics.some(
-          (diagnostic) =>
-            diagnostic.category === "authority",
+          (diagnostic) => diagnostic.category === "authority",
         ),
       ).toBe(false);
     } finally {
@@ -631,7 +645,8 @@ Update truth when:
 
       expect(
         result.diagnostics.some(
-          (diagnostic) => diagnostic.category === "config" && diagnostic.severity === "error",
+          (diagnostic) =>
+            diagnostic.category === "config" && diagnostic.severity === "error",
         ),
       ).toBe(false);
       expect(result.diagnostics).not.toEqual(
@@ -800,7 +815,10 @@ frontmatter:
 ignore: []
 `,
       );
-      await repo.writeFile("docs/truthmark/routes/areas.md", "# Truthmark Areas\n");
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        "# Truthmark Areas\n",
+      );
       await runInit(repo.rootDir);
       await repo.writeFile(
         ".gemini/commands/truthmark/sync.toml",
@@ -1481,7 +1499,7 @@ Update truth when:
     }
   });
 
-  it("reports duplicate route entries with divergent relationship metadata", async () => {
+  it("merges duplicate route entries with divergent relationship metadata", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -1532,17 +1550,22 @@ Update truth when:
             "docs/truthmark/engineering/behaviors/checkout.md" &&
           diagnostic.message.includes("conflicting relationship metadata"),
       );
-
-      expect(duplicateDiagnostics).toHaveLength(1);
-      expect(duplicateDiagnostics[0]?.message).toContain(
-        "realizes=[docs/truthmark/product/payments/checkout.md]",
+      const reciprocalDiagnostics = result.diagnostics.filter(
+        (diagnostic) =>
+          diagnostic.category === "traceability" &&
+          diagnostic.severity === "error" &&
+          diagnostic.file === "docs/truthmark/product/payments/checkout.md" &&
+          diagnostic.message.includes("must reciprocate with realizes"),
       );
+
+      expect(duplicateDiagnostics).toEqual([]);
+      expect(reciprocalDiagnostics).toEqual([]);
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("allows duplicate route entries with matching relationship metadata", async () => {
+  it("merges duplicate route relationship metadata before validating targets", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -1550,6 +1573,10 @@ Update truth when:
       await repo.writeFile(
         "docs/truthmark/product/payments/checkout.md",
         "# Checkout Capability\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/product/payments/refunds.md",
+        "# Refunds Capability\n",
       );
       await repo.writeFile(
         "docs/truthmark/engineering/behaviors/checkout.md",
@@ -1568,6 +1595,10 @@ truth_documents:
     kind: product-capability
     realized_by:
       - docs/truthmark/engineering/behaviors/checkout.md
+  - path: docs/truthmark/product/payments/refunds.md
+    kind: product-capability
+    realized_by:
+      - docs/truthmark/engineering/behaviors/checkout.md
   - path: docs/truthmark/engineering/behaviors/checkout.md
     kind: engineering-behavior
     realizes:
@@ -1575,7 +1606,7 @@ truth_documents:
   - path: docs/truthmark/engineering/behaviors/checkout.md
     kind: engineering-behavior
     realizes:
-      - docs/truthmark/product/payments/checkout.md
+      - docs/truthmark/product/payments/refunds.md
 \`\`\`
 
 Code surface:
@@ -1595,6 +1626,15 @@ Update truth when:
             diagnostic.file ===
               "docs/truthmark/engineering/behaviors/checkout.md" &&
             diagnostic.message.includes("conflicting relationship metadata"),
+        ),
+      ).toEqual([]);
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "traceability" &&
+            diagnostic.severity === "error" &&
+            diagnostic.file === "docs/truthmark/product/payments/refunds.md" &&
+            diagnostic.message.includes("must reciprocate with realizes"),
         ),
       ).toEqual([]);
     } finally {
@@ -1667,7 +1707,9 @@ Update truth when:
             category: "frontmatter",
             severity: "error",
             file: "docs/truthmark/engineering/api.md",
-            message: expect.stringContaining("routed truth kind engineering-contract"),
+            message: expect.stringContaining(
+              "routed truth kind engineering-contract",
+            ),
           }),
         ]),
       );
@@ -1927,7 +1969,8 @@ ignore:
 
       expect(
         result.diagnostics.some(
-          (diagnostic) => diagnostic.category === "config" && diagnostic.severity === "error",
+          (diagnostic) =>
+            diagnostic.category === "config" && diagnostic.severity === "error",
         ),
       ).toBe(false);
       expect(coverageFiles).toContain("src/unmapped/manual.ts");

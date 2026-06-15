@@ -31,4 +31,67 @@ describe("buildRouteMap", () => {
       }),
     );
   });
+
+  it("emits merged relationship metadata for duplicate route entries", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await runInit(repo.rootDir);
+    await repo.writeFile(
+      "docs/truthmark/product/payments/checkout.md",
+      "# Checkout Capability\n",
+    );
+    await repo.writeFile(
+      "docs/truthmark/product/payments/refunds.md",
+      "# Refunds Capability\n",
+    );
+    await repo.writeFile(
+      "docs/truthmark/engineering/behaviors/checkout.md",
+      "# Checkout Behavior\n",
+    );
+    await repo.writeFile(
+      "docs/truthmark/routes/areas.md",
+      `# Truthmark Areas
+
+## Checkout
+
+Truth documents:
+\`\`\`yaml
+truth_documents:
+  - path: docs/truthmark/product/payments/checkout.md
+    kind: product-capability
+  - path: docs/truthmark/product/payments/refunds.md
+    kind: product-capability
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/refunds.md
+  - path: docs/truthmark/engineering/behaviors/checkout.md
+    kind: engineering-behavior
+    realizes:
+      - docs/truthmark/product/payments/checkout.md
+\`\`\`
+
+Code surface:
+- src/checkout/**
+
+Update truth when:
+- checkout behavior changes
+`,
+    );
+
+    const routeMap = await buildRouteMap(repo.rootDir);
+    const checkoutRoute = routeMap.routes.find(
+      (route) => route.name === "Checkout",
+    );
+    const checkoutEntry = checkoutRoute?.truthDocumentEntries.find(
+      (entry) =>
+        entry.path === "docs/truthmark/engineering/behaviors/checkout.md",
+    );
+
+    expect(checkoutEntry?.realizes).toEqual([
+      "docs/truthmark/product/payments/checkout.md",
+      "docs/truthmark/product/payments/refunds.md",
+    ]);
+  });
 });

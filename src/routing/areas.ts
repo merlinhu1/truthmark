@@ -44,6 +44,19 @@ export type TruthAreaReference = {
   truthDocumentEntries: TruthDocumentEntry[];
 };
 
+const uniqueSorted = (values: string[]): string[] =>
+  [...new Set(values)].sort();
+
+export const mergeTruthDocumentEntryRelationships = (
+  first: TruthDocumentEntry,
+  second: TruthDocumentEntry,
+): TruthDocumentEntry => ({
+  ...first,
+  realizedBy: uniqueSorted([...first.realizedBy, ...second.realizedBy]),
+  realizes: uniqueSorted([...first.realizes, ...second.realizes]),
+  dependsOn: uniqueSorted([...first.dependsOn, ...second.dependsOn]),
+});
+
 type TruthAreaFileReference = {
   id: string;
   name: string;

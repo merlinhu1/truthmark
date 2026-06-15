@@ -7,9 +7,16 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
 import { resolveAreaRouting } from "../routing/area-resolver.js";
 import type { Diagnostic } from "../output/diagnostic.js";
-import { laneForTruthDocumentKind, type TruthDocumentEntry } from "../routing/areas.js";
+import {
+  laneForTruthDocumentKind,
+  mergeTruthDocumentEntryRelationships,
+  type TruthDocumentEntry,
+} from "../routing/areas.js";
 import { classifyPath } from "../sync/classify.js";
-import { resolveEngineeringTruthRoot, resolveProductTruthRoot } from "../truth/docs.js";
+import {
+  resolveEngineeringTruthRoot,
+  resolveProductTruthRoot,
+} from "../truth/docs.js";
 
 export type AreasCheckResult = {
   diagnostics: Diagnostic[];
@@ -86,38 +93,8 @@ const PRODUCT_LINK_REVIEW_KINDS = new Set([
   "engineering-contract",
 ]);
 
-const normalizeRoot = (value: string): string => value.replaceAll("\\", "/").replace(/\/+$/u, "");
-
-const uniqueSorted = (values: string[]): string[] =>
-  [...new Set(values)].sort();
-
-const relationshipFields = [
-  ["realized_by", "realizedBy"],
-  ["realizes", "realizes"],
-  ["depends_on", "dependsOn"],
-] as const;
-
-const hasDivergentRelationshipMetadata = (
-  first: TruthDocumentEntry,
-  second: TruthDocumentEntry,
-): boolean =>
-  relationshipFields.some(([, property]) => {
-    const firstValues = uniqueSorted(first[property]);
-    const secondValues = uniqueSorted(second[property]);
-
-    return (
-      firstValues.length !== secondValues.length ||
-      firstValues.some((value, index) => value !== secondValues[index])
-    );
-  });
-
-const relationshipMetadataSummary = (entry: TruthDocumentEntry): string =>
-  relationshipFields
-    .map(
-      ([field, property]) =>
-        `${field}=[${uniqueSorted(entry[property]).join(", ")}]`,
-    )
-    .join(", ");
+const normalizeRoot = (value: string): string =>
+  value.replaceAll("\\", "/").replace(/\/+$/u, "");
 
 const validateLaneShape = (
   entry: TruthDocumentEntry,
@@ -140,7 +117,10 @@ const validateLaneShape = (
     });
   }
 
-  if (entry.lane === "product" && !normalizedPath.startsWith(`${productRoot}/`)) {
+  if (
+    entry.lane === "product" &&
+    !normalizedPath.startsWith(`${productRoot}/`)
+  ) {
     diagnostics.push({
       category: "lane-shape",
       severity: "error",
@@ -150,7 +130,10 @@ const validateLaneShape = (
     });
   }
 
-  if (entry.lane === "engineering" && !normalizedPath.startsWith(`${engineeringRoot}/`)) {
+  if (
+    entry.lane === "engineering" &&
+    !normalizedPath.startsWith(`${engineeringRoot}/`)
+  ) {
     diagnostics.push({
       category: "lane-shape",
       severity: "error",
@@ -320,14 +303,11 @@ export const checkAreas = async (
         return false;
       }
 
-      if (
-        existingEntry &&
-        hasDivergentRelationshipMetadata(existingEntry, truthDocumentEntry)
-      ) {
+      if (existingEntry && existingEntry.lane !== truthDocumentEntry.lane) {
         diagnostics.push({
           category: "area-index",
           severity: "error",
-          message: `Truth document ${truthDocumentEntry.path} is routed multiple times with conflicting relationship metadata: first ${relationshipMetadataSummary(existingEntry)}; later ${relationshipMetadataSummary(truthDocumentEntry)}.`,
+          message: `Truth document ${truthDocumentEntry.path} is routed with conflicting lanes ${existingEntry.lane} and ${truthDocumentEntry.lane}.`,
           area: area.name,
           file: truthDocumentEntry.path,
         });
@@ -336,6 +316,14 @@ export const checkAreas = async (
 
       if (!existingEntry) {
         truthDocumentEntryMap.set(truthDocumentEntry.path, truthDocumentEntry);
+      } else {
+        truthDocumentEntryMap.set(
+          truthDocumentEntry.path,
+          mergeTruthDocumentEntryRelationships(
+            existingEntry,
+            truthDocumentEntry,
+          ),
+        );
       }
 
       areaTruthDocumentEntries.push(truthDocumentEntry);
@@ -353,7 +341,9 @@ export const checkAreas = async (
       const routedEntry = area.truthDocumentEntries[truthDocumentIndex];
 
       if (looksLikeGlob(truthDocument)) {
-        const matches = (await fg([truthDocument], { cwd: rootDir, onlyFiles: true })).sort();
+        const matches = (
+          await fg([truthDocument], { cwd: rootDir, onlyFiles: true })
+        ).sort();
 
         if (matches.length === 0) {
           diagnostics.push({
@@ -446,7 +436,8 @@ export const checkAreas = async (
           entry.area.name === area.name &&
           entry.area.truthDocuments.length === area.truthDocuments.length &&
           entry.area.truthDocuments.every(
-            (truthDocument, index) => truthDocument === area.truthDocuments[index],
+            (truthDocument, index) =>
+              truthDocument === area.truthDocuments[index],
           ),
       );
       if (matchingArea) {
@@ -490,7 +481,10 @@ export const checkAreas = async (
 
         for (const match of matches) {
           try {
-            await assertRepoContainment(rootDir, resolveRepoPath(rootDir, match));
+            await assertRepoContainment(
+              rootDir,
+              resolveRepoPath(rootDir, match),
+            );
             containedMatches += 1;
           } catch {
             diagnostics.push({
@@ -553,7 +547,8 @@ export const checkAreas = async (
   for (const codeFile of codeFiles.sort()) {
     const matched = areaCoverage.some(
       (entry) =>
-        entry.valid && entry.patterns.some((pattern) => micromatch.isMatch(codeFile, pattern)),
+        entry.valid &&
+        entry.patterns.some((pattern) => micromatch.isMatch(codeFile, pattern)),
     );
 
     if (!matched) {
@@ -572,7 +567,9 @@ export const checkAreas = async (
   const topologyPressureCount =
     broadAreaCount +
     diagnostics.filter(
-      (diagnostic) => diagnostic.category === "area-index" && diagnostic.severity === "review",
+      (diagnostic) =>
+        diagnostic.category === "area-index" &&
+        diagnostic.severity === "review",
     ).length;
 
   const truthDocumentEntries = [...truthDocumentEntryMap.values()];

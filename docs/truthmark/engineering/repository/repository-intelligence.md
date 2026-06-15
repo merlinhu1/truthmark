@@ -16,7 +16,7 @@ It covers RepoIndex, RouteMap, ImpactSet, ContextPack, evidence validation, fres
 
 ## Current Implementation Behavior
 
-RepoIndex and RouteMap are derived from the active checkout and preserve route lane and relationship metadata. RepoIndex derives truth-doc lane and doc type from `truth_kind` when canonical truth docs omit explicit `truth_lane` and `doc_type` frontmatter. These artifacts guide routing and verification but do not override source files, route files, truth docs, or workflow write boundaries.
+RepoIndex and RouteMap are derived from the active checkout and preserve route lane and relationship metadata. RouteMap emits duplicate truth document entries with the same path, kind, and lane as one relationship view whose `realized_by`, `realizes`, and `depends_on` metadata is merged by unique sorted set. RepoIndex derives truth-doc lane and doc type from `truth_kind` when canonical truth docs omit explicit `truth_lane` and `doc_type` frontmatter. These artifacts guide routing and verification but do not override source files, route files, truth docs, or workflow write boundaries.
 
 ## Product Truth Links
 
