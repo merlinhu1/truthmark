@@ -210,6 +210,18 @@ ${prompt}
 `;
 };
 
+const renderDocumentCommandAdapterInstructions = (root: string): string => `Use this prompt as a light-weight adapter for Truthmark Document.
+
+To run the full workflow, use the installed skill surface:
+${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
+
+For the canonical workflow procedure, report template, and helper policy, read:
+- ${root}/SKILL.md
+- ${root}/support/procedure.md
+- ${root}/support/report-template.md
+
+If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.`;
+
 const renderTomlString = (value: string): string => {
   return `"${value.replace(/\\/gu, "\\\\").replace(/"/gu, '\\"')}"`;
 };
@@ -749,6 +761,10 @@ const TRUTHMARK_SUBAGENT_PROFILES = {
 Audit one bounded Truthmark route, area, or doc shard assigned by the parent.
 Inspect .truthmark/config.yml and route files only when they exist; then inspect mapped truth docs and relevant implementation files directly.
 Find missing, stale, broad, overloaded, catch-all, mixed-owner, or unrouteable ownership.
+Validate route ownership against lane-specific roots and route kind:
+- confirm mapped truth docs resolve to the correct lane root (product or engineering) for their kind
+- flag mismatch between assigned route kind and resolved doc kind (for example, product-capability routed to engineering paths)
+- verify route-doc linkage for lane pairings via realized_by and realizes before recommending edits.
 Do not edit files, stage changes, or propose broad rewrites.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
 recommendedWorkflow must be one of: none, truthmark-document, truthmark-structure.`,
@@ -775,6 +791,7 @@ Return JSON only with keys: scope, filesReviewed, claimsChecked, evidence, unsup
     nicknameCandidates: ["Doc Audit", "Doc Shape", "Doc Check"],
     instructions: `Stay read-only.
 Review assigned canonical truth docs for compact frontmatter, required template sections, final Source References entries, Evidence checked entries, Product Decisions, and Rationale.
+Treat lane-specific decision sections as authoritative and include both Product Decisions and Engineering Decisions where present.
 Flag README.md files used as behavior truth targets, mixed-owner docs, and shape repairs that should move to Truth Structure.
 Do not edit files, stage changes, or rewrite docs.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
@@ -1505,10 +1522,11 @@ export const renderTruthmarkGeminiDocumentCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
+  void config;
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthDocumentSkillBody(config),
+    renderDocumentCommandAdapterInstructions('.gemini/skills/truthmark-document'),
   );
 };
 
@@ -1584,12 +1602,11 @@ export const renderTruthmarkCopilotDocumentPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
+  void config;
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderTruthDocumentSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+    renderDocumentCommandAdapterInstructions('.github/skills/truthmark-document'),
   );
 };
 

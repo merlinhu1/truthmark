@@ -362,7 +362,7 @@ describe("runInit", () => {
       expect(agents).toContain("routes docs/truthmark/routes/areas.md");
       expect(agents).toContain("docs/truthmark/routes/areas/**/*.md");
       expect(agents).toContain(
-        "Truth docs: docs/truthmark/engineering/**/*.md",
+        "Truth docs: docs/truthmark/product/**/*.md and docs/truthmark/engineering/**/*.md",
       );
       expect(agents).toContain(
         "Decisions live in the canonical doc they govern",
@@ -888,7 +888,9 @@ ignore: []
       ).toContain("name: truthmark-sync");
       expect(
         await repo.readFile(".gemini/commands/truthmark/document.toml"),
-      ).toContain("name: truthmark-document");
+      ).toContain(
+        `description = "${getTruthmarkWorkflow("truthmark-document").description}"`,
+      );
       expect(
         await repo.readFile(".gemini/commands/truthmark/realize.toml"),
       ).toContain(

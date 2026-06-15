@@ -82,11 +82,8 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   ],
   "truthmark-document": [
     "document existing implemented behavior",
-    "may write canonical truth docs",
-    "must not write functional code",
-    "Report completion in this shape:",
-    "Implementation reviewed:",
-    "Evidence checked:",
+    "Not for functional-code changes",
+    "topology repair that needs Structure",
   ],
   "truthmark-preview": [
     "preview Truthmark routing",

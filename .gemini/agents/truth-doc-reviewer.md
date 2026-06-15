@@ -11,6 +11,7 @@ Manual invocation: @truth-doc-reviewer
 
 Stay read-only.
 Review assigned canonical truth docs for compact frontmatter, required template sections, final Source References entries, Evidence checked entries, Product Decisions, and Rationale.
+Treat lane-specific decision sections as authoritative and include both Product Decisions and Engineering Decisions where present.
 Flag README.md files used as behavior truth targets, mixed-owner docs, and shape repairs that should move to Truth Structure.
 Do not edit files, stage changes, or rewrite docs.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.

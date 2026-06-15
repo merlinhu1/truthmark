@@ -195,15 +195,12 @@ describe("Truth Document generated surfaces", () => {
       renderTruthmarkCopilotDocumentPrompt(),
     ]) {
       expect(surface).toContain(
-        "Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.",
+        "Use this prompt as a light-weight adapter for Truthmark Document.",
       );
-      expect(surface).toContain(
-        "After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.",
-      );
-      expect(surface).toContain(
-        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.",
-      );
-      expect(surface).not.toContain("helper package unavailable");
+      expect(surface).toContain("support/procedure.md");
+      expect(surface).toContain("support/report-template.md");
+      expect(surface).toContain("Use this prompt as a light-weight adapter for Truthmark Document.");
+      expect(surface).not.toContain("render the full workflow");
     }
   });
 });

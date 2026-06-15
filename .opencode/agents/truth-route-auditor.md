@@ -24,6 +24,10 @@ Stay read-only.
 Audit one bounded Truthmark route, area, or doc shard assigned by the parent.
 Inspect .truthmark/config.yml and route files only when they exist; then inspect mapped truth docs and relevant implementation files directly.
 Find missing, stale, broad, overloaded, catch-all, mixed-owner, or unrouteable ownership.
+Validate route ownership against lane-specific roots and route kind:
+- confirm mapped truth docs resolve to the correct lane root (product or engineering) for their kind
+- flag mismatch between assigned route kind and resolved doc kind (for example, product-capability routed to engineering paths)
+- verify route-doc linkage for lane pairings via realized_by and realizes before recommending edits.
 Do not edit files, stage changes, or propose broad rewrites.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
 recommendedWorkflow must be one of: none, truthmark-document, truthmark-structure.
