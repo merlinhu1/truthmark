@@ -8,7 +8,8 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- docs/truthmark/engineering/authentication/session-timeout.md
+- docs/truthmark/product/capabilities/authentication-session.md
+- docs/truthmark/engineering/behaviors/authentication-session.md
 
 Code updated:
 - src/auth/session.ts

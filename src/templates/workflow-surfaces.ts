@@ -1335,7 +1335,8 @@ truthmark:
 const renderTruthmarkRealizeSkillBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const truthDocsRoot = resolveEngineeringTruthRoot(config);
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-realize");
 
   return `---
@@ -1385,7 +1386,8 @@ Report completion in this shape:
 Truth Realize: completed
 
 Truth docs used:
-- ${truthDocsRoot}/authentication/session-timeout.md
+- ${productTruthRoot}/capabilities/authentication-session.md
+- ${engineeringTruthRoot}/behaviors/authentication-session.md
 
 Code updated:
 - src/auth/session.ts
