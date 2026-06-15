@@ -66,7 +66,7 @@ Return result in this shape:
 - manualReviewFiles: string[] required when status is blocked; at least one file`;
 };
 
-export const renderTruthSyncSkillBody = (
+export const renderTruthSyncProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   options: {
     includeClaudeSubagentMode?: boolean;
@@ -75,9 +75,7 @@ export const renderTruthSyncSkillBody = (
     includeOpenCodeSubagentMode?: boolean;
   } = {},
 ): string => {
-  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-sync");
-  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
@@ -108,15 +106,7 @@ export const renderTruthSyncSkillBody = (
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
-  return `---
-name: truthmark-sync
-description: ${workflow.description}
-argument-hint: Optional changed-code area, truth-doc area, or sync focus
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
+  return `Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 Invocations: ${TRUTH_SYNC_EXPLICIT_INVOCATIONS}
 Explicit invocation runs immediately. Later functional-code changes reopen the finish-time requirement, and an earlier explicit run satisfies the finish gate only if no later functional-code changes occur.
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
@@ -177,7 +167,31 @@ Parent post-sync verification:
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
-- blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
+- blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files`;
+};
+
+export const renderTruthSyncSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
+): string => {
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
+  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
+
+  return `---
+name: truthmark-sync
+description: ${workflow.description}
+argument-hint: Optional changed-code area, truth-doc area, or sync focus
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthSyncProcedureBody(config, options)}
 Report completion in this shape:
 ${renderMarkdownExample(
     renderTruthSyncCompletedReport({

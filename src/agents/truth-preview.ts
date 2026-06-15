@@ -4,7 +4,7 @@ import {
   defaultAgentConfig,
   renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationRuleBlock,
+  renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -16,7 +16,7 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_PREVIEW_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.";
 
-const renderTruthPreviewReportExample = (
+export const renderTruthPreviewReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   return `Truth Preview: completed
@@ -57,20 +57,10 @@ Handoff:
 - Run the selected Truthmark workflow after user approval.`;
 };
 
-export const renderTruthPreviewSkillBody = (
+export const renderTruthPreviewProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return `---
-name: truthmark-preview
-description: ${workflow.description}
-argument-hint: Optional requested outcome, code area, doc path, or routing question
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
+  return `Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
 Invocations: ${TRUTH_PREVIEW_EXPLICIT_INVOCATIONS}
 
@@ -84,13 +74,13 @@ Purpose:
 
 Read:
 - .truthmark/config.yml, only when present
-- ${config.truthmark.paths.routesIndex}, only when present
-- ${config.truthmark.paths.routeAreasRoot}/, only when present
+- ${config.truthmark.paths.routesIndex}, first, only when present
+- relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ for the selected scope or changed paths, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - Evidence authority:
 ${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 - Lane classification:
-${renderLaneClassificationRuleBlock(config)}
+${renderReadOnlyLaneClassificationRuleBlock(config)}
 
 Do not:
 - must not edit files
@@ -107,8 +97,23 @@ Suggested subagent use:
 - write workers: none
 - leases needed: none
 
-${renderHierarchySummary(config)}
+${renderHierarchySummary(config)}`;
+};
 
+export const renderTruthPreviewSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-preview");
+
+  return `---
+name: truthmark-preview
+description: ${workflow.description}
+argument-hint: Optional requested outcome, code area, doc path, or routing question
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthPreviewProcedureBody(config)}
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthPreviewReportExample(config))}`;
 };

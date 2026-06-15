@@ -190,16 +190,22 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       `version: "${TRUTHMARK_VERSION}"`,
     );
+    expect(renderTruthmarkGeminiDocumentCommand()).toContain(
+      "This command is the Gemini CLI entrypoint for Truthmark Document.",
+    );
+    expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
+      "This prompt is the GitHub Copilot entrypoint for Truthmark Document.",
+    );
     for (const surface of [
       renderTruthmarkGeminiDocumentCommand(),
       renderTruthmarkCopilotDocumentPrompt(),
     ]) {
-      expect(surface).toContain(
-        "Use this prompt as a light-weight adapter for Truthmark Document.",
-      );
       expect(surface).toContain("support/procedure.md");
       expect(surface).toContain("support/report-template.md");
-      expect(surface).toContain("Use this prompt as a light-weight adapter for Truthmark Document.");
+      expect(surface).toContain("Do not invoke another Truthmark command from here.");
+      expect(surface).toContain(
+        "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
+      );
       expect(surface).not.toContain("render the full workflow");
     }
   });

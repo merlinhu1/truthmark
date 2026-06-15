@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
@@ -15,7 +18,34 @@ const portalPaths = [
   ".gemini/commands/truthmark/portal.toml",
 ];
 
+const readOnlyProcedurePaths = [
+  ".agents/skills/truthmark-check/support/procedure.md",
+  ".agents/skills/truthmark-preview/support/procedure.md",
+  ".claude/skills/truthmark-check/support/procedure.md",
+  ".claude/skills/truthmark-preview/support/procedure.md",
+  ".gemini/skills/truthmark-check/support/procedure.md",
+  ".gemini/skills/truthmark-preview/support/procedure.md",
+  ".github/skills/truthmark-check/support/procedure.md",
+  ".github/skills/truthmark-preview/support/procedure.md",
+  ".opencode/skills/truthmark-check/support/procedure.md",
+  ".opencode/skills/truthmark-preview/support/procedure.md",
+];
+
+const staleWriteAuthorizingLaneText =
+  "before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous";
+
 describe("Truthmark Portal generated surfaces", () => {
+  it("keeps checked-in read-only procedures free of write-authorizing lane wording", () => {
+    for (const procedurePath of readOnlyProcedurePaths) {
+      const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
+
+      expect(content, procedurePath).not.toContain(staleWriteAuthorizingLaneText);
+      expect(content, procedurePath).toContain(
+        "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
+      );
+    }
+  });
+
   it("omits generic optional CLI validation from generated user-facing workflow surfaces", () => {
     const config = createDefaultConfig();
     const generatedSurfaces = renderGeneratedSurfaces(config);
@@ -118,11 +148,11 @@ describe("Truthmark Portal generated surfaces", () => {
     }
 
     expect(copilotPrompt).toContain(
-      "Use this prompt as a light-weight adapter for Truthmark Portal",
+      "This prompt is the GitHub Copilot entrypoint for Truthmark Portal.",
     );
     expect(copilotPrompt).toContain(".github/skills/truthmark-portal/SKILL.md");
     expect(geminiCommand).toContain(
-      "Use this prompt as a light-weight adapter for Truthmark Portal",
+      "This command is the Gemini CLI entrypoint for Truthmark Portal.",
     );
     expect(geminiCommand).toContain(".gemini/skills/truthmark-portal/SKILL.md");
 

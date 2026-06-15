@@ -18,7 +18,7 @@ Truth Document is manual and implementation-first:
   - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
   - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
   - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
-  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
+  - both-lane work must write separate product and engineering docs and cross-link them in route YAML with realized_by and realizes, not in doc frontmatter
   - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
   - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 - document current implemented behavior; do not invent future behavior or planned endpoints
@@ -30,7 +30,7 @@ Truth Document is manual and implementation-first:
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
 - write product capability/boundary truth under docs/truthmark/product when documenting product promise, boundary, rationale, or user/stakeholder value
 - write engineering truth under docs/truthmark/engineering when documenting implementation behavior, contracts, architecture, workflows, operations, or tests
-- for both-lane documentation requests, write separate product and engineering docs and cross-link them with realized_by and realizes
+- for both-lane documentation requests, write separate product and engineering docs and cross-link them in route YAML with realized_by and realizes, not in doc frontmatter
 - keep engineering behavior truth behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content

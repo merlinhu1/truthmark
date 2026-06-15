@@ -3,12 +3,11 @@ agent: 'agent'
 description: 'Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.'
 ---
 
-Use this prompt as a light-weight adapter for Truthmark Sync.
+This prompt is the GitHub Copilot entrypoint for Truthmark Sync.
 
-To run the full workflow, use the installed skill surface:
-OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
+Do not invoke another Truthmark command from here.
 
-For the canonical workflow procedure, report template, and workflow-specific support files, read:
+Read these host-local files in order only as needed:
 - .github/skills/truthmark-sync/SKILL.md
 - .github/skills/truthmark-sync/support/procedure.md
 - .github/skills/truthmark-sync/support/report-template.md

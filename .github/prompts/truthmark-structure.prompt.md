@@ -3,12 +3,11 @@ agent: 'agent'
 description: 'Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.'
 ---
 
-Use this prompt as a light-weight adapter for Truthmark Structure.
+This prompt is the GitHub Copilot entrypoint for Truthmark Structure.
 
-To run the full workflow, use the installed skill surface:
-OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
+Do not invoke another Truthmark command from here.
 
-For the canonical workflow procedure, report template, and workflow-specific support files, read:
+Read these host-local files in order only as needed:
 - .github/skills/truthmark-structure/SKILL.md
 - .github/skills/truthmark-structure/support/procedure.md
 - .github/skills/truthmark-structure/support/report-template.md

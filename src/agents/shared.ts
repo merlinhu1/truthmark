@@ -1,6 +1,9 @@
 import { createDefaultConfig } from "../config/defaults.js";
 import type { TruthmarkConfig } from "../config/schema.js";
-import { resolveEngineeringTruthRoot, resolveProductTruthRoot } from "../truth/docs.js";
+import {
+  resolveEngineeringTruthRoot,
+  resolveProductTruthRoot,
+} from "../truth/docs.js";
 
 export {
   resolveEngineeringTruthRoot,
@@ -13,10 +16,7 @@ const renderBulletLine = (line: string): string => {
   return `- ${normalized}`;
 };
 
-export const renderBulletBlock = (
-  lines: string,
-  indent = "  ",
-): string => {
+export const renderBulletBlock = (lines: string, indent = "  "): string => {
   return lines
     .split(/\n/u)
     .map((line) => line.trim())
@@ -29,9 +29,30 @@ export const renderLaneClassificationRuleBlock = (
   config: TruthmarkConfig = defaultAgentConfig(),
   indent = "  ",
 ): string => {
-  const [, ...rules] = renderLaneClassificationInstructions(config).split(/\n/u);
+  const [, ...rules] =
+    renderLaneClassificationInstructions(config).split(/\n/u);
 
   return renderBulletBlock(rules.join("\n"), indent);
+};
+
+export const renderReadOnlyLaneClassificationRuleBlock = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  indent = "  ",
+): string => {
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+
+  return renderBulletBlock(
+    [
+      "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
+      `product-lane ownership belongs under ${productTruthRoot} and describes product promises, boundaries, rationale, decisions, and success criteria`,
+      `engineering-lane ownership belongs under ${engineeringTruthRoot} and describes source-backed current realization, contracts, architecture, workflows, operations, or tests`,
+      "both-lane ownership uses separate product and engineering docs cross-linked in route YAML with realized_by and realizes, not in doc frontmatter",
+      "ambiguous lane ownership should be reported as blocked or routed to Truth Structure",
+      LANE_INVARIANT,
+    ].join("\n"),
+    indent,
+  );
 };
 
 export {
@@ -59,7 +80,7 @@ export const renderLaneClassificationInstructions = (
     "- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous",
     `- product-lane writes belong under ${productTruthRoot} and state product promises, boundaries, rationale, decisions, and success criteria`,
     `- engineering-lane writes belong under ${engineeringTruthRoot} and state source-backed current realization, contracts, architecture, workflows, operations, or tests`,
-    "- both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes",
+    "- both-lane work must write separate product and engineering docs and cross-link them in route YAML with realized_by and realizes, not in doc frontmatter",
     "- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document",
     `- ${LANE_INVARIANT}`,
   ].join("\n");
@@ -172,7 +193,8 @@ export const renderCodexSubagentModeSection = (
         ]
       : [];
   const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
-  const readOnlyWorkerLabel = writeAgents.length > 0 ? "read-only workers" : "workers";
+  const readOnlyWorkerLabel =
+    writeAgents.length > 0 ? "read-only workers" : "workers";
 
   return [
     "Codex subagent mode:",
@@ -191,7 +213,9 @@ export const renderOpenCodeSubagentModeSection = (
   writeAgents: string[] = [],
 ): string => {
   const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
-  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map(
+    (agent) => `@${agent.replace(/_/gu, "-")}`,
+  );
   const writeAgentLines =
     writeMentions.length > 0
       ? [
@@ -202,7 +226,8 @@ export const renderOpenCodeSubagentModeSection = (
         ]
       : [];
   const readOnlyScope = writeAgents.length > 0 ? "for verification" : "only";
-  const readOnlyWorkerLabel = writeAgents.length > 0 ? "read-only workers" : "workers";
+  const readOnlyWorkerLabel =
+    writeAgents.length > 0 ? "read-only workers" : "workers";
 
   return [
     "OpenCode subagent mode:",
@@ -220,7 +245,9 @@ export const renderClaudeSubagentModeSection = (
   parentRule: string,
   writeAgents: string[] = [],
 ): string => {
-  const mentions = agents.map((agent) => `${agent.replace(/_/gu, "-")} subagent`);
+  const mentions = agents.map(
+    (agent) => `${agent.replace(/_/gu, "-")} subagent`,
+  );
   const writeMentions = writeAgents.map(
     (agent) => `${agent.replace(/_/gu, "-")} subagent`,
   );
@@ -254,7 +281,9 @@ export const renderCopilotCustomAgentModeSection = (
   writeAgents: string[] = [],
 ): string => {
   const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
-  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map(
+    (agent) => `@${agent.replace(/_/gu, "-")}`,
+  );
   const writeAgentLines =
     writeMentions.length > 0
       ? [
@@ -285,7 +314,9 @@ export const renderGeminiSubagentModeSection = (
   writeAgents: string[] = [],
 ): string => {
   const mentions = agents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
-  const writeMentions = writeAgents.map((agent) => `@${agent.replace(/_/gu, "-")}`);
+  const writeMentions = writeAgents.map(
+    (agent) => `@${agent.replace(/_/gu, "-")}`,
+  );
   const writeAgentLines =
     writeMentions.length > 0
       ? [

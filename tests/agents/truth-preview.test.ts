@@ -4,6 +4,7 @@ import {
   renderTruthPreviewSkillBody,
 } from "../../src/agents/truth-preview.js";
 import {
+  renderTruthmarkSkillPackage,
   renderTruthmarkPreviewLocalSkill,
   renderTruthmarkPreviewSkill,
   renderTruthmarkPreviewSkillMetadata,
@@ -35,6 +36,31 @@ describe("renderTruthPreviewSkillBody", () => {
     expect(skill).toContain("Handoff:");
     expect(skill).toContain("truth_route_auditor");
     expect(skill).not.toContain("truth_doc_writer");
+  });
+
+  it("bounds route reads to the root route index and relevant child route files", () => {
+    const skill = renderTruthPreviewSkillBody();
+    const packageEntrypoint = renderTruthmarkSkillPackage({
+      skillPath: ".agents/skills/truthmark-preview/SKILL.md",
+      workflowId: "truthmark-preview",
+      host: "codex",
+    }).find((file) => file.path.endsWith("/SKILL.md"))?.content;
+
+    expect(skill).toContain(
+      "- docs/truthmark/routes/areas.md, first, only when present",
+    );
+    expect(skill).toContain(
+      "- relevant child route files under docs/truthmark/routes/areas/ for the selected scope or changed paths, only when present",
+    );
+    expect(packageEntrypoint).toContain(
+      "the root route index (docs/truthmark/routes/areas.md) first when present",
+    );
+    expect(packageEntrypoint).toContain(
+      "only child route files under docs/truthmark/routes/areas/ that are relevant to the selected scope or changed paths",
+    );
+    expect(packageEntrypoint).not.toContain(
+      "configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/)",
+    );
   });
 });
 

@@ -3,12 +3,11 @@ agent: 'agent'
 description: 'Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.'
 ---
 
-Use this prompt as a light-weight adapter for Truthmark Document.
+This prompt is the GitHub Copilot entrypoint for Truthmark Document.
 
-To run the full workflow, use the installed skill surface:
-OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
+Do not invoke another Truthmark command from here.
 
-For the canonical workflow procedure, report template, and workflow-specific support files, read:
+Read these host-local files in order only as needed:
 - .github/skills/truthmark-document/SKILL.md
 - .github/skills/truthmark-document/support/procedure.md
 - .github/skills/truthmark-document/support/report-template.md

@@ -510,7 +510,10 @@ describe("runInit", () => {
         ),
       ).toContain("validate-sync-report:");
       expect(syncCopilotPrompt).toContain(
-        "Use this prompt as a light-weight adapter for Truthmark Sync",
+        "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
+      );
+      expect(syncCopilotPrompt).toContain(
+        "Do not invoke another Truthmark command from here.",
       );
       expect(syncCopilotPrompt).toContain(
         ".github/skills/truthmark-sync/support/subagents-and-leases.md",
@@ -576,12 +579,17 @@ describe("runInit", () => {
       expect(previewOpenCodeSkill).toContain("name: truthmark-preview");
       expect(previewClaudeSkill).toContain("name: truthmark-preview");
       expect(previewCopilotPrompt).toContain(
-        "Use this prompt as a light-weight adapter for Truthmark Preview",
+        "This prompt is the GitHub Copilot entrypoint for Truthmark Preview.",
+      );
+      expect(previewCopilotPrompt).toContain(
+        "Do not invoke another Truthmark command from here.",
       );
       expect(previewCopilotPrompt).toContain(
         ".github/skills/truthmark-preview/support/report-template.md",
       );
-      expect(previewGeminiCommand).toContain("/truthmark:preview");
+      expect(previewGeminiCommand).toContain(
+        "This command is the Gemini CLI entrypoint for Truthmark Preview.",
+      );
       expect(previewGeminiCommand).not.toContain("helper-manifest.yml");
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/procedure.md");
@@ -864,10 +872,10 @@ ignore: []
       ).resolves.toBeTruthy();
       expect(
         await repo.readFile(".github/prompts/truthmark-sync.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-sync");
+      ).toContain("This prompt is the GitHub Copilot entrypoint for Truthmark Sync.");
       expect(
         await repo.readFile(".github/prompts/truthmark-document.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-document");
+      ).toContain("This prompt is the GitHub Copilot entrypoint for Truthmark Document.");
       await expect(
         fs.stat(`${repo.rootDir}/.github/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
@@ -915,7 +923,7 @@ ignore: []
       );
       expect(
         await repo.readFile(".gemini/commands/truthmark/sync.toml"),
-      ).toContain("Use this prompt as a light-weight adapter for Truthmark Sync");
+      ).toContain("This command is the Gemini CLI entrypoint for Truthmark Sync.");
       expect(
         await repo.readFile(".gemini/commands/truthmark/sync.toml"),
       ).toContain(".gemini/skills/truthmark-sync/SKILL.md");

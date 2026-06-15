@@ -1,11 +1,10 @@
 description = "Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs."
 prompt = '''
-Use this prompt as a light-weight adapter for Truthmark Check.
+This command is the Gemini CLI entrypoint for Truthmark Check.
 
-To run the full workflow, use the installed skill surface:
-OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
+Do not invoke another Truthmark command from here.
 
-For the canonical workflow procedure, report template, and workflow-specific support files, read:
+Read these host-local files in order only as needed:
 - .gemini/skills/truthmark-check/SKILL.md
 - .gemini/skills/truthmark-check/support/procedure.md
 - .gemini/skills/truthmark-check/support/report-template.md

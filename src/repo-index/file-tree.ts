@@ -206,21 +206,6 @@ export const discoverRepoFiles = async (
       const title =
         markdown.headings.find((heading) => heading.depth === 1)?.text ?? null;
       const sourceOfTruth = parseSourceReferences(source, filePath);
-      const realizedBy = Array.isArray(parsed.data.realized_by)
-        ? parsed.data.realized_by.filter(
-            (entry: unknown): entry is string => typeof entry === "string",
-          )
-        : [];
-      const realizes = Array.isArray(parsed.data.realizes)
-        ? parsed.data.realizes.filter(
-            (entry: unknown): entry is string => typeof entry === "string",
-          )
-        : [];
-      const dependsOn = Array.isArray(parsed.data.depends_on)
-        ? parsed.data.depends_on.filter(
-            (entry: unknown): entry is string => typeof entry === "string",
-          )
-        : [];
       const truthKind =
         typeof parsed.data.truth_kind === "string"
           ? parsed.data.truth_kind
@@ -246,9 +231,9 @@ export const discoverRepoFiles = async (
               ? laneForTruthDocumentKind(derivedTruthKind)
               : null,
         sourceOfTruth: sourceOfTruth.sort(),
-        realizedBy: realizedBy.sort(),
-        realizes: realizes.sort(),
-        dependsOn: dependsOn.sort(),
+        realizedBy: [],
+        realizes: [],
+        dependsOn: [],
       });
     }
   }

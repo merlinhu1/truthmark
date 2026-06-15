@@ -16,16 +16,20 @@ Truth Check is agent-led:
   - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
   - Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - Lane classification:
-  - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
-  - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
-  - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
-  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
-  - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+  - classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only
+  - product-lane ownership belongs under docs/truthmark/product and describes product promises, boundaries, rationale, decisions, and success criteria
+  - engineering-lane ownership belongs under docs/truthmark/engineering and describes source-backed current realization, contracts, architecture, workflows, operations, or tests
+  - both-lane ownership uses separate product and engineering docs cross-linked in route YAML with realized_by and realizes, not in doc frontmatter
+  - ambiguous lane ownership should be reported as blocked or routed to Truth Structure
   - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 - check that current docs describe current code rather than historical plans
+- keep lane and cross-lane checks route-first and bounded:
+  - for a narrow audit, inspect only the routed area and directly linked counterpart docs
+  - for root-wide truth health, first build a cheap route-map/index from route files, then inspect only mismatches and linked leaves
+  - inspect product counterparts for engineering docs only when route YAML claims a product relationship, or when the user explicitly asks for user-visible product coverage
 - check lane root/kind alignment for product truth under docs/truthmark/product and engineering truth under docs/truthmark/engineering
-- check cross-lane realized_by and realizes links for existence and lane compatibility
-- report missing product links for user-visible engineering docs as review diagnostics, not hard errors
+- check route YAML cross-lane realized_by and realizes links for existence and lane compatibility
+- report missing product links for user-visible engineering docs only as a second-pass review diagnostic, not as default full-document reads or hard errors
 - check product docs do not contain engineering execution flow, generated file inventories, or CLI envelope mechanics
 - check engineering docs do not contain product promises, product rationale, or Product Decisions sections
 - never judge whether a product decision is commercially correct, valuable, prioritized, or desirable

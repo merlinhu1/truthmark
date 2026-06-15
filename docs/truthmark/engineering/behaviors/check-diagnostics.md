@@ -1,9 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-14
-realizes:
-  - docs/truthmark/product/capabilities/lane-separated-truth.md
+last_reviewed: 2026-06-15
 ---
 
 # Check Diagnostics
@@ -20,6 +18,8 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 
 `truthmark check` combines config, area routing, frontmatter, link, lane-shape, lane-drift, traceability, generated-surface, source-traceability, and freshness diagnostics. Missing product links for user-visible engineering docs are review diagnostics.
 
+Frontmatter diagnostics reject relationship metadata fields `realized_by`, `realizes`, and `depends_on` when they appear in truth document frontmatter. Relationship authority stays in fenced route YAML entries.
+
 Product truth doc structure validation enforces the `product-capability` shape. Product capability docs require capability sections for the capability promise, users and value, capability scope including boundary constraints and adjacent systems, current product behavior, acceptance criteria, product decisions, engineering realization links, and non-goals.
 
 ## Core Rules
@@ -28,6 +28,7 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 - Engineering docs must live under the engineering truth root and use engineering kinds.
 - Product docs under `docs/truthmark/product/**` infer `product-capability` unless explicit route metadata says otherwise.
 - Product capability docs do not satisfy product structure by using only boundary headings.
+- Relationship metadata belongs in route YAML; truth document frontmatter must not declare `realized_by`, `realizes`, or `depends_on`.
 - Traceability links must exist and point to the opposite lane when using `realized_by` or `realizes`.
 - Check reports structure and evidence only; it does not judge product strategy.
 
@@ -50,7 +51,9 @@ Update when check categories, severity rules, lane audit behavior, or product ki
 - ../../../../src/checks/areas.ts
 - ../../../../src/checks/decisions.ts
 - ../../../../src/checks/frontmatter.ts
+- ../../../../tests/checks/frontmatter.test.ts
 - `src/checks/areas.ts`
 - `src/checks/decisions.ts`
 - `src/checks/frontmatter.ts`
+- `tests/checks/frontmatter.test.ts`
 - `src/output/diagnostic.ts`

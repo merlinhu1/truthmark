@@ -73,7 +73,7 @@ Notes:
 - Added an Authentication area for session behavior.`;
 };
 
-export const renderTruthStructureSkillBody = (
+export const renderTruthStructureProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   options: {
     includeClaudeSubagentMode?: boolean;
@@ -97,15 +97,7 @@ export const renderTruthStructureSkillBody = (
     : "";
   const subagentMode = `${claudeSubagentMode}${copilotCustomAgentMode}`;
 
-  return `---
-name: truthmark-structure
-description: ${workflow.description}
-argument-hint: Optional area, directory, or routing concern
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-Use this skill to design or repair Truthmark area structure.
+  return `Use this skill to design or repair Truthmark area structure.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
@@ -189,7 +181,27 @@ Portable fallback:
 - Inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and representative implementation code.
 - Use a subagent only when the host supports that pattern; otherwise perform the topology repair inline.
 ${renderHierarchySummary(config)}
-${DECISION_TRUTH_INSTRUCTIONS}
+${DECISION_TRUTH_INSTRUCTIONS}`;
+};
+
+export const renderTruthStructureSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+  } = {},
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-structure");
+
+  return `---
+name: truthmark-structure
+description: ${workflow.description}
+argument-hint: Optional area, directory, or routing concern
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthStructureProcedureBody(config, options)}
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthStructureReportExample(config))}`;
 };

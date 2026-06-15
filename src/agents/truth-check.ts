@@ -11,7 +11,7 @@ import {
   defaultAgentConfig,
   renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationRuleBlock,
+  renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -23,7 +23,7 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.";
 
-const renderTruthCheckReportExample = (
+export const renderTruthCheckReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
   const rootRouteIndex = config.truthmark.paths.routesIndex;
@@ -39,19 +39,20 @@ Fixes suggested:
 - none
 
 ${renderAuditEvidenceCheckedSection([
-    {
-      finding: "The root route index is present and maps repository truth owners.",
-      evidence: [`${rootRouteIndex}:1`],
-      suggestedFix: "none",
-      confidence: "high",
-    },
-  ])}
+  {
+    finding:
+      "The root route index is present and maps repository truth owners.",
+    evidence: [`${rootRouteIndex}:1`],
+    suggestedFix: "none",
+    confidence: "high",
+  },
+])}
 
 Validation:
 - truthmark check`;
 };
 
-export const renderTruthCheckSkillBody = (
+export const renderTruthCheckProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   options: {
     includeClaudeSubagentMode?: boolean;
@@ -87,15 +88,7 @@ export const renderTruthCheckSkillBody = (
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
-  return `---
-name: truthmark-check
-description: ${workflow.description}
-argument-hint: Optional area, doc path, or audit focus
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-# Truthmark Check
+  return `# Truthmark Check
 
 Use this skill to audit repository truth health.
 
@@ -108,11 +101,15 @@ Truth Check is agent-led:
 - Evidence authority:
 ${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 - Lane classification:
-${renderLaneClassificationRuleBlock(config)}
+${renderReadOnlyLaneClassificationRuleBlock(config)}
 - check that current docs describe current code rather than historical plans
+- keep lane and cross-lane checks route-first and bounded:
+  - for a narrow audit, inspect only the routed area and directly linked counterpart docs
+  - for root-wide truth health, first build a cheap route-map/index from route files, then inspect only mismatches and linked leaves
+  - inspect product counterparts for engineering docs only when route YAML claims a product relationship, or when the user explicitly asks for user-visible product coverage
 - check lane root/kind alignment for product truth under ${config.truthmark.paths.productTruthRoot} and engineering truth under ${config.truthmark.paths.engineeringTruthRoot}
-- check cross-lane realized_by and realizes links for existence and lane compatibility
-- report missing product links for user-visible engineering docs as review diagnostics, not hard errors
+- check route YAML cross-lane realized_by and realizes links for existence and lane compatibility
+- report missing product links for user-visible engineering docs only as a second-pass review diagnostic, not as default full-document reads or hard errors
 - check product docs do not contain engineering execution flow, generated file inventories, or CLI envelope mechanics
 - check engineering docs do not contain product promises, product rationale, or Product Decisions sections
 - never judge whether a product decision is commercially correct, valuable, prioritized, or desirable
@@ -126,8 +123,29 @@ ${renderLaneClassificationRuleBlock(config)}
 ${renderAuditEvidenceGateSection()}
 
 ${subagentMode}${renderHierarchySummary(config)}
-${DECISION_TRUTH_INSTRUCTIONS}
+${DECISION_TRUTH_INSTRUCTIONS}`;
+};
 
+export const renderTruthCheckSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-check");
+
+  return `---
+name: truthmark-check
+description: ${workflow.description}
+argument-hint: Optional area, doc path, or audit focus
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthCheckProcedureBody(config, options)}
 Report completion in this shape:
 
 ${renderMarkdownExample(renderTruthCheckReportExample(config))}`;

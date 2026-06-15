@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-contract
 last_reviewed: 2026-06-14
-realizes:
-  - docs/truthmark/product/capabilities/lane-separated-truth.md
 ---
 
 # Config, Route, And Check Contracts
@@ -31,12 +29,12 @@ Default config exposes `truthmark.workspace` and `truthmark.generated.portal.ena
 
 - Config YAML with version `2`
 - Fenced route YAML with `truth_documents`
-- Markdown frontmatter fields such as `truth_kind`, `realized_by`, and `realizes`
+- Markdown frontmatter fields such as `truth_kind`
 
 ## Outputs
 
 - Normalized config paths for fixed route, template, product truth, engineering truth, and Portal locations derived from `truthmark.workspace`
-- RouteMap and RepoIndex data preserving lane, derived doc type, and relationship metadata
+- RouteMap data preserving lane and relationship metadata, plus RepoIndex data preserving derived doc type and lane metadata
 - Diagnostics including `lane-shape`, `lane-drift`, and `traceability`
 
 ## Compatibility Rules
@@ -49,7 +47,7 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 
 ## Engineering Decisions
 
-- Decision (2026-06-14): Authored relationship fields use explicit `realized_by`, `realizes`, and `depends_on` fields.
+- Decision (2026-06-14): Authored relationship fields use explicit `realized_by`, `realizes`, and `depends_on` fields in route YAML, not doc frontmatter.
 - Decision (2026-06-14): Canonical truth docs use `truth_kind` as the frontmatter source for truth lane and doc type; `truth_lane` remains accepted only as an optional consistency check.
 - Decision (2026-06-14): Route layout, template layout, default area `repository`, and max delegation depth `1` are product invariants derived from `truthmark.workspace`, not user config fields.
 

@@ -69,7 +69,7 @@ Avoid duplicating a separate canonical contract doc; link to it when contract ow
 ## Product Truth Links
 
 <!--
-Link product truth docs this engineering doc realizes using realizes frontmatter when applicable.
+List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.
 Use 'None.' when this is purely internal engineering behavior.
 -->
 

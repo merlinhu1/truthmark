@@ -11,10 +11,14 @@ import {
   type TruthDocumentKind,
 } from "../routing/areas.js";
 
-const isTruthDocumentKind = (
-  value: string,
-): value is TruthDocumentKind =>
+const isTruthDocumentKind = (value: string): value is TruthDocumentKind =>
   TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind);
+
+const ROUTE_RELATIONSHIP_FRONTMATTER_FIELDS = [
+  "realized_by",
+  "realizes",
+  "depends_on",
+];
 
 export const checkFrontmatter = async (
   rootDir: string,
@@ -76,6 +80,21 @@ export const checkFrontmatter = async (
     const routedTruthDocument = truthDocumentMap.get(markdownPath);
     const truthKind = document.frontmatter.truth_kind;
     const truthLane = document.frontmatter.truth_lane;
+    const isTruthDocument =
+      routedTruthDocument !== undefined || truthKind !== undefined;
+
+    if (isTruthDocument) {
+      for (const field of ROUTE_RELATIONSHIP_FRONTMATTER_FIELDS) {
+        if (field in document.frontmatter) {
+          diagnostics.push({
+            category: "frontmatter",
+            severity: "error",
+            message: `Frontmatter field ${field} is not allowed on truth documents; author relationship metadata in fenced route YAML entries instead.`,
+            file: markdownPath,
+          });
+        }
+      }
+    }
 
     if (
       truthLane !== undefined &&

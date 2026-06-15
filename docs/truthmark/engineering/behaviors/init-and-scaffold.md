@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-behavior
 last_reviewed: 2026-06-14
-realizes:
-  - docs/truthmark/product/capabilities/lane-separated-truth.md
 ---
 
 # Init And Scaffold

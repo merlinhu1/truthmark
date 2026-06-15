@@ -541,7 +541,7 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "## Product Truth Links",
     "",
     "<!--",
-    "Link product truth docs this engineering doc realizes using realizes frontmatter when applicable.",
+    "List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.",
     "Use 'None.' when this is purely internal engineering behavior.",
     "-->",
     "",
@@ -693,8 +693,6 @@ const renderProductTruthDocTemplate = (
     "status: active",
     `truth_kind: ${truthKind}`,
     `last_reviewed: ${currentDate()}`,
-    "realized_by:",
-    "  - {{engineering_realization}}",
     "---",
     "",
     `# ${title}`,
@@ -710,7 +708,7 @@ const renderProductTruthDocTemplate = (
       sectionSpec(
         "## Engineering Realization Links",
         [
-          "Link engineering truth that realizes this product truth using realized_by frontmatter.",
+          "List engineering truth that realizes this product truth; author canonical realized_by links in route YAML, not doc frontmatter.",
           "Do not summarize those engineering docs.",
         ],
         "engineering_realization_links",

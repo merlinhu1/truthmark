@@ -55,6 +55,18 @@ describe("renderTruthCheckSkillBody", () => {
     expect(skill).toContain("optionally run truthmark check");
     expect(skill).toContain("must not require the truthmark binary");
     expect(skill).toContain(
+      "keep lane and cross-lane checks route-first and bounded",
+    );
+    expect(skill).toContain(
+      "for a narrow audit, inspect only the routed area and directly linked counterpart docs",
+    );
+    expect(skill).toContain(
+      "for root-wide truth health, first build a cheap route-map/index from route files",
+    );
+    expect(skill).toContain(
+      "report missing product links for user-visible engineering docs only as a second-pass review diagnostic",
+    );
+    expect(skill).toContain(
       "support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests",
     );
     expect(skill).toContain(
@@ -124,6 +136,13 @@ describe("Truth Check generated surfaces", () => {
     expect(routeAuditor).toContain('name = "truth_route_auditor"');
     expect(routeAuditor).toContain('sandbox_mode = "read-only"');
     expect(routeAuditor).toContain(readOnlyContextBoundary);
+    expect(routeAuditor).toContain("Use a route-first bounded strategy");
+    expect(routeAuditor).toContain(
+      "inspect product counterparts for engineering docs only when route YAML claims a product relationship",
+    );
+    expect(routeAuditor).toContain(
+      "missing product links for user-visible engineering docs as a second-pass diagnostic",
+    );
     expect(routeAuditor).toContain("Return JSON only");
     expect(routeAuditor).toContain("recommendedWorkflow");
     expect(routeAuditor).not.toContain("write truth docs");

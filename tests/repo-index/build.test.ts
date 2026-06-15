@@ -109,6 +109,37 @@ last_reviewed: 2026-05-14
     );
   });
 
+  it("does not treat relationship frontmatter as canonical repo-index metadata", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+    await repo.writeFile(
+      "docs/truthmark/engineering/contracts/api.md",
+      `---
+status: active
+truth_kind: engineering-contract
+last_reviewed: 2026-05-14
+realizes:
+  - docs/truthmark/product/capabilities/api.md
+depends_on:
+  - docs/truthmark/engineering/contracts/shared.md
+---
+
+# API Contract
+`,
+    );
+
+    const result = await buildRepoIndex(repo.rootDir);
+
+    expect(result.docs).toContainEqual(
+      expect.objectContaining({
+        path: "docs/truthmark/engineering/contracts/api.md",
+        realizedBy: [],
+        realizes: [],
+        dependsOn: [],
+      }),
+    );
+  });
+
   it("skips tracked files that are deleted from the worktree", async () => {
     const repo = await createTempRepo();
     repos.push(repo);

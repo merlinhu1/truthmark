@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-workflow
 last_reviewed: 2026-06-15
-realizes:
-  - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
 
 # Installed Workflow Runtime
@@ -18,7 +16,7 @@ It owns generated workflow runtime behavior, managed instruction blocks, helper 
 
 ## Current Implementation Behavior
 
-The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated skill packages hold the full workflow procedures and report contracts. Generated GitHub Copilot prompts and Gemini commands act as compact adapters that route users to the installed skill package rather than embedding duplicate workflow bodies. Generated text instructs agents to classify lane impact before writing canonical truth docs.
+The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated skill packages hold the full workflow procedures and report contracts. Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters: they direct the current invocation to host-local skill package files and explicitly avoid dispatching another Truthmark command rather than embedding duplicate workflow bodies or cross-host invocation lists. Generated write-capable workflow text instructs agents to classify lane impact before writing canonical truth docs, while read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing. Truth Preview keeps route selection thin by reading the root route index first and then only child route files relevant to the selected scope or changed paths. Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks: narrow audits stay within the routed area plus directly linked counterpart docs, root-wide health first builds a route-map/index from route files, and missing product links for user-visible engineering docs are second-pass review diagnostics rather than default full-document reads.
 
 ## Triggers
 

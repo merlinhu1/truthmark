@@ -2,9 +2,6 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-realized_by:
-  - docs/truthmark/engineering/contracts/config-route-and-check-contracts.md
-  - docs/truthmark/engineering/behaviors/check-diagnostics.md
 ---
 
 # Lane-Separated Truth

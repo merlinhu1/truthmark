@@ -2,9 +2,6 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-realized_by:
-  - docs/truthmark/engineering/workflows/installed-workflow-runtime.md
-  - docs/truthmark/engineering/contracts/generated-host-surfaces.md
 ---
 
 # Agent-Native Workflow Injection

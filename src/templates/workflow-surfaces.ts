@@ -16,28 +16,42 @@ import {
 } from "../agents/shared.js";
 import {
   TRUTH_CHECK_EXPLICIT_INVOCATIONS,
+  renderTruthCheckProcedureBody,
+  renderTruthCheckReportExample,
   renderTruthCheckSkillBody,
 } from "../agents/truth-check.js";
 import {
   TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
+  renderTruthDocumentProcedureBody,
+  renderTruthDocumentReportExample,
   renderTruthDocumentSkillBody,
 } from "../agents/truth-document.js";
 import {
   TRUTH_PREVIEW_EXPLICIT_INVOCATIONS,
+  renderTruthPreviewProcedureBody,
+  renderTruthPreviewReportExample,
   renderTruthPreviewSkillBody,
 } from "../agents/truth-preview.js";
 import {
   TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
+  renderTruthmarkPortalProcedureBody,
   renderTruthmarkPortalSkillBody,
 } from "../agents/truthmark-portal.js";
 import {
   TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
+  renderTruthStructureProcedureBody,
+  renderTruthStructureReportExample,
   renderTruthStructureSkillBody,
 } from "../agents/truth-structure.js";
 import {
   TRUTH_SYNC_EXPLICIT_INVOCATIONS,
+  renderTruthSyncProcedureBody,
   renderTruthSyncSkillBody,
 } from "../agents/truth-sync.js";
+import {
+  renderTruthSyncBlockedReport,
+  renderTruthSyncCompletedReport,
+} from "../sync/report.js";
 import { TRUTHMARK_WRITE_WORKER_REPORT_FIELDS } from "../agents/write-lease.js";
 import {
   getTruthmarkWorkflow,
@@ -232,18 +246,19 @@ const workflowSupportFiles = (workflowId: TruthmarkWorkflowId): string[] => {
 const renderWorkflowCommandAdapterInstructions = (
   workflowId: TruthmarkWorkflowId,
   root: string,
+  hostName: string,
+  surfaceKind: "command" | "prompt",
 ): string => {
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const canonicalFiles = ["SKILL.md", ...workflowSupportFiles(workflowId)]
     .map((supportFile) => `- ${root}/${supportFile}`)
     .join("\n");
 
-  return `Use this prompt as a light-weight adapter for ${definition.title}.
+  return `This ${surfaceKind} is the ${hostName} entrypoint for ${definition.title}.
 
-To run the full workflow, use the installed skill surface:
-${definition.invocations}
+Do not invoke another Truthmark command from here.
 
-For the canonical workflow procedure, report template, and workflow-specific support files, read:
+Read these host-local files in order only as needed:
 ${canonicalFiles}
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.`;
@@ -351,7 +366,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       "Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.",
     quickRules: (config) => [
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
-      `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect only the truth docs or implementation files needed to preview ownership.`,
+      `Inspect .truthmark/config.yml and the root route index (${config.truthmark.paths.routesIndex}) first when present; then inspect only child route files under ${config.truthmark.paths.routeAreasRoot}/ that are relevant to the selected scope or changed paths, plus the truth docs or implementation files needed to preview ownership.`,
       "Truth Preview is read-only; this report is intended, not authorized.",
       "must not edit files and must not issue write leases; do not run Truth Sync automatically, replace Truth Check, claim final correctness, or mutate code.",
       "Use optional read-only route-auditor evidence only when it reduces context or clarifies ownership.",
@@ -411,27 +426,108 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   },
 };
 
-const stripWorkflowSkillFrontmatter = (body: string): string => {
-  return body.replace(/^---\n[\s\S]*?\n---\n\n?/u, "").trim();
+const renderMarkdownExample = (content: string): string => {
+  return ["```md", content, "```"].join("\n");
 };
 
-const splitWorkflowSupport = (
-  body: string,
-): { procedure: string; reportTemplate: string } => {
-  const stripped = stripWorkflowSkillFrontmatter(body);
-  const marker = "Report completion in this shape:";
-  const markerIndex = stripped.indexOf(marker);
+const renderWorkflowReportTemplate = (
+  workflowId: TruthmarkWorkflowId,
+  config: TruthmarkConfig,
+): string => {
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
 
-  if (markerIndex === -1) {
-    return {
-      procedure: stripped,
-      reportTemplate: "Report completion in the workflow-specific shape.",
-    };
+  switch (workflowId) {
+    case "truthmark-structure":
+      return `Report completion in this shape:\n${renderMarkdownExample(
+        renderTruthStructureReportExample(config),
+      )}`;
+    case "truthmark-document":
+      return `Report completion in this shape:\n${renderMarkdownExample(
+        renderTruthDocumentReportExample(config),
+      )}`;
+    case "truthmark-sync":
+      return `Report completion in this shape:\n${renderMarkdownExample(
+        renderTruthSyncCompletedReport({
+          changedCode: ["src/auth/session.ts"],
+          ownershipReviewed: [config.truthmark.paths.routesIndex],
+          truthDocsUpdated: [`${engineeringTruthRoot}/repository/overview.md`],
+          evidenceChecked: [
+            {
+              claim:
+                "Session timeout behavior is documented in the mapped repository truth doc.",
+              evidence: [
+                "src/auth/session.ts:12",
+                `${config.truthmark.paths.routesIndex}:11`,
+              ],
+              result: "supported",
+            },
+          ],
+          helperScripts: [
+            "validate-write-lease: skipped, no write lease used",
+          ],
+          notes: ["Updated session timeout behavior."],
+        }),
+      )}\nBlocked report example:\n${renderMarkdownExample(
+  renderTruthSyncBlockedReport({
+    reason: "routing repair is not allowed",
+    manualReviewFiles: [config.truthmark.paths.routesIndex],
+    nextAction: "update routing metadata and rerun Truth Sync",
+  }),
+)}`;
+    case "truthmark-preview":
+      return `Report completion in this shape:\n${renderMarkdownExample(
+        renderTruthPreviewReportExample(config),
+      )}`;
+    case "truthmark-realize":
+      return `Report completion in this shape:\n\n${renderMarkdownExample(`Truth Realize: completed
+
+Truth docs used:
+- ${productTruthRoot}/capabilities/authentication-session.md
+- ${engineeringTruthRoot}/behaviors/authentication-session.md
+
+Code updated:
+- src/auth/session.ts
+
+Verification:
+- npm test -- auth`)}`;
+    case "truthmark-check":
+      return `Report completion in this shape:\n\n${renderMarkdownExample(
+        renderTruthCheckReportExample(config),
+      )}`;
+    case "truthmark-portal":
+      return `Report completion in this shape:\n\n${renderMarkdownExample(`Truthmark Portal: completed
+
+Output path:
+- ${config.truthmark.paths.portalOutput}
+
+Page count:
+- <count>
+
+Diagrams/assets:
+- <generated diagrams/assets or none>
+
+Source docs reviewed:
+- <source markdown paths>
+
+Skipped/ambiguous docs:
+- <paths and reason, or none>
+
+Validation:
+- <checks performed>
+
+Markdown canonical statement:
+- Markdown remains canonical; generated Portal HTML is non-canonical presentation only.`)}`;
   }
+};
 
+const renderWorkflowSupportParts = (
+  workflowId: TruthmarkWorkflowId,
+  config: TruthmarkConfig,
+): { procedure: string; reportTemplate: string } => {
   return {
-    procedure: stripped.slice(0, markerIndex).trim(),
-    reportTemplate: stripped.slice(markerIndex).trim(),
+    procedure: renderWorkflowProcedure(workflowId, config),
+    reportTemplate: renderWorkflowReportTemplate(workflowId, config),
   };
 };
 
@@ -507,25 +603,25 @@ Helper scripts:
   );
 };
 
-const renderStandaloneWorkflowSkillBody = (
+const renderWorkflowProcedure = (
   workflowId: TruthmarkWorkflowId,
   config: TruthmarkConfig,
 ): string => {
   switch (workflowId) {
     case "truthmark-structure":
-      return renderTruthStructureSkillBody(config);
+      return renderTruthStructureProcedureBody(config);
     case "truthmark-document":
-      return renderTruthDocumentSkillBody(config);
+      return renderTruthDocumentProcedureBody(config);
     case "truthmark-sync":
-      return renderTruthSyncSkillBody(config);
+      return renderTruthSyncProcedureBody(config);
     case "truthmark-preview":
-      return renderTruthPreviewSkillBody(config);
+      return renderTruthPreviewProcedureBody(config);
     case "truthmark-realize":
-      return renderTruthmarkRealizeSkillBody(config);
+      return renderTruthmarkRealizeProcedureBody(config);
     case "truthmark-check":
-      return renderTruthCheckSkillBody(config);
+      return renderTruthCheckProcedureBody(config);
     case "truthmark-portal":
-      return renderTruthmarkPortalSkillBody(config);
+      return renderTruthmarkPortalProcedureBody(config);
   }
 };
 
@@ -659,8 +755,9 @@ export const renderTruthmarkSkillPackage = ({
 }): TruthmarkSkillPackageFile[] => {
   const skillDirectory = skillPath.replace(/\/SKILL\.md$/u, "");
   const supportDirectory = `${skillDirectory}/support`;
-  const { procedure, reportTemplate } = splitWorkflowSupport(
-    renderStandaloneWorkflowSkillBody(workflowId, config),
+  const { procedure, reportTemplate } = renderWorkflowSupportParts(
+    workflowId,
+    config,
   );
   const subagents = renderWorkflowSubagentSupport(workflowId, host);
   const helpers = getTruthmarkWorkflow(workflowId).helpers ?? [];
@@ -780,11 +877,14 @@ const TRUTHMARK_SUBAGENT_PROFILES = {
     instructions: `Stay read-only.
 Audit one bounded Truthmark route, area, or doc shard assigned by the parent.
 Inspect .truthmark/config.yml and route files only when they exist; then inspect mapped truth docs and relevant implementation files directly.
+Use a route-first bounded strategy: narrow audits inspect only the routed area and directly linked counterpart docs; root-wide health first builds a cheap route-map/index from route files, then inspects only mismatches and linked leaves.
 Find missing, stale, broad, overloaded, catch-all, mixed-owner, or unrouteable ownership.
 Validate route ownership against lane-specific roots and route kind:
 - confirm mapped truth docs resolve to the correct lane root (product or engineering) for their kind
 - flag mismatch between assigned route kind and resolved doc kind (for example, product-capability routed to engineering paths)
-- verify route-doc linkage for lane pairings via realized_by and realizes before recommending edits.
+- verify route-doc linkage for lane pairings via realized_by and realizes before recommending edits
+- inspect product counterparts for engineering docs only when route YAML claims a product relationship, or when the parent explicitly asks for user-visible product coverage
+- treat missing product links for user-visible engineering docs as a second-pass diagnostic, not a default full-document read.
 Do not edit files, stage changes, or propose broad rewrites.
 Return JSON only with keys: scope, filesReviewed, findings, evidence, confidence, recommendedWorkflow, notes.
 recommendedWorkflow must be one of: none, truthmark-document, truthmark-structure.`,
@@ -1352,22 +1452,10 @@ truthmark:
 `;
 };
 
-const renderTruthmarkRealizeSkillBody = (
+const renderTruthmarkRealizeProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const productTruthRoot = resolveProductTruthRoot(config);
-  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
-  const workflow = getTruthmarkWorkflow("truthmark-realize");
-
-  return `---
-name: truthmark-realize
-description: ${workflow.description}
-argument-hint: Optional truth doc path, area, or desired code behavior to realize
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-# Truthmark Realize
+  return `# Truthmark Realize
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
@@ -1398,8 +1486,25 @@ Read and write boundaries:
 
 - may read truth docs, routing docs, and relevant functional code
 - may write functional code only
-- must not edit truth docs or truth routing while realizing those docs
+- must not edit truth docs or truth routing while realizing those docs`;
+};
 
+const renderTruthmarkRealizeSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-realize");
+
+  return `---
+name: truthmark-realize
+description: ${workflow.description}
+argument-hint: Optional truth doc path, area, or desired code behavior to realize
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthmarkRealizeProcedureBody(config)}
 Report completion in this shape:
 
 \`\`\`md
@@ -1536,7 +1641,12 @@ const renderGeminiWorkflowCommand = (
 
   return renderGeminiCommand(
     workflow.description,
-    renderWorkflowCommandAdapterInstructions(workflowId, root),
+    renderWorkflowCommandAdapterInstructions(
+      workflowId,
+      root,
+      "Gemini CLI",
+      "command",
+    ),
   );
 };
 
@@ -1548,7 +1658,12 @@ const renderCopilotWorkflowPrompt = (
 
   return renderCopilotPromptFile(
     workflow.description,
-    renderWorkflowCommandAdapterInstructions(workflowId, root),
+    renderWorkflowCommandAdapterInstructions(
+      workflowId,
+      root,
+      "GitHub Copilot",
+      "prompt",
+    ),
   );
 };
 

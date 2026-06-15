@@ -2,8 +2,6 @@
 status: active
 truth_kind: engineering-contract
 last_reviewed: 2026-06-15
-realizes:
-  - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
 
 # Generated Host Surfaces
@@ -18,7 +16,7 @@ It covers configured platform output paths, generated workflow files, managed in
 
 ## Current Implementation Behavior
 
-Truthmark renders workflow surfaces for configured platforms and leaves already committed files in place when platforms are removed from config. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, subagent guidance, and helper policy. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: they name the workflow invocation, point to the host-specific skill package files, and use direct checkout inspection as fallback instead of duplicating full workflow bodies.
+Truthmark renders workflow surfaces for configured platforms and leaves already committed files in place when platforms are removed from config. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, subagent guidance, and helper policy. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: they identify the current host entrypoint, tell the agent not to invoke another Truthmark command from inside that entrypoint, point only to host-local skill package files, and use direct checkout inspection as fallback instead of duplicating full workflow bodies.
 
 ## Contract Surface
 
@@ -45,6 +43,7 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 
 - Decision (2026-06-14): Generated surfaces must preserve Truthmark as a workflow injector, not a runtime authority.
 - Decision (2026-06-15): GitHub Copilot prompt files and Gemini command files stay compact workflow adapters when a host skill package exists; canonical workflow bodies remain in generated skill support files.
+- Decision (2026-06-15): GitHub Copilot prompt files and Gemini command files must not embed cross-host Truthmark invocation lists; those lists belong in human-facing docs or skill metadata, not adapter bodies.
 
 ## Maintenance Notes
 

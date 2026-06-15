@@ -2,8 +2,6 @@
 status: active
 truth_kind: product-capability
 last_reviewed: 2026-06-14
-realized_by:
-  - {{engineering_realization}}
 ---
 
 # {{title}}
@@ -72,7 +70,7 @@ Replace stale decisions instead of appending historical logs.
 ## Engineering Realization Links
 
 <!--
-Link engineering truth that realizes this product truth using realized_by frontmatter.
+List engineering truth that realizes this product truth; author canonical realized_by links in route YAML, not doc frontmatter.
 Do not summarize those engineering docs.
 -->
 

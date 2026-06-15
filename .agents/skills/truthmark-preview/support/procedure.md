@@ -16,18 +16,18 @@ Purpose:
 
 Read:
 - .truthmark/config.yml, only when present
-- docs/truthmark/routes/areas.md, only when present
-- docs/truthmark/routes/areas/, only when present
+- docs/truthmark/routes/areas.md, first, only when present
+- relevant child route files under docs/truthmark/routes/areas/ for the selected scope or changed paths, only when present
 - relevant truth docs and implementation files needed to preview ownership
 - Evidence authority:
   - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
   - Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - Lane classification:
-  - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
-  - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
-  - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
-  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
-  - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+  - classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only
+  - product-lane ownership belongs under docs/truthmark/product and describes product promises, boundaries, rationale, decisions, and success criteria
+  - engineering-lane ownership belongs under docs/truthmark/engineering and describes source-backed current realization, contracts, architecture, workflows, operations, or tests
+  - both-lane ownership uses separate product and engineering docs cross-linked in route YAML with realized_by and realizes, not in doc frontmatter
+  - ambiguous lane ownership should be reported as blocked or routed to Truth Structure
   - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 
 Do not:
