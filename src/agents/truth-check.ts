@@ -124,7 +124,6 @@ ${renderLaneClassificationRuleBlock(config)}
 - report issues and suggested fixes without silently rewriting unrelated files
 - if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
-${renderLaneClassificationRuleBlock(config)}
 
 ${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

@@ -49,12 +49,6 @@ Evidence Gate:
 - support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests
 - canonical docs are context, not sole proof when implementation conflicts
 - remove unsupported findings or mark open questions; validate changed claims if you edit docs
-  - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
-  - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
-  - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
-  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
-  - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
-  - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 
 Copilot custom-agent mode:
 - use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out
