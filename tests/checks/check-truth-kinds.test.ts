@@ -23,8 +23,8 @@ Truth documents:
 
 ${"```"}yaml
 truth_documents:
-  - path: docs/truthmark/truth/repository/overview.md
-    kind: contract
+  - path: docs/truthmark/engineering/repository/overview.md
+    kind: engineering-contract
 ${"```"}
 
 Code surface:
@@ -35,11 +35,11 @@ Update truth when:
 `,
       );
       await repo.writeFile(
-        "docs/truthmark/truth/repository/overview.md",
+        "docs/truthmark/engineering/repository/overview.md",
         `---
 status: active
 doc_type: behavior
-truth_kind: behavior
+truth_kind: engineering-behavior
 last_reviewed: 2026-05-14
 source_of_truth:
   - docs/truthmark/routes/areas/repository.md
@@ -76,7 +76,7 @@ Bounded truth is easier to maintain.
           expect.objectContaining({
             category: "frontmatter",
             severity: "error",
-            file: "docs/truthmark/truth/repository/overview.md",
+            file: "docs/truthmark/engineering/repository/overview.md",
             message: expect.stringContaining("truth_kind"),
           }),
         ]),

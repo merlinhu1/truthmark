@@ -55,6 +55,18 @@ describe("renderTruthCheckSkillBody", () => {
     expect(skill).toContain("optionally run truthmark check");
     expect(skill).toContain("must not require the truthmark binary");
     expect(skill).toContain(
+      "keep lane and cross-lane checks route-first and bounded",
+    );
+    expect(skill).toContain(
+      "for a narrow audit, inspect only the routed area and directly linked counterpart docs",
+    );
+    expect(skill).toContain(
+      "for root-wide truth health, first build a cheap route-map/index from route files",
+    );
+    expect(skill).toContain(
+      "report missing product links for user-visible engineering docs only as a second-pass review diagnostic",
+    );
+    expect(skill).toContain(
       "support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests",
     );
     expect(skill).toContain(
@@ -62,7 +74,6 @@ describe("renderTruthCheckSkillBody", () => {
     );
     expect(skill).toContain("Truthmark hierarchy hints:");
     expect(skill).toContain("Product Decisions");
-    expect(skill).toContain("Rationale");
     expect(skill).toContain("Truth Check: completed");
     expect(skill).toContain("Files reviewed");
     expect(skill).toContain("Issues found");
@@ -125,6 +136,13 @@ describe("Truth Check generated surfaces", () => {
     expect(routeAuditor).toContain('name = "truth_route_auditor"');
     expect(routeAuditor).toContain('sandbox_mode = "read-only"');
     expect(routeAuditor).toContain(readOnlyContextBoundary);
+    expect(routeAuditor).toContain("Use a route-first bounded strategy");
+    expect(routeAuditor).toContain(
+      "inspect product counterparts for engineering docs only when route YAML claims a product relationship",
+    );
+    expect(routeAuditor).toContain(
+      "missing product links for user-visible engineering docs as a second-pass diagnostic",
+    );
     expect(routeAuditor).toContain("Return JSON only");
     expect(routeAuditor).toContain("recommendedWorkflow");
     expect(routeAuditor).not.toContain("write truth docs");
@@ -139,7 +157,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain('sandbox_mode = "read-only"');
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
   it("renders read-only Claude Code verifier subagents for truth audits", () => {
     const routeAuditor = renderTruthmarkClaudeRouteAuditorAgent();
@@ -160,7 +179,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain("tools: Read, Grep, Glob, LS");
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
   it("renders read-only OpenCode verifier subagents for truth audits", () => {
     const routeAuditor = renderTruthmarkOpenCodeRouteAuditorAgent();
@@ -182,7 +202,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain("edit: deny");
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
 
   it("renders read-only Copilot verifier agents with bounded context", () => {
@@ -199,7 +220,9 @@ describe("Truth Check generated surfaces", () => {
     expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
     expect(docReviewer).toContain("name: truth-doc-reviewer");
     expect(docReviewer).toContain(readOnlyContextBoundary);
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Product Decisions");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
 
   it("renders write-capable doc writer agents behind explicit leases", () => {
@@ -208,7 +231,8 @@ describe("Truth Check generated surfaces", () => {
     const claudeWriter = renderTruthmarkClaudeDocWriterAgent();
     const copilotWriter = renderTruthmarkCopilotDocWriterAgent();
     const customConfig = createDefaultConfig();
-    customConfig.truthmark.paths.truthRoot = "product/truth";
+    customConfig.truthmark.paths.productTruthRoot = "product/truth";
+    customConfig.truthmark.paths.engineeringTruthRoot = "product/engineering";
     customConfig.truthmark.paths.routesIndex = "product/routes/index.md";
     customConfig.truthmark.paths.routeAreasRoot = "product/routes/areas";
     const customOpenCodeWriter = renderTruthmarkOpenCodeDocWriterAgent(customConfig);
@@ -219,17 +243,17 @@ describe("Truth Check generated surfaces", () => {
     expect(codexWriter).not.toContain(readOnlyContextBoundary);
     expect(codexWriter).toContain("Return YAML only");
     expect(openCodeWriter).toContain("mode: subagent");
-    expect(openCodeWriter).toContain('"docs/truthmark/truth/**": allow');
+    expect(openCodeWriter).toContain('"docs/truthmark/engineering/**": allow');
     expect(openCodeWriter).toContain('"docs/truthmark/routes/areas.md": allow');
     expect(openCodeWriter).toContain("@truth-doc-writer");
-    expect(customOpenCodeWriter).toContain('"product/truth/**": allow');
+    expect(customOpenCodeWriter).toContain('"product/engineering/**": allow');
     expect(customOpenCodeWriter).toContain(
       '"product/routes/index.md": allow',
     );
     expect(customOpenCodeWriter).toContain(
       '"product/routes/areas/**/*.md": allow',
     );
-    expect(customOpenCodeWriter).not.toContain('"docs/truthmark/truth/**": allow');
+    expect(customOpenCodeWriter).not.toContain('"docs/truthmark/engineering/**": allow');
     expect(claudeWriter).toContain("name: truth-doc-writer");
     expect(claudeWriter).toContain("tools: Read, Grep, Glob, LS, Edit, MultiEdit");
     expect(copilotWriter).toContain("name: truth-doc-writer");

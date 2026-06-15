@@ -7,12 +7,12 @@ import { createTempRepo } from "../helpers/temp-repo.js";
 const decisionConfig = createDefaultConfig();
 
 describe("checkDecisionSections", () => {
-  it("emits review diagnostics for current workflow docs missing decision truth sections", async () => {
+  it("emits review diagnostics for current workflow docs missing engineering structure sections", async () => {
     const repo = await createTempRepo();
 
     try {
       await repo.writeFile(
-        "docs/truthmark/truth/installed-workflows.md",
+        "docs/truthmark/engineering/installed-workflows.md",
         `# Installed Workflows
 
 ## Scope
@@ -32,12 +32,17 @@ Agents inspect the checkout directly.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truthmark/truth/installed-workflows.md"],
+        ["docs/truthmark/engineering/installed-workflows.md"],
         [
           {
-            path: "docs/truthmark/truth/installed-workflows.md",
-            kind: "workflow",
+            path: "docs/truthmark/engineering/installed-workflows.md",
+            kind: "engineering-workflow",
             kindSource: "explicit",
+            lane: "engineering",
+            laneSource: "inferred",
+            realizedBy: [],
+            realizes: [],
+            dependsOn: [],
           },
         ],
       );
@@ -46,8 +51,8 @@ Agents inspect the checkout directly.
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truthmark/truth/installed-workflows.md",
-          message: expect.stringContaining("Product Decisions"),
+          file: "docs/truthmark/engineering/installed-workflows.md",
+          message: expect.stringContaining("Purpose"),
         }),
       ]);
     } finally {
@@ -60,12 +65,16 @@ Agents inspect the checkout directly.
 
     try {
       await repo.writeFile(
-        "docs/truthmark/truth/installed-workflows.md",
+        "docs/truthmark/engineering/installed-workflows.md",
         `# Installed Workflows
 
 ## Scope
 
 Installed workflow truth.
+
+## Purpose
+
+Defines installed workflow runtime behavior.
 
 ## Triggers
 
@@ -75,25 +84,46 @@ Explicit workflow invocations.
 
 Agents inspect the checkout directly.
 
-## Product Decisions
+## Current Implementation Behavior
+
+Installed workflow surfaces provide the current runtime.
+
+## Source References
+
+- AGENTS.md
+
+## Product Truth Links
+
+None.
+
+## Engineering Decisions
 
 - Installed skills and AGENTS blocks are the workflow runtime.
 
 ## Rationale
 
 This keeps installed repositories usable when the Truthmark package is unavailable.
+
+## Maintenance Notes
+
+Update when installed workflow surfaces change.
 `,
       );
 
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truthmark/truth/installed-workflows.md"],
+        ["docs/truthmark/engineering/installed-workflows.md"],
         [
           {
-            path: "docs/truthmark/truth/installed-workflows.md",
-            kind: "workflow",
+            path: "docs/truthmark/engineering/installed-workflows.md",
+            kind: "engineering-workflow",
             kindSource: "explicit",
+            lane: "engineering",
+            laneSource: "inferred",
+            realizedBy: [],
+            realizes: [],
+            dependsOn: [],
           },
         ],
       );
@@ -109,12 +139,15 @@ This keeps installed repositories usable when the Truthmark package is unavailab
 
     try {
       await repo.writeFile("docs/notes/future.md", "# Future\n");
-      await repo.writeFile("docs/truthmark/truth/README.md", "# Current Feature Docs\n");
+      await repo.writeFile(
+        "docs/truthmark/engineering/README.md",
+        "# Current Feature Docs\n",
+      );
 
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/notes/future.md", "docs/truthmark/truth/README.md"],
+        ["docs/notes/future.md", "docs/truthmark/engineering/README.md"],
       );
 
       expect(diagnostics).toEqual([]);
@@ -128,10 +161,10 @@ This keeps installed repositories usable when the Truthmark package is unavailab
 
     try {
       await repo.writeFile(
-        "docs/truthmark/truth/repository/overview.md",
+        "docs/truthmark/engineering/repository/overview.md",
         `# Repository Overview
 
-## Product Decisions
+## Engineering Decisions
 
 - Decision (2026-05-14): Keep routed truth bounded.
 
@@ -144,12 +177,17 @@ Bounded truth docs are easier to maintain.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truthmark/truth/repository/overview.md"],
+        ["docs/truthmark/engineering/repository/overview.md"],
         [
           {
-            path: "docs/truthmark/truth/repository/overview.md",
-            kind: "behavior",
+            path: "docs/truthmark/engineering/repository/overview.md",
+            kind: "engineering-behavior",
             kindSource: "explicit",
+            lane: "engineering",
+            laneSource: "inferred",
+            realizedBy: [],
+            realizes: [],
+            dependsOn: [],
           },
         ],
       );
@@ -158,11 +196,13 @@ Bounded truth docs are easier to maintain.
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truthmark/truth/repository/overview.md",
+          file: "docs/truthmark/engineering/repository/overview.md",
           message: expect.stringContaining("Scope"),
         }),
       ]);
-      expect(diagnostics[0]?.message).toContain("Current Behavior");
+      expect(diagnostics[0]?.message).toContain(
+        "Current Implementation Behavior",
+      );
     } finally {
       await repo.cleanup();
     }
@@ -173,9 +213,9 @@ Bounded truth docs are easier to maintain.
 
     try {
       await repo.writeFile(
-        "docs/truthmark/truth/contract-surface.md",
+        "docs/truthmark/engineering/contract-surface.md",
         `---
-truth_kind: contract
+truth_kind: engineering-contract
 ---
 
 # Contract Surface
@@ -201,24 +241,26 @@ Structured JSON output.
       const diagnostics = await checkDecisionSections(
         repo.rootDir,
         decisionConfig,
-        ["docs/truthmark/truth/contract-surface.md"],
+        ["docs/truthmark/engineering/contract-surface.md"],
       );
 
       expect(diagnostics).toEqual([
         expect.objectContaining({
           category: "doc-structure",
           severity: "review",
-          file: "docs/truthmark/truth/contract-surface.md",
-          message: expect.stringContaining("Product Decisions"),
+          file: "docs/truthmark/engineering/contract-surface.md",
+          message: expect.stringContaining("Purpose"),
         }),
       ]);
-      expect(diagnostics[0]?.message).not.toContain("Current Behavior");
+      expect(diagnostics[0]?.message).toContain(
+        "Current Implementation Behavior",
+      );
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("does not apply behavior-specific checks to defaulted routed docs", async () => {
+  it("applies common engineering structure checks to defaulted routed docs", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -230,7 +272,7 @@ Structured JSON output.
 
 Indexes the canonical docs tree.
 
-## Product Decisions
+## Engineering Decisions
 
 - Keep the docs tree split by role.
 
@@ -247,13 +289,25 @@ This keeps onboarding and current truth separate.
         [
           {
             path: "docs/README.md",
-            kind: "behavior",
+            kind: "engineering-behavior",
             kindSource: "defaulted",
+            lane: "engineering",
+            laneSource: "defaulted",
+            realizedBy: [],
+            realizes: [],
+            dependsOn: [],
           },
         ],
       );
 
-      expect(diagnostics).toEqual([]);
+      expect(diagnostics).toEqual([
+        expect.objectContaining({
+          category: "doc-structure",
+          severity: "review",
+          file: "docs/README.md",
+          message: expect.stringContaining("Source References"),
+        }),
+      ]);
     } finally {
       await repo.cleanup();
     }

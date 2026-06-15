@@ -44,7 +44,7 @@ describe("buildImpactSet", () => {
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
 
-    const truthDocPath = "docs/truthmark/truth/repository/overview.md";
+    const truthDocPath = "docs/truthmark/engineering/repository/overview.md";
     await repo.writeFile(
       truthDocPath,
       `${await repo.readFile(truthDocPath)}\nUpdated direct truth-doc edit.\n`,

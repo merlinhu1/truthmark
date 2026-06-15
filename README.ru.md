@@ -511,12 +511,9 @@ truthmark init
 | `version` | Версия контракта config. |
 | `platforms` | Agent hosts, которые должны получить сгенерированные интерфейсы для платформы. |
 | `truthmark.workspace` | Workspace, принадлежащий Truthmark, для маршрутов, документов истины, шаблонов и сгенерированного презентационного вывода. |
-| `truthmark.routes.index` | Путь к корневому индексу маршрутов относительно `truthmark.workspace`. |
-| `truthmark.routes.areas` | Директория делегированных дочерних маршрутов относительно `truthmark.workspace`. |
-| `truthmark.routes.default_area` | Базовое имя начального scaffolded дочернего маршрута. |
-| `truthmark.routes.max_delegation_depth` | Текущая максимальная глубина делегирования routing. |
-| `truthmark.truth.root` | Корень документов истины относительно `truthmark.workspace`. |
-| `truthmark.templates.root` | Корень шаблонов документов истины относительно `truthmark.workspace`. |
+| Фиксированные маршруты | Маршруты находятся в `routes/areas.md` и `routes/areas/` внутри `truthmark.workspace`; область по умолчанию — `repository`, глубина делегирования — `1`. |
+| Фиксированные дорожки истины | Product truth находится в `product/`, а engineering truth в `engineering/` внутри `truthmark.workspace`. |
+| Фиксированные шаблоны | Шаблоны документов истины находятся в `templates/` внутри `truthmark.workspace`. |
 | `truthmark.generated.portal` | Опциональное включение ручного презентационного workflow: `enabled`. |
 | `instruction_targets` | Файлы, которые получают общие управляемые блоки инструкций, например `AGENTS.md`. |
 | `frontmatter.required` | Поля metadata, которые создают error diagnostics при отсутствии. |
@@ -749,7 +746,7 @@ npm run check
 | `npm run check` | Запускает lint, typecheck, tests и build. |
 | `npm run release:check` | Запускает release-oriented validation. |
 
-Когда меняете сам Truthmark, смотрите [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Когда меняете сам Truthmark, смотрите [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Документация
 

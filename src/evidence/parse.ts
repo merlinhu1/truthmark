@@ -5,39 +5,46 @@ import matter from "gray-matter";
 import { parse } from "yaml";
 
 import type { EvidenceReference } from "./types.js";
+import {
+  normalizeSourceReferencePath,
+  parseSourceReferences,
+} from "../truth/source-references.js";
 
 const yamlFencePattern = /```ya?ml\s*\n([\s\S]*?)```/giu;
 const topLevelEvidenceMarkerPattern = /^evidence\s*:/imu;
-
-const repoRootPrefixes = [".codex/", ".github/", ".truthmark/", "docs/", "src/", "tests/"];
-
-const normalizeReferencePath = (truthDocPath: string, referencePath: string): string => {
-  const strippedPath = referencePath.split("#")[0]?.trim() ?? "";
-  const isRepoRelative = repoRootPrefixes.some((prefix) => strippedPath.startsWith(prefix));
-
-  if (!isRepoRelative && (strippedPath.startsWith(".") || !strippedPath.includes("/"))) {
-    return path.posix.normalize(path.posix.join(path.posix.dirname(truthDocPath), strippedPath));
-  }
-
-  return path.posix.normalize(strippedPath);
-};
 
 const toEvidenceReference = (
   truthDocPath: string,
   raw: unknown,
 ): EvidenceReference | null => {
-  if (!raw || typeof raw !== "object" || !("path" in raw) || typeof raw.path !== "string") {
+  if (
+    !raw ||
+    typeof raw !== "object" ||
+    !("path" in raw) ||
+    typeof raw.path !== "string"
+  ) {
     return null;
   }
 
   return {
     truthDocPath,
-    path: normalizeReferencePath(truthDocPath, raw.path),
-    symbol: "symbol" in raw && typeof raw.symbol === "string" ? raw.symbol : undefined,
-    startLine: "start_line" in raw && typeof raw.start_line === "number" ? raw.start_line : undefined,
-    endLine: "end_line" in raw && typeof raw.end_line === "number" ? raw.end_line : undefined,
+    path: normalizeSourceReferencePath(truthDocPath, raw.path),
+    symbol:
+      "symbol" in raw && typeof raw.symbol === "string"
+        ? raw.symbol
+        : undefined,
+    startLine:
+      "start_line" in raw && typeof raw.start_line === "number"
+        ? raw.start_line
+        : undefined,
+    endLine:
+      "end_line" in raw && typeof raw.end_line === "number"
+        ? raw.end_line
+        : undefined,
     contentHash:
-      "content_hash" in raw && typeof raw.content_hash === "string" ? raw.content_hash : undefined,
+      "content_hash" in raw && typeof raw.content_hash === "string"
+        ? raw.content_hash
+        : undefined,
     source: "evidence-block",
   };
 };
@@ -49,17 +56,12 @@ export const parseEvidenceReferences = async (
   const source = await fs.readFile(path.join(rootDir, truthDocPath), "utf8");
   const parsed = matter(source);
   const references: EvidenceReference[] = [];
-  const sourceOfTruth = Array.isArray(parsed.data.source_of_truth) ? parsed.data.source_of_truth : [];
 
-  for (const entry of sourceOfTruth) {
-    if (typeof entry !== "string") {
-      continue;
-    }
-
+  for (const entry of parseSourceReferences(source, truthDocPath)) {
     references.push({
       truthDocPath,
-      path: normalizeReferencePath(truthDocPath, entry),
-      source: "frontmatter",
+      path: entry,
+      source: "source-references",
     });
   }
 

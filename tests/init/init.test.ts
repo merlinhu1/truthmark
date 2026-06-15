@@ -58,15 +58,15 @@ describe("runInit", () => {
       expect(config.platforms.length).toBeGreaterThan(0);
       expect(config.truthmark).toMatchObject({
         workspace: "docs/truthmark",
-        routes: {
-          index: "routes/areas.md",
-          areas: "routes/areas",
-          default_area: "repository",
-          max_delegation_depth: 1,
+        generated: {
+          portal: {
+            enabled: false,
+          },
         },
-        truth: { root: "truth" },
-        templates: { root: "templates" },
       });
+      expect(config.truthmark).not.toHaveProperty("routes");
+      expect(config.truthmark).not.toHaveProperty("templates");
+      expect(config.truthmark).not.toHaveProperty("truth");
       await expect(
         fs.stat(`${repo.rootDir}/.truthmark/local.example.yml`),
       ).rejects.toThrow();
@@ -87,82 +87,117 @@ describe("runInit", () => {
       ).toContain("Truth documents:");
       expect(
         await repo.readFile("docs/truthmark/routes/areas/repository.md"),
-      ).toContain("path: docs/truthmark/truth/repository/overview.md");
+      ).toContain("path: docs/truthmark/engineering/repository/overview.md");
       expect(
         await repo.readFile("docs/truthmark/routes/areas/repository.md"),
-      ).toContain("kind: behavior");
+      ).toContain("kind: engineering-behavior");
       expect(
         await repo.readFile("docs/truthmark/routes/areas/repository.md"),
-      ).not.toContain("- docs/truthmark/truth/repository/overview.md");
+      ).not.toContain("- docs/truthmark/engineering/repository/overview.md");
       expect(
         await repo.readFile("docs/truthmark/routes/areas/repository.md"),
-      ).not.toContain("- docs/truthmark/truth/README.md");
-      expect(await repo.readFile("docs/truthmark/truth/README.md")).toContain(
-        "Truth Docs",
-      );
-      expect(await repo.readFile("docs/truthmark/truth/README.md")).toContain("index");
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "# {{title}}",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Current Behavior",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Scope",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "{{scope}}",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Core Rules",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Flows And States",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "Split into another leaf doc when content introduces",
-      );
-      expect(await repo.readFile("docs/truthmark/truth/repository/README.md")).toContain(
-        "Repository Truth Docs",
-      );
-      expect(await repo.readFile("docs/truthmark/truth/repository/README.md")).toContain(
-        "index",
+      ).not.toContain("- docs/truthmark/engineering/README.md");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).toContain("Truth Docs");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).toContain(
+        "Keep engineering truth in bounded behavior, contract, architecture, workflow, operations, and test docs.",
       );
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).not.toContain("<domain>/<behavior>.md");
+      expect(
+        await repo.readFile("docs/truthmark/product/README.md"),
+      ).toContain("Keep product truth in bounded capability docs.");
+      expect(
+        await repo.readFile("docs/truthmark/product/README.md"),
+      ).not.toContain("<domain>/<behavior>.md");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).toContain("index");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("# {{title}}");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("## Current Implementation Behavior");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("## Scope");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("{{scope}}");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("## Core Rules");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("## Flows And States");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("Split into another leaf doc when content introduces");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/repository/README.md"),
+      ).toContain("Repository Truth Docs");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/repository/README.md"),
+      ).toContain("index");
+      expect(
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("# Repository Overview");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain(
-        "This doc was created from the editable behavior-doc template at docs/truthmark/templates/behavior-doc.md.",
+        "This doc was created from the editable engineering-behavior template at docs/truthmark/templates/engineering-behavior.md.",
       );
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
-      ).toContain("## Current Behavior");
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
+      ).toContain("## Current Implementation Behavior");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("## Purpose");
       expect(
-        (await repo.readFile("docs/truthmark/truth/repository/overview.md")).match(
-          /## Scope/g,
-        ),
+        (
+          await repo.readFile(
+            "docs/truthmark/engineering/repository/overview.md",
+          )
+        ).match(/## Scope/g),
       ).toHaveLength(1);
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("## Non-Goals");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("## Maintenance Notes");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).not.toContain("{{");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
-      ).toContain("## Product Decisions");
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
+      ).toContain("## Engineering Decisions");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("## Rationale");
-
       const agents = await repo.readFile("AGENTS.md");
       const structureSkill = await repo.readFile(
         ".agents/skills/truthmark-structure/SKILL.md",
@@ -223,6 +258,9 @@ describe("runInit", () => {
       );
       const syncCopilotPrompt = await repo.readFile(
         ".github/prompts/truthmark-sync.prompt.md",
+      );
+      const syncCopilotSubagents = await repo.readFile(
+        ".github/skills/truthmark-sync/support/subagents-and-leases.md",
       );
       const realizeSkill = await repo.readFile(
         ".agents/skills/truthmark-realize/SKILL.md",
@@ -340,7 +378,9 @@ describe("runInit", () => {
       expect(agents).toContain("Hierarchy hints: config .truthmark/config.yml");
       expect(agents).toContain("routes docs/truthmark/routes/areas.md");
       expect(agents).toContain("docs/truthmark/routes/areas/**/*.md");
-      expect(agents).toContain("Truth docs: docs/truthmark/truth/**/*.md");
+      expect(agents).toContain(
+        "Truth docs: docs/truthmark/product/**/*.md and docs/truthmark/engineering/**/*.md",
+      );
       expect(agents).toContain(
         "Decisions live in the canonical doc they govern",
       );
@@ -421,14 +461,18 @@ describe("runInit", () => {
       expect(syncHelperManifest).toContain("- sync-report");
       expect(syncHelperManifest).toContain("- <report-file>");
       expect(syncHelperManifest).toContain("- --json");
-      expect(syncHelperManifest).not.toContain("cd .agents/skills/truthmark-sync");
+      expect(syncHelperManifest).not.toContain(
+        "cd .agents/skills/truthmark-sync",
+      );
       expect(syncHelperManifest).not.toContain("node scripts/");
       expect(syncHelperManifest).toContain("writes: false");
       expect(syncHelperPolicy).toContain("Optional helper CLI commands");
       expect(syncHelperPolicy).toContain("manual fallback");
       expect(syncHelperPolicy).toContain("Helper scripts:");
       await expect(
-        repo.readFile(".agents/skills/truthmark-sync/scripts/validate-sync-report.mjs"),
+        repo.readFile(
+          ".agents/skills/truthmark-sync/scripts/validate-sync-report.mjs",
+        ),
       ).rejects.toThrow();
       expect(syncProcedure).toContain("host supports subagent dispatch");
       expect(syncSubagents).toContain("truth_doc_writer");
@@ -438,7 +482,9 @@ describe("runInit", () => {
       expect(syncSkill).toContain(
         "Inspect .truthmark/config.yml and configured route files",
       );
-      expect(syncSkill).toContain("then inspect relevant canonical docs directly");
+      expect(syncSkill).toContain(
+        "then inspect relevant canonical docs directly",
+      );
       expect(syncSkill).not.toContain(".truthmark/local.yml");
       expect(syncSkill).not.toContain("truth_sync.sync_agent");
       expect(syncSkill).not.toContain(
@@ -459,13 +505,26 @@ describe("runInit", () => {
       expect(syncOpenCodeSubagents).toContain("@truth-claim-verifier");
       expect(syncOpenCodeSubagents).toContain("@truth-doc-writer");
       expect(
-        await repo.readFile(".opencode/skills/truthmark-sync/helper-manifest.yml"),
+        await repo.readFile(
+          ".opencode/skills/truthmark-sync/helper-manifest.yml",
+        ),
       ).toContain("validate-sync-report:");
-      expect(syncCopilotPrompt).toContain("Copilot custom-agent mode:");
-      expect(syncCopilotPrompt).toContain("@truth-route-auditor");
-      expect(syncCopilotPrompt).toContain("@truth-claim-verifier");
-      expect(syncCopilotPrompt).toContain("@truth-doc-writer");
-      expect(syncCopilotPrompt).not.toContain("scripts/validate-sync-report.mjs");
+      expect(syncCopilotPrompt).toContain(
+        "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
+      );
+      expect(syncCopilotPrompt).toContain(
+        "Do not invoke another Truthmark command from here.",
+      );
+      expect(syncCopilotPrompt).toContain(
+        ".github/skills/truthmark-sync/support/subagents-and-leases.md",
+      );
+      expect(syncCopilotSubagents).toContain("Copilot custom-agent mode:");
+      expect(syncCopilotSubagents).toContain("@truth-route-auditor");
+      expect(syncCopilotSubagents).toContain("@truth-claim-verifier");
+      expect(syncCopilotSubagents).toContain("@truth-doc-writer");
+      expect(syncCopilotPrompt).not.toContain(
+        "scripts/validate-sync-report.mjs",
+      );
       expect(syncClaudeSkill).toContain("name: truthmark-sync");
       expect(syncClaudeSkill).toContain(
         "Use this skill automatically before finishing",
@@ -477,7 +536,9 @@ describe("runInit", () => {
       expect(syncClaudeSubagents).toContain("truth-claim-verifier subagent");
       expect(syncClaudeSubagents).toContain("truth-doc-writer subagent");
       expect(
-        await repo.readFile(".claude/skills/truthmark-sync/helper-manifest.yml"),
+        await repo.readFile(
+          ".claude/skills/truthmark-sync/helper-manifest.yml",
+        ),
       ).toContain("validate-sync-report:");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain("user-invocable: true");
@@ -517,8 +578,18 @@ describe("runInit", () => {
       );
       expect(previewOpenCodeSkill).toContain("name: truthmark-preview");
       expect(previewClaudeSkill).toContain("name: truthmark-preview");
-      expect(previewCopilotPrompt).toContain("Truth Preview: completed");
-      expect(previewGeminiCommand).toContain("/truthmark:preview");
+      expect(previewCopilotPrompt).toContain(
+        "This prompt is the GitHub Copilot entrypoint for Truthmark Preview.",
+      );
+      expect(previewCopilotPrompt).toContain(
+        "Do not invoke another Truthmark command from here.",
+      );
+      expect(previewCopilotPrompt).toContain(
+        ".github/skills/truthmark-preview/support/report-template.md",
+      );
+      expect(previewGeminiCommand).toContain(
+        "This command is the Gemini CLI entrypoint for Truthmark Preview.",
+      );
       expect(previewGeminiCommand).not.toContain("helper-manifest.yml");
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/procedure.md");
@@ -553,7 +624,9 @@ describe("runInit", () => {
       expect(openCodeDocReviewerAgent).toContain("edit: deny");
       expect(openCodeDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(openCodeDocWriterAgent).toContain("mode: subagent");
-      expect(openCodeDocWriterAgent).toContain('"docs/truthmark/truth/**": allow');
+      expect(openCodeDocWriterAgent).toContain(
+        '"docs/truthmark/engineering/**": allow',
+      );
       expect(openCodeDocWriterAgent).toContain("@truth-doc-writer");
       expect(openCodeDocWriterAgent).not.toContain(READ_ONLY_CONTEXT_BOUNDARY);
       expect(copilotRouteAuditorAgent).toContain("name: truth-route-auditor");
@@ -584,7 +657,9 @@ describe("runInit", () => {
       expect(claudeDocReviewerAgent).toContain("name: truth-doc-reviewer");
       expect(claudeDocReviewerAgent).toContain("tools: Read, Grep, Glob, LS");
       expect(claudeDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
-      expect(claudeDocReviewerAgent).toContain("Rationale");
+      expect(claudeDocReviewerAgent).toContain("Product Decisions");
+      expect(claudeDocReviewerAgent).toContain("Engineering Decisions");
+      expect(claudeDocReviewerAgent).toContain("lane-appropriate decision sections");
       expect(claudeDocWriterAgent).toContain("name: truth-doc-writer");
       expect(claudeDocWriterAgent).toContain(
         "tools: Read, Grep, Glob, LS, Edit, MultiEdit",
@@ -664,7 +739,10 @@ describe("runInit", () => {
         ),
       ).toBe(true);
       const diagnosticCategoriesByFile = new Map(
-        result.diagnostics.map((diagnostic) => [diagnostic.file, diagnostic.category]),
+        result.diagnostics.map((diagnostic) => [
+          diagnostic.file,
+          diagnostic.category,
+        ]),
       );
       for (const file of [
         ".github/prompts/truthmark-realize.prompt.md",
@@ -693,56 +771,64 @@ describe("runInit", () => {
       await runInit(repo.rootDir);
 
       const config = parse(await repo.readFile(".truthmark/config.yml")) as {
-        truthmark: { workspace: string; truth: { root: string } };
+        truthmark: { workspace: string };
       };
 
       expect(config.truthmark.workspace).toBe("docs/truthmark");
-      expect(config.truthmark.truth.root).toBe("truth");
-      expect(await repo.readFile("docs/truthmark/truth/README.md")).toContain(
-        "Truth Docs",
-      );
-      expect(await repo.readFile("docs/truthmark/truth/repository/README.md")).toContain(
-        "Repository Truth Docs",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "truth_kind: behavior",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Current Behavior",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/contract-doc.md")).toContain(
-        "## Contract Surface",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/contract-doc.md")).toContain(
-        "{{contract_surface}}",
-      );
       expect(
-        await repo.readFile("docs/truthmark/templates/architecture-doc.md"),
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).toContain("Truth Docs");
+      expect(
+        await repo.readFile("docs/truthmark/engineering/repository/README.md"),
+      ).toContain("Repository Truth Docs");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("truth_kind: engineering-behavior");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
+      ).toContain("## Current Implementation Behavior");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-contract.md"),
+      ).toContain("## Contract Surface");
+      expect(
+        await repo.readFile("docs/truthmark/templates/engineering-contract.md"),
+      ).toContain("{{contract_surface}}");
+      expect(
+        await repo.readFile(
+          "docs/truthmark/templates/engineering-architecture.md",
+        ),
       ).toContain("## Boundaries");
-      expect(await repo.readFile("docs/truthmark/templates/workflow-doc.md")).toContain(
-        "## Execution Model",
-      );
-      expect(await repo.readFile("docs/truthmark/templates/operations-doc.md")).toContain(
-        "## Runtime Topology",
-      );
       expect(
-        await repo.readFile("docs/truthmark/templates/test-behavior-doc.md"),
+        await repo.readFile("docs/truthmark/templates/engineering-workflow.md"),
+      ).toContain("## Execution Model");
+      expect(
+        await repo.readFile(
+          "docs/truthmark/templates/engineering-operations.md",
+        ),
+      ).toContain("## Runtime Topology");
+      expect(
+        await repo.readFile(
+          "docs/truthmark/templates/engineering-test-behavior.md",
+        ),
       ).toContain("## Assertions And Invariants");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
-      ).toContain("doc_type: behavior");
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
+      ).toContain("truth_kind: engineering-behavior");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
-      ).toContain("truth_kind: behavior");
-      expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain(
         "Truth README files are indexes; behavior truth belongs in bounded leaf docs.",
       );
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain(
-        "This doc was created from the editable behavior-doc template at docs/truthmark/templates/behavior-doc.md.",
+        "This doc was created from the editable engineering-behavior template at docs/truthmark/templates/engineering-behavior.md.",
       );
     } finally {
       await repo.cleanup();
@@ -762,15 +848,6 @@ platforms:
   - gemini-cli
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  truth:
-    root: truth
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -795,10 +872,10 @@ ignore: []
       ).resolves.toBeTruthy();
       expect(
         await repo.readFile(".github/prompts/truthmark-sync.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-sync");
+      ).toContain("This prompt is the GitHub Copilot entrypoint for Truthmark Sync.");
       expect(
         await repo.readFile(".github/prompts/truthmark-document.prompt.md"),
-      ).toContain("GitHub Copilot /truthmark-document");
+      ).toContain("This prompt is the GitHub Copilot entrypoint for Truthmark Document.");
       await expect(
         fs.stat(`${repo.rootDir}/.github/skills/truthmark-sync/SKILL.md`),
       ).resolves.toBeTruthy();
@@ -809,13 +886,19 @@ ignore: []
         await repo.readFile(".github/skills/truthmark-sync/SKILL.md"),
       ).toContain("helper-manifest.yml");
       expect(
-        await repo.readFile(".github/skills/truthmark-sync/support/subagents-and-leases.md"),
+        await repo.readFile(
+          ".github/skills/truthmark-sync/support/subagents-and-leases.md",
+        ),
       ).toContain("@truth-doc-writer");
       expect(
-        await repo.readFile(".github/skills/truthmark-document/helper-manifest.yml"),
+        await repo.readFile(
+          ".github/skills/truthmark-document/helper-manifest.yml",
+        ),
       ).toContain("validate-document-report:");
       expect(
-        await repo.readFile(".github/skills/truthmark-document/support/helper-policy.md"),
+        await repo.readFile(
+          ".github/skills/truthmark-document/support/helper-policy.md",
+        ),
       ).not.toContain("scripts/validate-document-report.mjs");
       await expect(fs.stat(`${repo.rootDir}/GEMINI.md`)).resolves.toBeTruthy();
       await expect(
@@ -840,10 +923,15 @@ ignore: []
       );
       expect(
         await repo.readFile(".gemini/commands/truthmark/sync.toml"),
-      ).toContain("name: truthmark-sync");
+      ).toContain("This command is the Gemini CLI entrypoint for Truthmark Sync.");
+      expect(
+        await repo.readFile(".gemini/commands/truthmark/sync.toml"),
+      ).toContain(".gemini/skills/truthmark-sync/SKILL.md");
       expect(
         await repo.readFile(".gemini/commands/truthmark/document.toml"),
-      ).toContain("name: truthmark-document");
+      ).toContain(
+        `description = "${getTruthmarkWorkflow("truthmark-document").description}"`,
+      );
       expect(
         await repo.readFile(".gemini/commands/truthmark/realize.toml"),
       ).toContain(
@@ -859,10 +947,14 @@ ignore: []
         await repo.readFile(".gemini/skills/truthmark-sync/SKILL.md"),
       ).toContain("helper-manifest.yml");
       expect(
-        await repo.readFile(".gemini/skills/truthmark-document/helper-manifest.yml"),
+        await repo.readFile(
+          ".gemini/skills/truthmark-document/helper-manifest.yml",
+        ),
       ).toContain("validate-document-report:");
       expect(
-        await repo.readFile(".gemini/skills/truthmark-sync/support/subagents-and-leases.md"),
+        await repo.readFile(
+          ".gemini/skills/truthmark-sync/support/subagents-and-leases.md",
+        ),
       ).toContain("@truth-doc-writer");
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/agents/truth-route-auditor.md`),
@@ -899,15 +991,6 @@ platforms:
   - claude-code
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  truth:
-    root: truth
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -972,7 +1055,7 @@ ignore: []
         "# System Architecture\n",
       );
       await repo.writeFile(
-        "docs/truthmark/truth/authentication.md",
+        "docs/truthmark/engineering/authentication.md",
         "# Authentication\n",
       );
       await repo.writeFile(
@@ -986,9 +1069,9 @@ ignore: []
       expect(await repo.readFile("docs/architecture/system.md")).toBe(
         "# System Architecture\n",
       );
-      expect(await repo.readFile("docs/truthmark/truth/authentication.md")).toBe(
-        "# Authentication\n",
-      );
+      expect(
+        await repo.readFile("docs/truthmark/engineering/authentication.md"),
+      ).toBe("# Authentication\n");
 
       const areas = await repo.readFile("docs/truthmark/routes/areas.md");
 
@@ -1011,11 +1094,11 @@ ignore: []
     try {
       await runConfig(repo.rootDir, {});
       await repo.writeFile(
-        "docs/truthmark/templates/behavior-doc.md",
+        "docs/truthmark/templates/engineering-behavior.md",
         `---
 status: active
       doc_type: behavior
-      truth_kind: behavior
+      truth_kind: engineering-behavior
 last_reviewed: 2026-05-12
 source_of_truth:
   - {{source_of_truth}}
@@ -1031,17 +1114,23 @@ Custom template for {{area}}.
 
       await runInit(repo.rootDir);
 
-      expect(await repo.readFile("docs/truthmark/templates/behavior-doc.md")).toContain(
-        "## Local Standard",
-      );
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile("docs/truthmark/templates/engineering-behavior.md"),
       ).toContain("## Local Standard");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
+      ).toContain("## Local Standard");
+      expect(
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).toContain("Custom template for repository.");
       expect(
-        await repo.readFile("docs/truthmark/truth/repository/overview.md"),
+        await repo.readFile(
+          "docs/truthmark/engineering/repository/overview.md",
+        ),
       ).not.toContain("{{");
     } finally {
       await repo.cleanup();
@@ -1054,11 +1143,11 @@ Custom template for {{area}}.
     try {
       await runConfig(repo.rootDir, {});
       await repo.writeFile(
-        "docs/truthmark/templates/behavior-doc.md",
+        "docs/truthmark/templates/engineering-behavior.md",
         `---
 status: active
 doc_type: behavior
-truth_kind: behavior
+truth_kind: engineering-behavior
 last_reviewed: 2026-05-12
 owner: local-platform
 source_of_truth:
@@ -1087,7 +1176,7 @@ This fenced heading example should remain part of the custom section.
 
 Old local scope copy that should be replaced.
 
-## Current Behavior
+## Current Implementation Behavior
 
 Old current-behavior copy that should be replaced.
 
@@ -1111,13 +1200,18 @@ Keep this project-specific trailing section.
 
       await runInit(repo.rootDir);
 
-      const updatedTemplate = await repo.readFile("docs/truthmark/templates/behavior-doc.md");
+      const updatedTemplate = await repo.readFile(
+        "docs/truthmark/templates/engineering-behavior.md",
+      );
 
       expect(updatedTemplate).toContain(
         "State the user/system outcome this behavior protects and why it exists.",
       );
       expect(updatedTemplate).toContain("owner: local-platform");
-      expect(updatedTemplate).toContain("  - docs/local-source.md");
+      expect(updatedTemplate).not.toContain("source_of_truth:");
+      expect(updatedTemplate).not.toContain("  - docs/local-source.md");
+      expect(updatedTemplate).toContain("## Source References");
+      expect(updatedTemplate).toContain("{{source_references}}");
       expect(updatedTemplate).toContain("# Custom {{title}} Template");
       expect(updatedTemplate).toContain(
         "Local introduction that should remain before managed sections.",
@@ -1142,15 +1236,18 @@ Keep this project-specific trailing section.
         "## Purpose",
         "## Team Notes Before Scope",
         "## Scope",
-        "## Current Behavior",
+        "## Current Implementation Behavior",
         "## Domain Vocabulary",
         "## Core Rules",
         "## Maintenance Notes",
+        "## Source References",
         "## Local Appendices",
       ].map((heading) => updatedTemplate.indexOf(heading));
 
       expect(headingOrder.every((index) => index >= 0)).toBe(true);
-      expect(headingOrder).toEqual([...headingOrder].sort((left, right) => left - right));
+      expect(headingOrder).toEqual(
+        [...headingOrder].sort((left, right) => left - right),
+      );
     } finally {
       await repo.cleanup();
     }
@@ -1159,12 +1256,12 @@ Keep this project-specific trailing section.
   it("preserves custom preambles across every truth doc template on rerun", async () => {
     const repo = await createTempRepo();
     const templatePaths = [
-      "docs/truthmark/templates/behavior-doc.md",
-      "docs/truthmark/templates/contract-doc.md",
-      "docs/truthmark/templates/architecture-doc.md",
-      "docs/truthmark/templates/workflow-doc.md",
-      "docs/truthmark/templates/operations-doc.md",
-      "docs/truthmark/templates/test-behavior-doc.md",
+      "docs/truthmark/templates/engineering-behavior.md",
+      "docs/truthmark/templates/engineering-contract.md",
+      "docs/truthmark/templates/engineering-architecture.md",
+      "docs/truthmark/templates/engineering-workflow.md",
+      "docs/truthmark/templates/engineering-operations.md",
+      "docs/truthmark/templates/engineering-test-behavior.md",
     ];
 
     try {
@@ -1196,20 +1293,24 @@ Keep this project-specific trailing section.
       for (const templatePath of templatePaths) {
         const updatedTemplate = await repo.readFile(templatePath);
         expect(updatedTemplate).toContain(`template_path: ${templatePath}`);
-        expect(updatedTemplate).toContain(`# Local Template For ${templatePath}`);
-        expect(updatedTemplate).toContain("Repository-specific introductory guidance.");
+        expect(updatedTemplate).toContain(
+          `# Local Template For ${templatePath}`,
+        );
+        expect(updatedTemplate).toContain(
+          "Repository-specific introductory guidance.",
+        );
       }
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("rejects a broken behavior-doc template symlink that would write outside the repo", async () => {
+  it("rejects a broken engineering-behavior template symlink that would write outside the repo", async () => {
     const repo = await createTempRepo();
     const outsideTemplatePath = path.resolve(
       repo.rootDir,
       "..",
-      "truthmark-outside-behavior-doc-template.md",
+      "truthmark-outside-engineering-behavior-template.md",
     );
 
     try {
@@ -1217,7 +1318,13 @@ Keep this project-specific trailing section.
       await repo.writeFile("docs/truthmark/templates/.keep", "");
       await fs.symlink(
         outsideTemplatePath,
-        path.join(repo.rootDir, "docs", "truthmark", "templates", "behavior-doc.md"),
+        path.join(
+          repo.rootDir,
+          "docs",
+          "truthmark",
+          "templates",
+          "engineering-behavior.md",
+        ),
       );
 
       await expect(runInit(repo.rootDir)).rejects.toThrow(
@@ -1321,13 +1428,15 @@ authority:
           expect.objectContaining({
             category: "config",
             severity: "error",
-            message: expect.stringContaining("Unsupported Truthmark config shape"),
+            message: expect.stringContaining(
+              "Unsupported Truthmark config shape",
+            ),
           }),
         ]),
       );
-      expect(await repo.readFile("docs/truthmark/truth/README.md")).toContain(
-        "Truth Docs",
-      );
+      expect(
+        await repo.readFile("docs/truthmark/engineering/README.md"),
+      ).toContain("Truth Docs");
     } finally {
       await repo.cleanup();
     }
@@ -1342,15 +1451,6 @@ authority:
         `version: 2
 truthmark:
   workspace: docs/product
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  truth:
-    root: truth
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -1363,8 +1463,10 @@ truthmark:
         "docs/product/routes/areas/repository.md",
       );
       expect(childRoute).toContain("```yaml");
-      expect(childRoute).toContain("path: docs/product/truth/repository/overview.md");
-      expect(childRoute).toContain("kind: behavior");
+      expect(childRoute).toContain(
+        "path: docs/product/engineering/repository/overview.md",
+      );
+      expect(childRoute).toContain("kind: engineering-behavior");
       expect(childRoute).not.toContain("- docs/product/repository/overview.md");
 
       const result = await runCheck(repo.rootDir);
@@ -1392,15 +1494,6 @@ platforms:
   - opencode
 truthmark:
   workspace: product
-  routes:
-    index: routes/index.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  truth:
-    root: truth
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -1412,14 +1505,18 @@ truthmark:
       const openCodeDocWriterAgent = await repo.readFile(
         ".opencode/agents/truth-doc-writer.md",
       );
-      expect(openCodeDocWriterAgent).toContain('"product/truth/**": allow');
       expect(openCodeDocWriterAgent).toContain(
-        '"product/routes/index.md": allow',
+        '"product/engineering/**": allow',
+      );
+      expect(openCodeDocWriterAgent).toContain(
+        '"product/routes/areas.md": allow',
       );
       expect(openCodeDocWriterAgent).toContain(
         '"product/routes/areas/**/*.md": allow',
       );
-      expect(openCodeDocWriterAgent).not.toContain('"docs/truthmark/truth/**": allow');
+      expect(openCodeDocWriterAgent).not.toContain(
+        '"docs/truthmark/engineering/**": allow',
+      );
       expect(openCodeDocWriterAgent).not.toContain(
         '"docs/truthmark/routes/areas.md": allow',
       );
@@ -1485,11 +1582,13 @@ Update truth when:
       await runInit(repo.rootDir);
 
       await expect(
-        fs.stat(path.join(repo.rootDir, "docs/truthmark/routes/areas/repository.md")),
+        fs.stat(
+          path.join(repo.rootDir, "docs/truthmark/routes/areas/repository.md"),
+        ),
       ).rejects.toThrow();
-      expect(await repo.readFile("docs/truthmark/routes/areas.md")).not.toContain(
-        "docs/truthmark/routes/areas/repository.md",
-      );
+      expect(
+        await repo.readFile("docs/truthmark/routes/areas.md"),
+      ).not.toContain("docs/truthmark/routes/areas/repository.md");
     } finally {
       await repo.cleanup();
     }
@@ -1523,11 +1622,15 @@ authority:
           expect.objectContaining({
             category: "config",
             severity: "error",
-            message: expect.stringContaining("Unsupported Truthmark config shape"),
+            message: expect.stringContaining(
+              "Unsupported Truthmark config shape",
+            ),
           }),
         ]),
       );
-      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/truth/README.md`)).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/docs/truthmark/engineering/README.md`),
+      ).rejects.toThrow();
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
     } finally {
       await repo.cleanup();

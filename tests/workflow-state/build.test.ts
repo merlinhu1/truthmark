@@ -113,14 +113,14 @@ describe("action context", () => {
       const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST[workflow], {
         routeIndexPath: "docs/truthmark/routes/areas.md",
         routeFiles: ["docs/truthmark/routes/areas/repository.md"],
-        truthDocs: ["docs/truthmark/truth/repository/overview.md"],
+        truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
       });
 
       expect(context.mode).toBe("truth-doc-write");
       expect(context.allowedWritePaths).toEqual([
+        "docs/truthmark/engineering/repository/overview.md",
         "docs/truthmark/routes/areas.md",
         "docs/truthmark/routes/areas/repository.md",
-        "docs/truthmark/truth/repository/overview.md",
       ]);
       expect(context.allowedWritePaths).not.toContain("*");
       expect(context.writeLeaseRequired).toBe(true);
@@ -132,14 +132,14 @@ describe("action context", () => {
     const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-structure"], {
       routeIndexPath: "docs/truthmark/routes/areas.md",
       routeFiles: ["docs/truthmark/routes/areas/new-area.md"],
-      starterTruthDocs: ["docs/truthmark/truth/new-area.md"],
+      starterTruthDocs: ["docs/truthmark/engineering/new-area.md"],
     });
 
     expect(context.mode).toBe("route-write");
     expect(context.allowedWritePaths).toEqual([
+      "docs/truthmark/engineering/new-area.md",
       "docs/truthmark/routes/areas.md",
       "docs/truthmark/routes/areas/new-area.md",
-      "docs/truthmark/truth/new-area.md",
     ]);
     expect(context.allowedWritePaths).not.toContain("*");
   });
@@ -148,18 +148,18 @@ describe("action context", () => {
     const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-realize"], {
       routeIndexPath: "docs/truthmark/routes/areas.md",
       routeFiles: ["docs/truthmark/routes/areas/repository.md"],
-      truthRoot: "docs/truthmark/truth",
-      truthDocs: ["docs/truthmark/truth/repository/overview.md"],
+      truthRoot: "docs/truthmark/engineering",
+      truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
       codeWritePaths: ["src/**/*.ts"],
     });
 
     expect(context.mode).toBe("code-write");
     expect(context.allowedWritePaths).toEqual(["src/**/*.ts"]);
     expect(context.forbiddenWritePaths).toEqual([
+      "docs/truthmark/engineering/**/*.md",
+      "docs/truthmark/engineering/repository/overview.md",
       "docs/truthmark/routes/areas.md",
       "docs/truthmark/routes/areas/repository.md",
-      "docs/truthmark/truth/**/*.md",
-      "docs/truthmark/truth/repository/overview.md",
     ]);
   });
 
@@ -293,9 +293,9 @@ describe("buildWorkflowState", () => {
     await runInit(repo.rootDir);
     await repo.writeFile(
       "docs/truthmark/routes/areas.md",
-      "# Truthmark Areas\n\n## Docs Only\n\nTruth documents:\n- docs/truthmark/truth/docs-only.md\n\nCode surface:\n- docs/**\n\nUpdate truth when:\n- docs change\n",
+      "# Truthmark Areas\n\n## Docs Only\n\nTruth documents:\n- docs/truthmark/engineering/docs-only.md\n\nCode surface:\n- docs/**\n\nUpdate truth when:\n- docs change\n",
     );
-    await repo.writeFile("docs/truthmark/truth/docs-only.md", "# Docs Only\n");
+    await repo.writeFile("docs/truthmark/engineering/docs-only.md", "# Docs Only\n");
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
     await repo.writeFile("src/unmapped.ts", "export const value = 2;\n");

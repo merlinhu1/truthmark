@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
@@ -15,7 +18,36 @@ const portalPaths = [
   ".gemini/commands/truthmark/portal.toml",
 ];
 
+const readOnlyProcedurePaths = [
+  ".agents/skills/truthmark-check/support/procedure.md",
+  ".agents/skills/truthmark-preview/support/procedure.md",
+  ".claude/skills/truthmark-check/support/procedure.md",
+  ".claude/skills/truthmark-preview/support/procedure.md",
+  ".gemini/skills/truthmark-check/support/procedure.md",
+  ".gemini/skills/truthmark-preview/support/procedure.md",
+  ".github/skills/truthmark-check/support/procedure.md",
+  ".github/skills/truthmark-preview/support/procedure.md",
+  ".opencode/skills/truthmark-check/support/procedure.md",
+  ".opencode/skills/truthmark-preview/support/procedure.md",
+];
+
+const staleWriteAuthorizingLaneText =
+  "before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous";
+
 describe("Truthmark Portal generated surfaces", () => {
+  it("keeps checked-in read-only procedures free of write-authorizing lane wording", () => {
+    for (const procedurePath of readOnlyProcedurePaths) {
+      const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
+
+      expect(content, procedurePath).not.toContain(
+        staleWriteAuthorizingLaneText,
+      );
+      expect(content, procedurePath).toContain(
+        "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
+      );
+    }
+  });
+
   it("omits generic optional CLI validation from generated user-facing workflow surfaces", () => {
     const config = createDefaultConfig();
     const generatedSurfaces = renderGeneratedSurfaces(config);
@@ -51,24 +83,34 @@ describe("Truthmark Portal generated surfaces", () => {
       ]),
     );
 
-    const syncSkill = byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
+    const syncSkill =
+      byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
     const syncProcedure =
       byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
     const syncHelperManifest =
       byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
     const syncHelperPolicy =
-      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ?? "";
+      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ??
+      "";
     const previewSkill =
       byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
 
     expect(syncSkill).toContain("Quick procedure:");
-    expect(syncSkill).toContain("direct checkout inspection is the canonical path");
-    expect(syncSkill).toContain("Read support/procedure.md before editing truth docs.");
+    expect(syncSkill).toContain(
+      "direct checkout inspection is the canonical path",
+    );
+    expect(syncSkill).toContain(
+      "Read support/procedure.md before editing truth docs.",
+    );
     expect(syncProcedure).toContain("Code verification is parent-owned");
-    expect(syncProcedure).toContain("Validate the report body before adding this validator's own success status");
+    expect(syncProcedure).toContain(
+      "Validate the report body before adding this validator's own success status",
+    );
     expect(syncHelperManifest).toContain("validate-sync-report");
     expect(syncHelperManifest).toContain("validate-write-lease");
-    expect(syncHelperPolicy).toContain("Optional helper CLI commands may collect deterministic checkout facts");
+    expect(syncHelperPolicy).toContain(
+      "Optional helper CLI commands may collect deterministic checkout facts",
+    );
     expect(syncHelperPolicy).toContain("truthmark validate ... --json");
     expect(previewSkill).toContain("Truth Preview is read-only");
     expect(previewSkill).not.toContain("CLI is unavailable");
@@ -76,7 +118,9 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("omits Portal surfaces and AGENTS wording when disabled", () => {
     const config = createDefaultConfig();
-    const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
+    const paths = renderGeneratedSurfaces(config).map(
+      (surface) => surface.path,
+    );
 
     expect(config.truthmark.generated.portal.enabled).toBe(false);
     for (const portalPath of portalPaths) {
@@ -92,20 +136,25 @@ describe("Truthmark Portal generated surfaces", () => {
     };
 
     const surfaces = renderGeneratedSurfaces(config);
-    const byPath = new Map(surfaces.map((surface) => [surface.path, surface.content]));
+    const byPath = new Map(
+      surfaces.map((surface) => [surface.path, surface.content]),
+    );
 
     for (const portalPath of portalPaths) {
       expect(byPath.has(portalPath)).toBe(true);
     }
 
-    const portalSkill = byPath.get(".agents/skills/truthmark-portal/SKILL.md") ?? "";
+    const portalSkill =
+      byPath.get(".agents/skills/truthmark-portal/SKILL.md") ?? "";
     const portalProcedure =
       byPath.get(".agents/skills/truthmark-portal/support/procedure.md") ?? "";
-    const copilotPrompt = byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
-    const geminiCommand = byPath.get(".gemini/commands/truthmark/portal.toml") ?? "";
+    const copilotPrompt =
+      byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
+    const geminiCommand =
+      byPath.get(".gemini/commands/truthmark/portal.toml") ?? "";
     const agentsBlock = renderAgentsBlock(config);
 
-    for (const text of [portalSkill, portalProcedure, copilotPrompt, geminiCommand]) {
+    for (const text of [portalSkill, portalProcedure]) {
       expect(text).toContain("manual-only");
       expect(text).toContain("Markdown remains canonical");
       expect(text).toContain("does not require the truthmark CLI");
@@ -117,10 +166,21 @@ describe("Truthmark Portal generated surfaces", () => {
       expect(text).toContain("generated non-canonical static files");
     }
 
+    expect(copilotPrompt).toContain(
+      "This prompt is the GitHub Copilot entrypoint for Truthmark Portal.",
+    );
+    expect(copilotPrompt).toContain(".github/skills/truthmark-portal/SKILL.md");
+    expect(geminiCommand).toContain(
+      "This command is the Gemini CLI entrypoint for Truthmark Portal.",
+    );
+    expect(geminiCommand).toContain(".gemini/skills/truthmark-portal/SKILL.md");
+
     expect(portalProcedure).toContain("replace the entire output directory");
     expect(portalProcedure).toContain("fixed Portal output directory only");
     expect(portalProcedure).not.toContain("custom Portal output");
-    expect(agentsBlock).toContain("Truthmark Portal is a separate manual-only presentation workflow");
+    expect(agentsBlock).toContain(
+      "Truthmark Portal is a separate manual-only presentation workflow",
+    );
     expect(agentsBlock).toContain("docs/truthmark/generated/portal/");
     expect(agentsBlock).toContain("Markdown remains canonical");
   });

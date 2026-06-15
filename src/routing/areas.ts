@@ -3,20 +3,27 @@ import { parse } from "yaml";
 import type { Diagnostic } from "../output/diagnostic.js";
 
 export const TRUTH_DOCUMENT_KINDS = [
-  "behavior",
-  "contract",
-  "architecture",
-  "workflow",
-  "operations",
-  "test-behavior",
+  "product-capability",
+  "engineering-behavior",
+  "engineering-contract",
+  "engineering-workflow",
+  "engineering-architecture",
+  "engineering-operations",
+  "engineering-test-behavior",
 ] as const;
 
 export type TruthDocumentKind = (typeof TRUTH_DOCUMENT_KINDS)[number];
+export type TruthDocumentLane = "product" | "engineering";
 
 export type TruthDocumentEntry = {
   path: string;
   kind: TruthDocumentKind;
   kindSource: "explicit" | "inferred" | "defaulted";
+  lane: TruthDocumentLane;
+  laneSource: "explicit" | "inferred" | "defaulted";
+  realizedBy: string[];
+  realizes: string[];
+  dependsOn: string[];
 };
 
 export type TruthArea = {
@@ -37,6 +44,19 @@ export type TruthAreaReference = {
   truthDocumentEntries: TruthDocumentEntry[];
 };
 
+const uniqueSorted = (values: string[]): string[] =>
+  [...new Set(values)].sort();
+
+export const mergeTruthDocumentEntryRelationships = (
+  first: TruthDocumentEntry,
+  second: TruthDocumentEntry,
+): TruthDocumentEntry => ({
+  ...first,
+  realizedBy: uniqueSorted([...first.realizedBy, ...second.realizedBy]),
+  realizes: uniqueSorted([...first.realizes, ...second.realizes]),
+  dependsOn: uniqueSorted([...first.dependsOn, ...second.dependsOn]),
+});
+
 type TruthAreaFileReference = {
   id: string;
   name: string;
@@ -55,9 +75,12 @@ type ParseAreasMarkdownResult = {
 
 export type ParseAreasMarkdownOptions = {
   truthDocsRoot?: string;
+  productTruthRoot?: string;
+  engineeringTruthRoot?: string;
 };
 
-const DEFAULT_WORKSPACE_TRUTH_DOCS_ROOT = "docs/truthmark/truth";
+const DEFAULT_PRODUCT_TRUTH_DOCS_ROOT = "docs/truthmark/product";
+const DEFAULT_ENGINEERING_TRUTH_DOCS_ROOT = "docs/truthmark/engineering";
 
 const slugify = (value: string): string => {
   return value
@@ -100,15 +123,96 @@ export const inferTruthDocumentKindFromPath = (
   options: ParseAreasMarkdownOptions = {},
 ): TruthDocumentKind | null => {
   const normalizedPath = documentPath.replaceAll("\\", "/");
-  const truthDocsRoot = (options.truthDocsRoot ?? DEFAULT_WORKSPACE_TRUTH_DOCS_ROOT)
+  const productTruthRoot = (
+    options.productTruthRoot ?? DEFAULT_PRODUCT_TRUTH_DOCS_ROOT
+  )
+    ?.replaceAll("\\", "/")
+    .replace(/\/+$/u, "");
+  const engineeringTruthRoot = (
+    options.engineeringTruthRoot ??
+    options.truthDocsRoot ??
+    DEFAULT_ENGINEERING_TRUTH_DOCS_ROOT
+  )
     ?.replaceAll("\\", "/")
     .replace(/\/+$/u, "");
 
-  if (truthDocsRoot && normalizedPath.startsWith(`${truthDocsRoot}/`)) {
-    return "behavior";
+  if (productTruthRoot && normalizedPath.startsWith(`${productTruthRoot}/`)) {
+    return "product-capability";
+  }
+
+  if (
+    engineeringTruthRoot &&
+    normalizedPath.startsWith(`${engineeringTruthRoot}/`)
+  ) {
+    if (normalizedPath.includes("/contracts/")) return "engineering-contract";
+    if (normalizedPath.includes("/workflows/")) return "engineering-workflow";
+    if (normalizedPath.includes("/architecture/"))
+      return "engineering-architecture";
+    if (normalizedPath.includes("/operations/"))
+      return "engineering-operations";
+    if (normalizedPath.includes("/tests/")) return "engineering-test-behavior";
+    return "engineering-behavior";
   }
 
   return null;
+};
+
+const inferTruthDocumentLaneFromPath = (
+  documentPath: string,
+  options: ParseAreasMarkdownOptions = {},
+): TruthDocumentLane | null => {
+  const normalizedPath = documentPath.replaceAll("\\", "/");
+  const productTruthRoot = (
+    options.productTruthRoot ?? DEFAULT_PRODUCT_TRUTH_DOCS_ROOT
+  )
+    .replaceAll("\\", "/")
+    .replace(/\/+$/u, "");
+  const engineeringTruthRoot = (
+    options.engineeringTruthRoot ??
+    options.truthDocsRoot ??
+    DEFAULT_ENGINEERING_TRUTH_DOCS_ROOT
+  )
+    .replaceAll("\\", "/")
+    .replace(/\/+$/u, "");
+
+  if (normalizedPath.startsWith(`${productTruthRoot}/`)) {
+    return "product";
+  }
+
+  if (normalizedPath.startsWith(`${engineeringTruthRoot}/`)) {
+    return "engineering";
+  }
+
+  return null;
+};
+
+export const laneForTruthDocumentKind = (
+  kind: TruthDocumentKind,
+): TruthDocumentLane => {
+  return kind.startsWith("product-") ? "product" : "engineering";
+};
+
+export const docTypeForTruthDocumentKind = (
+  kind: TruthDocumentKind,
+): string => {
+  if (kind.startsWith("product-")) {
+    return "product";
+  }
+  return kind.slice("engineering-".length);
+};
+
+const parseStringListField = (rawEntry: unknown, field: string): string[] => {
+  if (!rawEntry || typeof rawEntry !== "object" || !(field in rawEntry)) {
+    return [];
+  }
+
+  const value = (rawEntry as Record<string, unknown>)[field];
+
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((entry): entry is string => typeof entry === "string");
 };
 
 type TruthDocumentsSectionResult = {
@@ -153,6 +257,7 @@ const parseTruthDocumentsFromList = (
   const truthDocuments = parseListSection(sectionLines);
   const truthDocumentEntries = truthDocuments.map((documentPath) => {
     const inferredKind = inferTruthDocumentKindFromPath(documentPath, options);
+    const inferredLane = inferTruthDocumentLaneFromPath(documentPath, options);
 
     if (!inferredKind) {
       diagnostics.push(
@@ -166,8 +271,13 @@ const parseTruthDocumentsFromList = (
 
     return {
       path: documentPath,
-      kind: inferredKind ?? "behavior",
+      kind: inferredKind ?? "engineering-behavior",
       kindSource: inferredKind ? ("inferred" as const) : ("defaulted" as const),
+      lane: inferredLane ?? "engineering",
+      laneSource: inferredLane ? ("inferred" as const) : ("defaulted" as const),
+      realizedBy: [],
+      realizes: [],
+      dependsOn: [],
     };
   });
 
@@ -181,6 +291,7 @@ const parseTruthDocumentsFromList = (
 const parseTruthDocumentsFromYaml = (
   sectionLines: string[],
   areaName: string,
+  options: ParseAreasMarkdownOptions,
 ): TruthDocumentsSectionResult => {
   const yamlFenceRange = findTruthDocumentsYamlFenceRange(sectionLines);
 
@@ -261,15 +372,35 @@ const parseTruthDocumentsFromYaml = (
       rawEntry && typeof rawEntry === "object" && "kind" in rawEntry
         ? (rawEntry as { kind?: unknown }).kind
         : null;
+    const lane =
+      rawEntry && typeof rawEntry === "object" && "lane" in rawEntry
+        ? (rawEntry as { lane?: unknown }).lane
+        : null;
+    const inferredKind =
+      typeof path === "string"
+        ? inferTruthDocumentKindFromPath(path, options)
+        : null;
+    const inferredLane =
+      typeof path === "string"
+        ? inferTruthDocumentLaneFromPath(path, options)
+        : null;
+    const normalizedKind = isTruthDocumentKind(kind) ? kind : inferredKind;
+    const normalizedLane =
+      lane === "product" || lane === "engineering"
+        ? lane
+        : normalizedKind
+          ? laneForTruthDocumentKind(normalizedKind)
+          : inferredLane;
 
     if (
       typeof path !== "string" ||
       path.trim().length === 0 ||
-      !isTruthDocumentKind(kind)
+      !normalizedKind ||
+      !normalizedLane
     ) {
       diagnostics.push(
         createAreaDiagnostic(
-          `Area ${areaName} truth_documents entries must include non-empty path and valid kind fields.`,
+          `Area ${areaName} truth_documents entries must include non-empty path plus valid lane and kind fields.`,
           areaName,
         ),
       );
@@ -278,8 +409,14 @@ const parseTruthDocumentsFromYaml = (
 
     truthDocumentEntries.push({
       path: path.trim(),
-      kind,
-      kindSource: "explicit",
+      kind: normalizedKind,
+      kindSource: isTruthDocumentKind(kind) ? "explicit" : "inferred",
+      lane: normalizedLane,
+      laneSource:
+        lane === "product" || lane === "engineering" ? "explicit" : "inferred",
+      realizedBy: parseStringListField(rawEntry, "realized_by"),
+      realizes: parseStringListField(rawEntry, "realizes"),
+      dependsOn: parseStringListField(rawEntry, "depends_on"),
     });
   }
 
@@ -301,7 +438,11 @@ const parseTruthDocumentsSection = (
     return parseTruthDocumentsFromList(sectionLines, areaName, options);
   }
 
-  const yamlResult = parseTruthDocumentsFromYaml(sectionLines, areaName);
+  const yamlResult = parseTruthDocumentsFromYaml(
+    sectionLines,
+    areaName,
+    options,
+  );
 
   if (
     yamlResult.diagnostics.length > 0 ||
@@ -405,8 +546,9 @@ export const parseAreasMarkdown = (
     const areaHeadingMatch = line.match(/^\s{0,3}##\s+(.*)$/u);
 
     if (areaHeadingMatch) {
+      const heading = areaHeadingMatch[1]?.trim() ?? null;
       flushArea();
-      currentAreaName = areaHeadingMatch[1]?.trim() ?? null;
+      currentAreaName = heading === "Source References" ? null : heading;
       continue;
     }
 

@@ -11,10 +11,12 @@ describe("parseAreasMarkdown", () => {
 Truth documents:
 ${"```"}yaml
 truth_documents:
-  - path: docs/truthmark/truth/authentication.md
-    kind: behavior
+  - path: docs/truthmark/engineering/authentication.md
+    kind: engineering-behavior
+    lane: engineering
   - path: docs/api/authentication.md
-    kind: contract
+    kind: engineering-contract
+    lane: engineering
 ${"```"}
 
 Code surface:
@@ -33,20 +35,20 @@ Update truth when:
         name: "Authentication",
         key: "authentication",
         truthDocuments: [
-          "docs/truthmark/truth/authentication.md",
+          "docs/truthmark/engineering/authentication.md",
           "docs/api/authentication.md",
         ],
         truthDocumentEntries: [
-          {
-            path: "docs/truthmark/truth/authentication.md",
-            kind: "behavior",
+          expect.objectContaining({
+            path: "docs/truthmark/engineering/authentication.md",
+            kind: "engineering-behavior",
             kindSource: "explicit",
-          },
-          {
+          }),
+          expect.objectContaining({
             path: "docs/api/authentication.md",
-            kind: "contract",
+            kind: "engineering-contract",
             kindSource: "explicit",
-          },
+          }),
         ],
         codeSurface: ["src/auth/**", "src/session/**"],
         updateTruthWhen: ["authentication behavior changes", "permissions change"],
@@ -60,7 +62,7 @@ Update truth when:
 ## Authentication
 
 Truth documents:
-- docs/truthmark/truth/authentication.md
+- docs/truthmark/engineering/authentication.md
 `);
 
     expect(result.areas).toEqual([]);
@@ -81,7 +83,7 @@ Truth documents:
       "   ## Authentication",
       "",
       "Truth documents:",
-      "- docs/truthmark/truth/authentication.md",
+      "- docs/truthmark/engineering/authentication.md",
       "",
       "Code surface:",
       "- src/auth/**",
@@ -132,7 +134,7 @@ Update truth when:
 ## Payments
 
 Truth documents:
-- docs/truthmark/truth/payments.md
+- docs/truthmark/engineering/payments.md
 
 Area files:
 - docs/truthmark/areas/payments.md
@@ -165,10 +167,12 @@ Update truth when:
 Truth documents:
 ${"```"}yaml
 truth_documents:
-  - path: docs/truthmark/truth/billing/checkout.md
-    kind: behavior
+  - path: docs/truthmark/engineering/billing/checkout.md
+    kind: engineering-behavior
+    lane: engineering
   - path: docs/contracts/billing/api.md
-    kind: contract
+    kind: engineering-contract
+    lane: engineering
 ${"```"}
 
 Code surface:
@@ -182,20 +186,20 @@ Update truth when:
     expect(result.areas).toEqual([
       expect.objectContaining({
         truthDocuments: [
-          "docs/truthmark/truth/billing/checkout.md",
+          "docs/truthmark/engineering/billing/checkout.md",
           "docs/contracts/billing/api.md",
         ],
         truthDocumentEntries: [
-          {
-            path: "docs/truthmark/truth/billing/checkout.md",
-            kind: "behavior",
+          expect.objectContaining({
+            path: "docs/truthmark/engineering/billing/checkout.md",
+            kind: "engineering-behavior",
             kindSource: "explicit",
-          },
-          {
+          }),
+          expect.objectContaining({
             path: "docs/contracts/billing/api.md",
-            kind: "contract",
+            kind: "engineering-contract",
             kindSource: "explicit",
-          },
+          }),
         ],
       }),
     ]);
@@ -207,7 +211,7 @@ Update truth when:
 ## Repository
 
 Truth documents:
-- docs/truthmark/truth/repository/overview.md
+- docs/truthmark/engineering/repository/overview.md
 - docs/architecture/module-map.md
 - docs/api/contracts.md
 
@@ -230,21 +234,21 @@ Update truth when:
     expect(result.areas).toEqual([
       expect.objectContaining({
         truthDocumentEntries: [
-          {
-            path: "docs/truthmark/truth/repository/overview.md",
-            kind: "behavior",
+          expect.objectContaining({
+            path: "docs/truthmark/engineering/repository/overview.md",
+            kind: "engineering-behavior",
             kindSource: "inferred",
-          },
-          {
+          }),
+          expect.objectContaining({
             path: "docs/architecture/module-map.md",
-            kind: "behavior",
+            kind: "engineering-behavior",
             kindSource: "defaulted",
-          },
-          {
+          }),
+          expect.objectContaining({
             path: "docs/api/contracts.md",
-            kind: "behavior",
+            kind: "engineering-behavior",
             kindSource: "defaulted",
-          },
+          }),
         ],
       }),
     ]);
@@ -258,11 +262,12 @@ Update truth when:
 Truth documents:
 ${"```"}yaml
 truth_documents:
-  - path: docs/truthmark/truth/contracts.md
-    kind: contract
+  - path: docs/truthmark/engineering/contracts/routing.md
+    kind: engineering-contract
+    lane: engineering
 ${"```"}
 
-- docs/truthmark/truth/installed-workflows.md
+- docs/truthmark/engineering/installed-workflows.md
 - docs/architecture/overview.md
 
 Code surface:
@@ -275,13 +280,13 @@ Update truth when:
     expect(result.diagnostics).toEqual([]);
     expect(result.areas).toEqual([
       expect.objectContaining({
-        truthDocuments: ["docs/truthmark/truth/contracts.md"],
+        truthDocuments: ["docs/truthmark/engineering/contracts/routing.md"],
         truthDocumentEntries: [
-          {
-            path: "docs/truthmark/truth/contracts.md",
-            kind: "contract",
+          expect.objectContaining({
+            path: "docs/truthmark/engineering/contracts/routing.md",
+            kind: "engineering-contract",
             kindSource: "explicit",
-          },
+          }),
         ],
       }),
     ]);
@@ -312,11 +317,11 @@ Update truth when:
     expect(result.areas).toEqual([
       expect.objectContaining({
         truthDocumentEntries: [
-          {
+          expect.objectContaining({
             path: "docs/README.md",
-            kind: "behavior",
+            kind: "engineering-behavior",
             kindSource: "defaulted",
-          },
+          }),
         ],
       }),
     ]);

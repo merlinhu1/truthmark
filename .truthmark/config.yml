@@ -7,15 +7,6 @@ platforms:
   - gemini-cli
 truthmark:
   workspace: docs/truthmark
-  routes:
-    index: routes/areas.md
-    areas: routes/areas
-    default_area: repository
-    max_delegation_depth: 1
-  truth:
-    root: truth
-  templates:
-    root: templates
   generated:
     portal:
       enabled: false
@@ -25,9 +16,7 @@ frontmatter:
   required: []
   recommended:
     - status
-    - doc_type
     - last_reviewed
-    - source_of_truth
 ignore:
   - node_modules/**
   - vendor/**

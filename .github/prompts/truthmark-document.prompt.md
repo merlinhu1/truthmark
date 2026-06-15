@@ -3,131 +3,16 @@ agent: 'agent'
 description: 'Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.'
 ---
 
----
-name: truthmark-document
-description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
-argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
-user-invocable: true
-truthmark-version: 2.1.0
----
+This prompt is the GitHub Copilot entrypoint for Truthmark Document.
 
-# Truthmark Document
+Do not invoke another Truthmark command from here.
 
-Use this skill to document existing implemented behavior when no functional-code changes are required for the task.
-Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
+Read these host-local files in order only as needed:
+- .github/skills/truthmark-document/SKILL.md
+- .github/skills/truthmark-document/support/procedure.md
+- .github/skills/truthmark-document/support/report-template.md
+- .github/skills/truthmark-document/support/subagents-and-leases.md
+- .github/skills/truthmark-document/helper-manifest.yml
+- .github/skills/truthmark-document/support/helper-policy.md
 
-Truth Document is manual and implementation-first:
-
-- run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
-- inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
-- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
-Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
-- document current implemented behavior; do not invent future behavior or planned endpoints
-- may write canonical truth docs and docs/truthmark/routes/areas.md or relevant child route files only
-- must not write functional code
-- when routing is missing, stale, broad, overloaded, catch-all, or cannot map the behavior to a bounded truth owner, run Truth Structure first when routing repair is safe and in scope
-- block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
-- keep feature README.md files as indexes rather than truth-document targets
-- create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
-- keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
-- keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
-- preserve unrelated authored content
-Truth-doc ownership gate:
-- before editing or relying on the implemented behavior and candidate truth docs, verify each target/source truth doc is a bounded owner for the behavior
-- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
-- if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, run Truth Structure first when safe and in scope; otherwise block and recommend Truth Structure
-- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason as applicable
-Product Decisions/Rationale preservation gate:
-- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections in every source or touched truth doc
-- preserve each current decision and rationale in the bounded owner doc it governs; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
-- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
-- if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing
-- after the edit, verify every touched truth doc still has Product Decisions and Rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
-Evidence Gate:
-- route-first: map the documented behavior to bounded route owners and primary canonical docs
-- review new or changed behavior-bearing claims only in touched docs, route ownership, Product Decisions, and Rationale
-- support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions
-- tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
-- remove, narrow, or block unsupported claims
-- if no truth doc changed, report why current truth was already sufficient or why documentation was blocked
-Copilot custom-agent mode:
-- use automatically when this workflow runs in Copilot and the parent agent chooses bounded custom-agent fan-out
-- dispatch read-only project custom agents for verification: @truth-route-auditor, @truth-claim-verifier
-- read-only custom agents inspect checkout evidence directly, return structured findings, and must not edit files
-- parent supplies bounded evidence shards; read-only custom agents must not preload host instruction files or repo-wide policy docs unless assigned as evidence
-- dispatch write-capable project custom agents only with explicit write leases: @truth-doc-writer
-- each write lease must name objective, required reads, allowed writes, forbidden writes, evidence, verification, and report fields
-- write workers must stop when a required edit is off-lease and report status, filesChanged, evidence, offLeaseChanges, blockers, and notes
-- parent must inspect the actual checkout diff against each lease before accepting a worker report
-- Parent agent owns Truth Document acceptance, lease validation, and final report
-Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
-They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
-If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
-When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
-Supported kinds: behavior, contract, architecture, workflow, operations, and test-behavior.
-Treat the HTML comments under each template section as normative authoring guidance for that section.
-Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
-If the template is missing, use Scope, Product Decisions, Rationale, and the kind-specific current-truth section.
-Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
-Truth-doc shape repair gate:
-- Truth Document may restructure only truth docs for the implemented behavior being documented.
-- repair shape in place only after the ownership gate confirms the doc is the right bounded owner
-- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
-- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
-- preserve supported claims; remove, narrow, or block unsupported or stale claims
-- report docs restructured and why a narrow edit was not sufficient
-Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
-Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
-Truthmark hierarchy hints:
-- Config, when present: .truthmark/config.yml
-- Root route index, when present: docs/truthmark/routes/areas.md
-- Area route files, when present: docs/truthmark/routes/areas/**/*.md
-- Truth docs, when present: docs/truthmark/truth/**/*.md
-Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
-Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
-Update Product Decisions and Rationale when a decision changes behavior.
-Helper status reporting:
-- Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
-- After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
-- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.
-- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
-- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
-Parent post-document verification:
-- verify only truth docs and leased truth routing files changed during document work
-- block on functional code, generated host surfaces, or unrelated diffs caused by document work
-- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
-
-Report completion in this shape:
-```md
-Truth Document: completed
-
-Implementation reviewed:
-- src/routing/area-resolver.ts
-
-Ownership reviewed:
-- docs/truthmark/routes/areas.md
-
-Truth docs created:
-- docs/truthmark/truth/contracts.md
-
-Truth docs updated:
-- docs/truthmark/truth/check-diagnostics.md
-
-Truth docs restructured:
-- docs/truthmark/truth/check-diagnostics.md
-
-Routing updated:
-- docs/truthmark/routes/areas.md
-
-Evidence checked:
-- Claim: Route resolution behavior is documented in the contracts truth doc.
-  Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/routes/areas.md:9
-  Result: supported
-
-Helper scripts:
-- validate-write-lease: skipped, no write lease used
-
-Notes:
-- Documented routing and behavior from route handlers and tests.
-```
+If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.

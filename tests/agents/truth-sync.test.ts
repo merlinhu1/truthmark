@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 import matter from "gray-matter";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
+import type { TruthmarkWorkflowId } from "../../src/agents/workflow-manifest.js";
 import {
   TRUTH_SYNC_EXPLICIT_INVOCATIONS,
+  renderTruthSyncProcedureBody,
   renderTruthSyncSkillBody,
   renderTruthSyncWorkerPrompt,
 } from "../../src/agents/truth-sync.js";
@@ -12,6 +16,7 @@ import {
   renderTruthmarkGeminiSyncCommand,
   renderTruthmarkSyncClaudeSkill,
   renderTruthmarkSyncLocalSkill,
+  renderTruthmarkSkillPackage,
   renderTruthmarkSyncSkill,
   renderTruthmarkSyncSkillMetadata,
 } from "../../src/templates/workflow-surfaces.js";
@@ -139,13 +144,13 @@ describe("renderTruthSyncSkillBody", () => {
       "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason",
     );
     expect(skillBody).toContain(
-      "Product Decisions/Rationale preservation gate",
+      "Decision/Rationale preservation gate",
     );
     expect(skillBody).toContain(
-      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions and Rationale sections",
+      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
     );
     expect(skillBody).toContain(
-      "preserve each current decision and rationale in the bounded owner doc it governs",
+      "preserve each current decision and rationale in the correct product or engineering lane owner",
     );
     expect(skillBody).toContain(
       "if ownership of a decision or rationale is unclear, block with manual-review files",
@@ -163,7 +168,7 @@ describe("renderTruthSyncSkillBody", () => {
     );
     expect(skillBody).not.toContain("# {{title}}");
     expect(skillBody).toContain(
-      "update Product Decisions and Rationale when a behavior change comes from a decision change",
+      "update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change",
     );
     expect(skillBody).toContain("Evidence checked");
     expect(skillBody).toContain("Claim:");
@@ -186,7 +191,7 @@ describe("renderTruthSyncSkillBody", () => {
 
     const skillBody = renderTruthSyncSkillBody(config);
 
-    expect(skillBody).toContain("docs/truthmark/truth/repository/overview.md");
+    expect(skillBody).toContain("docs/truthmark/engineering/repository/overview.md");
     expect(skillBody).toContain("docs/routes/index.md:11");
     expect(skillBody).toContain(
       "verify only truth docs and leased truth routing files changed",
@@ -195,6 +200,107 @@ describe("renderTruthSyncSkillBody", () => {
 });
 
 describe("Truth Sync generated metadata", () => {
+  it("keeps package procedure support wired to the explicit procedure renderer", () => {
+    const config = createDefaultConfig();
+    const files = renderTruthmarkSkillPackage({
+      skillPath: ".agents/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "codex",
+      config,
+    });
+    const procedure = files.find((file) =>
+      file.path.endsWith("/support/procedure.md"),
+    )?.content;
+    const reportTemplate = files.find((file) =>
+      file.path.endsWith("/support/report-template.md"),
+    )?.content;
+
+    expect(procedure).toContain(renderTruthSyncProcedureBody(config));
+    expect(procedure).not.toContain("Truth Sync: completed");
+    expect(reportTemplate).toContain("Truth Sync: completed");
+    expect(reportTemplate).not.toContain("Parent workflow:");
+  });
+
+  it("does not split package support by slicing the standalone workflow body", () => {
+    const source = readFileSync(
+      new URL("../../src/templates/workflow-surfaces.ts", import.meta.url),
+      "utf8",
+    );
+
+    expect(source).not.toContain("stripWorkflowSkillFrontmatter");
+    expect(source).not.toContain("renderStandaloneWorkflowSkillBody");
+    expect(source).not.toContain("slice(0, -reportTemplate.length)");
+    expect(source).not.toContain("endsWith(reportTemplate)");
+  });
+
+
+  it("renders every workflow package from structured procedure and report support files", () => {
+    const workflowIds: TruthmarkWorkflowId[] = [
+      "truthmark-structure",
+      "truthmark-document",
+      "truthmark-sync",
+      "truthmark-preview",
+      "truthmark-realize",
+      "truthmark-check",
+      "truthmark-portal",
+    ];
+
+    for (const workflowId of workflowIds) {
+      const files = renderTruthmarkSkillPackage({
+        skillPath: `.agents/skills/${workflowId}/SKILL.md`,
+        workflowId,
+        host: "codex",
+      });
+      const entrypoint = files.find((file) => file.path.endsWith("/SKILL.md"))
+        ?.content;
+      const procedure = files.find((file) =>
+        file.path.endsWith("/support/procedure.md"),
+      )?.content;
+      const reportTemplate = files.find((file) =>
+        file.path.endsWith("/support/report-template.md"),
+      )?.content;
+
+      expect(entrypoint, workflowId).toContain("Progressive disclosure:");
+      expect(entrypoint, workflowId).toContain("support/procedure.md");
+      expect(entrypoint, workflowId).toContain("support/report-template.md");
+      expect(procedure, workflowId).toContain("Generated by Truthmark");
+      expect(procedure, workflowId).not.toContain(
+        "Report completion in this shape:",
+      );
+      expect(reportTemplate, workflowId).toContain(
+        "Report completion in this shape:",
+      );
+    }
+  });
+
+  it("renders package support files from structured report parts instead of the first marker text", () => {
+    const config = createDefaultConfig();
+    config.truthmark.paths.routesIndex =
+      "docs/Report completion in this shape:/areas.md";
+
+    const files = renderTruthmarkSkillPackage({
+      skillPath: ".agents/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "codex",
+      config,
+    });
+    const procedure = files.find((file) =>
+      file.path.endsWith("/support/procedure.md"),
+    )?.content;
+    const reportTemplate = files.find((file) =>
+      file.path.endsWith("/support/report-template.md"),
+    )?.content;
+
+    expect(procedure).toContain("Parent post-sync verification");
+    expect(procedure).toContain(
+      "docs/Report completion in this shape:/areas.md",
+    );
+    expect(procedure).not.toContain("Truth Sync: completed");
+    expect(reportTemplate).toContain("Report completion in this shape:");
+    expect(reportTemplate).toContain("Truth Sync: completed");
+    expect(reportTemplate).not.toContain("Parent post-sync verification");
+  });
+
   it("carries skip cases in Codex-visible metadata", () => {
     const metadata = renderTruthmarkSyncSkillMetadata();
 
@@ -208,19 +314,24 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
     );
+    expect(renderTruthmarkGeminiSyncCommand()).toContain(
+      "This command is the Gemini CLI entrypoint for Truthmark Sync.",
+    );
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain(
+      "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
+    );
     for (const surface of [
       renderTruthmarkGeminiSyncCommand(),
       renderTruthmarkCopilotSyncPrompt(),
     ]) {
       expect(surface).toContain(
-        "Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.",
+        "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
       );
-      expect(surface).toContain(
-        "After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.",
-      );
-      expect(surface).toContain(
-        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.",
-      );
+      expect(surface).toContain("Do not invoke another Truthmark command from here.");
+      expect(surface).toContain("support/procedure.md");
+      expect(surface).toContain("support/report-template.md");
+      expect(surface).toContain("helper-manifest.yml");
+      expect(surface).toContain("support/helper-policy.md");
       expect(surface).not.toContain("helper package unavailable");
     }
   });

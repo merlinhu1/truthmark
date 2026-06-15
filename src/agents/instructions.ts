@@ -1,5 +1,8 @@
 import type { TruthmarkConfig } from "../config/schema.js";
-import { defaultAgentConfig } from "./shared.js";
+import {
+  defaultAgentConfig,
+  renderLaneClassificationInstructions,
+} from "./shared.js";
 import { TRUTH_CHECK_EXPLICIT_INVOCATIONS } from "./truth-check.js";
 import { TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS } from "./truth-structure.js";
 import { TRUTH_SYNC_EXPLICIT_INVOCATIONS } from "./truth-sync.js";
@@ -13,7 +16,9 @@ Use when area routing is missing, stale, broad, overloaded, catch-all, unrouteab
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Inspect repository layout, configured route files when present (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/), canonical docs, and relevant code directly.
 Create or repair routing and starter canonical truth docs only when useful. Use only canonical current-truth destinations for starter truth docs.
-Own topology pressure: split broad/catch-all routing by inferred product or behavior ownership.
+Own topology pressure: split broad/catch-all routing by inferred product or engineering behavior ownership.
+Own lane splits, decision relocation, and cross-lane relationship repair.
+${renderLaneClassificationInstructions(config)}
 If the skill is unavailable, perform the same direct checkout workflow from any present config, route files, docs, and implementation.`;
 };
 
@@ -38,6 +43,8 @@ Delegate to a subagent only when the host supports subagent dispatch; the acting
 Inspect the current checkout directly. ImpactSet and ContextPack are optional derived context; they do not override checkout evidence or write boundaries.
 Run relevant tests before finishing when functional code changes occurred.
 Support new or changed behavior-bearing truth claims with checkout evidence and report the evidence reviewed.
+${renderLaneClassificationInstructions(config)}
+Update engineering truth first after functional-code changes. Update product truth only from explicit product evidence, otherwise report product-lane review needed.
 Truthmark is agent-native: installed skills and this managed block are the workflow runtime. Inspect the checkout directly; truthmark CLI commands are optional validation tools after installation.
 Code first: code leads; truth docs follow; Truth Sync never rewrites code for alignment.
 May write truth docs and configured truth routing files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when present; must not rewrite functional code.

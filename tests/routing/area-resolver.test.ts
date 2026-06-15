@@ -36,7 +36,7 @@ Update truth when:
 ## Checkout
 
 Truth documents:
-- docs/truthmark/truth/payments/checkout.md
+- docs/truthmark/engineering/behaviors/payments-checkout.md
 
 Code surface:
 - services/payments/checkout/**
@@ -56,7 +56,7 @@ Update truth when:
       expect(result.areas).toEqual([
         expect.objectContaining({
           name: "Checkout",
-          truthDocuments: ["docs/truthmark/truth/payments/checkout.md"],
+          truthDocuments: ["docs/truthmark/engineering/behaviors/payments-checkout.md"],
           sourcePath: "docs/truthmark/routes/areas/payments.md",
           parentName: "Payments",
         }),

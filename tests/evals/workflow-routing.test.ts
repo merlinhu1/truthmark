@@ -56,13 +56,41 @@ const WORKFLOW_CONTRACT_PATH_GROUPS = (
   WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
-  [`.github/prompts/${id}.prompt.md`],
-  [WORKFLOW_COMMAND_PATHS[id]],
 ];
+
+const WORKFLOW_ADAPTER_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
+  `.github/prompts/${id}.prompt.md`,
+  WORKFLOW_COMMAND_PATHS[id],
+];
+
+const GENERATED_SKILL_SURFACE_PATTERN = /\/SKILL\.md$/u;
+const GENERATED_COMMAND_ADAPTER_PATTERN =
+  /^\.github\/prompts\/truthmark-[^/]+\.prompt\.md$|^\.gemini\/commands\/truthmark\/[^/]+\.toml$/u;
+const SURFACE_TOKEN_PATTERN = /\S+/gu;
+const ADAPTER_NEXT_STEP_SELF_INVOCATION_PATTERN =
+  /\b(?:run|invoke|open|use|call|execute|dispatch|start)\s+(?:the\s+)?\/?\$?truthmark[-:\s][a-z-]+\b/iu;
+
+const surfaceTokenCount = (content: string): number =>
+  content.match(SURFACE_TOKEN_PATTERN)?.length ?? 0;
+
+const surfaceLineCount = (content: string): number =>
+  content.split(/\r?\n/u).length;
+
+const nonProhibitionLinesMatching = (
+  content: string,
+  pattern: RegExp,
+): string[] =>
+  content
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) => pattern.test(line))
+    .filter(
+      (line) => !/\b(?:do not|must not|never|none|without)\b/iu.test(line),
+    );
 
 const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   "truthmark-sync": [
-    "Skip when changes are documentation-only",
+    "Skip docs-only",
     "block and recommend Truth Structure",
     "verify only truth docs and leased truth routing files changed",
     "Report completion in this shape:",
@@ -82,11 +110,8 @@ const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   ],
   "truthmark-document": [
     "document existing implemented behavior",
-    "may write canonical truth docs",
-    "must not write functional code",
-    "Report completion in this shape:",
-    "Implementation reviewed:",
-    "Evidence checked:",
+    "Not for functional-code changes",
+    "topology repair that needs Structure",
   ],
   "truthmark-preview": [
     "preview Truthmark routing",
@@ -212,11 +237,15 @@ describe("no-CLI fallback eval corpus", () => {
   it("covers route-first fallback outcomes before any hard budget policy is added", () => {
     const caseIds = NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.id);
 
-    expect(caseIds).toEqual(expect.arrayContaining([...NO_CLI_FALLBACK_SCENARIOS]));
+    expect(caseIds).toEqual(
+      expect.arrayContaining([...NO_CLI_FALLBACK_SCENARIOS]),
+    );
 
     for (const testCase of NO_CLI_FALLBACK_EVAL_CASES) {
       expect(testCase.changedSurface.length).toBeGreaterThan(0);
-      expect(testCase.equivalenceAxes).toEqual([...NO_CLI_FALLBACK_EQUIVALENCE_AXES]);
+      expect(testCase.equivalenceAxes).toEqual([
+        ...NO_CLI_FALLBACK_EQUIVALENCE_AXES,
+      ]);
       expect(testCase.expectedCliOutcome).toEqual(
         expect.objectContaining({
           decision: expect.stringMatching(/^(apply|block|structure)$/u),
@@ -227,9 +256,11 @@ describe("no-CLI fallback eval corpus", () => {
       );
     }
 
-    expect(NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.scenario).join("\n")).not.toMatch(
-      /token budget|hard budget/iu,
-    );
+    expect(
+      NO_CLI_FALLBACK_EVAL_CASES.map((testCase) => testCase.scenario).join(
+        "\n",
+      ),
+    ).not.toMatch(/token budget|hard budget/iu);
   });
 });
 
@@ -287,6 +318,132 @@ describe("generated workflow surface conformance", () => {
     }
   });
 
+  it("keeps prompt and command adapters linked to canonical skill packages", () => {
+    for (const id of TRUTHMARK_WORKFLOW_IDS) {
+      const workflow = getTruthmarkWorkflow(id);
+
+      for (const path of WORKFLOW_ADAPTER_PATHS(id)) {
+        const content = surfaces.get(path);
+
+        expect(content, `${path} is generated`).toBeDefined();
+        expect(content).toContain(workflow.description);
+        expect(content).toContain("entrypoint for");
+        expect(content).toContain(
+          "Do not invoke another Truthmark command from here.",
+        );
+        expect(content).toContain(
+          "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
+        );
+        expect(content).toContain(`${id}/SKILL.md`);
+        expect(content).toContain(`${id}/support/procedure.md`);
+        expect(content).toContain(`${id}/support/report-template.md`);
+      }
+    }
+  });
+
+  it("keeps read-only generated surfaces free of write-authorizing guidance", () => {
+    const readOnlySurfacePaths = Array.from(surfaces.keys()).filter(
+      (path) =>
+        path.includes("truthmark-preview") ||
+        path.includes("truthmark-check") ||
+        path.includes("route-auditor") ||
+        path.includes("claim-verifier") ||
+        path.includes("doc-reviewer"),
+    );
+    const writeAuthorityPatterns = [
+      /\bbefore writing\b/iu,
+      /\bmay write\b/iu,
+      /\bwrite canonical truth docs\b/iu,
+      /\bwrite lease\b/iu,
+    ];
+
+    expect(readOnlySurfacePaths.length).toBeGreaterThan(0);
+    for (const path of readOnlySurfacePaths) {
+      const content = surfaces.get(path) ?? "";
+
+      for (const pattern of writeAuthorityPatterns) {
+        expect(nonProhibitionLinesMatching(content, pattern), path).toEqual([]);
+      }
+    }
+  });
+
+  it("keeps Truth Realize surfaces from inheriting truth-doc write instructions", () => {
+    const realizeSurfacePaths = Array.from(surfaces.keys()).filter(
+      (path) =>
+        path.includes("truthmark-realize") &&
+        (path.endsWith("/SKILL.md") ||
+          path.endsWith("/support/procedure.md") ||
+          path.startsWith(".github/prompts/") ||
+          path.startsWith(".gemini/commands/")),
+    );
+
+    expect(realizeSurfacePaths.length).toBeGreaterThan(0);
+    for (const path of realizeSurfacePaths) {
+      const content = surfaces.get(path) ?? "";
+
+      expect(
+        nonProhibitionLinesMatching(
+          content,
+          /\b(?:write|edit|update|patch|create)\b.*\b(?:truth docs?|truth routing|canonical truth docs?)\b/iu,
+        ),
+        path,
+      ).toEqual([]);
+      if (
+        path.endsWith("/SKILL.md") ||
+        path.endsWith("/support/procedure.md")
+      ) {
+        expect(content, path).toMatch(
+          /\b(?:do not|must not|never)\b.*\b(?:edit|write|update)\b.*\b(?:truth docs?|truth routing)\b/iu,
+        );
+      }
+    }
+  });
+
+  it("keeps host command adapters from self-recursive next steps", () => {
+    for (const id of TRUTHMARK_WORKFLOW_IDS) {
+      for (const path of WORKFLOW_ADAPTER_PATHS(id)) {
+        const content = surfaces.get(path);
+
+        expect(content, `${path} is generated`).toBeDefined();
+        expect(content, path).not.toMatch(
+          ADAPTER_NEXT_STEP_SELF_INVOCATION_PATTERN,
+        );
+      }
+    }
+  });
+
+  it("keeps generated skills and command adapters under deterministic size ceilings", () => {
+    const ceilings = [
+      {
+        pattern: GENERATED_SKILL_SURFACE_PATTERN,
+        maxLines: 45,
+        maxTokens: 350,
+      },
+      {
+        pattern: GENERATED_COMMAND_ADAPTER_PATTERN,
+        maxLines: 25,
+        maxTokens: 125,
+      },
+    ];
+
+    for (const [path, content] of surfaces) {
+      const ceiling = ceilings.find(({ pattern }) => pattern.test(path));
+
+      if (ceiling === undefined) {
+        continue;
+      }
+
+      expect(
+        surfaceLineCount(content),
+        `${path} line count`,
+      ).toBeLessThanOrEqual(ceiling.maxLines);
+      expect(
+        surfaceTokenCount(content),
+        `${path} token count`,
+      ).toBeLessThanOrEqual(ceiling.maxTokens);
+    }
+  });
+
   it("keeps write-workflow no-CLI fallback route-first and non-expansive", () => {
     const writeWorkflowExpectations: Record<
       | "truthmark-sync"
@@ -325,7 +482,9 @@ describe("generated workflow surface conformance", () => {
       ],
     };
 
-    for (const [id, expectedTerms] of Object.entries(writeWorkflowExpectations)) {
+    for (const [id, expectedTerms] of Object.entries(
+      writeWorkflowExpectations,
+    )) {
       const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
 
       expect(content, `${id} Codex skill is generated`).toBeDefined();

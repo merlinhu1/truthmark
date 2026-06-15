@@ -511,12 +511,9 @@ Wichtige Config-Bereiche sind:
 | `version` | Version des Config-Vertrags. |
 | `platforms` | Agenten-Hosts, die plattformspezifische generierte Oberflächen erhalten sollen. |
 | `truthmark.workspace` | Truthmark-eigener Workspace für Routen, Truth-Dokumente, Vorlagen und generierte Präsentationsausgabe. |
-| `truthmark.routes.index` | Root-Routenindex relativ zu `truthmark.workspace`. |
-| `truthmark.routes.areas` | Verzeichnis für delegierte untergeordnete Routendateien relativ zu `truthmark.workspace`. |
-| `truthmark.routes.default_area` | Dateiname des initial erzeugten untergeordneten Routings ohne Erweiterung. |
-| `truthmark.routes.max_delegation_depth` | Aktuelle maximale Routing-Delegationstiefe. |
-| `truthmark.truth.root` | Truth-Dokumentwurzel relativ zu `truthmark.workspace`. |
-| `truthmark.templates.root` | Truth-Dokumentvorlagenwurzel relativ zu `truthmark.workspace`. |
+| Feste Routen | Routen liegen unter `routes/areas.md` und `routes/areas/` innerhalb von `truthmark.workspace`; die Standard-Area ist `repository`, die Delegationstiefe ist `1`. |
+| Feste Truth-Lanes | Product-Truth liegt unter `product/` und Engineering-Truth unter `engineering/` innerhalb von `truthmark.workspace`. |
+| Feste Vorlagen | Truth-Dokumentvorlagen liegen unter `templates/` innerhalb von `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optionale manuelle Präsentations-Workflow-Aktivierung: `enabled`. |
 | `instruction_targets` | Dateien, die gemeinsam verwaltete Instruktionsblöcke erhalten, etwa `AGENTS.md`. |
 | `frontmatter.required` | Metadatenfelder, die bei Fehlen Error-Diagnostik erzeugen. |
@@ -749,7 +746,7 @@ Nützliche Skripte:
 | `npm run check` | Führt Lint, Typecheck, Tests und Build aus. |
 | `npm run release:check` | Führt release-orientierte Validierung aus. |
 
-Wenn du Truthmark selbst änderst, siehe [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Wenn du Truthmark selbst änderst, siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Dokumentation
 

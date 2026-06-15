@@ -7,18 +7,21 @@ import {
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
+  renderLaneClassificationRuleBlock,
+  renderClaimEvidenceCheckedSection,
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
   renderCopilotCustomAgentModeSection,
   renderOpenCodeSubagentModeSection,
-  renderClaimEvidenceCheckedSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
-  resolveTruthDocsRoot,
+  resolveEngineeringTruthRoot,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
+
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
@@ -31,7 +34,7 @@ export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
 export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const truthDocsRoot = resolveTruthDocsRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
   const helperScripts = ["validate-write-lease: skipped, no write lease used"];
 
   return `Truth Document: completed
@@ -43,13 +46,13 @@ Ownership reviewed:
 - ${config.truthmark.paths.routesIndex}
 
 Truth docs created:
-- ${truthDocsRoot}/contracts.md
+- ${engineeringTruthRoot}/contracts/routing.md
 
 Truth docs updated:
-- ${truthDocsRoot}/check-diagnostics.md
+- ${engineeringTruthRoot}/behaviors/check-diagnostics.md
 
 Truth docs restructured:
-- ${truthDocsRoot}/check-diagnostics.md
+- ${engineeringTruthRoot}/behaviors/check-diagnostics.md
 
 Routing updated:
 - ${config.truthmark.paths.routesIndex}
@@ -72,7 +75,7 @@ Notes:
 - Documented routing and behavior from route handlers and tests.`;
 };
 
-export const renderTruthDocumentSkillBody = (
+export const renderTruthDocumentProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   options: {
     includeClaudeSubagentMode?: boolean;
@@ -112,15 +115,7 @@ export const renderTruthDocumentSkillBody = (
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
-  return `---
-name: truthmark-document
-description: ${workflow.description}
-argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-# Truthmark Document
+  return `# Truthmark Document
 
 Use this skill to document existing implemented behavior when no functional-code changes are required for the task.
 Invocations: ${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
@@ -129,7 +124,10 @@ Truth Document is manual and implementation-first:
 
 - run only when the user explicitly asks to generate or update truth docs for existing behavior, or when Truth Sync, Truth Check, or Truth Structure reports implemented behavior that lacks canonical truth docs
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect existing canonical docs, implementation code, and tests directly
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+- Lane classification:
+${renderLaneClassificationRuleBlock(config)}
 - document current implemented behavior; do not invent future behavior or planned endpoints
 - may write canonical truth docs and ${config.truthmark.paths.routesIndex} or relevant child route files only
 - must not write functional code
@@ -137,7 +135,10 @@ Truth Document is manual and implementation-first:
 - block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
 - keep feature README.md files as indexes rather than truth-document targets
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
-- keep behavior truth docs behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
+- write product capability/boundary truth under ${config.truthmark.paths.productTruthRoot} when documenting product promise, boundary, rationale, or user/stakeholder value
+- write engineering truth under ${config.truthmark.paths.engineeringTruthRoot} when documenting implementation behavior, contracts, architecture, workflows, operations, or tests
+- for both-lane documentation requests, write separate product and engineering docs and cross-link them in route YAML with realized_by and realizes, not in doc frontmatter
+- keep engineering behavior truth behavior-oriented, not endpoint-oriented, unless the endpoint itself is the behavior boundary
 - keep API endpoint details in the nearest contract truth doc when such a doc owns the API contract
 - preserve unrelated authored content
 ${renderTruthDocOwnershipGateSection(
@@ -167,8 +168,29 @@ Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
 - block on functional code, generated host surfaces, or unrelated diffs caused by document work
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable
+- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable`;
+};
 
+export const renderTruthDocumentSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-document");
+
+  return `---
+name: truthmark-document
+description: ${workflow.description}
+argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthDocumentProcedureBody(config, options)}
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthDocumentReportExample(config))}`;
 };

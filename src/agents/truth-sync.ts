@@ -13,9 +13,11 @@ import {
   renderOpenCodeSubagentModeSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
+  renderBulletBlock,
+  renderLaneClassificationRuleBlock,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
-  resolveTruthDocsRoot,
+  resolveEngineeringTruthRoot,
 } from "./shared.js";
 import {
   renderTruthSyncBlockedReport,
@@ -40,6 +42,8 @@ Worker rules:
 - require a write lease with workflow, worker, shard, objective, requiredReads, allowedWrites, forbiddenWrites, evidenceRequired, verification, and reportFields before editing
 - inspect relevant staged, unstaged, and untracked functional code directly
 - inspect .truthmark/config.yml and configured route files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when they exist; then inspect canonical truth docs directly
+- classify lane impact as product-lane, engineering-lane, both-lane, or ambiguous before writing
+- update engineering truth first after functional-code changes; update product truth only from explicit product evidence or report product-lane review needed
 - Code verification is parent-owned; report what was run or why it was not run
 - may write only leased truth docs and leased truth routing files for Truth Sync alignment
 - must not rewrite functional code or generated host surfaces
@@ -62,7 +66,7 @@ Return result in this shape:
 - manualReviewFiles: string[] required when status is blocked; at least one file`;
 };
 
-export const renderTruthSyncSkillBody = (
+export const renderTruthSyncProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   options: {
     includeClaudeSubagentMode?: boolean;
@@ -71,9 +75,7 @@ export const renderTruthSyncSkillBody = (
     includeOpenCodeSubagentMode?: boolean;
   } = {},
 ): string => {
-  const truthDocsRoot = resolveTruthDocsRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-sync");
-  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
   const claudeSubagentMode = options.includeClaudeSubagentMode
     ? `${renderClaudeSubagentModeSection(
         workflow.subagents ?? [],
@@ -104,15 +106,7 @@ export const renderTruthSyncSkillBody = (
     : "";
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
-  return `---
-name: truthmark-sync
-description: ${workflow.description}
-argument-hint: Optional changed-code area, truth-doc area, or sync focus
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
+  return `Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 Invocations: ${TRUTH_SYNC_EXPLICIT_INVOCATIONS}
 Explicit invocation runs immediately. Later functional-code changes reopen the finish-time requirement, and an earlier explicit run satisfies the finish gate only if no later functional-code changes occur.
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
@@ -120,9 +114,13 @@ Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.
 2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
-4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-5. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-6. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+4. Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+5. Lane classification gate:
+${renderLaneClassificationRuleBlock(config)}
+6. Update engineering truth first after code changes. Update product truth only when implemented user-visible product promise or capability boundary changed and explicit source/user evidence supports it; otherwise report product-lane review needed.
+7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
+8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
 ${subagentMode}Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -132,6 +130,7 @@ ${subagentMode}Topology quality gate:
 - README.md files are indexes, not Truth Sync targets
 - must not append behavior details to a README.md index
 - create or update a bounded leaf truth doc when behavior changes do not fit an existing leaf doc
+- write engineering truth under ${config.truthmark.paths.engineeringTruthRoot}; product truth updates under ${config.truthmark.paths.productTruthRoot} are allowed only for explicit current product behavior changes
 ${renderTruthDocOwnershipGateSection(
     "changed functional files and impacted truth docs",
     "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners, run Truth Structure before syncing when safe and in scope; otherwise block and recommend Truth Structure",
@@ -151,7 +150,7 @@ Optional validation tooling:
 - you may run truthmark check when local tooling is available
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
-- update Product Decisions and Rationale when a behavior change comes from a decision change
+- update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change
 Helper status reporting:
 - Validate the report body before adding this validator's own success status; the body may omit \`validate-sync-report\` while validation is pending.
 - After \`truthmark validate sync-report <report-file> --json\` returns \`data.validation.ok: true\`, append or update \`validate-sync-report: ran, passed\` in the final report.
@@ -168,13 +167,37 @@ Parent post-sync verification:
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to the reviewed changed-code surface
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
-- blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files
+- blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files`;
+};
+
+export const renderTruthSyncSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  options: {
+    includeClaudeSubagentMode?: boolean;
+    includeCodexSubagentMode?: boolean;
+    includeCopilotCustomAgentMode?: boolean;
+    includeOpenCodeSubagentMode?: boolean;
+  } = {},
+): string => {
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+  const workflow = getTruthmarkWorkflow("truthmark-sync");
+  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
+
+  return `---
+name: truthmark-sync
+description: ${workflow.description}
+argument-hint: Optional changed-code area, truth-doc area, or sync focus
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthSyncProcedureBody(config, options)}
 Report completion in this shape:
 ${renderMarkdownExample(
     renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: [config.truthmark.paths.routesIndex],
-      truthDocsUpdated: [`${truthDocsRoot}/repository/overview.md`],
+      truthDocsUpdated: [`${engineeringTruthRoot}/repository/overview.md`],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the mapped repository truth doc.",

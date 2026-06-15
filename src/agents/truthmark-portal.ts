@@ -6,22 +6,13 @@ import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 export const TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Gemini CLI /truthmark:portal.";
 
-export const renderTruthmarkPortalSkillBody = (
+export const renderTruthmarkPortalProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-portal");
   const output = config.truthmark.paths.portalOutput;
   const template = config.truthmark.paths.portalTemplate;
 
-  return `---
-name: truthmark-portal
-description: ${workflow.description}
-argument-hint: Optional portal generation focus
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-# Truthmark Portal
+  return `# Truthmark Portal
 
 Truthmark Portal is a manual-only presentation workflow. It is never a completion gate, never Truth Sync, and runs only when the user explicitly asks to generate, refresh, or update the committed static HTML Portal.
 
@@ -52,8 +43,24 @@ Workflow:
 5. Replace or write only under ${output}; do not edit canonical Markdown, routing, source code, or instruction files unless the user explicitly changes scope.
 6. Generate the multi-page static site with local assets/search metadata and visible source provenance.
 7. Validate entry page, links where practical, provenance/disclaimers, local-only assets, and that metadata remains under ${output}/assets.
-${renderHierarchySummary(config)}
+${renderHierarchySummary(config)}`;
+};
 
+export const renderTruthmarkPortalSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-portal");
+  const output = config.truthmark.paths.portalOutput;
+
+  return `---
+name: truthmark-portal
+description: ${workflow.description}
+argument-hint: Optional portal generation focus
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthmarkPortalProcedureBody(config)}
 Report completion in this shape:
 
 \`\`\`md

@@ -11,19 +11,26 @@ describe("repo path writes", () => {
     const repo = await createTempRepo();
 
     try {
-      const outsideDir = path.resolve(repo.rootDir, "..", "truthmark-paths-write-outside");
+      const outsideDir = path.resolve(
+        repo.rootDir,
+        "..",
+        "truthmark-paths-write-outside",
+      );
 
       await fs.mkdir(outsideDir, { recursive: true });
       await fs.symlink(outsideDir, path.join(repo.rootDir, "docs"));
 
-      await expect(writeRepoFile(repo.rootDir, "docs/escaped.md", "# Escaped\n")).rejects.toThrow(
-        "must stay inside the repository root",
-      );
+      await expect(
+        writeRepoFile(repo.rootDir, "docs/escaped.md", "# Escaped\n"),
+      ).rejects.toThrow("must stay inside the repository root");
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-paths-write-outside"), {
-        force: true,
-        recursive: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-paths-write-outside"),
+        {
+          force: true,
+          recursive: true,
+        },
+      );
       await repo.cleanup();
     }
   });
@@ -32,36 +39,57 @@ describe("repo path writes", () => {
     const repo = await createTempRepo();
 
     try {
-      const outsideDir = path.resolve(repo.rootDir, "..", "truthmark-paths-ensure-outside");
+      const outsideDir = path.resolve(
+        repo.rootDir,
+        "..",
+        "truthmark-paths-ensure-outside",
+      );
 
       await fs.mkdir(outsideDir, { recursive: true });
       await fs.symlink(outsideDir, path.join(repo.rootDir, "docs"));
 
-      await expect(ensureRepoFile(repo.rootDir, "docs/escaped.md", "# Escaped\n")).rejects.toThrow(
-        "must stay inside the repository root",
-      );
+      await expect(
+        ensureRepoFile(repo.rootDir, "docs/escaped.md", "# Escaped\n"),
+      ).rejects.toThrow("must stay inside the repository root");
     } finally {
-      await fs.rm(path.resolve(repo.rootDir, "..", "truthmark-paths-ensure-outside"), {
-        force: true,
-        recursive: true,
-      });
+      await fs.rm(
+        path.resolve(repo.rootDir, "..", "truthmark-paths-ensure-outside"),
+        {
+          force: true,
+          recursive: true,
+        },
+      );
       await repo.cleanup();
     }
   });
 
   it("rejects ensureRepoFile when the target is a broken symlink outside the repo", async () => {
     const repo = await createTempRepo();
-    const outsidePath = path.resolve(repo.rootDir, "..", "truthmark-paths-broken-link.md");
+    const outsidePath = path.resolve(
+      repo.rootDir,
+      "..",
+      "truthmark-paths-broken-link.md",
+    );
 
     try {
       await repo.writeFile("docs/truthmark/templates/.keep", "");
       await fs.symlink(
         outsidePath,
-        path.join(repo.rootDir, "docs", "truthmark", "templates", "behavior-doc.md"),
+        path.join(
+          repo.rootDir,
+          "docs",
+          "truthmark",
+          "templates",
+          "engineering-behavior.md",
+        ),
       );
 
       await expect(
-        ensureRepoFile(repo.rootDir, "docs/truthmark/templates/behavior-doc.md", "# Template\n"),
+        ensureRepoFile(
+          repo.rootDir,
+          "docs/truthmark/templates/engineering-behavior.md",
+          "# Template\n",
+        ),
       ).rejects.toThrow("must stay inside the repository root");
       await expect(fs.stat(outsidePath)).rejects.toThrow();
     } finally {

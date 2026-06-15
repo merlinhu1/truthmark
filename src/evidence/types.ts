@@ -5,5 +5,5 @@ export type EvidenceReference = {
   startLine?: number;
   endLine?: number;
   contentHash?: string;
-  source: "frontmatter" | "evidence-block";
+  source: "frontmatter" | "source-references" | "evidence-block";
 };

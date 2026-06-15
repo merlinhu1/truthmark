@@ -2,10 +2,6 @@
 status: active
 doc_type: routing
 last_reviewed: 2026-05-16
-source_of_truth:
-  - ../areas.md
-  - ../../README.md
-  - ../../ai/repo-rules.md
 ---
 
 # Installed Workflows Areas
@@ -16,28 +12,22 @@ Truth documents:
 
 ```yaml
 truth_documents:
-  - path: docs/truthmark/truth/contracts.md
-    kind: contract
-  - path: docs/truthmark/truth/workflows/overview.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/shared-gates.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-structure.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-document.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-sync.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-preview.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-realize.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truth-check.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/truthmark-portal.md
-    kind: workflow
-  - path: docs/truthmark/truth/workflows/content-generation.md
-    kind: workflow
+  - path: docs/truthmark/product/capabilities/agent-native-workflow-injection.md
+    kind: product-capability
+    lane: product
+    realized_by:
+      - docs/truthmark/engineering/workflows/installed-workflow-runtime.md
+      - docs/truthmark/engineering/contracts/generated-host-surfaces.md
+  - path: docs/truthmark/engineering/workflows/installed-workflow-runtime.md
+    kind: engineering-workflow
+    lane: engineering
+    realizes:
+      - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
+  - path: docs/truthmark/engineering/contracts/generated-host-surfaces.md
+    kind: engineering-contract
+    lane: engineering
+    realizes:
+      - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ```
 
 Code surface:
@@ -51,12 +41,18 @@ Code surface:
 - src/templates/generated-surfaces.ts
 - src/truth/\*\*
 - src/version.ts
-- tests/evals/**
-- tests/templates/**
+- tests/evals/\*\*
+- tests/templates/\*\*
 
 Update truth when:
 
 - installed workflow boundaries or report shapes change
 - generated instruction block or skill content changes
 - workflow version markers or sync classification behavior changes
-- ownership gates, evidence gates, Product Decisions/Rationale preservation gates, or truth-doc split behavior changes
+- ownership gates, evidence gates, lane classification gates, decision/rationale preservation gates, or truth-doc split behavior changes
+
+## Source References
+
+- ../areas.md
+- ../../README.md
+- ../../ai/repo-rules.md

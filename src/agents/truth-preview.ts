@@ -2,8 +2,9 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
   renderHierarchySummary,
-  resolveTruthDocsRoot,
+  renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -15,11 +16,9 @@ const renderMarkdownExample = (content: string): string => {
 export const TRUTH_PREVIEW_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.";
 
-const renderTruthPreviewReportExample = (
+export const renderTruthPreviewReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const truthDocsRoot = resolveTruthDocsRoot(config);
-
   return `Truth Preview: completed
 
 Requested outcome:
@@ -35,14 +34,16 @@ Why this workflow:
 
 Likely route owner:
 - route file: ${config.truthmark.paths.routesIndex}
-- truth doc: ${truthDocsRoot}/example.md
+- likely lane impact: engineering-lane
+- product target docs: none identified
+- engineering target docs: ${config.truthmark.paths.engineeringTruthRoot}/behaviors/example.md
 - confidence: medium
 
 Expected write classes:
 - truth docs
 
 Expected target files:
-- ${truthDocsRoot}/example.md
+- ${config.truthmark.paths.engineeringTruthRoot}/behaviors/example.md
 
 Suggested subagent use:
 - read-only verifiers: truth_route_auditor
@@ -56,20 +57,10 @@ Handoff:
 - Run the selected Truthmark workflow after user approval.`;
 };
 
-export const renderTruthPreviewSkillBody = (
+export const renderTruthPreviewProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return `---
-name: truthmark-preview
-description: ${workflow.description}
-argument-hint: Optional requested outcome, code area, doc path, or routing question
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
+  return `Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
 Invocations: ${TRUTH_PREVIEW_EXPLICIT_INVOCATIONS}
 
@@ -77,15 +68,19 @@ Truth Preview is read-only. Its report is intended, not authorized.
 
 Purpose:
 - preview the likely Truthmark workflow, route owner, target files, expected write classes, suggested subagent use, and blocking ambiguity before edits happen
+- report likely product lane impact, engineering lane impact, target docs, and ambiguity before edits
 - hand off to the selected workflow after user approval
 - keep the selector thin so agents can avoid loading or acting through heavier workflows prematurely
 
 Read:
 - .truthmark/config.yml, only when present
-- ${config.truthmark.paths.routesIndex}, only when present
-- relevant child route files under ${config.truthmark.paths.routeAreasRoot}/, only when present
+- ${config.truthmark.paths.routesIndex}, first, only when present
+- relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ for the selected scope or changed paths, only when present
 - relevant truth docs and implementation files needed to preview ownership
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+- Lane classification:
+${renderReadOnlyLaneClassificationRuleBlock(config)}
 
 Do not:
 - must not edit files
@@ -102,8 +97,23 @@ Suggested subagent use:
 - write workers: none
 - leases needed: none
 
-${renderHierarchySummary(config)}
+${renderHierarchySummary(config)}`;
+};
 
+export const renderTruthPreviewSkillBody = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  const workflow = getTruthmarkWorkflow("truthmark-preview");
+
+  return `---
+name: truthmark-preview
+description: ${workflow.description}
+argument-hint: Optional requested outcome, code area, doc path, or routing question
+user-invocable: true
+truthmark-version: ${TRUTHMARK_VERSION}
+---
+
+${renderTruthPreviewProcedureBody(config)}
 Report completion in this shape:
 ${renderMarkdownExample(renderTruthPreviewReportExample(config))}`;
 };

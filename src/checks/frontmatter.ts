@@ -6,14 +6,19 @@ import { parseMarkdownDocument } from "../markdown/parse.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import {
   TRUTH_DOCUMENT_KINDS,
+  laneForTruthDocumentKind,
   type TruthDocumentEntry,
   type TruthDocumentKind,
 } from "../routing/areas.js";
 
-const isTruthDocumentKind = (
-  value: string,
-): value is TruthDocumentKind =>
+const isTruthDocumentKind = (value: string): value is TruthDocumentKind =>
   TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind);
+
+const ROUTE_RELATIONSHIP_FRONTMATTER_FIELDS = [
+  "realized_by",
+  "realizes",
+  "depends_on",
+];
 
 export const checkFrontmatter = async (
   rootDir: string,
@@ -74,6 +79,35 @@ export const checkFrontmatter = async (
 
     const routedTruthDocument = truthDocumentMap.get(markdownPath);
     const truthKind = document.frontmatter.truth_kind;
+    const truthLane = document.frontmatter.truth_lane;
+    const isTruthDocument =
+      routedTruthDocument !== undefined || truthKind !== undefined;
+
+    if (isTruthDocument) {
+      for (const field of ROUTE_RELATIONSHIP_FRONTMATTER_FIELDS) {
+        if (field in document.frontmatter) {
+          diagnostics.push({
+            category: "frontmatter",
+            severity: "error",
+            message: `Frontmatter field ${field} is not allowed on truth documents; author relationship metadata in fenced route YAML entries instead.`,
+            file: markdownPath,
+          });
+        }
+      }
+    }
+
+    if (
+      truthLane !== undefined &&
+      truthLane !== "product" &&
+      truthLane !== "engineering"
+    ) {
+      diagnostics.push({
+        category: "frontmatter",
+        severity: "error",
+        message: "Frontmatter truth_lane must be product or engineering.",
+        file: markdownPath,
+      });
+    }
 
     if (truthKind !== undefined) {
       if (typeof truthKind !== "string" || !isTruthDocumentKind(truthKind)) {
@@ -95,6 +129,21 @@ export const checkFrontmatter = async (
           category: "frontmatter",
           severity: "error",
           message: `Frontmatter truth_kind ${truthKind} must match routed truth kind ${routedTruthDocument.kind}.`,
+          file: markdownPath,
+        });
+      }
+
+      if (
+        typeof truthKind === "string" &&
+        isTruthDocumentKind(truthKind) &&
+        truthLane !== undefined &&
+        (truthLane === "product" || truthLane === "engineering") &&
+        truthLane !== laneForTruthDocumentKind(truthKind)
+      ) {
+        diagnostics.push({
+          category: "frontmatter",
+          severity: "error",
+          message: `Frontmatter truth_lane ${truthLane} must match truth_kind ${truthKind}.`,
           file: markdownPath,
         });
       }

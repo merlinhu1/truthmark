@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible Truthmark bug
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Truthmark. Please remove secrets and private repository content before submitting.
+  - type: input
+    id: version
+    attributes:
+      label: Truthmark version or commit
+      description: Paste the package version, commit, or branch you tested.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node.js version, npm version, and package manager.
+      placeholder: "macOS 15, Node 22, npm 10"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include the command or workflow, relevant config/routes/truth-doc snippets, and minimal steps.
+      placeholder: |
+        1. Run `truthmark ...`
+        2. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include command output or diagnostics when useful.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Link related PRs, docs, generated surfaces, or screenshots if helpful.
