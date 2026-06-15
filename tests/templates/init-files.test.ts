@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import {
   renderArchitectureDocTemplateFile,
@@ -25,7 +25,7 @@ describe("truth doc templates", () => {
   it("keeps cross-lane relationship authority in route YAML, not frontmatter", () => {
     for (const [templateKind, renderTemplate] of templateCases) {
       const template = renderTemplate();
-      const frontmatter = matter(template).data;
+      const frontmatter = parseFrontmatter(template).data;
 
       expect(frontmatter, templateKind).not.toHaveProperty("realized_by");
       expect(frontmatter, templateKind).not.toHaveProperty("realizes");

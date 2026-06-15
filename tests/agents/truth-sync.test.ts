@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import type { TruthmarkWorkflowId } from "../../src/agents/workflow-manifest.js";
@@ -49,7 +49,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
 
 describe("renderTruthSyncSkillBody", () => {
   it("renders parseable skill frontmatter", () => {
-    const parsed = matter(renderTruthSyncSkillBody());
+    const parsed = parseFrontmatter(renderTruthSyncSkillBody());
 
     expect(parsed.data.name).toBe("truthmark-sync");
     expect(parsed.data["user-invocable"]).toBe(true);

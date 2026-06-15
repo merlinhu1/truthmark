@@ -3,9 +3,9 @@ import path from "node:path";
 
 import { execa } from "execa";
 import fg from "fast-glob";
-import matter from "gray-matter";
 import micromatch from "micromatch";
 
+import { parseFrontmatter } from "../markdown/frontmatter.js";
 import { parseMarkdownDocument } from "../markdown/parse.js";
 import {
   TRUTH_DOCUMENT_KINDS,
@@ -188,7 +188,7 @@ export const discoverRepoFiles = async (
 
     if (kind === "doc") {
       const source = await fs.readFile(path.join(rootDir, filePath), "utf8");
-      const parsed = matter(source);
+      const parsed = parseFrontmatter(source);
       const markdown = parseMarkdownDocument(parsed.content);
       const title =
         markdown.headings.find((heading) => heading.depth === 1)?.text ?? null;

@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
+import { parseFrontmatter } from "../markdown/frontmatter.js";
 import { parseMarkdownDocument } from "../markdown/parse.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import {
@@ -44,6 +45,7 @@ export const checkFrontmatter = async (
     let document;
 
     try {
+      parseFrontmatter(source, { throwOnInvalid: true });
       document = parseMarkdownDocument(source);
     } catch (error: unknown) {
       diagnostics.push({

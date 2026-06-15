@@ -1,8 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import matter from "gray-matter";
 import { parse } from "yaml";
+
+import { parseFrontmatter } from "../markdown/frontmatter.js";
 
 import type { EvidenceReference } from "./types.js";
 import {
@@ -54,7 +55,7 @@ export const parseEvidenceReferences = async (
   truthDocPath: string,
 ): Promise<EvidenceReference[]> => {
   const source = await fs.readFile(path.join(rootDir, truthDocPath), "utf8");
-  const parsed = matter(source);
+  const parsed = parseFrontmatter(source);
   const references: EvidenceReference[] = [];
 
   for (const entry of parseSourceReferences(source, truthDocPath)) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
@@ -19,7 +19,7 @@ import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthDocumentSkillBody", () => {
   it("renders parseable skill frontmatter", () => {
-    const parsed = matter(renderTruthDocumentSkillBody());
+    const parsed = parseFrontmatter(renderTruthDocumentSkillBody());
 
     expect(parsed.data.name).toBe("truthmark-document");
     expect(parsed.data["user-invocable"]).toBe(true);

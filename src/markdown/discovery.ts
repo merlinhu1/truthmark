@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 
 import fg from "fast-glob";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.js";
 
 import { resolveRepoPath, toRepoRelativePath } from "../fs/paths.js";
 
@@ -53,7 +53,7 @@ export const discoverMarkdownDocuments = async (
     markdownPaths.sort().map(async (relativePath) => {
       const absolutePath = resolveRepoPath(rootDir, relativePath);
       const source = await fs.readFile(absolutePath, "utf8");
-      const parsed = matter(source);
+      const parsed = parseFrontmatter(source);
 
       return {
         path: toRepoRelativePath(rootDir, absolutePath),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import {
   TRUTHMARK_WORKFLOW_IDS,
@@ -38,7 +38,7 @@ const renderWorkflowSkill = (id: (typeof TRUTHMARK_WORKFLOW_IDS)[number]) => {
 describe("Truthmark workflow manifest", () => {
   it("is the source for generated skill frontmatter descriptions", () => {
     for (const id of TRUTHMARK_WORKFLOW_IDS) {
-      const parsed = matter(renderWorkflowSkill(id));
+      const parsed = parseFrontmatter(renderWorkflowSkill(id));
 
       expect(parsed.data.name).toBe(id);
       expect(parsed.data.description).toBe(
