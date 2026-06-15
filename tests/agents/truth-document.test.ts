@@ -92,7 +92,7 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain(
       "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
-    expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
+    expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
     expect(skill).toContain("repository-intelligence artifacts were not generated");
     expect(skill).toContain("Evidence Gate");
     expect(skill).toContain(

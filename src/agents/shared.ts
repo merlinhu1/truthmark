@@ -92,7 +92,7 @@ export const EVIDENCE_AUTHORITY_INSTRUCTIONS = [
 ].join("\n");
 
 export const REPOSITORY_INTELLIGENCE_INSTRUCTIONS = [
-  "Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.",
+  "Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context may guide routing, write boundaries, and verification planning when available.",
   "They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.",
   "If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.",
 ].join("\n");

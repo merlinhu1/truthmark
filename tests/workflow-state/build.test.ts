@@ -86,6 +86,7 @@ describe("workflow state contract", () => {
         required: [],
         recommended: [],
         helpers: [],
+        affectedTests: [],
       },
       nextSteps: [],
       reportSections: [],
@@ -225,10 +226,16 @@ describe("buildWorkflowState", () => {
       expect.arrayContaining(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].requiredGates),
     );
     expect(state.checks.helpers.map((helper) => helper.id)).toContain("validate-sync-report");
+    expect(JSON.stringify((state.checks as { affectedTests?: string[] }).affectedTests ?? [])).toContain(
+      "tests/math.test.ts",
+    );
     expect(state.reportSections).toEqual(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections);
     expect(Array.isArray(state.diagnostics)).toBe(true);
     expect("base" in state).toBe(false);
     expect("contextPack" in state).toBe(false);
+    expect(JSON.stringify(state)).not.toContain('"sourceFiles"');
+    expect(JSON.stringify(state)).not.toContain('"truthDocs":[{');
+    expect(JSON.stringify(state)).not.toContain('"content":');
   });
 
   it("does not expose a legacy ContextPack opt-in path", async () => {
@@ -243,6 +250,8 @@ describe("buildWorkflowState", () => {
     } as Parameters<typeof buildWorkflowState>[1] & { includeContextPack: true });
 
     expect("contextPack" in state).toBe(false);
+    expect("sourceFiles" in state).toBe(false);
+    expect("truthDocs" in state).toBe(false);
     expect(JSON.stringify(state)).not.toContain('"content":');
   });
 

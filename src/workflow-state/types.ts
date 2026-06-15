@@ -47,6 +47,7 @@ export type WorkflowStateChecks = {
   required: string[];
   recommended: string[];
   helpers: WorkflowHelperValidationCommand[];
+  affectedTests: string[];
 };
 
 export type WorkflowState = {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { parseTruthDocUpdateDraft } from "../../src/generation/validate.js";
-import type { ContextPack } from "../../src/generation/types.js";
+import type { ContentPromptContext } from "../../src/generation/types.js";
 
-const contextPack = {
+const promptContext = {
   task: "truth-sync",
   changedFiles: ["src/auth/session.ts"],
   owningAreas: ["Authentication"],
@@ -19,7 +19,7 @@ const contextPack = {
     },
   ],
   openQuestions: [],
-} satisfies ContextPack;
+} satisfies ContentPromptContext;
 
 const validDraft = {
   status: "drafted",
@@ -44,7 +44,7 @@ const validDraft = {
 
 describe("parseTruthDocUpdateDraft", () => {
   it("accepts a valid evidence-backed draft", () => {
-    const draft = parseTruthDocUpdateDraft(JSON.stringify(validDraft), contextPack);
+    const draft = parseTruthDocUpdateDraft(JSON.stringify(validDraft), promptContext);
 
     expect(draft.status).toBe("drafted");
     expect(draft.claims[0]?.evidenceIds).toEqual(["E1"]);
@@ -59,7 +59,7 @@ describe("parseTruthDocUpdateDraft", () => {
         patches: [],
         openQuestions: ["Which bounded doc owns this behavior?"],
       }),
-      contextPack,
+      promptContext,
     );
 
     expect(draft.status).toBe("blocked");
@@ -67,7 +67,7 @@ describe("parseTruthDocUpdateDraft", () => {
   });
 
   it("rejects non-json output", () => {
-    expect(() => parseTruthDocUpdateDraft("not json", contextPack)).toThrow("Invalid JSON");
+    expect(() => parseTruthDocUpdateDraft("not json", promptContext)).toThrow("Invalid JSON");
   });
 
   it("rejects claims without evidence IDs", () => {
@@ -77,7 +77,7 @@ describe("parseTruthDocUpdateDraft", () => {
           ...validDraft,
           claims: [{ ...validDraft.claims[0], evidenceIds: [] }],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("truth-doc-update-draft validation failed");
   });
@@ -89,7 +89,7 @@ describe("parseTruthDocUpdateDraft", () => {
           ...validDraft,
           claims: [{ ...validDraft.claims[0], evidenceIds: ["E2"] }],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("unknown evidence id");
   });
@@ -102,7 +102,7 @@ describe("parseTruthDocUpdateDraft", () => {
           targetDocs: ["docs/truthmark/truth/other.md"],
           patches: [{ ...validDraft.patches[0], path: "docs/truthmark/truth/other.md" }],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("patch path is not in relevant docs");
   });
@@ -115,7 +115,7 @@ describe("parseTruthDocUpdateDraft", () => {
           targetDocs: ["../outside.md"],
           patches: [{ ...validDraft.patches[0], path: "../outside.md" }],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("unsafe doc path");
   });
@@ -128,7 +128,7 @@ describe("parseTruthDocUpdateDraft", () => {
           targetDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
           patches: [],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("targetDocs must match patch paths");
   });
@@ -140,7 +140,7 @@ describe("parseTruthDocUpdateDraft", () => {
           ...validDraft,
           claims: [],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("drafted output requires at least one claim");
   });
@@ -153,7 +153,7 @@ describe("parseTruthDocUpdateDraft", () => {
           targetDocs: [],
           patches: [],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("drafted output requires at least one patch");
   });
@@ -165,7 +165,7 @@ describe("parseTruthDocUpdateDraft", () => {
           ...validDraft,
           claims: [{ ...validDraft.claims[0], support: "unsupported" }],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("drafted output cannot contain unsupported claims");
   });
@@ -178,7 +178,7 @@ describe("parseTruthDocUpdateDraft", () => {
           status: "blocked",
           openQuestions: ["Need more evidence"],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("blocked output cannot include claims, target docs, or patches");
   });
@@ -193,7 +193,7 @@ describe("parseTruthDocUpdateDraft", () => {
           patches: [],
           openQuestions: [],
         }),
-        contextPack,
+        promptContext,
       ),
     ).toThrow("blocked output requires at least one open question");
   });

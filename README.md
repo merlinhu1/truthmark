@@ -394,7 +394,7 @@ It must not change functional code.
 Use Truth Realize when a product or architecture decision starts in docs and code should be updated to match.
 
 ```text
-/truthmark-realize realize docs/truthmark/truth/authentication/session-timeout.md into code
+/truthmark-realize realize docs/truthmark/product/capabilities/session-timeout.md into code
 ```
 
 Truth Realize is doc-first.
@@ -441,7 +441,7 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and bounded ContextPack artifacts. Generated workflow skill packages may also expose helper manifests and helper policies that call installed `truthmark validate ... --json` CLI validators; those helpers are accelerators, not bundled repo-local scripts or sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Generated workflow skill packages may also expose helper manifests and helper policies that call installed `truthmark validate ... --json` CLI validators; those helpers are accelerators, not bundled repo-local scripts or sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 They are not sources of truth.
 
@@ -449,7 +449,7 @@ They are not sources of truth.
 | --- | --- |
 | `truthmark index` | Build RepoIndex and RouteMap JSON for the active checkout. |
 | `truthmark impact --base <ref>` | Map changed files to routed truth docs, owning routes, nearby tests, and public symbols. |
-| `truthmark context --workflow <workflow> [--base <ref>]` | Generate a bounded ContextPack for Truth Sync, Truth Document, or Truth Realize. Use `--format markdown` for a human-readable pack. |
+| `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Return workflow applicability, write boundaries, target truth docs, checks, helper commands, and compact affected-test guidance. |
 
 Structured output is available with `--json` where supported.
 
@@ -642,7 +642,7 @@ truthmark check
 ### Document implemented behavior
 
 ```text
-/truthmark-document document the implemented password reset flow under docs/truthmark/truth/authentication
+/truthmark-document document the implemented password reset flow under docs/truthmark/engineering/behaviors/authentication
 ```
 
 ### Sync after code changes
@@ -654,7 +654,7 @@ truthmark check
 ### Realize a doc-first decision
 
 ```text
-/truthmark-realize realize docs/truthmark/truth/billing/invoice-retry-policy.md into code
+/truthmark-realize realize docs/truthmark/product/capabilities/invoice-retry-policy.md into code
 ```
 
 ### Audit truth health from the terminal
@@ -669,10 +669,10 @@ truthmark check
 truthmark impact --base main
 ```
 
-### Generate a workflow ContextPack
+### Inspect workflow status
 
 ```bash
-truthmark context --workflow truth-sync --base main --format markdown
+truthmark workflow status --workflow truthmark-sync --base main --json
 ```
 
 ### Enable the optional Portal workflow
@@ -699,7 +699,7 @@ Truthmark V1 currently provides:
 - `truthmark check`
 - `truthmark index`
 - `truthmark impact`
-- `truthmark context`
+- `truthmark workflow status`
 - branch-scope metadata
 - managed instruction blocks
 - generated Truth Structure workflow surfaces
@@ -710,7 +710,7 @@ Truthmark V1 currently provides:
 - generated Truth Check workflow surfaces
 - optional generated Truthmark Portal workflow surfaces
 - route, authority, decision-structure, frontmatter, link, freshness, generated-surface, and coverage diagnostics
-- derived RepoIndex, RouteMap, ImpactSet, and ContextPack artifacts
+- derived RepoIndex, RouteMap, ImpactSet, and WorkflowState artifacts
 - host-specific surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI
 
 ## Development
@@ -755,11 +755,11 @@ The README is the fast path for evaluation and setup.
 Detailed current behavior lives under `docs/`:
 
 - [Docs index](docs/README.md)
-- [Architecture overview](docs/truthmark/truth/architecture/overview.md)
-- [API and CLI contracts](docs/truthmark/truth/contracts.md)
-- [Init and scaffold behavior](docs/truthmark/truth/init-and-scaffold.md)
-- [Check diagnostics](docs/truthmark/truth/check-diagnostics.md)
-- [Installed workflows](docs/truthmark/truth/workflows/overview.md)
+- [Architecture overview](docs/truthmark/engineering/architecture/overview.md)
+- [API and CLI contracts](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Init and scaffold behavior](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Check diagnostics](docs/truthmark/engineering/behaviors/check-diagnostics.md)
+- [Installed workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
 - [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
 
 ## Design boundaries

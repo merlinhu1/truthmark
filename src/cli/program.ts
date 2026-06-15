@@ -5,7 +5,6 @@ import { renderHuman, renderJson } from "../output/render.js";
 import {
   runCheck,
   runConfig,
-  runContext,
   runImpact,
   runIndex,
   runInit,
@@ -33,12 +32,6 @@ type ImpactOptions = OutputOptions & {
   base?: string;
 };
 
-type ContextOptions = OutputOptions & {
-  workflow?: string;
-  base?: string;
-  format?: string;
-};
-
 type WorkflowOptions = OutputOptions & {
   workflow?: string;
   base?: string;
@@ -54,14 +47,6 @@ const writeResult = (result: CommandResult, options: OutputOptions): void => {
   const output = options.json ? renderJson(result) : renderHuman(result);
   process.stdout.write(`${output}\n`);
   markFailedWhenErrorDiagnosticsExist(result);
-};
-const writeContextResult = (result: CommandResult, options: ContextOptions): void => {
-  if (!options.json && typeof result.data?.markdown === "string") {
-    process.stdout.write(result.data.markdown);
-    markFailedWhenErrorDiagnosticsExist(result);
-    return;
-  }
-  writeResult(result, options);
 };
 
 const renderValidationHuman = (result: WorkflowHelperValidationResult): string => {
@@ -153,24 +138,6 @@ export const buildProgram = (): Command => {
       .requiredOption("--base <ref>", "Base Git ref to compare against"),
   ).action(async (options: ImpactOptions) => {
     writeResult(await runImpact({ base: options.base }), options);
-  });
-
-  addJsonOption(
-    program
-      .command("context")
-      .description("Generate a bounded workflow context pack.")
-      .requiredOption("--workflow <workflow>", "Workflow name: truth-sync, truth-document, or truth-realize")
-      .option("--base <ref>", "Base Git ref for impact-backed packs")
-      .option("--format <format>", "Output format: markdown", "markdown"),
-  ).action(async (options: ContextOptions) => {
-    writeContextResult(
-      await runContext({
-        workflow: options.workflow,
-        base: options.base,
-        format: options.format,
-      }),
-      options,
-    );
   });
 
   const workflow = program

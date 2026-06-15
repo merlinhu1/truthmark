@@ -33,7 +33,7 @@ Truthmark is a local CLI and generated-surface renderer. It reads checkout files
 - Check pipeline
 - Init/scaffold renderer
 - Workflow manifest and generated surface renderer
-- RepoIndex, RouteMap, ImpactSet, ContextPack, and WorkflowState builders
+- RepoIndex, RouteMap, ImpactSet, and WorkflowState/action-context builders
 
 ## Product Truth Links
 

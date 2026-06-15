@@ -16,9 +16,9 @@ This guide is for humans maintaining Truthmark's own docs tree.
 
 ## When To Update Which Docs
 
-- Change to scaffolded files or AGENTS management: update [docs/truthmark/truth/init-and-scaffold.md](../truthmark/truth/init-and-scaffold.md)
-- Change to diagnostics, routing, containment, or branch scope: update [docs/truthmark/truth/check-diagnostics.md](../truthmark/truth/check-diagnostics.md)
-- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truthmark/truth/workflows/overview.md](../truthmark/truth/workflows/overview.md) and the relevant bounded doc under `docs/truthmark/truth/workflows/`
+- Change to scaffolded files or AGENTS management: update [docs/truthmark/engineering/behaviors/init-and-scaffold.md](../truthmark/engineering/behaviors/init-and-scaffold.md)
+- Change to diagnostics, routing, containment, or branch scope: update [docs/truthmark/engineering/behaviors/check-diagnostics.md](../truthmark/engineering/behaviors/check-diagnostics.md)
+- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truthmark/product/capabilities/agent-native-workflow-injection.md](../truthmark/product/capabilities/agent-native-workflow-injection.md), [docs/truthmark/engineering/workflows/installed-workflow-runtime.md](../truthmark/engineering/workflows/installed-workflow-runtime.md), and the relevant bounded engineering workflow or generated-surface doc
 - Change to repository-wide rules or completion policy: update [docs/ai/repo-rules.md](../ai/repo-rules.md) or the relevant standard
 
 ## Maintaining AGENTS.md

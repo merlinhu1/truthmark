@@ -26,28 +26,29 @@ Fast routing for agents. Repository-wide rules live in [docs/ai/repo-rules.md](r
 
 Read:
 
-1. [docs/truthmark/truth/architecture/overview.md](../truthmark/truth/architecture/overview.md)
-2. [docs/truthmark/truth/architecture/module-map.md](../truthmark/truth/architecture/module-map.md)
-3. [docs/truthmark/truth/init-and-scaffold.md](../truthmark/truth/init-and-scaffold.md)
-4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)
+1. [docs/truthmark/engineering/architecture/overview.md](../truthmark/engineering/architecture/overview.md)
+2. [docs/truthmark/engineering/behaviors/init-and-scaffold.md](../truthmark/engineering/behaviors/init-and-scaffold.md)
+3. [docs/truthmark/engineering/contracts/config-route-and-check-contracts.md](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
+4. [docs/truthmark/product/capabilities/lane-separated-truth.md](../truthmark/product/capabilities/lane-separated-truth.md)
 
 ### Diagnostics, routing, or containment checks
 
 Read:
 
-1. [docs/truthmark/truth/architecture/module-map.md](../truthmark/truth/architecture/module-map.md)
-2. [docs/truthmark/truth/check-diagnostics.md](../truthmark/truth/check-diagnostics.md)
+1. [docs/truthmark/engineering/architecture/overview.md](../truthmark/engineering/architecture/overview.md)
+2. [docs/truthmark/engineering/behaviors/check-diagnostics.md](../truthmark/engineering/behaviors/check-diagnostics.md)
 3. [docs/standards/documentation-governance.md](../standards/documentation-governance.md)
-4. [docs/truthmark/truth/contracts.md](../truthmark/truth/contracts.md)
+4. [docs/truthmark/engineering/contracts/config-route-and-check-contracts.md](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
 
 ### Installed workflow, prompt, or reporting changes
 
 Read:
 
 1. [.truthmark/config.yml](../../.truthmark/config.yml)
-2. [docs/truthmark/truth/workflows/overview.md](../truthmark/truth/workflows/overview.md) and the relevant workflow leaf doc under `docs/truthmark/truth/workflows/`
-3. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
-4. The manifest, renderer, generated surfaces, and focused tests named by the workflow truth docs
+2. [docs/truthmark/product/capabilities/agent-native-workflow-injection.md](../truthmark/product/capabilities/agent-native-workflow-injection.md)
+3. [docs/truthmark/engineering/workflows/installed-workflow-runtime.md](../truthmark/engineering/workflows/installed-workflow-runtime.md) and [docs/truthmark/engineering/contracts/generated-host-surfaces.md](../truthmark/engineering/contracts/generated-host-surfaces.md)
+4. [docs/standards/maintaining-repository-truth.md](../standards/maintaining-repository-truth.md)
+5. The manifest, renderer, generated surfaces, and focused tests named by the workflow truth docs
 
 ### Package version changes
 

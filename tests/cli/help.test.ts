@@ -21,7 +21,7 @@ describe("truthmark CLI", () => {
     expect(result.stdout).toContain("check");
     expect(result.stdout).toContain("index");
     expect(result.stdout).toContain("impact");
-    expect(result.stdout).toContain("context");
+    expect(result.stdout).not.toContain("context");
 
     for (const command of forbiddenCommands) {
       expect(result.stdout).not.toContain(command);

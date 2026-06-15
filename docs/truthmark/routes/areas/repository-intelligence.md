@@ -34,12 +34,11 @@ Code surface:
 - src/impact/\*\*
 - src/evidence/\*\*
 - src/freshness/\*\*
-- src/context-pack/\*\*
 - src/workflow-state/\*\*
 
 Update truth when:
 
-- RepoIndex, RouteMap, route-first ImpactSet, evidence validation, freshness diagnostics, ContextPack behavior, or WorkflowState behavior changes
+- RepoIndex, RouteMap, route-first ImpactSet, evidence validation, freshness diagnostics, or WorkflowState/action-context behavior changes
 - repository-intelligence command output changes
 
 ## Source References
