@@ -213,14 +213,18 @@ describe("Truth Sync generated metadata", () => {
       renderTruthmarkCopilotSyncPrompt(),
     ]) {
       expect(surface).toContain(
-        "Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.",
+        "Use this prompt as a light-weight adapter for Truthmark Sync.",
       );
       expect(surface).toContain(
-        "After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.",
+        "To run the full workflow, use the installed skill surface:",
       );
       expect(surface).toContain(
-        "If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.",
+        "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.",
       );
+      expect(surface).toContain("support/procedure.md");
+      expect(surface).toContain("support/report-template.md");
+      expect(surface).toContain("helper-manifest.yml");
+      expect(surface).toContain("support/helper-policy.md");
       expect(surface).not.toContain("helper package unavailable");
     }
   });

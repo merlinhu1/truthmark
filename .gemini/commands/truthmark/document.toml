@@ -5,10 +5,13 @@ Use this prompt as a light-weight adapter for Truthmark Document.
 To run the full workflow, use the installed skill surface:
 OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
 
-For the canonical workflow procedure, report template, and helper policy, read:
+For the canonical workflow procedure, report template, and workflow-specific support files, read:
 - .gemini/skills/truthmark-document/SKILL.md
 - .gemini/skills/truthmark-document/support/procedure.md
 - .gemini/skills/truthmark-document/support/report-template.md
+- .gemini/skills/truthmark-document/support/subagents-and-leases.md
+- .gemini/skills/truthmark-document/helper-manifest.yml
+- .gemini/skills/truthmark-document/support/helper-policy.md
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 User focus or arguments: {{args}}

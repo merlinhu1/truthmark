@@ -10,7 +10,7 @@ This directory is an index for current truth docs organized by the configured Tr
 
 Engineering truth owns current realization, contracts, architecture, workflows, operations, and tests. Engineering lane docs describe how the repository currently implements and operates the behavior.
 
-README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.
+README.md files are indexes, not Truth Sync targets. Keep engineering truth in bounded behavior, contract, architecture, workflow, operations, and test docs.
 
 ## Source References
 

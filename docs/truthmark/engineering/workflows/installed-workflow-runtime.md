@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-14
+last_reviewed: 2026-06-15
 realizes:
   - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
@@ -18,7 +18,7 @@ It owns generated workflow runtime behavior, managed instruction blocks, helper 
 
 ## Current Implementation Behavior
 
-The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated text instructs agents to classify lane impact before writing canonical truth docs.
+The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated skill packages hold the full workflow procedures and report contracts. Generated GitHub Copilot prompts and Gemini commands act as compact adapters that route users to the installed skill package rather than embedding duplicate workflow bodies. Generated text instructs agents to classify lane impact before writing canonical truth docs.
 
 ## Triggers
 

@@ -210,17 +210,44 @@ ${prompt}
 `;
 };
 
-const renderDocumentCommandAdapterInstructions = (root: string): string => `Use this prompt as a light-weight adapter for Truthmark Document.
+const workflowSupportFiles = (workflowId: TruthmarkWorkflowId): string[] => {
+  const workflow = getTruthmarkWorkflow(workflowId);
+  const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
+  const hasSubagentSupport =
+    definition.parentRule !== undefined &&
+    ((workflow.subagents?.length ?? 0) > 0 ||
+      (workflow.writeSubagents?.length ?? 0) > 0);
+  const hasHelperSupport = (workflow.helpers?.length ?? 0) > 0;
+
+  return [
+    "support/procedure.md",
+    "support/report-template.md",
+    ...(hasSubagentSupport ? ["support/subagents-and-leases.md"] : []),
+    ...(hasHelperSupport
+      ? ["helper-manifest.yml", "support/helper-policy.md"]
+      : []),
+  ];
+};
+
+const renderWorkflowCommandAdapterInstructions = (
+  workflowId: TruthmarkWorkflowId,
+  root: string,
+): string => {
+  const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
+  const canonicalFiles = ["SKILL.md", ...workflowSupportFiles(workflowId)]
+    .map((supportFile) => `- ${root}/${supportFile}`)
+    .join("\n");
+
+  return `Use this prompt as a light-weight adapter for ${definition.title}.
 
 To run the full workflow, use the installed skill surface:
-${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
+${definition.invocations}
 
-For the canonical workflow procedure, report template, and helper policy, read:
-- ${root}/SKILL.md
-- ${root}/support/procedure.md
-- ${root}/support/report-template.md
+For the canonical workflow procedure, report template, and workflow-specific support files, read:
+${canonicalFiles}
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.`;
+};
 
 const renderTomlString = (value: string): string => {
   return `"${value.replace(/\\/gu, "\\\\").replace(/"/gu, '\\"')}"`;
@@ -637,14 +664,7 @@ export const renderTruthmarkSkillPackage = ({
   );
   const subagents = renderWorkflowSubagentSupport(workflowId, host);
   const helpers = getTruthmarkWorkflow(workflowId).helpers ?? [];
-  const supportFiles = [
-    "support/procedure.md",
-    "support/report-template.md",
-    ...(subagents === undefined ? [] : ["support/subagents-and-leases.md"]),
-    ...(helpers.length === 0
-      ? []
-      : ["helper-manifest.yml", "support/helper-policy.md"]),
-  ];
+  const supportFiles = workflowSupportFiles(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const files: TruthmarkSkillPackageFile[] = [
     {
@@ -1508,164 +1528,166 @@ truthmark:
 `;
 };
 
-export const renderTruthmarkGeminiStructureCommand = (
-  config: TruthmarkConfig = defaultAgentConfig(),
+const renderGeminiWorkflowCommand = (
+  workflowId: TruthmarkWorkflowId,
+  root: string,
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-structure");
+  const workflow = getTruthmarkWorkflow(workflowId);
 
   return renderGeminiCommand(
     workflow.description,
-    renderTruthStructureSkillBody(config),
+    renderWorkflowCommandAdapterInstructions(workflowId, root),
+  );
+};
+
+const renderCopilotWorkflowPrompt = (
+  workflowId: TruthmarkWorkflowId,
+  root: string,
+): string => {
+  const workflow = getTruthmarkWorkflow(workflowId);
+
+  return renderCopilotPromptFile(
+    workflow.description,
+    renderWorkflowCommandAdapterInstructions(workflowId, root),
+  );
+};
+
+export const renderTruthmarkGeminiStructureCommand = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string => {
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-structure",
+    ".gemini/skills/truthmark-structure",
   );
 };
 
 export const renderTruthmarkGeminiDocumentCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-document");
   void config;
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderDocumentCommandAdapterInstructions('.gemini/skills/truthmark-document'),
+  return renderGeminiWorkflowCommand(
+    "truthmark-document",
+    ".gemini/skills/truthmark-document",
   );
 };
 
 export const renderTruthmarkGeminiSyncCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-sync");
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderTruthSyncSkillBody(config),
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-sync",
+    ".gemini/skills/truthmark-sync",
   );
 };
 
 export const renderTruthmarkGeminiRealizeCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-realize");
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderTruthmarkRealizeSkillBody(config),
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-realize",
+    ".gemini/skills/truthmark-realize",
   );
 };
 
 export const renderTruthmarkGeminiCheckCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-check");
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderTruthCheckSkillBody(config),
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-check",
+    ".gemini/skills/truthmark-check",
   );
 };
 
 export const renderTruthmarkGeminiPreviewCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderTruthPreviewSkillBody(config),
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-preview",
+    ".gemini/skills/truthmark-preview",
   );
 };
 
 export const renderTruthmarkGeminiPortalCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-portal");
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderTruthmarkPortalSkillBody(config),
+  void config;
+  return renderGeminiWorkflowCommand(
+    "truthmark-portal",
+    ".gemini/skills/truthmark-portal",
   );
 };
 
 export const renderTruthmarkCopilotStructurePrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-structure");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthStructureSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-structure",
+    ".github/skills/truthmark-structure",
   );
 };
 
 export const renderTruthmarkCopilotDocumentPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-document");
   void config;
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderDocumentCommandAdapterInstructions('.github/skills/truthmark-document'),
+  return renderCopilotWorkflowPrompt(
+    "truthmark-document",
+    ".github/skills/truthmark-document",
   );
 };
 
 export const renderTruthmarkCopilotSyncPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-sync");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthSyncSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-sync",
+    ".github/skills/truthmark-sync",
   );
 };
 
 export const renderTruthmarkCopilotRealizePrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-realize");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthmarkRealizeSkillBody(config),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-realize",
+    ".github/skills/truthmark-realize",
   );
 };
 
 export const renderTruthmarkCopilotCheckPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-check");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthCheckSkillBody(config, {
-      includeCopilotCustomAgentMode: true,
-    }),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-check",
+    ".github/skills/truthmark-check",
   );
 };
 
 export const renderTruthmarkCopilotPreviewPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthPreviewSkillBody(config),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-preview",
+    ".github/skills/truthmark-preview",
   );
 };
 
 export const renderTruthmarkCopilotPortalPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-portal");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    renderTruthmarkPortalSkillBody(config),
+  void config;
+  return renderCopilotWorkflowPrompt(
+    "truthmark-portal",
+    ".github/skills/truthmark-portal",
   );
 };

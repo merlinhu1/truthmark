@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-14
+last_reviewed: 2026-06-15
 realizes:
   - docs/truthmark/product/capabilities/agent-native-workflow-injection.md
 ---
@@ -18,7 +18,7 @@ It covers configured platform output paths, generated workflow files, managed in
 
 ## Current Implementation Behavior
 
-Truthmark renders workflow surfaces for configured platforms and leaves already committed files in place when platforms are removed from config.
+Truthmark renders workflow surfaces for configured platforms and leaves already committed files in place when platforms are removed from config. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, subagent guidance, and helper policy. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: they name the workflow invocation, point to the host-specific skill package files, and use direct checkout inspection as fallback instead of duplicating full workflow bodies.
 
 ## Contract Surface
 
@@ -33,7 +33,8 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 
 ## Outputs
 
-- Host-native workflow files and optional helper manifests
+- Host-native workflow skill packages and compact prompt/command adapters
+- Optional helper manifests
 - Managed instruction blocks with the Truthmark version marker
 
 ## Product Truth Links
@@ -43,6 +44,7 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 ## Engineering Decisions
 
 - Decision (2026-06-14): Generated surfaces must preserve Truthmark as a workflow injector, not a runtime authority.
+- Decision (2026-06-15): GitHub Copilot prompt files and Gemini command files stay compact workflow adapters when a host skill package exists; canonical workflow bodies remain in generated skill support files.
 
 ## Maintenance Notes
 

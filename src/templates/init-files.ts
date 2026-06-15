@@ -36,6 +36,16 @@ const renderLaneRootReadmeSummary = (lane: "product" | "engineering"): string =>
   ].join(" ");
 };
 
+const renderLaneRootLeafDocGuidance = (
+  lane: "product" | "engineering",
+): string => {
+  if (lane === "product") {
+    return "README.md files are indexes, not Truth Sync targets. Keep product truth in bounded capability docs.";
+  }
+
+  return "README.md files are indexes, not Truth Sync targets. Keep engineering truth in bounded behavior, contract, architecture, workflow, operations, and test docs.";
+};
+
 const renderTruthDocumentsMetadata = (
   documents: Array<{ path: string; kind: string }>,
 ): string[] => {
@@ -200,7 +210,7 @@ export const renderTruthRootReadmeTemplate = (
     "",
     renderLaneRootReadmeSummary(lane),
     "",
-    "README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.",
+    renderLaneRootLeafDocGuidance(lane),
     "",
     "## Source References",
     "",
