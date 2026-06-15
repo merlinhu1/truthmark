@@ -200,6 +200,7 @@ export const buildWorkflowState = async (
       required: [...manifestEntry.requiredGates],
       recommended: [...manifestEntry.positiveTriggers],
       helpers: helperCommandsFor(options.workflow),
+      affectedTests: impactSet?.affectedTests ?? [],
     },
     nextSteps: nextStepsFor(options.workflow, applicability, comparisonBase),
     reportSections: [...manifestEntry.reportSections],

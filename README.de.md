@@ -441,7 +441,7 @@ Die meisten Maintainer beginnen mit drei Befehlen.
 | `truthmark init` | Installiert oder aktualisiert konfigurierte Workflow-Schnittstellen aus der geprüften Config. |
 | `truthmark check` | Validiert Config, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope, generierte Oberflächen, Freshness und Coverage-Diagnostik. |
 
-Optionale Repository-Intelligence-Helfer erzeugen abgeleitetes Review-Material für den aktiven Checkout, etwa RepoIndex-, RouteMap-, ImpactSet- und begrenzte ContextPack-Artefakte. Generierte Workflow-Skill-Pakete können außerdem Helper-Manifeste und Helper-Policies bereitstellen, die installierte `truthmark validate ... --json` CLI-Validatoren aufrufen; diese Helpers sind Beschleuniger, keine im Repository gebündelten lokalen Skripte und keine Quellen der Wahrheit. Eigenständige Copilot-Prompts und Gemini-Commands verwenden denselben CLI-Validator-Vertrag, wenn der installierte Runner verfügbar ist; andernfalls melden sie einen sichtbaren übersprungenen Helper-Status und führen eine manuelle Validierung durch.
+Optionale Repository-Intelligence-Helfer erzeugen abgeleitetes Review-Material für den aktiven Checkout, etwa RepoIndex-, RouteMap-, ImpactSet- und kompaktes WorkflowState/action-context-JSON. Generierte Workflow-Skill-Pakete können außerdem Helper-Manifeste und Helper-Policies bereitstellen, die installierte `truthmark validate ... --json` CLI-Validatoren aufrufen; diese Helpers sind Beschleuniger, keine im Repository gebündelten lokalen Skripte und keine Quellen der Wahrheit. Eigenständige Copilot-Prompts und Gemini-Commands verwenden denselben CLI-Validator-Vertrag, wenn der installierte Runner verfügbar ist; andernfalls melden sie einen sichtbaren übersprungenen Helper-Status und führen eine manuelle Validierung durch.
 
 Sie sind keine Quellen der Wahrheit.
 
@@ -449,7 +449,7 @@ Sie sind keine Quellen der Wahrheit.
 | --- | --- |
 | `truthmark index` | Baut RepoIndex- und RouteMap-JSON für den aktiven Checkout. |
 | `truthmark impact --base <ref>` | Ordnet geänderte Dateien gerouteten Truth-Dokumenten, besitzenden Routen, nahen Tests und öffentlichen Symbolen zu. |
-| `truthmark ctx --workflow <workflow> [--base <ref>]` | Erzeugt ein begrenztes ContextPack für Truth Sync, Truth Document oder Truth Realize. Nutze `--format markdown` für eine menschenlesbare Fassung. |
+| `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Liefert Workflow-Anwendbarkeit, Schreibgrenzen, Ziel-Truth-Dokumente, Checks, Helper-Commands und kompakte Hinweise zu betroffenen Tests. |
 
 Strukturierte Ausgabe ist mit `--json` verfügbar, wo sie unterstützt wird.
 
@@ -669,10 +669,10 @@ truthmark check
 truthmark impact --base main
 ```
 
-### Workflow-ContextPack erzeugen
+### Workflow-Status prüfen
 
 ```bash
-truthmark ctx --workflow truth-sync --base main --format markdown
+truthmark workflow status --workflow truthmark-sync --base main --json
 ```
 
 ### Optionalen Portal-Workflow aktivieren
@@ -699,7 +699,7 @@ Truthmark V1 bietet derzeit:
 - `truthmark check`
 - `truthmark index`
 - `truthmark impact`
-- `truthmark ctx`
+- `truthmark workflow status`
 - Branch-Scope-Metadaten
 - verwaltete Instruktionsblöcke
 - generierte Truth-Structure-Workflow-Schnittstellen
@@ -710,7 +710,7 @@ Truthmark V1 bietet derzeit:
 - generierte Truth-Check-Workflow-Schnittstellen
 - optionale generierte Truthmark-Portal-Workflow-Schnittstellen
 - Diagnostik für Route, Autorität, Entscheidungsstruktur, Frontmatter, Links, Freshness, generierte Schnittstellen und Coverage
-- abgeleitete RepoIndex-, RouteMap-, ImpactSet- und ContextPack-Artefakte
+- abgeleitete RepoIndex-, RouteMap-, ImpactSet- und WorkflowState-Artefakte
 - host-spezifische Schnittstellen für Codex, Claude Code, GitHub Copilot, OpenCode und Gemini CLI
 
 ## Entwicklung

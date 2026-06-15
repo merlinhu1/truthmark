@@ -66,7 +66,7 @@ Evidence Gate:
 - tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
 - remove, narrow, or block unsupported claims
 - if no impacted doc changed, report why truth was already current or why sync was skipped
-Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and ContextPack may guide routing, context selection, and verification planning when available.
+Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context may guide routing, write boundaries, and verification planning when available.
 They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
 If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
 Optional validation tooling:

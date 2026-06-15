@@ -123,13 +123,12 @@ Code surface:
 - src/impact/\*\*
 - src/evidence/\*\*
 - src/freshness/\*\*
-- src/context-pack/\*\*
 - src/workflow-state/\*\*
 
 Update truth when:
 
-- repository indexing, route-map, impact analysis, evidence validation, freshness checks, context-pack behavior, or workflow-state behavior changes
-- `truthmark index`, `truthmark impact`, or `truthmark context` result shapes change
+- repository indexing, route-map, impact analysis, evidence validation, freshness checks, or workflow-state/action-context behavior changes
+- `truthmark index`, `truthmark impact`, or `truthmark workflow status` result shapes change
 
 ## Source References
 

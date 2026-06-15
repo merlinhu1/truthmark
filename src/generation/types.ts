@@ -13,7 +13,7 @@ type EvidenceSnippet = {
   text: string;
 };
 
-export type ContextPack = {
+export type ContentPromptContext = {
   task: "truth-sync" | "truth-document";
   changedFiles: string[];
   owningAreas: string[];
@@ -45,5 +45,5 @@ export type ContentPromptSpec<TId extends ContentPromptId = ContentPromptId> = {
   title: string;
   purpose: string;
   outputSchemaId: OutputSchemaId;
-  render: (context: ContextPack) => string;
+  render: (context: ContentPromptContext) => string;
 };

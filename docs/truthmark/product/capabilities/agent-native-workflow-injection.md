@@ -16,11 +16,11 @@ Repository maintainers and agents can follow the checked-in workflow contract wi
 
 ## Capability Scope
 
-This capability covers generated host-native workflow files, managed instruction blocks, bounded write rules, helper metadata, and direct-checkout fallback behavior.
+This capability covers generated host-native workflow files, managed instruction blocks, bounded write rules, helper metadata, compact workflow status/impact guidance, and direct-checkout fallback behavior.
 
 ## Current Product Behavior
 
-Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gemini CLI workflow files generated from the source templates and manifest.
+Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gemini CLI workflow files generated from the source templates and manifest. Agents may use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` and `truthmark impact --base <ref> --json` as optional compact helpers for applicability, write boundaries, routing, affected tests, and diagnostics; these helpers do not provide file-content packets.
 
 ## Acceptance Criteria
 
@@ -31,6 +31,7 @@ Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gem
 ## Product Decisions
 
 - Decision (2026-06-14): Workflow surfaces remain committed repository files; optional CLI helpers validate after relevant work and do not orchestrate workflow execution.
+- Decision (2026-06-15): Agent-facing repository-intelligence handoff uses workflow status plus impact instead of a standalone ContextPack command.
 
 ## Engineering Realization Links
 

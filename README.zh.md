@@ -441,7 +441,7 @@ truthmark check
 | `truthmark init` | 从已审查配置安装或刷新已配置的工作流接口。 |
 | `truthmark check` | 验证配置、权限边界、路由、承载决策的文档、frontmatter、内部链接、分支范围、生成接口、freshness 和覆盖率诊断。 |
 
-可选的仓库情报辅助工具会为当前 checkout 生成派生审查材料，例如 RepoIndex、RouteMap、ImpactSet 和有边界的 ContextPack 产物。生成的工作流 skill packages 也可以暴露 helper manifests 和 helper policies，用来调用已安装的 `truthmark validate ... --json` CLI validators；这些 helpers 是加速器，不是打包进仓库的本地脚本，也不是事实来源。独立的 Copilot prompts 和 Gemini commands 在已安装 runner 可用时使用同一 CLI validator contract；不可用时应报告可见的 skipped helper status，并进行 manual validation。
+可选的仓库情报辅助工具会为当前 checkout 生成派生审查材料，例如 RepoIndex、RouteMap、ImpactSet 和紧凑的 WorkflowState/action-context JSON。生成的工作流 skill packages 也可以暴露 helper manifests 和 helper policies，用来调用已安装的 `truthmark validate ... --json` CLI validators；这些 helpers 是加速器，不是打包进仓库的本地脚本，也不是事实来源。独立的 Copilot prompts 和 Gemini commands 在已安装 runner 可用时使用同一 CLI validator contract；不可用时应报告可见的 skipped helper status，并进行 manual validation。
 
 它们不是事实来源。
 
@@ -449,7 +449,7 @@ truthmark check
 | --- | --- |
 | `truthmark index` | 为当前 checkout 构建 RepoIndex 和 RouteMap JSON。 |
 | `truthmark impact --base <ref>` | 将变更文件映射到已路由事实文档、所属路由、附近测试和公开符号。 |
-| `truthmark ctx --workflow <workflow> [--base <ref>]` | 为 Truth Sync、Truth Document 或 Truth Realize 生成有边界的 ContextPack。使用 `--format markdown` 生成可读版本。 |
+| `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | 返回工作流适用性、写入边界、目标事实文档、检查项、helper commands 和紧凑的受影响测试指引。 |
 
 受支持位置可使用 `--json` 获取结构化输出。
 
@@ -669,10 +669,10 @@ truthmark check
 truthmark impact --base main
 ```
 
-### 生成工作流 ContextPack
+### 查看工作流状态
 
 ```bash
-truthmark ctx --workflow truth-sync --base main --format markdown
+truthmark workflow status --workflow truthmark-sync --base main --json
 ```
 
 ### 启用可选 Portal 工作流
@@ -699,7 +699,7 @@ Truthmark V1 目前提供：
 - `truthmark check`
 - `truthmark index`
 - `truthmark impact`
-- `truthmark ctx`
+- `truthmark workflow status`
 - 分支范围元数据
 - 受管指令块
 - 生成的 Truth Structure 工作流接口
@@ -710,7 +710,7 @@ Truthmark V1 目前提供：
 - 生成的 Truth Check 工作流接口
 - 可选生成的 Truthmark Portal 工作流接口
 - 路由、权限边界、决策结构、frontmatter、链接、freshness、生成接口和覆盖率诊断
-- 派生的 RepoIndex、RouteMap、ImpactSet 和 ContextPack 产物
+- 派生的 RepoIndex、RouteMap、ImpactSet 和 WorkflowState 产物
 - 面向 Codex、Claude Code、GitHub Copilot、OpenCode 和 Gemini CLI 的宿主专属接口
 
 ## 开发

@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 
 import { truthDocUpdateDraftSchema } from "./schemas/truth-doc-update.js";
-import type { ContextPack, TruthDocUpdateDraft } from "./types.js";
+import type { ContentPromptContext, TruthDocUpdateDraft } from "./types.js";
 
 const ajv = new Ajv({ allErrors: true });
 const validateTruthDocUpdateDraft = ajv.compile(truthDocUpdateDraftSchema);
@@ -28,7 +28,7 @@ const sortedUnique = (values: string[]): string[] => {
   return [...new Set(values)].sort();
 };
 
-const assertSemanticValidity = (draft: TruthDocUpdateDraft, context: ContextPack): void => {
+const assertSemanticValidity = (draft: TruthDocUpdateDraft, context: ContentPromptContext): void => {
   const evidenceIds = new Set(context.evidenceSnippets.map((snippet) => snippet.id));
   const relevantDocs = new Set(context.relevantDocs);
 
@@ -84,7 +84,7 @@ const assertSemanticValidity = (draft: TruthDocUpdateDraft, context: ContextPack
 
 export const parseTruthDocUpdateDraft = (
   rawOutput: string,
-  context: ContextPack,
+  context: ContentPromptContext,
 ): TruthDocUpdateDraft => {
   const parsed = parseJson(rawOutput);
 

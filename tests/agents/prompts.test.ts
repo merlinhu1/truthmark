@@ -20,7 +20,7 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain(
       "implement only bounded, current truth claims from the source docs",
     );
-    expect(prompt).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
+    expect(prompt).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
     expect(prompt).toContain("workflow write boundaries");
     expect(prompt).toContain(
       "read product truth under docs/truthmark/product as requirements",
