@@ -1392,7 +1392,7 @@ Update truth when:
     }
   });
 
-  it("reports product realized_by links without reciprocal engineering realizes links", async () => {
+  it("allows product realized_by links without reciprocal engineering realizes links", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -1431,21 +1431,20 @@ Update truth when:
       );
 
       const result = await runCheck(repo.rootDir);
-      const reciprocalDiagnostics = result.diagnostics.filter(
+      const traceabilityErrors = result.diagnostics.filter(
         (diagnostic) =>
           diagnostic.category === "traceability" &&
           diagnostic.severity === "error" &&
-          diagnostic.file === "docs/truthmark/product/payments/checkout.md" &&
-          diagnostic.message.includes("must reciprocate with realizes"),
+          diagnostic.file === "docs/truthmark/product/payments/checkout.md",
       );
 
-      expect(reciprocalDiagnostics).toHaveLength(1);
+      expect(traceabilityErrors).toEqual([]);
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("reports engineering realizes links without reciprocal product realized_by links", async () => {
+  it("allows engineering realizes links without reciprocal product realized_by links", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -1484,16 +1483,15 @@ Update truth when:
       );
 
       const result = await runCheck(repo.rootDir);
-      const reciprocalDiagnostics = result.diagnostics.filter(
+      const traceabilityErrors = result.diagnostics.filter(
         (diagnostic) =>
           diagnostic.category === "traceability" &&
           diagnostic.severity === "error" &&
           diagnostic.file ===
-            "docs/truthmark/engineering/behaviors/checkout.md" &&
-          diagnostic.message.includes("must reciprocate with realized_by"),
+            "docs/truthmark/engineering/behaviors/checkout.md",
       );
 
-      expect(reciprocalDiagnostics).toHaveLength(1);
+      expect(traceabilityErrors).toEqual([]);
     } finally {
       await repo.cleanup();
     }
@@ -1550,16 +1548,15 @@ Update truth when:
             "docs/truthmark/engineering/behaviors/checkout.md" &&
           diagnostic.message.includes("conflicting relationship metadata"),
       );
-      const reciprocalDiagnostics = result.diagnostics.filter(
+      const traceabilityErrors = result.diagnostics.filter(
         (diagnostic) =>
           diagnostic.category === "traceability" &&
           diagnostic.severity === "error" &&
-          diagnostic.file === "docs/truthmark/product/payments/checkout.md" &&
-          diagnostic.message.includes("must reciprocate with realizes"),
+          diagnostic.file === "docs/truthmark/product/payments/checkout.md",
       );
 
       expect(duplicateDiagnostics).toEqual([]);
-      expect(reciprocalDiagnostics).toEqual([]);
+      expect(traceabilityErrors).toEqual([]);
     } finally {
       await repo.cleanup();
     }
@@ -1633,8 +1630,7 @@ Update truth when:
           (diagnostic) =>
             diagnostic.category === "traceability" &&
             diagnostic.severity === "error" &&
-            diagnostic.file === "docs/truthmark/product/payments/refunds.md" &&
-            diagnostic.message.includes("must reciprocate with realizes"),
+            diagnostic.file === "docs/truthmark/product/payments/refunds.md",
         ),
       ).toEqual([]);
     } finally {

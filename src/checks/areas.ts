@@ -169,13 +169,6 @@ const validateRelationshipTargets = (
           message: `Product truth document ${entry.path} realized_by target ${target} must point to engineering truth.`,
           file: entry.path,
         });
-      } else if (!targetEntry.realizes.includes(entry.path)) {
-        diagnostics.push({
-          category: "traceability",
-          severity: "error",
-          message: `Product truth document ${entry.path} realized_by target ${target} must reciprocate with realizes.`,
-          file: entry.path,
-        });
       }
     }
 
@@ -193,13 +186,6 @@ const validateRelationshipTargets = (
           category: "traceability",
           severity: "error",
           message: `Engineering truth document ${entry.path} realizes target ${target} must point to product truth.`,
-          file: entry.path,
-        });
-      } else if (!targetEntry.realizedBy.includes(entry.path)) {
-        diagnostics.push({
-          category: "traceability",
-          severity: "error",
-          message: `Engineering truth document ${entry.path} realizes target ${target} must reciprocate with realized_by.`,
           file: entry.path,
         });
       }
