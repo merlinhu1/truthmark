@@ -394,7 +394,7 @@ No debe cambiar código funcional.
 Usa Truth Realize cuando una decisión de producto o arquitectura empieza en documentos y el código debe actualizarse para coincidir.
 
 ```text
-/truthmark-realize realiza docs/truthmark/truth/authentication/session-timeout.md como código
+/truthmark-realize realiza docs/truthmark/product/capabilities/session-timeout.md como código
 ```
 
 Truth Realize es doc-first.
@@ -642,7 +642,7 @@ truthmark check
 ### Documentar comportamiento implementado
 
 ```text
-/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truthmark/truth/authentication
+/truthmark-document documenta el flujo implementado de restablecimiento de contraseña bajo docs/truthmark/engineering/behaviors/authentication
 ```
 
 ### Sincronizar después de cambios de código
@@ -654,7 +654,7 @@ truthmark check
 ### Realizar una decisión doc-first
 
 ```text
-/truthmark-realize realiza docs/truthmark/truth/billing/invoice-retry-policy.md como código
+/truthmark-realize realiza docs/truthmark/product/capabilities/invoice-retry-policy.md como código
 ```
 
 ### Auditar la salud de verdad desde la terminal
@@ -755,11 +755,11 @@ El README es el camino rápido para evaluación y configuración.
 El comportamiento actual detallado vive bajo `docs/`:
 
 - [Índice de documentación](docs/README.md)
-- [Resumen de arquitectura](docs/truthmark/truth/architecture/overview.md)
-- [Contratos de API y CLI](docs/truthmark/truth/contracts.md)
-- [Comportamiento de init y scaffold](docs/truthmark/truth/init-and-scaffold.md)
-- [Diagnósticos de check](docs/truthmark/truth/check-diagnostics.md)
-- [Flujos instalados](docs/truthmark/truth/workflows/overview.md)
+- [Resumen de arquitectura](docs/truthmark/engineering/architecture/overview.md)
+- [Contratos de API y CLI](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Comportamiento de init y scaffold](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Diagnósticos de check](docs/truthmark/engineering/behaviors/check-diagnostics.md)
+- [Flujos instalados](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
 - [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
 
 ## Límites de diseño

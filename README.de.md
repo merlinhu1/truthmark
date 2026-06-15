@@ -394,7 +394,7 @@ Es darf keinen funktionalen Code ändern.
 Nutze Truth Realize, wenn eine Produkt- oder Architekturentscheidung in Dokumenten beginnt und Code daran angepasst werden soll.
 
 ```text
-/truthmark-realize docs/truthmark/truth/authentication/session-timeout.md in Code realisieren
+/truthmark-realize docs/truthmark/product/capabilities/session-timeout.md in Code realisieren
 ```
 
 Truth Realize ist doc-first.
@@ -642,7 +642,7 @@ truthmark check
 ### Implementiertes Verhalten dokumentieren
 
 ```text
-/truthmark-document den implementierten Password-Reset-Flow unter docs/truthmark/truth/authentication dokumentieren
+/truthmark-document den implementierten Password-Reset-Flow unter docs/truthmark/engineering/behaviors/authentication dokumentieren
 ```
 
 ### Nach Codeänderungen synchronisieren
@@ -654,7 +654,7 @@ truthmark check
 ### Eine doc-first Entscheidung realisieren
 
 ```text
-/truthmark-realize docs/truthmark/truth/billing/invoice-retry-policy.md in Code realisieren
+/truthmark-realize docs/truthmark/product/capabilities/invoice-retry-policy.md in Code realisieren
 ```
 
 ### Truth-Gesundheit im Terminal auditieren
@@ -755,11 +755,11 @@ Die README ist der schnelle Pfad für Evaluation und Setup.
 Aktuelles Verhalten im Detail lebt unter `docs/`:
 
 - [Dokumentationsindex](docs/README.md)
-- [Architekturüberblick](docs/truthmark/truth/architecture/overview.md)
-- [API- und CLI-Verträge](docs/truthmark/truth/contracts.md)
-- [Init- und Scaffold-Verhalten](docs/truthmark/truth/init-and-scaffold.md)
-- [Check-Diagnostik](docs/truthmark/truth/check-diagnostics.md)
-- [Installierte Workflows](docs/truthmark/truth/workflows/overview.md)
+- [Architekturüberblick](docs/truthmark/engineering/architecture/overview.md)
+- [API- und CLI-Verträge](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Init- und Scaffold-Verhalten](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Check-Diagnostik](docs/truthmark/engineering/behaviors/check-diagnostics.md)
+- [Installierte Workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
 - [Leitfaden zur Pflege von Repository-Truth](docs/standards/maintaining-repository-truth.md)
 
 ## Designgrenzen

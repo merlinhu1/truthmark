@@ -394,7 +394,7 @@ It must not change functional code.
 Use Truth Realize when a product or architecture decision starts in docs and code should be updated to match.
 
 ```text
-/truthmark-realize realize docs/truthmark/truth/authentication/session-timeout.md into code
+/truthmark-realize realize docs/truthmark/product/capabilities/session-timeout.md into code
 ```
 
 Truth Realize is doc-first.
@@ -642,7 +642,7 @@ truthmark check
 ### Document implemented behavior
 
 ```text
-/truthmark-document document the implemented password reset flow under docs/truthmark/truth/authentication
+/truthmark-document document the implemented password reset flow under docs/truthmark/engineering/behaviors/authentication
 ```
 
 ### Sync after code changes
@@ -654,7 +654,7 @@ truthmark check
 ### Realize a doc-first decision
 
 ```text
-/truthmark-realize realize docs/truthmark/truth/billing/invoice-retry-policy.md into code
+/truthmark-realize realize docs/truthmark/product/capabilities/invoice-retry-policy.md into code
 ```
 
 ### Audit truth health from the terminal
@@ -755,11 +755,11 @@ The README is the fast path for evaluation and setup.
 Detailed current behavior lives under `docs/`:
 
 - [Docs index](docs/README.md)
-- [Architecture overview](docs/truthmark/truth/architecture/overview.md)
-- [API and CLI contracts](docs/truthmark/truth/contracts.md)
-- [Init and scaffold behavior](docs/truthmark/truth/init-and-scaffold.md)
-- [Check diagnostics](docs/truthmark/truth/check-diagnostics.md)
-- [Installed workflows](docs/truthmark/truth/workflows/overview.md)
+- [Architecture overview](docs/truthmark/engineering/architecture/overview.md)
+- [API and CLI contracts](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Init and scaffold behavior](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Check diagnostics](docs/truthmark/engineering/behaviors/check-diagnostics.md)
+- [Installed workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
 - [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
 
 ## Design boundaries

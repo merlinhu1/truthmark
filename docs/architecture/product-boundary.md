@@ -4,9 +4,10 @@ doc_type: architecture
 last_reviewed: 2026-06-12
 source_of_truth:
   - ../../README.md
-  - ../truthmark/truth/architecture/overview.md
-  - ../truthmark/truth/workflows/overview.md
-  - ../truthmark/truth/repository/workflow-state.md
+  - ../truthmark/product/capabilities/agent-native-workflow-injection.md
+  - ../truthmark/product/capabilities/lane-separated-truth.md
+  - ../truthmark/engineering/architecture/overview.md
+  - ../truthmark/engineering/workflows/installed-workflow-runtime.md
 ---
 
 # Truthmark Product Boundary

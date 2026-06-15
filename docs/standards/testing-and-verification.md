@@ -4,7 +4,7 @@ doc_type: standard
 last_reviewed: 2026-05-13
 source_of_truth:
   - ../../package.json
-  - ../truth/contracts.md
+  - ../truthmark/engineering/contracts/config-route-and-check-contracts.md
   - versioning.md
 ---
 
