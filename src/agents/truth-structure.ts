@@ -6,18 +6,21 @@ import {
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
   renderClaudeSubagentModeSection,
   renderClaimEvidenceCheckedSection,
   renderCopilotCustomAgentModeSection,
   renderHierarchySummary,
+  renderLaneClassificationRuleBlock,
   renderTopologyEvidenceGateSection,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
-  renderLaneClassificationInstructions,
 } from "./shared.js";
+
 import { TRUTHMARK_VERSION } from "../version.js";
+
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
@@ -106,8 +109,10 @@ Use this skill to design or repair Truthmark area structure.
 Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- ${renderLaneClassificationInstructions(config)}
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+- Lane classification:
+${renderLaneClassificationRuleBlock(config)}
 - inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair ${config.truthmark.paths.routesIndex}

@@ -138,7 +138,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain('sandbox_mode = "read-only"');
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
   it("renders read-only Claude Code verifier subagents for truth audits", () => {
     const routeAuditor = renderTruthmarkClaudeRouteAuditorAgent();
@@ -159,7 +160,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain("tools: Read, Grep, Glob, LS");
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
   it("renders read-only OpenCode verifier subagents for truth audits", () => {
     const routeAuditor = renderTruthmarkOpenCodeRouteAuditorAgent();
@@ -181,7 +183,8 @@ describe("Truth Check generated surfaces", () => {
     expect(docReviewer).toContain("edit: deny");
     expect(docReviewer).toContain(readOnlyContextBoundary);
     expect(docReviewer).toContain("Product Decisions");
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
 
   it("renders read-only Copilot verifier agents with bounded context", () => {
@@ -198,7 +201,9 @@ describe("Truth Check generated surfaces", () => {
     expect(claimVerifier).toContain("supported | narrowed | removed | blocked");
     expect(docReviewer).toContain("name: truth-doc-reviewer");
     expect(docReviewer).toContain(readOnlyContextBoundary);
-    expect(docReviewer).toContain("Rationale");
+    expect(docReviewer).toContain("Product Decisions");
+    expect(docReviewer).toContain("Engineering Decisions");
+    expect(docReviewer).toContain("lane-appropriate decision sections");
   });
 
   it("renders write-capable doc writer agents behind explicit leases", () => {

@@ -2,8 +2,9 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationInstructions,
+  renderLaneClassificationRuleBlock,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -84,10 +85,12 @@ Purpose:
 Read:
 - .truthmark/config.yml, only when present
 - ${config.truthmark.paths.routesIndex}, only when present
-- relevant child route files under ${config.truthmark.paths.routeAreasRoot}/, only when present
+- ${config.truthmark.paths.routeAreasRoot}/, only when present
 - relevant truth docs and implementation files needed to preview ownership
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-- ${renderLaneClassificationInstructions(config)}
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+- Lane classification:
+${renderLaneClassificationRuleBlock(config)}
 
 Do not:
 - must not edit files

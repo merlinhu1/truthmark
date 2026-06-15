@@ -13,7 +13,8 @@ import {
   renderOpenCodeSubagentModeSection,
   renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
-  renderLaneClassificationInstructions,
+  renderBulletBlock,
+  renderLaneClassificationRuleBlock,
   renderTruthDocOwnershipGateSection,
   renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
@@ -123,8 +124,10 @@ Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.
 2. Inspect .truthmark/config.yml and configured route files only when they exist; then inspect relevant canonical docs.
 3. Identify functional-code changes and the nearest truth docs or routing repairs.
-4. ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
-5. ${renderLaneClassificationInstructions(config)}
+4. Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+5. Lane classification gate:
+${renderLaneClassificationRuleBlock(config)}
 6. Update engineering truth first after code changes. Update product truth only when implemented user-visible product promise or capability boundary changed and explicit source/user evidence supports it; otherwise report product-lane review needed.
 7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.

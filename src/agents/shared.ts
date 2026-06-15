@@ -7,6 +7,33 @@ export {
   resolveProductTruthRoot,
   resolveTruthDocsRoot,
 } from "../truth/docs.js";
+
+const renderBulletLine = (line: string): string => {
+  const normalized = line.trim().replace(/^-\s*/u, "");
+  return `- ${normalized}`;
+};
+
+export const renderBulletBlock = (
+  lines: string,
+  indent = "  ",
+): string => {
+  return lines
+    .split(/\n/u)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => `${indent}${renderBulletLine(line)}`)
+    .join("\n");
+};
+
+export const renderLaneClassificationRuleBlock = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+  indent = "  ",
+): string => {
+  const [, ...rules] = renderLaneClassificationInstructions(config).split(/\n/u);
+
+  return renderBulletBlock(rules.join("\n"), indent);
+};
+
 export {
   renderAuditEvidenceCheckedSection,
   renderClaimEvidenceCheckedSection,

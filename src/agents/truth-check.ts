@@ -9,8 +9,9 @@ import {
   DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationInstructions,
+  renderLaneClassificationRuleBlock,
 } from "./shared.js";
 import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
@@ -103,8 +104,11 @@ Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
 Truth Check is agent-led:
 
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
 - inspect the configured root route index at ${config.truthmark.paths.routesIndex} and relevant child route files under ${config.truthmark.paths.routeAreasRoot}/ when they exist
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
+- Lane classification:
+${renderLaneClassificationRuleBlock(config)}
 - check that current docs describe current code rather than historical plans
 - check lane root/kind alignment for product truth under ${config.truthmark.paths.productTruthRoot} and engineering truth under ${config.truthmark.paths.engineeringTruthRoot}
 - check cross-lane realized_by and realizes links for existence and lane compatibility
@@ -120,7 +124,7 @@ Truth Check is agent-led:
 - report issues and suggested fixes without silently rewriting unrelated files
 - if follow-up docs edits are needed for mixed-owner docs, run or recommend Truth Structure before editing
 ${renderAuditEvidenceGateSection()}
-${renderLaneClassificationInstructions(config)}
+${renderLaneClassificationRuleBlock(config)}
 
 ${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}

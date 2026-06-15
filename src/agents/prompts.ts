@@ -4,8 +4,9 @@ import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
   defaultAgentConfig,
+  renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationInstructions,
+  renderLaneClassificationRuleBlock,
   renderTruthDocOwnershipGateSection,
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
@@ -26,9 +27,11 @@ Only run when the user explicitly asks to realize truth docs into code. This is 
 Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 Doc first:
 - read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests
-- ${EVIDENCE_AUTHORITY_INSTRUCTIONS}
+- Evidence authority:
+${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 - ${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
-- ${renderLaneClassificationInstructions(config)}
+- Lane classification:
+${renderLaneClassificationRuleBlock(config)}
 - use product truth as requirements and engineering truth as current implementation context; do not redefine product truth inside engineering docs
 ${renderTruthDocOwnershipGateSection(
     "source truth docs before writing code",

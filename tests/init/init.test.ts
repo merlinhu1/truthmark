@@ -621,7 +621,9 @@ describe("runInit", () => {
       expect(claudeDocReviewerAgent).toContain("name: truth-doc-reviewer");
       expect(claudeDocReviewerAgent).toContain("tools: Read, Grep, Glob, LS");
       expect(claudeDocReviewerAgent).toContain(READ_ONLY_CONTEXT_BOUNDARY);
-      expect(claudeDocReviewerAgent).toContain("Rationale");
+      expect(claudeDocReviewerAgent).toContain("Product Decisions");
+      expect(claudeDocReviewerAgent).toContain("Engineering Decisions");
+      expect(claudeDocReviewerAgent).toContain("lane-appropriate decision sections");
       expect(claudeDocWriterAgent).toContain("name: truth-doc-writer");
       expect(claudeDocWriterAgent).toContain(
         "tools: Read, Grep, Glob, LS, Edit, MultiEdit",

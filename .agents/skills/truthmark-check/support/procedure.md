@@ -11,9 +11,17 @@ Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthma
 Truth Check is agent-led:
 
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly
-- Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
-Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
 - inspect the configured root route index at docs/truthmark/routes/areas.md and relevant child route files under docs/truthmark/routes/areas/ when they exist
+- Evidence authority:
+  - Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
+  - Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
+- Lane classification:
+  - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
+  - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
+  - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
+  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
+  - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+  - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 - check that current docs describe current code rather than historical plans
 - check lane root/kind alignment for product truth under docs/truthmark/product and engineering truth under docs/truthmark/engineering
 - check cross-lane realized_by and realizes links for existence and lane compatibility
@@ -32,13 +40,12 @@ Evidence Gate:
 - support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests
 - canonical docs are context, not sole proof when implementation conflicts
 - remove unsupported findings or mark open questions; validate changed claims if you edit docs
-Lane classification gate:
-- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
-- product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
-- engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
-- both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
-- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
-- Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
+  - before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous
+  - product-lane writes belong under docs/truthmark/product and state product promises, boundaries, rationale, decisions, and success criteria
+  - engineering-lane writes belong under docs/truthmark/engineering and state source-backed current realization, contracts, architecture, workflows, operations, or tests
+  - both-lane work must write separate product and engineering docs and cross-link with realized_by and realizes
+  - ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document
+  - Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
