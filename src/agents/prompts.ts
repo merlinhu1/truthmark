@@ -6,7 +6,6 @@ import {
   defaultAgentConfig,
   renderBulletBlock,
   renderHierarchySummary,
-  renderLaneClassificationRuleBlock,
   renderTruthDocOwnershipGateSection,
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
@@ -14,6 +13,23 @@ import {
 
 const renderMarkdownExample = (content: string): string => {
   return [`\`\`\`md`, content, `\`\`\``].join("\n");
+};
+
+const renderTruthRealizeLaneClassificationRuleBlock = (
+  config: TruthmarkConfig,
+): string => {
+  const productTruthRoot = resolveProductTruthRoot(config);
+  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
+
+  return renderBulletBlock(
+    [
+      "classify the source truth docs and requested code change as product-lane, engineering-lane, both-lane, or ambiguous before writing code",
+      `read product truth under ${productTruthRoot} as requirements: product promises, boundaries, rationale, decisions, and success criteria`,
+      `read engineering truth under ${engineeringTruthRoot} as implementation context: source-backed current realization, contracts, architecture, workflows, operations, or tests`,
+      "do not write truth docs or truth routing; leave route YAML, realized_by, and realizes updates to Truth Structure, Truth Document, or finish-time Truth Sync",
+      "ambiguous lane ownership should block before code changes or route to Truth Structure",
+    ].join("\n"),
+  );
 };
 
 export const renderTruthRealizePrompt = (
@@ -31,7 +47,7 @@ Doc first:
 ${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 - ${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 - Lane classification:
-${renderLaneClassificationRuleBlock(config)}
+${renderTruthRealizeLaneClassificationRuleBlock(config)}
 - use product truth as requirements and engineering truth as current implementation context; do not redefine product truth inside engineering docs
 ${renderTruthDocOwnershipGateSection(
     "source truth docs before writing code",

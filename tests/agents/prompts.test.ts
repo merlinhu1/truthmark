@@ -22,8 +22,18 @@ describe("renderTruthRealizePrompt", () => {
     );
     expect(prompt).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
     expect(prompt).toContain("workflow write boundaries");
+    expect(prompt).toContain(
+      "read product truth under docs/truthmark/product as requirements",
+    );
+    expect(prompt).toContain(
+      "read engineering truth under docs/truthmark/engineering as implementation context",
+    );
     expect(prompt).toContain("write functional code only");
     expect(prompt).toContain("do not edit truth docs or truth routing");
+    expect(prompt).toContain("do not write truth docs or truth routing");
+    expect(prompt).not.toContain("before writing canonical truth docs");
+    expect(prompt).not.toContain("product-lane writes belong");
+    expect(prompt).not.toContain("engineering-lane writes belong");
     expect(prompt).not.toContain("Truth-doc restructure gate");
     expect(prompt).not.toContain("Truth-doc shape repair gate");
     expect(prompt).not.toContain("restructure truth docs");
@@ -45,6 +55,9 @@ describe("renderTruthRealizePrompt", () => {
     const prompt = renderTruthRealizePrompt(config);
 
     expect(prompt).toContain("docs/product/product/capabilities/authentication-session.md");
+    expect(prompt).toContain(
+      "read engineering truth under docs/product/engineering as implementation context",
+    );
     expect(prompt).not.toContain("docs/truthmark/product/capabilities/authentication-session.md");
   });
 
