@@ -8,6 +8,8 @@ last_reviewed: 2026-06-14
 
 This directory is an index for current truth docs organized by the configured Truthmark hierarchy.
 
+Product truth owns capability promises, boundaries, decisions, and acceptance criteria. Product lane docs state what must be true, why it matters, and what success means.
+
 README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.
 
 ## Source References

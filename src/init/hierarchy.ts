@@ -3,7 +3,10 @@ import type { TruthmarkConfig } from "../config/schema.js";
 import type { FileWriteResult } from "../fs/paths.js";
 import { ensureRepoFile, resolveRepoPath, writeRepoFile } from "../fs/paths.js";
 import { parseAreasMarkdown } from "../routing/areas.js";
-import { resolveTruthDocsRoot } from "../truth/docs.js";
+import {
+  resolveEngineeringTruthRoot,
+  resolveTruthDocsRoot,
+} from "../truth/docs.js";
 import {
   renderChildAreaTemplate,
   mergeTruthDocTemplate,
@@ -133,15 +136,15 @@ export const scaffoldHierarchy = async (
   results.push(
     await ensureRepoFile(
       rootDir,
-      `${truthDocsRoot}/README.md`,
-      renderTruthRootReadmeTemplate(config),
+      `${resolveEngineeringTruthRoot(config)}/README.md`,
+      renderTruthRootReadmeTemplate(config, "engineering"),
     ),
   );
   results.push(
     await ensureRepoFile(
       rootDir,
       `${config.truthmark.paths.productTruthRoot}/README.md`,
-      renderTruthRootReadmeTemplate(config),
+      renderTruthRootReadmeTemplate(config, "product"),
     ),
   );
   results.push(

@@ -8,7 +8,7 @@ import {
   createDefaultRawConfig,
 } from "../config/defaults.js";
 import { inferTruthDocumentKindFromPath } from "../routing/areas.js";
-import { resolveTruthDocsRoot } from "../truth/docs.js";
+import { resolveEngineeringTruthRoot, resolveProductTruthRoot } from "../truth/docs.js";
 
 const asRelativePath = (value: string): string => {
   return value.split(path.sep).join("/");
@@ -20,7 +20,21 @@ const resolveRelativePath = (fromPath: string, toPath: string): string => {
   return asRelativePath(path.relative(path.dirname(fromPath), toPath));
 };
 
-const truthRoot = resolveTruthDocsRoot;
+const truthRoot = resolveEngineeringTruthRoot;
+
+const renderLaneRootReadmeSummary = (lane: "product" | "engineering"): string => {
+  if (lane === "product") {
+    return [
+      "Product truth owns capability promises, boundaries, decisions, and acceptance criteria.",
+      "Product lane docs state what must be true, why it matters, and what success means.",
+    ].join(" ");
+  }
+
+  return [
+    "Engineering truth owns current realization, contracts, architecture, workflows, operations, and tests.",
+    "Engineering lane docs describe how the repository currently implements and operates the behavior.",
+  ].join(" ");
+};
 
 const renderTruthDocumentsMetadata = (
   documents: Array<{ path: string; kind: string }>,
@@ -165,8 +179,9 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
 
 export const renderTruthRootReadmeTemplate = (
   config: TruthmarkConfig = createDefaultConfig(),
+  lane: "product" | "engineering" = "engineering",
 ): string => {
-  const templatePath = `${truthRoot(config)}/README.md`;
+  const templatePath = `${lane === "product" ? resolveProductTruthRoot(config) : resolveEngineeringTruthRoot(config)}/README.md`;
   const sourceOfTruth = resolveRelativePath(
     templatePath,
     config.truthmark.paths.routesIndex,
@@ -182,6 +197,8 @@ export const renderTruthRootReadmeTemplate = (
     "# Truth Docs",
     "",
     "This directory is an index for current truth docs organized by the configured Truthmark hierarchy.",
+    "",
+    renderLaneRootReadmeSummary(lane),
     "",
     "README.md files are indexes, not Truth Sync targets. Keep bounded truth in leaf docs under `<domain>/<behavior>.md`.",
     "",
