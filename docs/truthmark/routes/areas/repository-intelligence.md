@@ -39,7 +39,7 @@ Code surface:
 
 Update truth when:
 
-- RepoIndex, RouteMap, ImpactSet, evidence validation, freshness diagnostics, ContextPack behavior, or WorkflowState behavior changes
+- RepoIndex, RouteMap, route-first ImpactSet, evidence validation, freshness diagnostics, ContextPack behavior, or WorkflowState behavior changes
 - repository-intelligence command output changes
 
 ## Source References

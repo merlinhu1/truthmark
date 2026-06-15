@@ -36,19 +36,6 @@ const languageByExtension = new Map<string, string>([
   [".toml", "toml"],
 ]);
 
-const sourceExtensions = new Set([
-  ".ts",
-  ".tsx",
-  ".js",
-  ".jsx",
-  ".mjs",
-  ".cjs",
-]);
-
-export const isJavaScriptLikePath = (filePath: string): boolean => {
-  return sourceExtensions.has(path.posix.extname(filePath));
-};
-
 const isTestPath = (filePath: string): boolean => {
   return (
     filePath.startsWith("tests/") ||

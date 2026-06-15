@@ -53,7 +53,7 @@ Truthmark owns:
 
 - Git-tracked repository documentation and routing metadata
 - host-native agent workflow surfaces such as skills, prompts, commands, managed instruction blocks, and subagents
-- branch-local documentation checks, indexes, impact summaries, context packs, and workflow state derived from the active checkout
+- branch-local documentation checks, workflow indexes, impact summaries, context packs, and workflow state derived from the active checkout
 - write boundaries for read-only, documentation-write, route-write, code-write, and presentation-write workflows
 - optional CLI/package helpers that improve validation or setup without becoming required for normal agent workflow execution
 

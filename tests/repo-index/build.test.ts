@@ -14,7 +14,7 @@ describe("buildRepoIndex", () => {
     await Promise.all(repos.splice(0).map((repo) => repo.cleanup()));
   });
 
-  it("indexes package metadata, files, docs, tests, exports, symbols, and route ownership", async () => {
+  it("indexes workflow metadata without language-semantic fields", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile(
@@ -58,19 +58,42 @@ describe("buildRepoIndex", () => {
     expect(result.tests.map((file) => file.path)).toContain(
       "tests/math.test.ts",
     );
-    expect(result.exports).toContainEqual({
-      path: "src/math.ts",
-      name: "add",
-      kind: "function",
-    });
-    expect(result.publicSymbols).toContainEqual({
-      path: "src/math.ts",
-      name: "add",
-      kind: "function",
-    });
+    expect(result).not.toHaveProperty("imports");
+    expect(result).not.toHaveProperty("exports");
+    expect(result).not.toHaveProperty("publicSymbols");
     expect(
       result.routeMap.routes.some((route) => route.truthDocs.length > 0),
     ).toBe(true);
+  });
+
+  it("keeps polyglot source files visible as workflow files without semantic distinctions", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+    await repo.writeFile("cmd/server/main.go", "package main\n\nfunc main() {}\n");
+    await repo.writeFile("scripts/task.py", "print('task')\n");
+    await repo.writeFile("src/App/Program.cs", "namespace App;\n\npublic class Program {}\n");
+    await repo.writeFile(
+      "src/main/java/com/example/App.java",
+      "package com.example;\n\npublic class App {}\n",
+    );
+    await repo.writeFile("src/index.ts", "export const value = 1;\n");
+    await repo.writeFile("src/index.js", "export const value = 1;\n");
+
+    const result = await buildRepoIndex(repo.rootDir);
+
+    expect(result.files).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "cmd/server/main.go", kind: "source", language: null }),
+        expect.objectContaining({ path: "scripts/task.py", kind: "source", language: null }),
+        expect.objectContaining({ path: "src/App/Program.cs", kind: "source", language: null }),
+        expect.objectContaining({ path: "src/main/java/com/example/App.java", kind: "source", language: null }),
+        expect.objectContaining({ path: "src/index.ts", kind: "source", language: "typescript" }),
+        expect.objectContaining({ path: "src/index.js", kind: "source", language: "javascript" }),
+      ]),
+    );
+    expect(result).not.toHaveProperty("imports");
+    expect(result).not.toHaveProperty("exports");
+    expect(result).not.toHaveProperty("publicSymbols");
   });
 
   it("derives truth doc lane, doc type, and source references from compact truth docs", async () => {
@@ -153,9 +176,7 @@ depends_on:
     expect(result.files.map((file) => file.path)).not.toContain(
       "src/deleted.ts",
     );
-    expect(result.exports.map((entry) => entry.path)).not.toContain(
-      "src/deleted.ts",
-    );
+    expect(result).not.toHaveProperty("exports");
   });
 
   it("excludes files ignored by gitignore", async () => {

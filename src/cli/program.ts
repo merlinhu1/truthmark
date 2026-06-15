@@ -139,7 +139,9 @@ export const buildProgram = (): Command => {
   });
 
   addJsonOption(
-    program.command("index").description("Build the deterministic Truthmark repository index."),
+    program
+      .command("index")
+      .description("Inspect derived Truthmark workflow routing metadata for the current checkout."),
   ).action(async (options: OutputOptions) => {
     writeResult(await runIndex(), options);
   });

@@ -33,6 +33,7 @@ describe("buildImpactSet", () => {
     expect(impact.changedFiles).toContainEqual(expect.objectContaining({ path: "src/math.ts", status: "modified" }));
     expect(impact.affectedTruthDocs.length).toBeGreaterThan(0);
     expect(impact.affectedTests).toContain("tests/math.test.ts");
+    expect(impact).not.toHaveProperty("changedPublicSymbols");
   });
 
   it("maps changed routed truth docs to affected routes and truth docs", async () => {
@@ -79,7 +80,7 @@ describe("buildImpactSet", () => {
     );
   });
 
-  it("reports public API changes when affected truth docs were not changed", async () => {
+  it("does not report TypeScript public-symbol diagnostics for route-owned changes", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
 
@@ -92,7 +93,8 @@ describe("buildImpactSet", () => {
 
     const impact = await buildImpactSet(repo.rootDir, { base: "main" });
 
-    expect(impact.diagnostics).toContainEqual(
+    expect(impact).not.toHaveProperty("changedPublicSymbols");
+    expect(impact.diagnostics).not.toContainEqual(
       expect.objectContaining({
         category: "impact",
         severity: "review",
@@ -200,11 +202,6 @@ Update truth when:
       }),
     );
     expect(impact.affectedTruthDocs).toEqual(["docs/truthmark/truth/new.md", "docs/truthmark/truth/old.md"]);
-    expect(impact.changedPublicSymbols).toContainEqual({
-      path: "src/old/api.ts",
-      name: "oldApi",
-      kind: "const",
-      change: "removed",
-    });
+    expect(impact).not.toHaveProperty("changedPublicSymbols");
   });
 });

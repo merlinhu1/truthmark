@@ -3,7 +3,7 @@ name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: 2.2.0
+truthmark-version: 2.2.1
 ---
 
 # Truthmark Check

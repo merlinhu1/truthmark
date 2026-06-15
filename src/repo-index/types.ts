@@ -35,30 +35,6 @@ export type RepoTestEntry = {
   targetHints: string[];
 };
 
-export type ImportEdge = {
-  from: string;
-  specifier: string;
-  imported: string[];
-};
-
-export type ExportKind =
-  | "class"
-  | "function"
-  | "const"
-  | "type"
-  | "interface"
-  | "enum"
-  | "re-export"
-  | "unknown";
-
-export type ExportEntry = {
-  path: string;
-  name: string;
-  kind: ExportKind;
-};
-
-export type PublicSymbolEntry = ExportEntry;
-
 export type RouteMapRoute = {
   id: string;
   name: string;
@@ -88,9 +64,6 @@ export type RepoIndex = {
   files: RepoFileEntry[];
   docs: RepoDocEntry[];
   tests: RepoTestEntry[];
-  imports: ImportEdge[];
-  exports: ExportEntry[];
-  publicSymbols: PublicSymbolEntry[];
   routeMap: RouteMap;
   diagnostics: Diagnostic[];
 };

@@ -128,7 +128,7 @@ Code surface:
 
 Update truth when:
 
-- repository indexing, route-map, impact analysis, evidence validation, freshness checks, context-pack behavior, or workflow-state behavior changes
+- workflow indexing, route-map, route-first impact analysis, evidence validation, freshness checks, context-pack behavior, or workflow-state behavior changes
 - `truthmark index`, `truthmark impact`, or `truthmark context` result shapes change
 
 ## Source References
