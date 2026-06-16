@@ -51,7 +51,7 @@ Align existing docs to that template and write or repair section content so it s
 If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
 Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
 Truth-doc shape repair gate:
-- Truth Sync may restructure only truth docs impacted by the current functional-code change.
+- Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale, even when the doc is outside the initially affected route focus.
 - repair shape in place only after the ownership gate confirms the doc is the right bounded owner
 - use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
 - repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
@@ -95,6 +95,6 @@ Parent post-sync verification:
 - block if functional code changed during sync
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
-- verify the updated docs correspond to the reviewed changed-code surface
+- verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction made within the sync write lease
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files

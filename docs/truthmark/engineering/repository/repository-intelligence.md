@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-15
+last_reviewed: 2026-06-16
 ---
 
 # Repository Intelligence
@@ -22,7 +22,7 @@ Repository intelligence is language-neutral workflow context, not a language-sem
 
 ImpactSet remains the branch-diff routing handoff for changed files, affected routes, affected truth docs, affected tests, and diagnostics. It derives affected routes from route code surfaces and truth-doc ownership, derives affected tests from changed test paths and path/name hints, and reports diagnostics for unmapped functional-code changes. It does not report TypeScript public-symbol changes or use TypeScript/JavaScript import parsing to infer affected tests.
 
-WorkflowState is the workflow-scoped handoff for applicability, action context, write boundaries, target truth docs, helper validation commands, checks, compact affected-test guidance, diagnostics, next steps, and report sections. The standalone ContextPack handoff is retired; agents use workflow status plus impact instead. These outputs do not emit source-file or truth-doc body contents.
+WorkflowState is the workflow-scoped handoff for applicability, action context, write boundaries, target truth docs, helper validation commands, checks, compact affected-test guidance, diagnostics, next steps, and report sections. `truthmark-sync` keeps affected truth docs in `targetTruthDocs` for review focus, while its write context intentionally authorizes indexed canonical truth docs and truth routing files so Sync can correct stale repository truth beyond the initially affected route when evidence supports it. The standalone ContextPack handoff is retired; agents use workflow status plus impact instead. These outputs do not emit source-file or truth-doc body contents.
 
 Evidence validation checks repository containment, referenced file or glob existence, line spans, and `sha256:` content hashes. Evidence `symbol` metadata, when present in an evidence YAML block, is non-normative metadata and is not validated through TypeScript-specific parsing.
 
@@ -35,6 +35,7 @@ Evidence validation checks repository containment, referenced file or glob exist
 - Decision (2026-06-14): Repository intelligence is derived context, not hidden memory or off-repo authority.
 - Decision (2026-06-15): Repository intelligence is a language-neutral workflow helper, not a semantic code index; TypeScript-specific import/export/public-symbol analysis is not part of the public contract.
 - Decision (2026-06-15): The standalone ContextPack handoff is retired; agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for workflow-scoped guidance and `truthmark impact --base <ref> --json` for branch-diff routing.
+- Decision (2026-06-16): Truth Sync write context is broad across indexed canonical truth docs and truth routing files; `targetTruthDocs` remains the affected-doc focus list, not the full write lease.
 
 ## Maintenance Notes
 

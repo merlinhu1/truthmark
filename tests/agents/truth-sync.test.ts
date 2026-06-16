@@ -157,7 +157,7 @@ describe("renderTruthSyncSkillBody", () => {
     );
     expect(skillBody).toContain("Truth-doc shape repair gate");
     expect(skillBody).toContain(
-      "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
+      "Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale",
     );
     expect(skillBody).toContain("use Truth Structure for ownership splits");
     expect(skillBody).toContain(
@@ -180,6 +180,9 @@ describe("renderTruthSyncSkillBody", () => {
     );
     expect(skillBody).toContain(
       "verify the final report records ownership review, structure requirement, split, restructure, or blocked reason",
+    );
+    expect(skillBody).toContain(
+      "verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction",
     );
     expect(skillBody).toContain("/truthmark:sync");
   });

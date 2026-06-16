@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-15
+last_reviewed: 2026-06-16
 ---
 
 # Installed Workflow Runtime
@@ -16,7 +16,7 @@ It owns generated workflow runtime behavior, managed instruction blocks, helper 
 
 ## Current Implementation Behavior
 
-The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated skill packages hold the full workflow procedures and report contracts. Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters: they direct the current invocation to host-local skill package files and explicitly avoid dispatching another Truthmark command rather than embedding duplicate workflow bodies or cross-host invocation lists. Generated write-capable workflow text instructs agents to classify lane impact before writing canonical truth docs, while read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing. The manual Truth Realize prompt path uses Realize-specific lane guidance: read product truth as requirements, read engineering truth as implementation context, and do not write truth docs or truth routing while realizing docs into code. Truth Preview keeps route selection thin by reading the root route index first and then only child route files relevant to the selected scope or changed paths. Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks: narrow audits stay within the routed area plus directly linked counterpart docs, root-wide health first builds a route-map/index from route files, and missing product links for user-visible engineering docs are second-pass review diagnostics rather than default full-document reads. Optional CLI repository-intelligence helpers are compact: workflow status exposes WorkflowState/action context, and impact exposes branch-diff routing data; neither helper emits source-file or truth-doc body contents.
+The source manifest and renderers generate host-specific skills, prompts, commands, subagents, helper manifests, and managed instruction blocks. Generated skill packages hold the full workflow procedures and report contracts. Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters: they direct the current invocation to host-local skill package files and explicitly avoid dispatching another Truthmark command rather than embedding duplicate workflow bodies or cross-host invocation lists. Generated write-capable workflow text instructs agents to classify lane impact before writing canonical truth docs, while read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing. The manual Truth Realize prompt path uses Realize-specific lane guidance: read product truth as requirements, read engineering truth as implementation context, and do not write truth docs or truth routing while realizing docs into code. Truth Preview keeps route selection thin by reading the root route index first and then only child route files relevant to the selected scope or changed paths. Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks: narrow audits stay within the routed area plus directly linked counterpart docs, root-wide health first builds a route-map/index from route files, and missing product links for user-visible engineering docs are second-pass review diagnostics rather than default full-document reads. Optional CLI repository-intelligence helpers are compact: workflow status exposes WorkflowState/action context, and impact exposes branch-diff routing data; neither helper emits source-file or truth-doc body contents. Truth Sync workflow status intentionally exposes broad write paths for indexed canonical truth docs and truth routing files so the workflow can correct stale repository truth across the checkout when supported by evidence.
 
 ## Triggers
 
@@ -36,6 +36,7 @@ Committed workflow files are the runtime contract. The CLI installs and validate
 
 - Decision (2026-06-14): Lane classification is part of generated workflow text before any canonical truth write.
 - Decision (2026-06-15): Optional workflow handoff helpers use `workflow status --json` and `impact --json`; generated surfaces must not direct agents to a standalone ContextPack command.
+- Decision (2026-06-16): Truth Sync status may authorize indexed canonical truth docs and truth routing files broadly; changed-file impact still controls applicability and focus, not the full write scope.
 
 ## Maintenance Notes
 
