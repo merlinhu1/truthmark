@@ -56,46 +56,80 @@ describe("repository intelligence CLI commands", () => {
     }
   });
 
-  it("renders markdown-only context data from truthmark context --workflow truth-sync --base main --json", async () => {
+  it("exposes compact ContextPack replacement data from workflow status", async () => {
     const repo = await createTempRepo();
     try {
-      await repo.writeFile("src/index.ts", "export const value = 1;\n");
+      await repo.writeFile(
+        "package.json",
+        JSON.stringify({ name: "sample", scripts: { test: "vitest" } }, null, 2),
+      );
+      await repo.writeFile(
+        "src/math.ts",
+        "export function add(left: number, right: number) { return left + right; }\n",
+      );
+      await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\nvoid add;\n");
       await runConfig(repo.rootDir, { force: false, stdout: false });
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "initial"]);
-      await repo.writeFile("src/index.ts", "export const value = 2;\n");
+      await repo.writeFile(
+        "src/math.ts",
+        "export function add(left: number, right: number) { return left + right + 0; }\n",
+      );
 
-      const result = await runCli(["context", "--workflow", "truth-sync", "--base", "main", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["workflow", "status", "--workflow", "truthmark-sync", "--base", "main", "--json"],
+        { cwd: repo.rootDir },
+      );
       const output = JSON.parse(result.stdout) as {
         command: string;
         data: {
-          contextPack?: unknown;
-          markdown: string;
-          summary: string;
-          truthDocs?: Array<{ content?: string }>;
-          sourceFiles?: Array<{ content?: string }>;
+          workflowState: {
+            applicability: { state: string; reasons: string[] };
+            actionContext: { allowedWritePaths: string[] };
+            targetTruthDocs: string[];
+            changedFiles: Array<{ path: string }>;
+            affectedRoutes: unknown[];
+            checks: {
+              required: string[];
+              recommended: string[];
+              helpers: unknown[];
+              affectedTests?: string[];
+              testCommands?: string[];
+            };
+            nextSteps: string[];
+            diagnostics: unknown[];
+          };
         };
-        summary: string;
       };
+      const state = output.data.workflowState;
+      const compactTestGuidance = [
+        ...(state.checks.affectedTests ?? []),
+        ...(state.checks.testCommands ?? []),
+      ];
 
-      expect(output.command).toBe("context");
-      expect(output.data.contextPack).toBeUndefined();
-      expect(output.data.truthDocs).toBeUndefined();
-      expect(output.data.sourceFiles).toBeUndefined();
-      expect(output.data.markdown).toContain("# Truthmark ContextPack (truth-sync)");
-      expect(output.data.summary).toBe(output.summary);
-      expect(JSON.stringify(output.data)).not.toContain('"truthDocs":[{');
-      expect(JSON.stringify(output.data)).not.toContain('"sourceFiles":[{');
-      expect(JSON.stringify(output.data)).not.toContain('"content":');
+      expect(result.exitCode).toBe(0);
+      expect(output.command).toBe("workflow status");
+      expect(state.applicability.state).toBe("applicable");
+      expect(state.applicability.reasons).toEqual([]);
+      expect(state.actionContext.allowedWritePaths).toEqual(
+        expect.arrayContaining(state.targetTruthDocs),
+      );
+      expect(state.actionContext.allowedWritePaths).toContain("docs/truthmark/routes/areas.md");
+      expect(state.targetTruthDocs.length).toBeGreaterThan(0);
+      expect(state.changedFiles.map((file) => file.path)).toContain("src/math.ts");
+      expect(state.affectedRoutes.length).toBeGreaterThan(0);
+      expect(state.checks.required.length).toBeGreaterThan(0);
+      expect(state.checks.helpers.length).toBeGreaterThan(0);
+      expect(Array.isArray(state.nextSteps)).toBe(true);
+      expect(Array.isArray(state.diagnostics)).toBe(true);
+      expect(compactTestGuidance.join("\n")).toContain("tests/math.test.ts");
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("keeps workflow status and context JSON free of ContextPack content", async () => {
+  it("keeps workflow status and impact JSON free of ContextPack content", async () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
@@ -116,6 +150,8 @@ describe("repository intelligence CLI commands", () => {
             schemaVersion: string;
             workflow: string;
             contextPack?: unknown;
+            sourceFiles?: unknown;
+            truthDocs?: Array<{ content?: string }>;
             actionContext: { helperValidationCommands: unknown[] };
             checks: { helpers: unknown[] };
           };
@@ -130,148 +166,46 @@ describe("repository intelligence CLI commands", () => {
       expect(statusOutput.data.workflowState.contextPack).toBeUndefined();
       expect(statusOutput.data.workflowState.actionContext.helperValidationCommands.length).toBeGreaterThan(0);
       expect(statusOutput.data.workflowState.checks.helpers.length).toBeGreaterThan(0);
+      expect(statusJson).not.toContain('"contextPack"');
+      expect(statusJson).not.toContain('"sourceFiles"');
+      expect(statusJson).not.toContain('"truthDocs":[{');
       expect(statusJson).not.toContain('"routeMap"');
-      expect(statusJson).not.toContain('"content"');
+      expect(statusJson).not.toContain('"content":');
 
-      const contextResult = await runCli(
-        ["context", "--workflow", "truth-sync", "--base", "main", "--json"],
-        { cwd: repo.rootDir },
-      );
-      const contextOutput = JSON.parse(contextResult.stdout) as {
-        data: {
-          contextPack?: unknown;
-          markdown?: string;
-          truthDocs?: Array<{ content?: string }>;
-          sourceFiles?: Array<{ content?: string }>;
-        };
+      const impactResult = await runCli(["impact", "--base", "main", "--json"], { cwd: repo.rootDir });
+      const impactOutput = JSON.parse(impactResult.stdout) as {
+        data: { impactSet: { contextPack?: unknown; sourceFiles?: unknown; truthDocs?: unknown } };
       };
-      const contextJson = JSON.stringify(contextOutput.data);
+      const impactJson = JSON.stringify(impactOutput.data.impactSet);
 
-      expect(contextResult.exitCode).toBe(0);
-      expect(contextOutput.data.contextPack).toBeUndefined();
-      expect(contextOutput.data.truthDocs).toBeUndefined();
-      expect(contextOutput.data.sourceFiles).toBeUndefined();
-      expect(contextOutput.data.markdown).toContain("# Truthmark ContextPack (truth-sync)");
-      expect(contextJson).not.toContain('"content":');
+      expect(impactResult.exitCode).toBe(0);
+      expect(impactOutput.data.impactSet.contextPack).toBeUndefined();
+      expect(impactOutput.data.impactSet.truthDocs).toBeUndefined();
+      expect(impactOutput.data.impactSet.sourceFiles).toBeUndefined();
+      expect(impactJson).not.toContain('"contextPack"');
+      expect(impactJson).not.toContain('"sourceFiles"');
+      expect(impactJson).not.toContain('"truthDocs":[{');
+      expect(impactJson).not.toContain('"content":');
     } finally {
       await repo.cleanup();
     }
   });
 
-  it("renders ContextPack markdown when --format markdown is requested", async () => {
+  it("retires truthmark context as a hard-removed command", async () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
       await runConfig(repo.rootDir, { force: false, stdout: false });
       await runInit(repo.rootDir);
 
-      const result = await runCli(["context", "--workflow", "truth-document", "--format", "markdown"], {
+      const result = await runCli(["context", "--workflow", "truth-sync", "--base", "main", "--json"], {
         cwd: repo.rootDir,
       });
-
-      expect(result.stdout).toContain("# Truthmark ContextPack (truth-document)");
-      expect(result.stdout).toContain("## Allowed Write Paths");
-      expect(result.stdout.trim()).not.toContain('"contextPack"');
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("renders ContextPack markdown by default", async () => {
-    const repo = await createTempRepo();
-    try {
-      await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
-      await runInit(repo.rootDir);
-
-      const result = await runCli(["context", "--workflow", "truth-document"], {
-        cwd: repo.rootDir,
-      });
-
-      expect(result.stdout).toContain("# Truthmark ContextPack (truth-document)");
-      expect(result.stdout).toContain("## Allowed Write Paths");
-      expect(result.stdout.trim()).not.toContain('"contextPack"');
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("renders markdown-only JSON data when --json and --format markdown are combined", async () => {
-    const repo = await createTempRepo();
-    try {
-      await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
-      await runInit(repo.rootDir);
-
-      const result = await runCli(
-        ["context", "--workflow", "truth-document", "--format", "markdown", "--json"],
-        { cwd: repo.rootDir },
-      );
-      const output = JSON.parse(result.stdout) as {
-        command: string;
-        data: { contextPack?: unknown; markdown?: string; summary?: string };
-        summary: string;
-      };
-
-      expect(output.command).toBe("context");
-      expect(output.data.contextPack).toBeUndefined();
-      expect(output.data.markdown).toContain("# Truthmark ContextPack (truth-document)");
-      expect(output.data.markdown).toContain("## Allowed Write Paths");
-      expect(output.data.summary).toBe(output.summary);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("rejects JSON ContextPack format output", async () => {
-    const repo = await createTempRepo();
-    try {
-      await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
-      await runInit(repo.rootDir);
-
-      const result = await runCli(["context", "--workflow", "truth-sync", "--format", "json", "--json"], {
-        cwd: repo.rootDir,
-      });
-      const output = JSON.parse(result.stdout) as {
-        diagnostics: Array<{ category: string; severity: string; message: string }>;
-      };
 
       expect(result.exitCode).toBe(1);
-      expect(output.diagnostics).toContainEqual(
-        expect.objectContaining({
-          category: "context-pack",
-          severity: "error",
-          message: expect.stringContaining("JSON ContextPack output was removed in v2"),
-        }),
-      );
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("rejects unsupported ContextPack formats", async () => {
-    const repo = await createTempRepo();
-    try {
-      await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
-      await runInit(repo.rootDir);
-
-      const result = await runCli(["context", "--workflow", "truth-sync", "--format", "typo", "--json"], {
-        cwd: repo.rootDir,
-      });
-      const output = JSON.parse(result.stdout) as {
-        diagnostics: Array<{ category: string; severity: string; message: string }>;
-      };
-
-      expect(result.exitCode).toBe(1);
-      expect(output.diagnostics).toContainEqual(
-        expect.objectContaining({
-          category: "context-pack",
-          severity: "error",
-          message: expect.stringContaining("supports only --format markdown"),
-        }),
-      );
+      expect(`${result.stdout}\n${result.stderr}`).toContain("unknown command");
+      expect(result.stdout).not.toContain("contextPack");
+      expect(result.stdout).not.toContain("ContextPack");
     } finally {
       await repo.cleanup();
     }

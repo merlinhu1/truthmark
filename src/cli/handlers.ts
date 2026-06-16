@@ -3,9 +3,6 @@ import { runInit as runRepositoryInit } from "../init/init.js";
 import { runCheck as runRepositoryCheck } from "../checks/check.js";
 import type { CommandResult } from "../output/diagnostic.js";
 import { buildImpactSet } from "../impact/build.js";
-import { buildContextPack } from "../context-pack/build.js";
-import { renderContextPackMarkdown } from "../context-pack/render.js";
-import type { ContextPackWorkflow } from "../context-pack/types.js";
 import {
   TRUTHMARK_WORKFLOW_IDS,
   type TruthmarkWorkflowId,
@@ -78,14 +75,6 @@ export const runImpact = async (options: { base?: string }): Promise<CommandResu
   };
 };
 
-const isContextPackWorkflow = (value: unknown): value is ContextPackWorkflow => {
-  return value === "truth-sync" || value === "truth-document" || value === "truth-realize";
-};
-
-const isContextMarkdownFormat = (value: unknown): value is "markdown" | undefined => {
-  return value === undefined || value === "markdown";
-};
-
 const isTruthmarkWorkflowId = (value: unknown): value is TruthmarkWorkflowId => {
   return typeof value === "string" && TRUTHMARK_WORKFLOW_IDS.includes(value as TruthmarkWorkflowId);
 };
@@ -150,73 +139,6 @@ export const runValidateWriteLease = async (
   }
 
   return validateWriteLeaseText(leaseText, changedText);
-};
-
-export const runContext = async (options: {
-  workflow?: string;
-  base?: string;
-  format?: string;
-}): Promise<CommandResult> => {
-  if (!isContextPackWorkflow(options.workflow)) {
-    return {
-      command: "context",
-      summary: "Truthmark context requires a supported --workflow value.",
-      diagnostics: [
-        {
-          category: "context-pack",
-          severity: "error",
-          message: "truthmark context requires --workflow truth-sync, truth-document, or truth-realize.",
-        },
-      ],
-    };
-  }
-
-  if (options.format === "json") {
-    return {
-      command: "context",
-      summary: "Truthmark context no longer supports JSON ContextPack output.",
-      diagnostics: [
-        {
-          category: "context-pack",
-          severity: "error",
-          message: "JSON ContextPack output was removed in v2; use --format markdown.",
-        },
-      ],
-    };
-  }
-
-  if (!isContextMarkdownFormat(options.format)) {
-    return {
-      command: "context",
-      summary: "Truthmark context requires a supported --format value.",
-      diagnostics: [
-        {
-          category: "context-pack",
-          severity: "error",
-          message: "truthmark context supports only --format markdown; JSON ContextPack output was removed in v2.",
-        },
-      ],
-    };
-  }
-
-  const contextPack = await buildContextPack(process.cwd(), {
-    workflow: options.workflow,
-    base: options.base,
-  });
-  const diagnostics = contextPack.warnings;
-
-  const summary = `Truthmark context generated ${contextPack.workflow} ContextPack with ${diagnostics.length} warnings.`;
-  const markdown = renderContextPackMarkdown(contextPack);
-
-  return {
-    command: "context",
-    summary,
-    diagnostics,
-    data: {
-      markdown,
-      summary,
-    },
-  };
 };
 
 export const runWorkflowStatus = async (options: {

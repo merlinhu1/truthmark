@@ -78,7 +78,7 @@ const applicabilityFor = (
   }
 
   if (workflow === "truthmark-sync" && !impactSet) {
-    reasons.push("truthmark-sync requires --base to derive bounded truth-doc write paths.");
+    reasons.push("truthmark-sync requires --base to derive changed-file impact before exposing sync write paths.");
     return { state: "blocked", reasons };
   }
 
@@ -111,10 +111,11 @@ const contextDataFor = (
   }
 
   const routeFiles = routeFilesFor(repoIndex);
-  const truthDocs = uniqueSorted(
-    impactSet?.affectedTruthDocs ??
-      repoIndex.routeMap.routes.flatMap((route) => route.truthDocs),
-  );
+  const indexedTruthDocs = uniqueSorted(repoIndex.routeMap.routes.flatMap((route) => route.truthDocs));
+  const truthDocs =
+    workflow === "truthmark-sync"
+      ? indexedTruthDocs
+      : uniqueSorted(impactSet?.affectedTruthDocs ?? indexedTruthDocs);
 
   return {
     routeIndexPath: config.truthmark.paths.routesIndex,
@@ -148,7 +149,7 @@ const nextStepsFor = (
   ) {
     return [
       workflow === "truthmark-sync"
-        ? "Rerun with --base <ref> so Truthmark can derive bounded truth-doc write paths."
+        ? "Rerun with --base <ref> so Truthmark can derive changed-file impact before exposing sync write paths."
         : "Rerun with --base <ref> so Truthmark can derive bounded allowed code-write paths.",
     ];
   }
@@ -200,6 +201,7 @@ export const buildWorkflowState = async (
       required: [...manifestEntry.requiredGates],
       recommended: [...manifestEntry.positiveTriggers],
       helpers: helperCommandsFor(options.workflow),
+      affectedTests: impactSet?.affectedTests ?? [],
     },
     nextSteps: nextStepsFor(options.workflow, applicability, comparisonBase),
     reportSections: [...manifestEntry.reportSections],

@@ -46,7 +46,7 @@ Truthmark's minimal canonical surface is:
 - `docs/ai/repo-rules.md` as the repository-wide agent policy source
 - `.truthmark/config.yml` as the committed hierarchy contract
 - `docs/truthmark/routes/areas.md` as the primary routing surface
-- the project's canonical truth docs under directories such as `docs/standards/`, `docs/architecture/`, and `docs/truthmark/truth/`
+- the project's canonical docs under directories such as `docs/standards/`, `docs/architecture/`, `docs/truthmark/product/`, and `docs/truthmark/engineering/`
 
 By default, instruction files such as `AGENTS.md` install workflow behavior. They do not outrank the canonical truth surface unless a project opts into that explicitly.
 

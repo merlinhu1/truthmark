@@ -11,7 +11,7 @@ source_of_truth:
 
 ## Purpose
 
-`docs/` is Truthmark's canonical repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, and current truth docs separate from onboarding copy and historical planning notes.
+`docs/` is Truthmark's canonical repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, and current lane-separated truth docs separate from onboarding copy and historical planning notes.
 
 `AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. `.truthmark/config.yml` defines the committed hierarchy contract.
 
@@ -30,13 +30,13 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 ### Agent-centric docs
 
 - `docs/ai/` for repository rules and agent onboarding
-- `docs/truthmark/` for routing metadata
+- `docs/truthmark/routes/` for routing metadata
 - `docs/standards/` for reusable constraints and completion rules
-- `docs/truthmark/truth/architecture/` for current system structure
+- `docs/truthmark/product/` for product capability promises, boundaries, and acceptance criteria
+- `docs/truthmark/engineering/` for current implementation behavior, architecture, contracts, workflows, and operations
 - `docs/architecture/` for repository-specific architecture guardrails
-- `docs/truthmark/truth/` for current behavior and invariants
 - `docs/truthmark/templates/` for editable scaffold templates used to create new docs
-- `docs/truthmark/truth/contracts.md` for stable contracts the CLI exposes
+- `docs/truthmark/engineering/contracts/` for stable contracts the CLI exposes
 
 ### Human-centric docs
 
@@ -47,11 +47,11 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 | Path | Type | Primary audience | Purpose |
 | --- | --- | --- | --- |
 | `docs/ai/` | agent rules | agent | Repository-wide rules and fast onboarding |
-| `docs/truthmark/` | routing | both | Truth-routing metadata such as `areas.md` and `areas/**/*.md` |
+| `docs/truthmark/routes/` | routing | both | Truth-routing metadata such as `areas.md` and `areas/**/*.md` |
 | `docs/standards/` | standard | agent | Reusable constraints, verification rules, completion gates |
-| `docs/truthmark/truth/architecture/` | architecture | agent | Current structure and module boundaries |
+| `docs/truthmark/product/` | product truth | agent | Product capability promises, boundaries, decisions, and acceptance criteria |
+| `docs/truthmark/engineering/` | engineering truth | agent | Current implementation behavior for init, check, contracts, workflows, and operations |
 | `docs/architecture/` | architecture | agent | Repository-specific architecture guardrails |
-| `docs/truthmark/truth/` | truth | agent | Current behavior for init, check, contracts, and installed workflows |
 | `docs/truthmark/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
 
 ## Frontmatter Policy
@@ -73,7 +73,7 @@ Canonical docs should include frontmatter and keep these fields current:
 - When `truthmark check` changes what it validates or how it reports diagnostics, update both the current truth doc and the contract doc.
 - When major product, onboarding, install, command, positioning, or workflow behavior changes, review the root [README.md](../README.md) and update it if the human entry point would otherwise be stale.
 - Keep planning or proposal material outside the canonical current-state docs until it becomes implemented truth.
-- When current behavior changes for architecture, contracts, or truth docs, update the owning canonical doc's `Product Decisions` and `Rationale` sections in the same change.
+- When current behavior changes for architecture, contracts, or lane-separated truth docs, update the owning canonical doc's `Product Decisions` and `Rationale` sections in the same change.
 - Do not keep parallel documentation trees for the same subject.
 
 ## Important Truthmark-Specific Caveat
@@ -87,18 +87,18 @@ New repositories should run `truthmark config` before `truthmark init` so teams 
 1. [README.md](../README.md)
 2. [.truthmark/config.yml](../.truthmark/config.yml)
 3. [docs/ai/repo-rules.md](ai/repo-rules.md)
-4. [docs/truthmark/truth/architecture/overview.md](truthmark/truth/architecture/overview.md)
-5. the relevant truth or standard doc for the area being changed
+4. [docs/truthmark/engineering/architecture/overview.md](truthmark/engineering/architecture/overview.md)
+5. the relevant product, engineering, or standard doc for the area being changed
 
 ### For agents
 
 1. [docs/ai/repo-rules.md](ai/repo-rules.md)
 2. [docs/ai/agent-onboarding.md](ai/agent-onboarding.md), when routing is unclear or cross-area
 3. [docs/truthmark/routes/areas.md](truthmark/routes/areas.md), when mapping code to canonical truth
-4. [docs/truthmark/truth/architecture/module-map.md](truthmark/truth/architecture/module-map.md), when changing module boundaries
-5. the relevant standard and truth docs for the task
+4. [docs/truthmark/engineering/architecture/overview.md](truthmark/engineering/architecture/overview.md), when changing module boundaries
+5. the relevant standard, product truth, and engineering truth docs for the task
 
-Use [docs/truthmark/truth/routing-examples.md](truth/routing-examples.md) when designing areas for larger API, frontend, infrastructure, or monorepo repositories.
+Use the route files under [docs/truthmark/routes/](truthmark/routes/) when designing areas for larger API, frontend, infrastructure, or monorepo repositories.
 
 ## Maintenance Principle
 

@@ -163,6 +163,33 @@ evidence:
     );
   });
 
+  it("treats evidence symbols as non-normative metadata", async () => {
+    const repo = await createTempRepo();
+    repos.push(repo);
+
+    await repo.writeFile("src/index.ts", "export const value = 1;\n");
+    await repo.writeFile(
+      "docs/truthmark/truth/symbol.md",
+      `---
+status: active
+---
+# Symbol metadata
+
+\`\`\`yaml
+evidence:
+  - path: ../../../src/index.ts
+    symbol: missingSymbol
+\`\`\`
+`,
+    );
+
+    const diagnostics = await validateEvidenceReferences(repo.rootDir, [
+      "docs/truthmark/truth/symbol.md",
+    ]);
+
+    expect(diagnostics).toEqual([]);
+  });
+
   it("ignores malformed non-evidence YAML while reporting malformed evidence YAML", async () => {
     const repo = await createTempRepo();
     repos.push(repo);

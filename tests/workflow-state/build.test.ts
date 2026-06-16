@@ -38,7 +38,9 @@ const readTree = async (rootDir: string, relativeRoot: string): Promise<Record<s
   return snapshot;
 };
 
-const setupConfiguredRepo = async (): Promise<TempRepo> => {
+const setupConfiguredRepo = async (
+  options: { includeUnrelatedRoute?: boolean } = {},
+): Promise<TempRepo> => {
   const repo = await createTempRepo();
   await repo.writeFile(
     "package.json",
@@ -51,6 +53,22 @@ const setupConfiguredRepo = async (): Promise<TempRepo> => {
   await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\nvoid add;\n");
   await runConfig(repo.rootDir, { force: false, stdout: false });
   await runInit(repo.rootDir);
+  if (options.includeUnrelatedRoute) {
+    await repo.writeFile(
+      "docs/truthmark/engineering/unrelated.md",
+      "---\nstatus: active\ntruth_kind: engineering-behavior\nlast_reviewed: 2026-06-15\n---\n\n# Unrelated\n\nUnrelated behavior.\n",
+    );
+    await repo.writeFile(
+      "docs/truthmark/routes/areas/unrelated.md",
+      "---\nstatus: active\ndoc_type: routing\nlast_reviewed: 2026-06-15\n---\n\n# Unrelated Area\n\n## Unrelated\n\nTruth documents:\n\n```yaml\ntruth_documents:\n  - path: docs/truthmark/engineering/unrelated.md\n    kind: engineering-behavior\n    lane: engineering\n```\n\nCode surface:\n\n- tools/**\n\nUpdate truth when:\n\n- unrelated tooling changes\n",
+    );
+    const rootAreasPath = "docs/truthmark/routes/areas.md";
+    const rootAreas = await repo.readFile(rootAreasPath);
+    await repo.writeFile(
+      rootAreasPath,
+      `${rootAreas}\n## Unrelated\n\nArea files:\n\n- docs/truthmark/routes/areas/unrelated.md\n\nCode surface:\n\n- tools/**\n\nUpdate truth when:\n\n- unrelated tooling changes\n`,
+    );
+  }
   await repo.runGit(["add", "."]);
   await repo.runGit(["commit", "-m", "initial"]);
   await repo.writeFile(
@@ -86,6 +104,7 @@ describe("workflow state contract", () => {
         required: [],
         recommended: [],
         helpers: [],
+        affectedTests: [],
       },
       nextSteps: [],
       reportSections: [],
@@ -225,10 +244,40 @@ describe("buildWorkflowState", () => {
       expect.arrayContaining(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].requiredGates),
     );
     expect(state.checks.helpers.map((helper) => helper.id)).toContain("validate-sync-report");
+    expect(JSON.stringify((state.checks as { affectedTests?: string[] }).affectedTests ?? [])).toContain(
+      "tests/math.test.ts",
+    );
     expect(state.reportSections).toEqual(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections);
     expect(Array.isArray(state.diagnostics)).toBe(true);
     expect("base" in state).toBe(false);
     expect("contextPack" in state).toBe(false);
+    expect(JSON.stringify(state)).not.toContain('"sourceFiles"');
+    expect(JSON.stringify(state)).not.toContain('"truthDocs":[{');
+    expect(JSON.stringify(state)).not.toContain('"content":');
+  });
+
+  it("authorizes sync to correct any indexed truth docs and routing files", async () => {
+    const repo = await setupConfiguredRepo({ includeUnrelatedRoute: true });
+    repos.push(repo);
+
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+      base: "main",
+    });
+
+    expect(state.affectedRoutes.map((route) => route.sourcePath)).toEqual([
+      "docs/truthmark/routes/areas/repository.md",
+    ]);
+    expect(state.targetTruthDocs).toEqual(["docs/truthmark/engineering/repository/overview.md"]);
+    expect(state.actionContext.allowedWritePaths).toEqual(
+      expect.arrayContaining([
+        "docs/truthmark/engineering/repository/overview.md",
+        "docs/truthmark/engineering/unrelated.md",
+        "docs/truthmark/routes/areas.md",
+        "docs/truthmark/routes/areas/repository.md",
+        "docs/truthmark/routes/areas/unrelated.md",
+      ]),
+    );
   });
 
   it("does not expose a legacy ContextPack opt-in path", async () => {
@@ -243,6 +292,8 @@ describe("buildWorkflowState", () => {
     } as Parameters<typeof buildWorkflowState>[1] & { includeContextPack: true });
 
     expect("contextPack" in state).toBe(false);
+    expect("sourceFiles" in state).toBe(false);
+    expect("truthDocs" in state).toBe(false);
     expect(JSON.stringify(state)).not.toContain('"content":');
   });
 

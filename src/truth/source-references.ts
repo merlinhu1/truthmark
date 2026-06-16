@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import matter from "gray-matter";
+import { parseFrontmatter } from "../markdown/frontmatter.js";
 
 const repoRootPrefixes = [
   ".codex/",
@@ -85,7 +85,7 @@ export const parseSourceReferences = (
   source: string,
   truthDocPath: string,
 ): string[] => {
-  const parsed = matter(source);
+  const parsed = parseFrontmatter(source);
   const references = new Set<string>();
   const frontmatterSourceOfTruth = Array.isArray(parsed.data.source_of_truth)
     ? parsed.data.source_of_truth

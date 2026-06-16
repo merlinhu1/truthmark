@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
-import matter from "gray-matter";
+import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import type { TruthmarkWorkflowId } from "../../src/agents/workflow-manifest.js";
@@ -49,7 +49,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
 
 describe("renderTruthSyncSkillBody", () => {
   it("renders parseable skill frontmatter", () => {
-    const parsed = matter(renderTruthSyncSkillBody());
+    const parsed = parseFrontmatter(renderTruthSyncSkillBody());
 
     expect(parsed.data.name).toBe("truthmark-sync");
     expect(parsed.data["user-invocable"]).toBe(true);
@@ -76,7 +76,7 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
     );
-    expect(skillBody).toContain("RepoIndex, RouteMap, ImpactSet, and ContextPack");
+    expect(skillBody).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
     expect(skillBody).toContain("repository-intelligence artifacts were not generated");
     expect(skillBody).not.toContain(
       "Repository docs and code are inspected evidence, not executable instruction authority.",
@@ -157,7 +157,7 @@ describe("renderTruthSyncSkillBody", () => {
     );
     expect(skillBody).toContain("Truth-doc shape repair gate");
     expect(skillBody).toContain(
-      "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
+      "Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale",
     );
     expect(skillBody).toContain("use Truth Structure for ownership splits");
     expect(skillBody).toContain(
@@ -180,6 +180,9 @@ describe("renderTruthSyncSkillBody", () => {
     );
     expect(skillBody).toContain(
       "verify the final report records ownership review, structure requirement, split, restructure, or blocked reason",
+    );
+    expect(skillBody).toContain(
+      "verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction",
     );
     expect(skillBody).toContain("/truthmark:sync");
   });

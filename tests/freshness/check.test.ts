@@ -33,7 +33,7 @@ describe("freshness diagnostics", () => {
     );
   });
 
-  it("reports changed API when affected truth docs were not changed", async () => {
+  it("does not report TypeScript public-symbol freshness when routed code changes", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
 
@@ -46,7 +46,7 @@ describe("freshness diagnostics", () => {
 
     const result = await runCheck(repo.rootDir, { base: "main" });
 
-    expect(result.diagnostics).toContainEqual(
+    expect(result.diagnostics).not.toContainEqual(
       expect.objectContaining({
         category: "freshness",
         severity: "review",

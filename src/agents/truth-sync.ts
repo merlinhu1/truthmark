@@ -138,7 +138,7 @@ ${renderTruthDocOwnershipGateSection(
 ${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
-    "Truth Sync may restructure only truth docs impacted by the current functional-code change.",
+    "Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale, even when the doc is outside the initially affected route focus.",
   )}
 ${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
 ${renderRouteFirstEvidenceGateSection(
@@ -165,7 +165,7 @@ Parent post-sync verification:
 - block if functional code changed during sync
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
-- verify the updated docs correspond to the reviewed changed-code surface
+- verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction made within the sync write lease
 - verify the final report records ownership review, structure requirement, split, restructure, or blocked reason when the ownership gate fired
 - blocked outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files`;
 };

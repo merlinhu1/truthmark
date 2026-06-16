@@ -4,8 +4,6 @@ import fg from "fast-glob";
 import type { Diagnostic } from "../output/diagnostic.js";
 import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
 import { hashText } from "../markdown/hash.js";
-import { isJavaScriptLikePath } from "../repo-index/file-tree.js";
-import { analyzeTypeScriptSource } from "../repo-index/typescript-symbols.js";
 import { parseEvidenceReferences } from "./parse.js";
 import type { EvidenceReference } from "./types.js";
 
@@ -59,23 +57,6 @@ const validateGlob = async (
   return matches.length > 0
     ? null
     : diagnosticFor(reference, `Referenced file pattern ${reference.path} does not match any file.`);
-};
-
-const validateSymbol = async (
-  rootDir: string,
-  reference: EvidenceReference,
-): Promise<Diagnostic | null> => {
-  if (!reference.symbol || !isJavaScriptLikePath(reference.path)) {
-    return null;
-  }
-
-  const source = await fs.readFile(resolveRepoPath(rootDir, reference.path), "utf8");
-  const analysis = analyzeTypeScriptSource(reference.path, source);
-  const hasSymbol = analysis.publicSymbols.some((symbol) => symbol.name === reference.symbol);
-
-  return hasSymbol
-    ? null
-    : diagnosticFor(reference, `Evidence symbol ${reference.symbol} was not found in ${reference.path}.`);
 };
 
 const validateHash = async (
@@ -141,11 +122,6 @@ const validateReference = async (
     if (!(await pathExists(absolutePath))) {
       diagnostics.push(diagnosticFor(reference, `Referenced file ${reference.path} does not exist.`));
       return diagnostics;
-    }
-
-    const symbolDiagnostic = await validateSymbol(rootDir, reference);
-    if (symbolDiagnostic) {
-      diagnostics.push(symbolDiagnostic);
     }
 
     const lineSpanDiagnostic = await validateLineSpan(rootDir, reference);

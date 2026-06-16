@@ -1,4 +1,4 @@
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.js";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import { visit } from "unist-util-visit";
@@ -35,7 +35,7 @@ const isInternalLink = (url: string): boolean => {
 };
 
 export const parseMarkdownDocument = (source: string): ParsedMarkdownDocument => {
-  const parsed = matter(source);
+  const parsed = parseFrontmatter(source);
   const tree = unified().use(remarkParse).parse(parsed.content) as MdastNode;
   const headings: Heading[] = [];
   const internalLinks: string[] = [];

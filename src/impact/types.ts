@@ -1,5 +1,4 @@
 import type { Diagnostic } from "../output/diagnostic.js";
-import type { ExportKind } from "../repo-index/types.js";
 
 export type ChangedFileStatus = "added" | "modified" | "deleted" | "renamed" | "copied" | "type-changed";
 
@@ -22,13 +21,6 @@ export type ImpactRoute = {
   codeSurface: string[];
 };
 
-export type PublicSymbolChange = {
-  path: string;
-  name: string;
-  kind: ExportKind;
-  change: "added" | "removed";
-};
-
 export type ImpactSet = {
   schemaVersion: "impact-set/v0";
   base: string;
@@ -37,7 +29,6 @@ export type ImpactSet = {
   affectedRoutes: ImpactRoute[];
   affectedTruthDocs: string[];
   affectedTests: string[];
-  changedPublicSymbols: PublicSymbolChange[];
   diagnostics: Diagnostic[];
 };
 

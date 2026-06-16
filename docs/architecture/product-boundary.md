@@ -4,9 +4,10 @@ doc_type: architecture
 last_reviewed: 2026-06-12
 source_of_truth:
   - ../../README.md
-  - ../truthmark/truth/architecture/overview.md
-  - ../truthmark/truth/workflows/overview.md
-  - ../truthmark/truth/repository/workflow-state.md
+  - ../truthmark/product/capabilities/agent-native-workflow-injection.md
+  - ../truthmark/product/capabilities/lane-separated-truth.md
+  - ../truthmark/engineering/architecture/overview.md
+  - ../truthmark/engineering/workflows/installed-workflow-runtime.md
 ---
 
 # Truthmark Product Boundary
@@ -53,7 +54,7 @@ Truthmark owns:
 
 - Git-tracked repository documentation and routing metadata
 - host-native agent workflow surfaces such as skills, prompts, commands, managed instruction blocks, and subagents
-- branch-local documentation checks, indexes, impact summaries, context packs, and workflow state derived from the active checkout
+- branch-local documentation checks, workflow indexes, impact summaries, context packs, and workflow state derived from the active checkout
 - write boundaries for read-only, documentation-write, route-write, code-write, and presentation-write workflows
 - optional CLI/package helpers that improve validation or setup without becoming required for normal agent workflow execution
 
