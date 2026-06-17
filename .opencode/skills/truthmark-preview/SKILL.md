@@ -8,12 +8,19 @@ truthmark-version: 2.3.0
 
 # Truthmark Preview
 
-This OpenCode file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
+Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
-Canonical workflow files:
-- .truthmark/agent/workflows/truthmark-preview/SKILL.md
-- .truthmark/agent/workflows/truthmark-preview/support/procedure.md
-- .truthmark/agent/workflows/truthmark-preview/support/report-template.md
-- .truthmark/agent/workflows/truthmark-preview/support/subagents-and-leases.md
+Invocations: OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.
 
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Inspect .truthmark/config.yml and the root route index (docs/truthmark/routes/areas.md) first when present; then inspect only child route files under docs/truthmark/routes/areas/ that are relevant to the selected scope or changed paths, plus the truth docs or implementation files needed to preview ownership.
+- Truth Preview is read-only; this report is intended, not authorized.
+- must not edit files and must not issue write leases; do not run Truth Sync automatically, replace Truth Check, claim final correctness, or mutate code.
+- Use optional read-only route-auditor evidence only when it reduces context or clarifies ownership.
+- Hand off to the selected workflow after user approval.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report
+- support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output

@@ -1,7 +1,3 @@
-<!-- truthmark:adapter-mode=expanded-adapter -->
-<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-check/SKILL.md -->
-<!-- truthmark:canonical-sha256=f6ccb4c9276a0eac2b4b37a458092e5dad832c6b9369bc0c277058a2f1925361 -->
-<!-- truthmark:generated-sha256=4918c62e2cc0474d00002f1b3902eb0f4211e11cea6fe5534594c0e0d84d54ef -->
 ---
 name: truthmark-check
 description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.

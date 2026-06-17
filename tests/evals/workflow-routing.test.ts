@@ -54,6 +54,8 @@ const WORKFLOW_CONTRACT_PATH_GROUPS = (
   id: TruthmarkWorkflowId,
 ): readonly (readonly string[])[] => [
   WORKFLOW_SKILL_PACKAGE_PATHS(".truthmark/agent/workflows", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".github/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".gemini/skills", id),

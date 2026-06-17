@@ -26,7 +26,7 @@ WorkflowState is the workflow-scoped advisory handoff for helper readiness, a wo
 
 Evidence validation checks repository containment, referenced file or glob existence, line spans, and `sha256:` content hashes. Evidence `symbol` metadata, when present in an evidence YAML block, is non-normative metadata and is not validated through TypeScript-specific parsing.
 
-Generated-surface diagnostics are checkout-derived repository intelligence for the installed workflow runtime. `truthmark check` compares rendered generated surfaces with committed files, validates `.truthmark/agent/` canonical package freshness through deterministic repository-relative hashes, reports adapter-only workflow files that duplicate full workflow body markers, reports adapters that reference missing canonical package files, and reports expanded adapters whose recorded canonical hash is stale.
+Generated-surface diagnostics are checkout-derived repository intelligence for the installed workflow runtime. `truthmark check` compares rendered generated surfaces with committed files, validates `.truthmark/agent/` canonical package freshness through deterministic repository-relative hashes, and reports missing or stale generated host-native skill package files so skill-directory resources stay colocated with `SKILL.md`.
 
 ## Product Truth Links
 

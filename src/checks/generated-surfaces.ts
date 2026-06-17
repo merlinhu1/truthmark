@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import { createHash } from "node:crypto";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import { resolveRepoPath } from "../fs/paths.js";
@@ -39,9 +38,6 @@ const normalizeGeneratedSurfaceContent = (content: string | null): string | null
   return content.replace(/\r\n/g, "\n").replace(/\n$/u, "");
 };
 
-const sha256 = (content: string): string =>
-  createHash("sha256").update(content).digest("hex");
-
 const fullWorkflowBodyMarkers = [
   "Parent workflow:",
   "Evidence checklist:",
@@ -55,11 +51,7 @@ const adapterCanonicalReferences = (content: string): string[] => {
   );
 };
 
-const adapterMode = (content: string): "adapter" | "expanded-adapter" | null => {
-  if (content.includes("<!-- truthmark:adapter-mode=expanded-adapter -->")) {
-    return "expanded-adapter";
-  }
-
+const adapterMode = (content: string): "adapter" | null => {
   if (
     content.includes("not the workflow source of truth") ||
     content.includes("not source of truth")
@@ -70,11 +62,6 @@ const adapterMode = (content: string): "adapter" | "expanded-adapter" | null => 
   return null;
 };
 
-const expandedCanonicalPath = (content: string): string | null =>
-  content.match(/truthmark:canonical=([^\s]+)\s*-->/u)?.[1] ?? null;
-
-const expandedCanonicalHash = (content: string): string | null =>
-  content.match(/truthmark:canonical-sha256=([a-f0-9]+)\s*-->/u)?.[1] ?? null;
 
 const versionMarkers = (content: string): string[] => {
   const markers: string[] = [];
@@ -143,26 +130,6 @@ export const checkGeneratedSurfaces = async (
       }
     }
 
-    if (mode === "expanded-adapter") {
-      const canonicalPath = expandedCanonicalPath(content);
-      const recordedHash = expandedCanonicalHash(content);
-      const canonicalContent =
-        canonicalPath === null ? null : await readOptionalFile(rootDir, canonicalPath);
-
-      if (
-        canonicalPath !== null &&
-        recordedHash !== null &&
-        canonicalContent !== null &&
-        sha256(`${canonicalPath}\n${canonicalContent}`) !== recordedHash
-      ) {
-        diagnostics.push({
-          category: "generated-surface",
-          severity: "review",
-          message: `Generated expanded adapter ${surface.path} has stale canonical hash for ${canonicalPath}; rerun truthmark init.`,
-          file: surface.path,
-        });
-      }
-    }
 
     const comparableContent = normalizeGeneratedSurfaceContent(
       surface.managedBlock ? extractManagedBlock(content) : content,

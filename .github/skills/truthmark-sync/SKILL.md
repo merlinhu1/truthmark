@@ -1,7 +1,3 @@
-<!-- truthmark:adapter-mode=expanded-adapter -->
-<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-sync/SKILL.md -->
-<!-- truthmark:canonical-sha256=88d55417bbb97d38b3aa269c93e29c86beb14f17ee4e643fa2e4ed2fdcb5cef8 -->
-<!-- truthmark:generated-sha256=cbfd08af6faef7adcc891a4c7c6fabb395b43845df9762fb1d45031b21ba9c83 -->
 ---
 name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.

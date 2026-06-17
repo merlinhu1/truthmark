@@ -381,10 +381,8 @@ describe("runInit", () => {
       expect(agents.match(/Hierarchy hints: config/g)).toHaveLength(1);
       expect(agents.match(/Decisions live/g)).toHaveLength(1);
       expect(structureSkill).toContain("name: truthmark-structure");
-      expect(structureSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-structure/support/procedure.md",
-      );
-      expect(structureSkill).toContain("not the workflow source of truth");
+      expect(structureSkill).toContain("support/procedure.md");
+      expect(structureSkill).not.toContain("not the workflow source of truth");
       expect(structureSkill).not.toContain("Truth Structure: completed");
       expect(structureSkill.split("\n").length).toBeLessThanOrEqual(55);
       expect(structureReportTemplate).toContain("Truth Structure: completed");
@@ -393,16 +391,12 @@ describe("runInit", () => {
       );
       expect(structureOpenCodeSkill).toContain("name: truthmark-structure");
       expect(documentSkill).toContain("name: truthmark-document");
-      expect(documentSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-document/support/procedure.md",
-      );
-      expect(documentSkill).toContain("not the workflow source of truth");
+      expect(documentSkill).toContain("support/procedure.md");
+      expect(documentSkill).not.toContain("not the workflow source of truth");
       expect(documentSkill).not.toContain("Truth Document: completed");
       expect(documentSkill).not.toContain("Parent workflow:");
       expect(documentSkill).not.toContain("truth_doc_writer");
-      expect(documentSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-document/support/helper-policy.md",
-      );
+      expect(documentSkill).toContain("support/helper-policy.md");
       expect(documentSkill.split("\n").length).toBeLessThanOrEqual(55);
       expect(documentHelperManifest).toContain("validate-document-report:");
       expect(documentSubagents).toContain("truth_doc_writer");
@@ -415,22 +409,14 @@ describe("runInit", () => {
         "allow_implicit_invocation: false",
       );
       expect(documentOpenCodeSkill).toContain("name: truthmark-document");
-      expect(documentOpenCodeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-document/support/subagents-and-leases.md",
-      );
+      expect(documentOpenCodeSkill).toContain("support/subagents-and-leases.md");
       expect(documentOpenCodeSkill).not.toContain("OpenCode subagent mode:");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain("user-invocable: true");
       expect(syncSkill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
-      expect(syncSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
-      );
-      expect(syncSkill).toContain(
-        "not the workflow source of truth",
-      );
-      expect(syncSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
-      );
+      expect(syncSkill).toContain("Use this skill automatically before finishing");
+      expect(syncSkill).not.toContain("not the workflow source of truth");
+      expect(syncSkill).toContain("support/procedure.md");
       expect(syncSkill).not.toContain("validate-sync-report.mjs report.md");
       expect(syncSkill).not.toContain("host supports subagent dispatch");
       expect(syncSkill).not.toContain("truth_doc_writer");
@@ -464,9 +450,7 @@ describe("runInit", () => {
       expect(syncSubagents).toContain("write lease");
       expect(syncReportTemplate).toContain("Truth Sync: completed");
       expect(syncReportTemplate).toContain("Truth Sync: blocked");
-      expect(syncSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-sync/support/report-template.md",
-      );
+      expect(syncSkill).toContain("support/report-template.md");
       expect(syncSkill).not.toContain(".truthmark/local.yml");
       expect(syncSkill).not.toContain("truth_sync.sync_agent");
       expect(syncSkill).not.toContain(
@@ -477,14 +461,12 @@ describe("runInit", () => {
       expect(syncSkillMetadata).toContain(`version: "${TRUTHMARK_VERSION}"`);
       expect(syncSkillMetadata).toContain('refresh_command: "truthmark init"');
       expect(syncOpenCodeSkill).toContain("name: truthmark-sync");
-      expect(syncOpenCodeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
-      );
-      expect(syncOpenCodeSkill).toContain("not the workflow source of truth");
+      expect(syncOpenCodeSkill).toContain("Use this skill automatically before finishing");
+      expect(syncOpenCodeSkill).not.toContain("not the workflow source of truth");
       expect(syncOpenCodeSkill).not.toContain("OpenCode subagent mode:");
-      await expect(
-        repo.readFile(".opencode/skills/truthmark-sync/helper-manifest.yml"),
-      ).rejects.toThrow();
+      expect(
+        await repo.readFile(".opencode/skills/truthmark-sync/helper-manifest.yml"),
+      ).toContain("validate-sync-report:");
       expect(syncCopilotPrompt).toContain(
         "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
       );
@@ -518,10 +500,8 @@ describe("runInit", () => {
       ).toContain("validate-sync-report:");
       expect(realizeSkill).toContain("name: truthmark-realize");
       expect(realizeSkill).toContain("user-invocable: true");
-      expect(realizeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-realize/SKILL.md",
-      );
-      expect(realizeSkill).toContain("not the workflow source of truth");
+      expect(realizeSkill).toContain("support/procedure.md");
+      expect(realizeSkill).not.toContain("not the workflow source of truth");
       expect(realizeSkill).not.toContain("Truth Realize: completed");
       expect(realizeSkillMetadata).toContain(
         'display_name: "Truthmark Realize"',
@@ -530,14 +510,10 @@ describe("runInit", () => {
         'default_prompt: "Use $truthmark-realize to realize the updated truth docs into code."',
       );
       expect(realizeOpenCodeSkill).toContain("name: truthmark-realize");
-      expect(realizeOpenCodeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-realize/SKILL.md",
-      );
+      expect(realizeOpenCodeSkill).toContain("support/procedure.md");
       expect(previewSkill).toContain("name: truthmark-preview");
-      expect(previewSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
-      );
-      expect(previewSkill).toContain("not the workflow source of truth");
+      expect(previewSkill).toContain("support/procedure.md");
+      expect(previewSkill).not.toContain("not the workflow source of truth");
       expect(previewSkill).not.toContain("Truth Preview: completed");
       expect(previewSkill).not.toContain("truth_route_auditor");
       expect(previewReportTemplate).toContain("Truth Preview: completed");
@@ -551,9 +527,7 @@ describe("runInit", () => {
         "allow_implicit_invocation: false",
       );
       expect(previewOpenCodeSkill).toContain("name: truthmark-preview");
-      expect(previewOpenCodeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
-      );
+      expect(previewOpenCodeSkill).toContain("support/procedure.md");
       expect(previewClaudeSkill).toContain("name: truthmark-preview");
       expect(previewCopilotPrompt).toContain(
         "This prompt is the GitHub Copilot entrypoint for Truthmark Preview.",
@@ -569,17 +543,13 @@ describe("runInit", () => {
       );
       expect(previewGeminiCommand).not.toContain("helper-manifest.yml");
       expect(checkSkill).toContain("name: truthmark-check");
-      expect(checkSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-check/SKILL.md",
-      );
-      expect(checkSkill).toContain("not the workflow source of truth");
+      expect(checkSkill).toContain("support/procedure.md");
+      expect(checkSkill).not.toContain("not the workflow source of truth");
       expect(checkSkill).not.toContain("Truth Check: completed");
       expect(checkSkill).not.toContain("Codex subagent mode:");
       expect(checkSkillMetadata).toContain('display_name: "Truthmark Check"');
       expect(checkOpenCodeSkill).toContain("name: truthmark-check");
-      expect(checkOpenCodeSkill).toContain(
-        ".truthmark/agent/workflows/truthmark-check/support/subagents-and-leases.md",
-      );
+      expect(checkOpenCodeSkill).toContain("support/subagents-and-leases.md");
       expect(checkOpenCodeSkill).not.toContain("OpenCode subagent mode:");
       expect(routeAuditorAgent).toContain('name = "truth_route_auditor"');
       expect(routeAuditorAgent).toContain('sandbox_mode = "read-only"');
@@ -994,22 +964,26 @@ ignore: []
         );
       }
 
-      const agentsAdapter = await repo.readFile(
+      const agentsSkill = await repo.readFile(
         ".agents/skills/truthmark-sync/SKILL.md",
       );
-      const opencodeAdapter = await repo.readFile(
+      const opencodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
       );
 
-      for (const adapter of [agentsAdapter, opencodeAdapter]) {
-        expect(adapter).toContain("not the workflow source of truth");
-        expect(adapter).toContain(
-          ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
-        );
-        expect(adapter).not.toContain("Parent workflow:");
-        expect(adapter).not.toContain("Evidence checklist:");
-        expect(adapter).not.toContain("Report completion in this shape:");
+      for (const skill of [agentsSkill, opencodeSkill]) {
+        expect(skill).toContain("Use this skill automatically before finishing");
+        expect(skill).toContain("support/procedure.md");
+        expect(skill).not.toContain("not the workflow source of truth");
       }
+      expect(
+        await repo.readFile(".agents/skills/truthmark-sync/support/procedure.md"),
+      ).toContain("Parent workflow:");
+      expect(
+        await repo.readFile(
+          ".opencode/skills/truthmark-sync/support/report-template.md",
+        ),
+      ).toContain("Changed code reviewed:");
     } finally {
       await repo.cleanup();
     }

@@ -8,14 +8,23 @@ truthmark-version: 2.3.0
 
 # Truthmark Sync
 
-This OpenCode file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
+Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 
-Canonical workflow files:
-- .truthmark/agent/workflows/truthmark-sync/SKILL.md
-- .truthmark/agent/workflows/truthmark-sync/support/procedure.md
-- .truthmark/agent/workflows/truthmark-sync/support/report-template.md
-- .truthmark/agent/workflows/truthmark-sync/support/subagents-and-leases.md
-- .truthmark/agent/workflows/truthmark-sync/helper-manifest.yml
-- .truthmark/agent/workflows/truthmark-sync/support/helper-policy.md
+Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
 
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Skip docs-only, formatting-only, behavior-preserving renames with no truth impact, missing config, and no-code changes.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect relevant canonical docs directly.
+- direct checkout inspection is the canonical path; do not require the truthmark binary.
+- May write canonical truth docs and truth routing files only; must not rewrite functional code.
+- Read support/procedure.md before editing truth docs.
+- Read support/subagents-and-leases.md only when dispatching or accepting worker output.
+- Read support/report-template.md before the final report.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report
+- support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
+- helper-manifest.yml — read only when invoking helper validators or validating helper registration
+- support/helper-policy.md — read only when invoking helper validators or reporting helper status

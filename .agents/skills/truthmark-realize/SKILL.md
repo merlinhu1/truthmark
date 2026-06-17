@@ -8,11 +8,18 @@ truthmark-version: 2.3.0
 
 # Truthmark Realize
 
-This Codex/OpenAI agents file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
+Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Canonical workflow files:
-- .truthmark/agent/workflows/truthmark-realize/SKILL.md
-- .truthmark/agent/workflows/truthmark-realize/support/procedure.md
-- .truthmark/agent/workflows/truthmark-realize/support/report-template.md
+Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
 
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Read the source truth docs, inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist, then inspect tests and relevant functional code directly.
+- Truth docs lead; code follows.
+- may write functional code only; must not edit truth docs or truth routing while realizing those docs.
+- Read support/procedure.md before changing code.
+- Read support/report-template.md before the final report.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report

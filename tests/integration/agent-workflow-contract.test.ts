@@ -100,9 +100,12 @@ describe("installed workflow contract", () => {
         "direct checkout inspection is the canonical path",
       );
       expect(syncCodexAdapter).toContain(
-        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+        "Use this skill automatically before finishing",
       );
-      expect(syncCodexAdapter).toContain("not the workflow source of truth");
+      expect(syncCodexAdapter).toContain("support/procedure.md");
+      expect(
+        await repo.readFile(".agents/skills/truthmark-sync/support/procedure.md"),
+      ).toContain("Parent workflow:");
       expect(documentSkill).toContain("name: truthmark-document");
       expect(documentSkill).toContain("support/procedure.md");
       expect(documentSkill).toContain("support/report-template.md");

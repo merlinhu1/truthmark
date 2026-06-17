@@ -114,7 +114,32 @@ describe("runCheck", () => {
     }
   });
 
-  it("reports adapter-only workflow body duplication", async () => {
+  it("reports missing host skill package support files", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await fs.rm(
+        `${repo.rootDir}/.agents/skills/truthmark-sync/support/procedure.md`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".agents/skills/truthmark-sync/support/procedure.md" &&
+            diagnostic.message.includes("is missing"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports stale host skill package entrypoints", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -122,7 +147,7 @@ describe("runCheck", () => {
       await repo.writeFile(
         ".agents/skills/truthmark-sync/SKILL.md",
         `${await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")}
-Parent workflow:
+Local stale edit.
 `,
       );
 
@@ -133,7 +158,7 @@ Parent workflow:
           (diagnostic) =>
             diagnostic.category === "generated-surface" &&
             diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md" &&
-            diagnostic.message.includes("duplicates workflow body marker"),
+            diagnostic.message.includes("is stale"),
         ),
       ).toBe(true);
     } finally {
@@ -141,44 +166,17 @@ Parent workflow:
     }
   });
 
-  it("reports adapter references to missing canonical files", async () => {
+  it("reports stale host skill package support files", async () => {
     const repo = await createTempRepo();
 
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        ".agents/skills/truthmark-sync/SKILL.md",
-        `${await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")}
-- .truthmark/agent/workflows/truthmark-sync/missing.md
-`,
-      );
-
-      const result = await runCheck(repo.rootDir);
-
-      expect(
-        result.diagnostics.some(
-          (diagnostic) =>
-            diagnostic.category === "generated-surface" &&
-            diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md" &&
-            diagnostic.message.includes("references missing canonical package file"),
-        ),
-      ).toBe(true);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
-  it("reports stale expanded adapter canonical hashes", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await initializeRepo(repo.rootDir);
-      await repo.writeFile(
-        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+        ".claude/skills/truthmark-sync/support/procedure.md",
         `${await repo.readFile(
-          ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+          ".claude/skills/truthmark-sync/support/procedure.md",
         )}
-Changed canonical content.
+Local stale edit.
 `,
       );
 
@@ -190,7 +188,7 @@ Changed canonical content.
             diagnostic.category === "generated-surface" &&
             diagnostic.file ===
               ".claude/skills/truthmark-sync/support/procedure.md" &&
-            diagnostic.message.includes("has stale canonical hash"),
+            diagnostic.message.includes("is stale"),
         ),
       ).toBe(true);
     } finally {

@@ -1,7 +1,3 @@
-<!-- truthmark:adapter-mode=expanded-adapter -->
-<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-document/SKILL.md -->
-<!-- truthmark:canonical-sha256=e504ba6e14813248c87f7907fe0fc38a13f79b8cb52541c1c38aafe8ae517446 -->
-<!-- truthmark:generated-sha256=3b6d2532ec304906665d30af0d0c6ecc219c644473ac67ab4c4be923685910f6 -->
 ---
 name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.

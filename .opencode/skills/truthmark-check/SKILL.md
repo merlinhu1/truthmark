@@ -8,12 +8,19 @@ truthmark-version: 2.3.0
 
 # Truthmark Check
 
-This OpenCode file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
+Use this skill to audit repository truth health.
 
-Canonical workflow files:
-- .truthmark/agent/workflows/truthmark-check/SKILL.md
-- .truthmark/agent/workflows/truthmark-check/support/procedure.md
-- .truthmark/agent/workflows/truthmark-check/support/report-template.md
-- .truthmark/agent/workflows/truthmark-check/support/subagents-and-leases.md
+Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.
 
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect canonical docs and relevant implementation directly.
+- Report issues and suggested fixes; do not silently rewrite unrelated files.
+- Read support/procedure.md before auditing details.
+- Read support/subagents-and-leases.md only when dispatching verifier subagents.
+- Read support/report-template.md before the final report.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report
+- support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output

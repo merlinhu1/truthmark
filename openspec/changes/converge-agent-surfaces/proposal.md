@@ -1,23 +1,23 @@
 ## Why
 
-Truthmark currently renders near-identical workflow instructions into several host-specific surfaces (`.agents`, `.claude`, `.github`, `.gemini`, `.opencode`, and top-level instruction files). Even though those files are generated, duplicated workflow prose makes review noisy and lets stale prompt wording drift across hosts.
+Truthmark currently renders near-identical workflow instructions into several host-specific surfaces (`.agents`, `.claude`, `.github`, `.gemini`, `.opencode`, and top-level instruction files). Even though those files are generated, duplicated workflow prose makes review noisy and lets stale prompt wording drift across hosts. At the same time, agent skill hosts package and progressively disclose resources from the skill directory, so adapter-only skill folders can drop native resource packaging.
 
-This change converges generated surfaces around one canonical repository-local Truthmark agent package. Host-specific files become thin adapters that route agents to the canonical package, with an expanded compatibility mode only for hosts that cannot reliably follow repository-file references.
+This change converges generated surfaces around one canonical renderer and repository-local Truthmark agent package while preserving host-native skill packages. Host skill directories remain complete generated packages with colocated support files; prompt/command surfaces stay thin adapters that route to the host-local or canonical package entrypoint.
 
 ## What Changes
 
 - Introduce a canonical Truthmark agent package under `.truthmark/agent/` containing workflow skill entrypoints, procedures, report templates, shared guidance, helper metadata, and a manifest.
-- Convert generated host skill/prompt/command files into adapter-only surfaces where possible.
-- Add an explicit expanded-adapter compatibility mode with source provenance and hashes for hosts that need full inline workflow bodies.
-- Add freshness and hygiene checks that detect stale canonical package files, stale adapters, unauthorized duplicated workflow prose in adapters, and missing canonical references.
-- Preserve current workflow behavior while moving authority from copied host prompts to canonical package files.
+- Render configured host skill directories as native generated packages with colocated procedure, report-template, helper, and lease resources.
+- Keep GitHub Copilot prompt files, Gemini command files, top-level managed blocks, and other non-skill surfaces as thin adapters/discovery surfaces.
+- Add freshness and hygiene checks that detect stale canonical package files and stale or missing generated host skill package files.
+- Preserve current workflow behavior while moving source authority from copied host prompts to canonical renderers and validated generated packages.
 - Do not add hooks, CI blockers, mandatory live MCP servers, or mandatory CLI execution for normal agent workflows.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `canonical-agent-workflow-package`: Defines the canonical repository-local package for Truthmark workflow prompts/skills and the adapter/freshness contract for generated host surfaces.
+- `canonical-agent-workflow-package`: Defines the canonical repository-local package for Truthmark workflow prompts/skills and the native-package/freshness contract for generated host surfaces.
 
 ### Modified Capabilities
 
@@ -31,7 +31,8 @@ This change converges generated surfaces around one canonical repository-local T
 - Tests: generated-surface freshness tests, workflow renderer tests, init/check integration tests, disk-level generated-file hygiene scans.
 - Truth docs: engineering workflow/repository truth docs and route metadata describing generated-surface ownership.
 - External reference patterns:
-  - Anthropic Agent Skills package reusable instructions, metadata, scripts, templates, and references to reduce repeated guidance: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview.md
+  - GitHub Agent Skills are folders of instructions, scripts, and resources; project skills live under repository skill directories such as `.github/skills`, `.claude/skills`, and `.agents/skills`: https://docs.github.com/en/copilot/concepts/agents/about-agent-skills
+  - Agent Skills package reusable instructions, scripts, reference materials, templates, and other resources in one skill folder: https://github.com/agentskills/agentskills
   - MCP Prompts expose prompt templates through list/get APIs while letting clients choose their UI pattern: https://modelcontextprotocol.io/specification/2025-06-18/server/prompts.md
   - GitHub reusable workflows and composite actions avoid repeated workflow definitions through reusable called units: https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows and https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
   - OpenAPI Generator normalizes an input model and applies target templates rather than treating every generated output as the source of truth: https://github.com/OpenAPITools/openapi-generator/blob/master/docs/templating.md

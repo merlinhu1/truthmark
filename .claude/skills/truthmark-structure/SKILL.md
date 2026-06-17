@@ -1,7 +1,3 @@
-<!-- truthmark:adapter-mode=expanded-adapter -->
-<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-structure/SKILL.md -->
-<!-- truthmark:canonical-sha256=335be170b1d903a659b192bfae69e5ae44d936fdd41831896c7890bac528b7e7 -->
-<!-- truthmark:generated-sha256=5fe1533eb8d4f827d6d925f9c166e3eec7c309a9e0c5b9f668f12797c3fce594 -->
 ---
 name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.

@@ -293,7 +293,7 @@ type TruthmarkSkillPackageFile = {
   content: string;
 };
 
-export type TruthmarkAdapterMode = "adapter" | "expanded-adapter";
+export type TruthmarkAdapterMode = "adapter" | "native-package";
 
 type TruthmarkCanonicalManifestFile = {
   path: string;
@@ -903,11 +903,11 @@ export const renderCanonicalAgentPackage = (
           .map(manifestFileFor)
           .sort((left, right) => left.path.localeCompare(right.path)),
         adapterModes: {
-          ".agents": "adapter",
-          ".opencode": "adapter",
-          ".claude": "expanded-adapter",
-          ".github": "expanded-adapter",
-          ".gemini": "expanded-adapter",
+          ".agents": "native-package",
+          ".opencode": "native-package",
+          ".claude": "native-package",
+          ".github": "native-package",
+          ".gemini": "native-package",
         },
       } satisfies TruthmarkCanonicalManifestWorkflow,
     ] as const;
@@ -976,55 +976,6 @@ Read the canonical SKILL.md first, then read support files only as that skill di
 `,
     },
   ];
-};
-
-export const renderTruthmarkExpandedAdapterPackage = ({
-  skillPath,
-  workflowId,
-  host,
-  config = defaultAgentConfig(),
-}: {
-  skillPath: string;
-  workflowId: TruthmarkWorkflowId;
-  host: TruthmarkSkillPackageHost;
-  config?: TruthmarkConfig;
-}): TruthmarkSkillPackageFile[] => {
-  const files = renderTruthmarkSkillPackage({
-    skillPath,
-    workflowId,
-    host,
-    config,
-  });
-  const canonicalRoot = canonicalWorkflowRoot(workflowId);
-  const canonicalFiles = new Map(
-    renderTruthmarkSkillPackage({
-      skillPath: canonicalWorkflowSkillPath(workflowId),
-      workflowId,
-      host: "codex",
-      config,
-    }).map((file) => [file.path.replace(`${canonicalRoot}/`, ""), file]),
-  );
-  const adapterRoot = skillPath.replace(/\/SKILL\.md$/u, "");
-
-  return files.map((file) => {
-    const relativePath =
-      file.path === skillPath ? "SKILL.md" : file.path.replace(`${adapterRoot}/`, "");
-    const canonicalFile = canonicalFiles.get(relativePath);
-    const canonicalPath =
-      canonicalFile?.path ?? canonicalWorkflowSkillPath(workflowId);
-    const canonicalContent = canonicalFile?.content ?? "";
-    const generatedHash = sha256(`${file.path}\n${file.content}`);
-    const canonicalHash = sha256(`${canonicalPath}\n${canonicalContent}`);
-
-    return {
-      path: file.path,
-      content: `<!-- truthmark:adapter-mode=expanded-adapter -->
-<!-- truthmark:canonical=${canonicalPath} -->
-<!-- truthmark:canonical-sha256=${canonicalHash} -->
-<!-- truthmark:generated-sha256=${generatedHash} -->
-${file.content}`,
-    };
-  });
 };
 
 const normalizeOpenCodePermissionPath = (path: string): string => {

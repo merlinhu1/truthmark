@@ -7,52 +7,52 @@
 
 ## 2. Canonical package renderer
 
-- [x] 2.1 Create canonical package types in `src/templates/workflow-surfaces.ts` or a new `src/templates/agent-package.ts`: package manifest entry, canonical package file, adapter mode, canonical hash input.
-- [x] 2.2 Implement deterministic package path helpers for `.truthmark/agent/manifest.json`, `.truthmark/agent/workflows/<workflow>/SKILL.md`, `procedure.md`, `report-template.md`, `subagents.md`, and `helpers.json`.
+- [x] 2.1 Create canonical package types in `src/templates/workflow-surfaces.ts`: package manifest entry, canonical package file, package mode, and canonical hash input.
+- [x] 2.2 Implement deterministic package path helpers for `.truthmark/agent/manifest.json`, `.truthmark/agent/workflows/<workflow>/SKILL.md`, `procedure.md`, `report-template.md`, subagent/lease support, helper manifest, and helper policy.
 - [x] 2.3 Reuse existing `renderTruthmarkSkillPackage` and `renderWorkflowSupportParts` logic to render canonical package files instead of duplicating renderer code.
 - [x] 2.4 Implement canonical package hash calculation using repository-relative path plus file content; exclude absolute checkout paths and operational fields.
-- [x] 2.5 Add `.truthmark/agent/manifest.json` rendering that lists version, schema version, workflows, canonical paths, support files, adapter modes, and hashes.
+- [x] 2.5 Add `.truthmark/agent/manifest.json` rendering that lists version, schema version, workflows, canonical paths, support files, host package modes, and hashes.
 - [x] 2.6 Wire canonical package files into `renderGeneratedSurfaces(config)` in `src/templates/generated-surfaces.ts`.
 - [x] 2.7 Run `npm run test -- tests/templates/generated-surfaces.test.ts tests/agents/workflow-manifest.test.ts` and expect the new package tests to pass.
 
-## 3. Adapter rendering
+## 3. Native skill package rendering
 
-- [x] 3.1 Add adapter rendering helpers that produce thin host files with canonical package references and host invocation metadata only.
-- [x] 3.2 Add an `adapterMode` decision point per host/workflow with default `adapter` and explicit `expanded-adapter` override for hosts that still need inline prompt bodies.
-- [x] 3.3 Convert one low-risk host package renderer, preferably `.agents` or `.opencode`, to adapter mode.
-- [x] 3.4 Add tests asserting adapter-mode generated files contain canonical paths and do not contain full procedure markers such as `Parent workflow:`, `Evidence checklist:`, or `Report completion in this shape:`.
-- [x] 3.5 Add tests asserting expanded-adapter mode includes provenance comments with adapter mode, canonical path, canonical hash, and generated hash.
+- [x] 3.1 Preserve native skill-package rendering for `.agents`, `.opencode`, `.claude`, `.github`, and `.gemini` skill directories so support resources remain colocated with `SKILL.md`.
+- [x] 3.2 Record host skill directories as `native-package` projections in the canonical manifest instead of adapter-only workflow bodies.
+- [x] 3.3 Keep GitHub Copilot prompt files and Gemini command files as thin adapters that point at workflow entrypoints and avoid recursive command dispatch.
+- [x] 3.4 Add tests asserting host-native generated skill packages include `SKILL.md`, `support/procedure.md`, `support/report-template.md`, and optional helper/subagent support files.
+- [x] 3.5 Add tests asserting prompt/command adapters stay compact and reference package-local workflow resources instead of embedding full procedure/report bodies.
 - [x] 3.6 Run `npm run test -- tests/templates/generated-surfaces.test.ts tests/agents/truth-sync.test.ts tests/agents/truth-document.test.ts tests/agents/truth-structure.test.ts` and expect PASS.
 
 ## 4. Freshness and hygiene checks
 
 - [x] 4.1 Extend `src/checks/generated-surfaces.ts` to validate canonical package existence and manifest hash consistency.
-- [x] 4.2 Add adapter hygiene diagnostics for missing canonical file references, stale expanded-adapter hashes, and duplicated workflow prose in adapter-mode files.
-- [x] 4.3 Add tests in `tests/checks/check.test.ts` for missing canonical package files, stale manifest hashes, stale expanded adapters, and unauthorized duplicated prompt bodies.
-- [x] 4.4 Add a disk-level regression that initializes a temp repository, mutates a canonical package file, and verifies `truthmark check --json` reports generated-surface freshness diagnostics.
+- [x] 4.2 Keep generated-surface freshness diagnostics for stale or missing host-native skill package files.
+- [x] 4.3 Add tests in `tests/checks/check.test.ts` for missing canonical package files, missing host-native support files, stale host-native entrypoints, and stale host-native support files.
+- [x] 4.4 Add a disk-level regression that initializes a temp repository, mutates generated package files, and verifies `truthmark check --json` reports generated-surface freshness diagnostics.
 - [x] 4.5 Run `npm run test -- tests/checks/check.test.ts tests/integration/init-check-workflow.test.ts` and expect PASS.
 
 ## 5. Host migration pass
 
-- [x] 5.1 Convert `.agents` generated workflow skills to adapter mode and run focused generated-surface tests.
-- [x] 5.2 Convert `.opencode` generated workflow skills to adapter mode and run focused generated-surface tests.
-- [x] 5.3 Convert `.claude` generated workflow skills to adapter mode if Claude reliably reads referenced repository files; otherwise mark as expanded-adapter with provenance.
-- [x] 5.4 Convert `.github` Copilot prompts/skills to adapter or expanded-adapter mode based on host reliability; keep Copilot command/prompt metadata host-native.
-- [x] 5.5 Convert `.gemini` generated workflow commands/skills to adapter or expanded-adapter mode based on host reliability.
-- [x] 5.6 Keep top-level `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` as short managed routing blocks that point to `.truthmark/agent/` and avoid full workflow procedure prose.
+- [x] 5.1 Render `.agents` generated workflow skills as native packages with colocated resources.
+- [x] 5.2 Render `.opencode` generated workflow skills as native packages with colocated resources.
+- [x] 5.3 Render `.claude` generated workflow skills as native packages with colocated resources.
+- [x] 5.4 Render `.github` Copilot skills as native packages with colocated resources; keep Copilot prompt metadata compact and host-native.
+- [x] 5.5 Render `.gemini` generated workflow skills as native packages with colocated resources; keep Gemini commands compact and host-native.
+- [x] 5.6 Keep top-level `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` as short managed routing blocks that mention `.truthmark/agent/` and host-native workflow surfaces without full workflow procedure prose.
 - [x] 5.7 Run `npx tsx src/cli/main.ts init --json` in the repository and inspect generated deltas for unintended prompt-body churn.
 
 ## 6. Documentation and truth sync
 
-- [x] 6.1 Update engineering truth docs that own generated workflow surfaces, especially `docs/truthmark/engineering/workflows/installed-workflow-runtime.md` and `docs/truthmark/engineering/repository/repository-intelligence.md`, to describe canonical package authority and adapter modes.
+- [x] 6.1 Update engineering truth docs that own generated workflow surfaces, especially `docs/truthmark/engineering/workflows/installed-workflow-runtime.md` and `docs/truthmark/engineering/repository/repository-intelligence.md`, to describe canonical renderer/package authority and native skill package projections.
 - [x] 6.2 Update route metadata under `docs/truthmark/routes/areas/installed-workflows.md` if ownership or sync triggers change.
 - [x] 6.3 Update README guidance only if user-facing setup output changes; keep product promises separate from implementation details.
 - [x] 6.4 Run `npx tsx src/cli/main.ts check --json` and expect no diagnostics.
 
 ## 7. Full verification
 
-- [x] 7.1 Run exact stale-copy scans: `rg -n "Parent workflow:|Evidence checklist:|Report completion in this shape" .agents .claude .gemini .github .opencode AGENTS.md CLAUDE.md GEMINI.md` and verify only expanded-adapter files contain full bodies.
-- [x] 7.2 Run exact retired-wording scans from the current workflow-surface hygiene suite and verify adapter migration did not reintroduce stale enforcement metaphors.
+- [x] 7.1 Run native package resource scans and verify generated host skill directories contain colocated support files.
+- [x] 7.2 Run exact retired-wording scans from the current workflow-surface hygiene suite and verify migration did not reintroduce stale enforcement metaphors.
 - [x] 7.3 Run `npm run typecheck` and expect PASS.
 - [x] 7.4 Run `npm run lint` and expect PASS.
 - [x] 7.5 Run `npm run test` and expect all tests to pass.

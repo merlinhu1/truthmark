@@ -37,11 +37,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-structure": {
@@ -68,11 +68,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-document": {
@@ -107,11 +107,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-realize": {
@@ -134,11 +134,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-preview": {
@@ -165,11 +165,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-check": {
@@ -196,11 +196,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     },
     "truthmark-portal": {
@@ -223,11 +223,11 @@
         }
       ],
       "adapterModes": {
-        ".agents": "adapter",
-        ".opencode": "adapter",
-        ".claude": "expanded-adapter",
-        ".github": "expanded-adapter",
-        ".gemini": "expanded-adapter"
+        ".agents": "native-package",
+        ".opencode": "native-package",
+        ".claude": "native-package",
+        ".github": "native-package",
+        ".gemini": "native-package"
       }
     }
   }

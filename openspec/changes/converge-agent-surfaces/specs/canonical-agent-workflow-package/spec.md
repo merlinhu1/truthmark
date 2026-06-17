@@ -2,7 +2,7 @@
 
 ### Requirement: Canonical workflow package
 
-Truthmark SHALL generate a repository-local canonical agent workflow package under `.truthmark/agent/` that contains the authoritative workflow skill/prompt content for every supported Truthmark workflow.
+Truthmark SHALL generate a repository-local canonical agent workflow package under `.truthmark/agent/` that contains the canonical workflow package projection for every supported Truthmark workflow.
 
 #### Scenario: Canonical package is generated
 
@@ -11,33 +11,32 @@ Truthmark SHALL generate a repository-local canonical agent workflow package und
 - **AND** `.truthmark/agent/workflows/<workflow>/SKILL.md` exists for each supported workflow
 - **AND** workflow procedure/report/helper support files exist when that workflow exposes those sections
 
-#### Scenario: Canonical package owns workflow behavior
+#### Scenario: Canonical package records generated package modes
 
-- **WHEN** a generated host adapter references a Truthmark workflow
-- **THEN** the workflow behavior is defined by `.truthmark/agent/workflows/<workflow>/` files
-- **AND** adapter-only host files do not contain full workflow procedure or report template bodies
+- **WHEN** the manifest describes a workflow
+- **THEN** it records deterministic repository-relative paths and hashes for canonical package files
+- **AND** it records host skill directories as native package projections when they carry colocated resources
 
-### Requirement: Host adapter projections
+### Requirement: Host-native skill package projections
 
-Truthmark SHALL render host-specific files as adapters that reference canonical workflow package files instead of duplicating workflow procedure prose, except where an explicit expanded-adapter compatibility mode is selected.
+Truthmark SHALL render configured host skill directories as native generated skill packages when the host discovers and invokes skills from skill folders.
 
-#### Scenario: Adapter-only host surface
+#### Scenario: Native host skill package
 
-- **WHEN** a host is configured for adapter mode
-- **THEN** its generated skill, prompt, or command file names the canonical workflow files it expects the agent to read
-- **AND** the file states that the adapter is not the workflow source of truth
-- **AND** the file contains only host invocation, discovery, and handoff guidance
+- **WHEN** a host workflow is emitted under a skill directory such as `.agents/skills`, `.opencode/skills`, `.claude/skills`, `.github/skills`, or `.gemini/skills`
+- **THEN** the generated skill folder contains `SKILL.md`
+- **AND** the generated skill folder contains the workflow support files (`support/procedure.md`, `support/report-template.md`, subagent/lease guidance, helper metadata, and helper policy when applicable)
+- **AND** those files are generated from the canonical workflow renderer rather than maintained as independent source authority
 
-#### Scenario: Expanded-adapter host surface
+#### Scenario: Thin non-skill adapter surface
 
-- **WHEN** a host is configured for expanded-adapter compatibility mode
-- **THEN** its generated file MAY contain an inline workflow body
-- **AND** it MUST include machine-readable provenance identifying adapter mode, canonical source path, canonical content hash, and generated content hash
-- **AND** `truthmark check` can detect when the expanded body is stale relative to the canonical package
+- **WHEN** a host workflow is emitted as a prompt, command, managed instruction block, or other non-skill entrypoint
+- **THEN** the generated surface names the workflow entrypoint it expects the agent to use
+- **AND** it contains host invocation, discovery, or handoff guidance rather than full workflow procedure/report bodies
 
-### Requirement: Deterministic manifest and hashes
+### Requirement: Deterministic manifest and freshness checks
 
-Truthmark SHALL render deterministic manifest and adapter metadata so generated-surface freshness can be checked without relying on manual review of copied prompt bodies.
+Truthmark SHALL render deterministic manifest and generated-surface metadata so canonical and host-native package freshness can be checked without relying on manual review of copied prompt bodies.
 
 #### Scenario: Stable manifest content
 
@@ -49,50 +48,49 @@ Truthmark SHALL render deterministic manifest and adapter metadata so generated-
 
 - **WHEN** a canonical workflow package file changes
 - **THEN** the manifest hash for that package changes
-- **AND** any generated expanded adapter referencing the old hash is reported stale by generated-surface freshness checks
+- **AND** `truthmark check` reports generated-surface freshness diagnostics until generated files are refreshed
 
 ### Requirement: Generated-surface hygiene diagnostics
 
 Truthmark SHALL detect stale or unsafe generated-surface convergence states through existing validation paths without introducing hooks, CI blockers, or mandatory workflow preflight execution.
 
-#### Scenario: Adapter contains duplicated procedure prose
+#### Scenario: Host skill package file is missing
 
-- **WHEN** a host file is marked or inferred as adapter mode
-- **AND** it contains full workflow procedure/report body markers that belong in canonical files
-- **THEN** `truthmark check` reports a generated-surface diagnostic for unauthorized duplicated workflow prose
+- **WHEN** a generated host-native skill support file is absent from the checkout
+- **THEN** `truthmark check` reports a generated-surface diagnostic naming the missing file
 
-#### Scenario: Adapter references missing canonical file
+#### Scenario: Host skill package file is stale
 
-- **WHEN** a host adapter points at a canonical workflow package file that does not exist
-- **THEN** `truthmark check` reports a generated-surface diagnostic naming the adapter and missing canonical file
+- **WHEN** a generated host-native skill entrypoint or support file differs from the renderer output
+- **THEN** `truthmark check` reports a generated-surface freshness diagnostic naming the stale file
 
-#### Scenario: Expanded adapter is stale
+#### Scenario: Thin adapter contains duplicated procedure prose
 
-- **WHEN** an expanded adapter's recorded canonical hash does not match the current canonical package file
-- **THEN** `truthmark check` reports a generated-surface freshness diagnostic
+- **WHEN** a non-skill host adapter surface is intended to be thin
+- **AND** it contains full workflow procedure/report body markers that belong in package files
+- **THEN** tests or generated-surface diagnostics report unauthorized duplicated workflow prose
 
 ### Requirement: Preserve workflow behavior during convergence
 
-Truthmark SHALL preserve current workflow semantics while moving workflow authority into canonical package files.
+Truthmark SHALL preserve current workflow semantics while moving workflow authority into canonical renderers and generated package files.
 
 #### Scenario: Existing workflow renderer tests remain meaningful
 
-- **WHEN** workflow source renderers are refactored to write canonical packages
-- **THEN** tests assert the canonical package contains the workflow sections previously asserted in host skill bodies
-- **AND** adapter tests assert host-specific routing/provenance rather than copied workflow prose
+- **WHEN** workflow source renderers are refactored to write canonical and host-native packages
+- **THEN** tests assert those packages contain the workflow sections consumed by skill hosts
+- **AND** adapter tests assert host-specific routing/provenance rather than copied workflow prose where the surface is not a skill package
 
 #### Scenario: Direct repository-file fallback remains available
 
 - **WHEN** a host cannot use a live service, MCP server, or CLI command during an agent workflow
-- **THEN** the agent can still read committed canonical package files directly
+- **THEN** the agent can still read committed canonical and host-native package files directly
 - **AND** the workflow does not require network access or a running daemon
 
 ### Requirement: Optional future MCP prompt exposure
 
-Truthmark MAY later expose canonical workflow packages through MCP prompts, but the canonical repository-file package SHALL remain the primary durable fallback.
+Truthmark MAY later expose canonical workflow packages through MCP prompts, but committed repository-file packages SHALL remain the primary durable fallback.
 
 #### Scenario: MCP unavailable
 
 - **WHEN** no MCP server is configured or running
-- **THEN** generated host adapters still point to committed canonical package files
-- **AND** Truthmark workflows remain usable from the repository checkout
+- **THEN** generated host-native skill packages and thin prompt/command adapters remain usable from the repository checkout

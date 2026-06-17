@@ -8,12 +8,19 @@ truthmark-version: 2.3.0
 
 # Truthmark Structure
 
-This OpenCode file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
+Use this skill to design or repair Truthmark area structure.
 
-Canonical workflow files:
-- .truthmark/agent/workflows/truthmark-structure/SKILL.md
-- .truthmark/agent/workflows/truthmark-structure/support/procedure.md
-- .truthmark/agent/workflows/truthmark-structure/support/report-template.md
-- .truthmark/agent/workflows/truthmark-structure/support/subagents-and-leases.md
+Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
 
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect current docs and relevant code directly.
+- Define areas by product or behavior ownership, not by mechanical directory mirroring.
+- Do not edit functional code.
+- Read support/procedure.md before writing route or starter truth-doc changes.
+- Read support/report-template.md before the final report.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report
+- support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
