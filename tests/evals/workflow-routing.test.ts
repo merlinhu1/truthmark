@@ -53,7 +53,6 @@ const WORKFLOW_SKILL_PACKAGE_PATHS = (
 const WORKFLOW_CONTRACT_PATH_GROUPS = (
   id: TruthmarkWorkflowId,
 ): readonly (readonly string[])[] => [
-  WORKFLOW_SKILL_PACKAGE_PATHS(".truthmark/agent/workflows", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
@@ -321,7 +320,7 @@ describe("generated workflow surface conformance", () => {
     }
   });
 
-  it("keeps prompt and command adapters linked to canonical skill packages", () => {
+  it("keeps prompt and command adapters linked to host-native skill packages", () => {
     for (const id of TRUTHMARK_WORKFLOW_IDS) {
       const workflow = getTruthmarkWorkflow(id);
 
@@ -488,9 +487,9 @@ describe("generated workflow surface conformance", () => {
     for (const [id, expectedTerms] of Object.entries(
       writeWorkflowExpectations,
     )) {
-      const content = surfaces.get(`.truthmark/agent/workflows/${id}/SKILL.md`);
+      const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
 
-      expect(content, `${id} canonical skill is generated`).toBeDefined();
+      expect(content, `${id} Codex skill is generated`).toBeDefined();
       expect(content).toContain(
         "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       );
@@ -511,7 +510,7 @@ describe("generated workflow surface conformance", () => {
 
   it("labels non-main progressive-disclosure files as conditional", () => {
     const syncSkill = surfaces.get(
-      ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+      ".agents/skills/truthmark-sync/SKILL.md",
     );
 
     expect(syncSkill).toContain(

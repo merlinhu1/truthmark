@@ -21,13 +21,13 @@ describe("installed workflow contract", () => {
 
       const agents = await repo.readFile("AGENTS.md");
       const structureSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-structure/SKILL.md",
+        ".agents/skills/truthmark-structure/SKILL.md",
       );
       const syncSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+        ".agents/skills/truthmark-sync/SKILL.md",
       );
       const documentSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-document/SKILL.md",
+        ".agents/skills/truthmark-document/SKILL.md",
       );
       const syncCodexAdapter = await repo.readFile(
         ".agents/skills/truthmark-sync/SKILL.md",
@@ -39,16 +39,16 @@ describe("installed workflow contract", () => {
         ".claude/skills/truthmark-sync/SKILL.md",
       );
       const realizeSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-realize/SKILL.md",
+        ".agents/skills/truthmark-realize/SKILL.md",
       );
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
       const previewSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
+        ".agents/skills/truthmark-preview/SKILL.md",
       );
       const checkSkill = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-check/SKILL.md",
+        ".agents/skills/truthmark-check/SKILL.md",
       );
       const routeAuditorAgent = await repo.readFile(
         ".codex/agents/truth-route-auditor.toml",

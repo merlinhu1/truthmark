@@ -49,7 +49,7 @@ Update truth when:
 
 - installed workflow boundaries or report shapes change
 - generated instruction block or skill content changes
-- canonical agent package, adapter mode, or generated-surface freshness diagnostics change
+- host-native package mode, prompt/command adapter mode, or generated-surface freshness diagnostics change
 - workflow version markers or sync classification behavior changes
 - ownership reviews, evidence checklists, product-truth decisions, lane classification behavior, decision/rationale preservation reviews, or truth-doc split behavior changes
 

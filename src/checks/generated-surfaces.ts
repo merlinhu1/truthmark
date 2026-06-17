@@ -38,31 +38,6 @@ const normalizeGeneratedSurfaceContent = (content: string | null): string | null
   return content.replace(/\r\n/g, "\n").replace(/\n$/u, "");
 };
 
-const fullWorkflowBodyMarkers = [
-  "Parent workflow:",
-  "Evidence checklist:",
-  "Report completion in this shape:",
-];
-
-const adapterCanonicalReferences = (content: string): string[] => {
-  return Array.from(
-    content.matchAll(/\.truthmark\/agent\/[^\s)]+/gu),
-    (match) => match[0].replace(/[",.;:]$/u, ""),
-  );
-};
-
-const adapterMode = (content: string): "adapter" | null => {
-  if (
-    content.includes("not the workflow source of truth") ||
-    content.includes("not source of truth")
-  ) {
-    return "adapter";
-  }
-
-  return null;
-};
-
-
 const versionMarkers = (content: string): string[] => {
   const markers: string[] = [];
   const patterns = [
@@ -100,36 +75,6 @@ export const checkGeneratedSurfaces = async (
       });
       continue;
     }
-
-    const mode = adapterMode(content);
-    if (mode === "adapter") {
-      const duplicatedMarker = fullWorkflowBodyMarkers.find((marker) =>
-        content.includes(marker),
-      );
-
-      if (duplicatedMarker !== undefined) {
-        diagnostics.push({
-          category: "generated-surface",
-          severity: "review",
-          message: `Generated adapter ${surface.path} duplicates workflow body marker "${duplicatedMarker}"; rerun truthmark init.`,
-          file: surface.path,
-        });
-      }
-    }
-
-    if (mode !== null) {
-      for (const canonicalReference of adapterCanonicalReferences(content)) {
-        if ((await readOptionalFile(rootDir, canonicalReference)) === null) {
-          diagnostics.push({
-            category: "generated-surface",
-            severity: "review",
-            message: `Generated adapter ${surface.path} references missing canonical package file ${canonicalReference}; rerun truthmark init.`,
-            file: surface.path,
-          });
-        }
-      }
-    }
-
 
     const comparableContent = normalizeGeneratedSurfaceContent(
       surface.managedBlock ? extractManagedBlock(content) : content,

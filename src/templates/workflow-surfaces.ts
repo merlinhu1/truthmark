@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import { stringify } from "yaml";
 
 import type { TruthmarkConfig } from "../config/schema.js";
@@ -57,7 +55,6 @@ import {
 import { TRUTHMARK_WRITE_WORKER_REPORT_FIELDS } from "../agents/write-lease.js";
 import {
   getTruthmarkWorkflow,
-  TRUTHMARK_WORKFLOW_IDS,
   type TruthmarkWorkflowHelper,
   type TruthmarkWorkflowId,
   type TruthmarkReadOnlySubagentId,
@@ -204,9 +201,6 @@ export const TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH =
 export const TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH =
   ".github/agents/truth-doc-writer.md";
 
-export const TRUTHMARK_AGENT_MANIFEST_PATH = ".truthmark/agent/manifest.json";
-export const TRUTHMARK_AGENT_WORKFLOWS_ROOT = ".truthmark/agent/workflows";
-
 const renderGeminiCommand = (description: string, prompt: string): string => {
   const promptWithArgs = `${prompt.trimEnd()}\nUser focus or arguments: {{args}}`;
 
@@ -278,9 +272,6 @@ const renderTomlStringArray = (values: string[]): string => {
   return `[${values.map(renderTomlString).join(", ")}]`;
 };
 
-const sha256 = (content: string): string =>
-  createHash("sha256").update(content).digest("hex");
-
 type TruthmarkSkillPackageHost =
   | "codex"
   | "opencode"
@@ -291,23 +282,6 @@ type TruthmarkSkillPackageHost =
 type TruthmarkSkillPackageFile = {
   path: string;
   content: string;
-};
-
-export type TruthmarkAdapterMode = "adapter" | "native-package";
-
-type TruthmarkCanonicalManifestFile = {
-  path: string;
-  sha256: string;
-};
-
-type TruthmarkCanonicalManifestWorkflow = {
-  id: TruthmarkWorkflowId;
-  displayName: string;
-  description: string;
-  canonicalRoot: string;
-  entrypoint: TruthmarkCanonicalManifestFile;
-  supportFiles: TruthmarkCanonicalManifestFile[];
-  adapterModes: Record<string, TruthmarkAdapterMode>;
 };
 
 type WorkflowPackageDefinition = {
@@ -848,134 +822,6 @@ export const renderTruthmarkSkillPackage = ({
   }
 
   return files;
-};
-
-export const canonicalWorkflowRoot = (
-  workflowId: TruthmarkWorkflowId,
-): string => `${TRUTHMARK_AGENT_WORKFLOWS_ROOT}/${workflowId}`;
-
-export const canonicalWorkflowSkillPath = (
-  workflowId: TruthmarkWorkflowId,
-): string => `${canonicalWorkflowRoot(workflowId)}/SKILL.md`;
-
-const manifestFileFor = (
-  file: TruthmarkSkillPackageFile,
-): TruthmarkCanonicalManifestFile => ({
-  path: file.path,
-  sha256: sha256(`${file.path}\n${file.content}`),
-});
-
-export const renderCanonicalAgentPackage = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): TruthmarkSkillPackageFile[] => {
-  const packageFiles = TRUTHMARK_WORKFLOW_IDS.flatMap((workflowId) =>
-    renderTruthmarkSkillPackage({
-      skillPath: canonicalWorkflowSkillPath(workflowId),
-      workflowId,
-      host: "codex",
-      config,
-    }),
-  );
-  const manifestWorkflows = TRUTHMARK_WORKFLOW_IDS.map((workflowId) => {
-    const workflowRoot = canonicalWorkflowRoot(workflowId);
-    const files = packageFiles.filter((file) =>
-      file.path.startsWith(`${workflowRoot}/`),
-    );
-    const workflow = getTruthmarkWorkflow(workflowId);
-    const entrypoint = files.find(
-      (file) => file.path === canonicalWorkflowSkillPath(workflowId),
-    );
-
-    if (entrypoint === undefined) {
-      throw new Error(`Missing canonical entrypoint for ${workflowId}`);
-    }
-
-    return [
-      workflowId,
-      {
-        id: workflowId,
-        displayName: workflow.displayName,
-        description: workflow.description,
-        canonicalRoot: workflowRoot,
-        entrypoint: manifestFileFor(entrypoint),
-        supportFiles: files
-          .filter((file) => file.path !== entrypoint.path)
-          .map(manifestFileFor)
-          .sort((left, right) => left.path.localeCompare(right.path)),
-        adapterModes: {
-          ".agents": "native-package",
-          ".opencode": "native-package",
-          ".claude": "native-package",
-          ".github": "native-package",
-          ".gemini": "native-package",
-        },
-      } satisfies TruthmarkCanonicalManifestWorkflow,
-    ] as const;
-  });
-  const manifest = {
-    schemaVersion: "truthmark-agent-package/v1",
-    truthmarkVersion: TRUTHMARK_VERSION,
-    generatedBy: "truthmark init",
-    manifestPath: TRUTHMARK_AGENT_MANIFEST_PATH,
-    packageRoot: ".truthmark/agent",
-    workflows: Object.fromEntries(manifestWorkflows),
-  };
-
-  return [
-    ...packageFiles,
-    {
-      path: TRUTHMARK_AGENT_MANIFEST_PATH,
-      content: `${JSON.stringify(manifest, null, 2)}\n`,
-    },
-  ].sort((left, right) => left.path.localeCompare(right.path));
-};
-
-export const renderTruthmarkSkillAdapterPackage = ({
-  skillPath,
-  workflowId,
-  host,
-}: {
-  skillPath: string;
-  workflowId: TruthmarkWorkflowId;
-  host: TruthmarkSkillPackageHost;
-}): TruthmarkSkillPackageFile[] => {
-  const workflow = getTruthmarkWorkflow(workflowId);
-  const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
-  const canonicalFiles = [
-    canonicalWorkflowSkillPath(workflowId),
-    ...workflowSupportFiles(workflowId).map(
-      (supportFile) => `${canonicalWorkflowRoot(workflowId)}/${supportFile}`,
-    ),
-  ];
-  const hostLabel =
-    host === "opencode"
-      ? "OpenCode"
-      : host === "codex"
-        ? "Codex/OpenAI agents"
-        : host;
-
-  return [
-    {
-      path: skillPath,
-      content: `---
-name: ${workflowId}
-description: ${workflow.description}
-argument-hint: ${definition.argumentHint}
-user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
----
-
-# ${definition.title}
-
-This ${hostLabel} file is an adapter for the canonical Truthmark workflow package. It is not the workflow source of truth.
-
-Canonical workflow files:
-${canonicalFiles.map((file) => `- ${file}`).join("\n")}
-
-Read the canonical SKILL.md first, then read support files only as that skill directs. Preserve this adapter as host invocation and discovery guidance only.
-`,
-    },
-  ];
 };
 
 const normalizeOpenCodePermissionPath = (path: string): string => {

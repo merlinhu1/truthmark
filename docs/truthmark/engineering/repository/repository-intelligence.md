@@ -26,7 +26,7 @@ WorkflowState is the workflow-scoped advisory handoff for helper readiness, a wo
 
 Evidence validation checks repository containment, referenced file or glob existence, line spans, and `sha256:` content hashes. Evidence `symbol` metadata, when present in an evidence YAML block, is non-normative metadata and is not validated through TypeScript-specific parsing.
 
-Generated-surface diagnostics are checkout-derived repository intelligence for the installed workflow runtime. `truthmark check` compares rendered generated surfaces with committed files, validates `.truthmark/agent/` canonical package freshness through deterministic repository-relative hashes, and reports missing or stale generated host-native skill package files so skill-directory resources stay colocated with `SKILL.md`.
+Generated-surface diagnostics are checkout-derived repository intelligence for the installed workflow runtime. `truthmark check` compares rendered generated surfaces with committed files and reports missing or stale generated host-native skill package files so skill-directory resources stay colocated with `SKILL.md`.
 
 ## Product Truth Links
 
@@ -40,7 +40,7 @@ Generated-surface diagnostics are checkout-derived repository intelligence for t
 - Decision (2026-06-16): `workflow status` is status/debug/handoff only; Truthmark does not expose a `workflow instructions` command and generated workflows must remain usable from committed repository files without live CLI preflight.
 - Decision (2026-06-17): WorkflowState presents optional helper output as an advisory workflow card with affected files, likely route owners, suggested truth docs, open questions, skipped helper status, `reviewChecklist`, and `evidencePrompts`; it does not expose retired enforcement-shaped names such as `checks.required`, the old gate alias, or `requiredEvidence`.
 - Decision (2026-06-16): Sync Intent is a transient report-section checklist exposed through workflow/report surfaces and WorkflowState report sections; it is not repository-intelligence state or a persisted plan.
-- Decision (2026-06-17): Generated-surface freshness includes canonical agent package and adapter hygiene diagnostics; these diagnostics are review output and do not add hooks, live services, or mandatory workflow preflight execution.
+- Decision (2026-06-17): Generated-surface freshness includes host-native package diagnostics; these diagnostics are review output and do not add hooks, live services, duplicate workflow packages, or mandatory workflow preflight execution.
 
 ## Maintenance Notes
 

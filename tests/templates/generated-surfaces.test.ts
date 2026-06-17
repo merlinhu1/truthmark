@@ -4,7 +4,6 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
-import { TRUTHMARK_WORKFLOW_IDS } from "../../src/agents/workflow-manifest.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
 
@@ -20,8 +19,10 @@ const portalPaths = [
 ];
 
 const readOnlyProcedurePaths = [
-  ".truthmark/agent/workflows/truthmark-check/support/procedure.md",
-  ".truthmark/agent/workflows/truthmark-preview/support/procedure.md",
+  ".agents/skills/truthmark-check/support/procedure.md",
+  ".agents/skills/truthmark-preview/support/procedure.md",
+  ".opencode/skills/truthmark-check/support/procedure.md",
+  ".opencode/skills/truthmark-preview/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
   ".claude/skills/truthmark-preview/support/procedure.md",
   ".gemini/skills/truthmark-check/support/procedure.md",
@@ -31,7 +32,8 @@ const readOnlyProcedurePaths = [
 ];
 
 const syncProcedurePaths = [
-  ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+  ".agents/skills/truthmark-sync/support/procedure.md",
+  ".opencode/skills/truthmark-sync/support/procedure.md",
   ".claude/skills/truthmark-sync/support/procedure.md",
   ".gemini/skills/truthmark-sync/support/procedure.md",
   ".github/skills/truthmark-sync/support/procedure.md",
@@ -120,17 +122,11 @@ describe("Truthmark Portal generated surfaces", () => {
     const syncSkill =
       byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
     const syncProcedure =
-      byPath.get(
-        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
-      ) ?? "";
+      byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
     const syncHelperManifest =
-      byPath.get(
-        ".truthmark/agent/workflows/truthmark-sync/helper-manifest.yml",
-      ) ?? "";
+      byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
     const syncHelperPolicy =
-      byPath.get(
-        ".truthmark/agent/workflows/truthmark-sync/support/helper-policy.md",
-      ) ?? "";
+      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ?? "";
     const previewSkill =
       byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
 
@@ -155,30 +151,14 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(previewSkill).not.toContain("CLI is unavailable");
   });
 
-  it("renders canonical agent package manifest and workflow entrypoints", () => {
+  it("does not render unused repo-local agent package copies", () => {
     const config = createDefaultConfig();
-    const byPath = new Map(
-      renderGeneratedSurfaces(config).map((surface) => [
-        surface.path,
-        surface.content,
-      ]),
-    );
-    const manifest = JSON.parse(
-      byPath.get(".truthmark/agent/manifest.json") ?? "{}",
-    );
+    const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
 
-    expect(manifest.schemaVersion).toBe("truthmark-agent-package/v1");
-    expect(manifest.packageRoot).toBe(".truthmark/agent");
-    expect(JSON.stringify(manifest)).not.toContain(process.cwd());
-
-    for (const workflowId of TRUTHMARK_WORKFLOW_IDS) {
-      const canonicalPath = `.truthmark/agent/workflows/${workflowId}/SKILL.md`;
-      const workflow = manifest.workflows[workflowId];
-
-      expect(byPath.has(canonicalPath), canonicalPath).toBe(true);
-      expect(workflow.entrypoint.path).toBe(canonicalPath);
-      expect(workflow.entrypoint.sha256).toMatch(/^[a-f0-9]{64}$/u);
-    }
+    expect(paths.some((path) => path.startsWith(".truthmark/agent/"))).toBe(false);
+    expect(paths).toContain(".agents/skills/truthmark-sync/SKILL.md");
+    expect(paths).toContain(".agents/skills/truthmark-sync/support/procedure.md");
+    expect(paths).toContain(".opencode/skills/truthmark-sync/support/procedure.md");
   });
 
   it("renders host skill packages with colocated native resources", () => {
@@ -232,12 +212,9 @@ describe("Truthmark Portal generated surfaces", () => {
     }
 
     const portalSkill =
-      byPath.get(".truthmark/agent/workflows/truthmark-portal/SKILL.md") ??
-      "";
+      byPath.get(".agents/skills/truthmark-portal/SKILL.md") ?? "";
     const portalProcedure =
-      byPath.get(
-        ".truthmark/agent/workflows/truthmark-portal/support/procedure.md",
-      ) ?? "";
+      byPath.get(".agents/skills/truthmark-portal/support/procedure.md") ?? "";
     const copilotPrompt =
       byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
     const geminiCommand =

@@ -2,22 +2,22 @@
 
 Truthmark currently renders near-identical workflow instructions into several host-specific surfaces (`.agents`, `.claude`, `.github`, `.gemini`, `.opencode`, and top-level instruction files). Even though those files are generated, duplicated workflow prose makes review noisy and lets stale prompt wording drift across hosts. At the same time, agent skill hosts package and progressively disclose resources from the skill directory, so adapter-only skill folders can drop native resource packaging.
 
-This change converges generated surfaces around one canonical renderer and repository-local Truthmark agent package while preserving host-native skill packages. Host skill directories remain complete generated packages with colocated support files; prompt/command surfaces stay thin adapters that route to the host-local or canonical package entrypoint.
+This change converges generated surfaces around one source renderer while preserving host-native skill packages. Host skill directories remain complete generated packages with colocated support files; prompt/command surfaces stay thin adapters that route to the host-local package entrypoint. It deliberately does not emit a separate `.truthmark/agent/` workflow package when no host surface consumes it.
 
 ## What Changes
 
-- Introduce a canonical Truthmark agent package under `.truthmark/agent/` containing workflow skill entrypoints, procedures, report templates, shared guidance, helper metadata, and a manifest.
+- Use source renderers as the workflow authority; do not generate duplicate `.truthmark/agent/` workflow copies unless a host surface actually consumes them.
 - Render configured host skill directories as native generated packages with colocated procedure, report-template, helper, and lease resources.
 - Keep GitHub Copilot prompt files, Gemini command files, top-level managed blocks, and other non-skill surfaces as thin adapters/discovery surfaces.
-- Add freshness and hygiene checks that detect stale canonical package files and stale or missing generated host skill package files.
-- Preserve current workflow behavior while moving source authority from copied host prompts to canonical renderers and validated generated packages.
+- Add freshness and hygiene checks that detect stale or missing generated host skill package files.
+- Preserve current workflow behavior while moving source authority from copied host prompts to source renderers and validated generated packages.
 - Do not add hooks, CI blockers, mandatory live MCP servers, or mandatory CLI execution for normal agent workflows.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `canonical-agent-workflow-package`: Defines the canonical repository-local package for Truthmark workflow prompts/skills and the native-package/freshness contract for generated host surfaces.
+- `native-agent-workflow-packages`: Defines the native-package/freshness contract for generated host surfaces.
 
 ### Modified Capabilities
 

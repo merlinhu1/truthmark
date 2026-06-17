@@ -187,7 +187,7 @@ describe("runInit", () => {
         ".agents/skills/truthmark-structure/SKILL.md",
       );
       const structureReportTemplate = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-structure/support/report-template.md",
+        ".agents/skills/truthmark-structure/support/report-template.md",
       );
       const structureSkillMetadata = await repo.readFile(
         ".agents/skills/truthmark-structure/agents/openai.yaml",
@@ -199,10 +199,10 @@ describe("runInit", () => {
         ".agents/skills/truthmark-document/SKILL.md",
       );
       const documentSubagents = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-document/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-document/support/subagents-and-leases.md",
       );
       const documentReportTemplate = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-document/support/report-template.md",
+        ".agents/skills/truthmark-document/support/report-template.md",
       );
       const documentSkillMetadata = await repo.readFile(
         ".agents/skills/truthmark-document/agents/openai.yaml",
@@ -211,25 +211,25 @@ describe("runInit", () => {
         ".opencode/skills/truthmark-document/SKILL.md",
       );
       const documentHelperManifest = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-document/helper-manifest.yml",
+        ".agents/skills/truthmark-document/helper-manifest.yml",
       );
       const syncSkill = await repo.readFile(
         ".agents/skills/truthmark-sync/SKILL.md",
       );
       const syncHelperManifest = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/helper-manifest.yml",
+        ".agents/skills/truthmark-sync/helper-manifest.yml",
       );
       const syncHelperPolicy = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/support/helper-policy.md",
+        ".agents/skills/truthmark-sync/support/helper-policy.md",
       );
       const syncProcedure = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+        ".agents/skills/truthmark-sync/support/procedure.md",
       );
       const syncSubagents = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-sync/support/subagents-and-leases.md",
       );
       const syncReportTemplate = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-sync/support/report-template.md",
+        ".agents/skills/truthmark-sync/support/report-template.md",
       );
       const syncSkillMetadata = await repo.readFile(
         ".agents/skills/truthmark-sync/agents/openai.yaml",
@@ -256,10 +256,10 @@ describe("runInit", () => {
         ".agents/skills/truthmark-preview/SKILL.md",
       );
       const previewSubagents = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-preview/support/subagents-and-leases.md",
+        ".agents/skills/truthmark-preview/support/subagents-and-leases.md",
       );
       const previewReportTemplate = await repo.readFile(
-        ".truthmark/agent/workflows/truthmark-preview/support/report-template.md",
+        ".agents/skills/truthmark-preview/support/report-template.md",
       );
       const previewSkillMetadata = await repo.readFile(
         ".agents/skills/truthmark-preview/agents/openai.yaml",
@@ -938,30 +938,26 @@ ignore: []
     }
   });
 
-  it("writes canonical agent package files", async () => {
+  it("writes host-native skill package files without repo-local workflow copies", async () => {
     const repo = await createTempRepo();
 
     try {
       await runConfig(repo.rootDir, {});
       await runInit(repo.rootDir);
 
-      const manifest = JSON.parse(
-        await repo.readFile(".truthmark/agent/manifest.json"),
-      );
+      await expect(
+        repo.readFile(".truthmark/agent/manifest.json"),
+      ).rejects.toThrow();
 
-      expect(manifest.schemaVersion).toBe("truthmark-agent-package/v1");
-      expect(manifest.packageRoot).toBe(".truthmark/agent");
-      expect(JSON.stringify(manifest)).not.toContain(repo.rootDir);
-
-      for (const workflowId of TRUTHMARK_WORKFLOW_IDS) {
-        const skillPath = `.truthmark/agent/workflows/${workflowId}/SKILL.md`;
+      for (const workflowId of TRUTHMARK_WORKFLOW_IDS.filter(
+        (id) => id !== "truthmark-portal",
+      )) {
+        const skillPath = `.agents/skills/${workflowId}/SKILL.md`;
         const skill = await repo.readFile(skillPath);
 
         expect(skill).toContain(`name: ${workflowId}`);
-        expect(manifest.workflows[workflowId].entrypoint.path).toBe(skillPath);
-        expect(manifest.workflows[workflowId].entrypoint.sha256).toMatch(
-          /^[a-f0-9]{64}$/u,
-        );
+        expect(skill).toContain("support/procedure.md");
+        expect(skill).not.toContain("not the workflow source of truth");
       }
 
       const agentsSkill = await repo.readFile(

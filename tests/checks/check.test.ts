@@ -89,31 +89,6 @@ describe("runCheck", () => {
     }
   });
 
-  it("reports missing canonical agent package files", async () => {
-    const repo = await createTempRepo();
-
-    try {
-      await initializeRepo(repo.rootDir);
-      await fs.rm(
-        `${repo.rootDir}/.truthmark/agent/workflows/truthmark-sync/SKILL.md`,
-      );
-
-      const result = await runCheck(repo.rootDir);
-
-      expect(
-        result.diagnostics.some(
-          (diagnostic) =>
-            diagnostic.category === "generated-surface" &&
-            diagnostic.file ===
-              ".truthmark/agent/workflows/truthmark-sync/SKILL.md" &&
-            diagnostic.message.includes("is missing"),
-        ),
-      ).toBe(true);
-    } finally {
-      await repo.cleanup();
-    }
-  });
-
   it("reports missing host skill package support files", async () => {
     const repo = await createTempRepo();
 

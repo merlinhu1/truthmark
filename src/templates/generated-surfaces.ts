@@ -33,7 +33,6 @@ import {
   renderTruthmarkGeminiSyncCommand,
   renderTruthmarkSkillPackage,
   renderTruthmarkCheckSkillMetadata,
-  renderCanonicalAgentPackage,
   renderTruthmarkOpenCodeClaimVerifierAgent,
   renderTruthmarkOpenCodeDocReviewerAgent,
   renderTruthmarkOpenCodeDocWriterAgent,
@@ -581,7 +580,6 @@ export const renderGeneratedSurfaces = (
   block = renderAgentsBlock(config),
 ): GeneratedSurface[] => {
   const files = [
-    ...renderCanonicalAgentPackage(config),
     ...instructionBlockFiles(config.instructionTargets, block),
     ...config.platforms.flatMap((platform) =>
       filesForPlatform(platform, config, block),
