@@ -171,7 +171,7 @@ Die konkreten Dateien hängen von `.truthmark/config.yml` ab, aber die Installat
 
 Die meisten Repositories brauchen nach der Initialisierung einen Aufräumschritt.
 
-Das Standard-Scaffold beginnt mit einem breiten Bereich `repository`. Echte Repositories brauchen meist präziseres Routing.
+Das Standard-Scaffold beginnt mit einem vorläufigen breiten Bootstrap-Bereich `repository`. Bevor echter Code normal synchronisiert wird, teile diese Bootstrap-Route in präzises Routing auf.
 
 Bitte deinen Agenten, die breite Route in tatsächliche Produkt-, Service-, Domänen- oder Ownership-Bereiche aufzuteilen:
 
@@ -538,7 +538,7 @@ Eine Route sagt dem Agenten:
 - wann Truth aktualisiert werden sollte
 - welche Art von Truth-Dokument beteiligt ist
 
-Das Standard-Scaffold beginnt breit. Bestehende Repositories sollten die Standardroute meist in echte Ownership-Bereiche aufteilen.
+Das Standard-Scaffold beginnt mit einer vorläufigen breiten Bootstrap-Route, damit ein neues Repository routbar ist. Wenn echter Code berührt wird, teile diese Bootstrap-Route vor normalem Truth Sync in echte Produkt-, Service-, Domänen- oder Ownership-Bereiche auf; mache den Bootstrap-Handoff nicht zu einem Catch-all-Verhaltensdokument.
 
 Beispiel:
 

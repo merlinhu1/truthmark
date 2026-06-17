@@ -1,9 +1,13 @@
+<!-- truthmark:adapter-mode=expanded-adapter -->
+<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-preview/SKILL.md -->
+<!-- truthmark:canonical-sha256=288d3ab94630d80e0d13985d6074239b32b683acd19482b90e7517609a6d971d -->
+<!-- truthmark:generated-sha256=7c2ec749c8a282f5c6d1b1d26b734c59ee67a4bc34752cfa64a5eee4cbbbabe8 -->
 ---
 name: truthmark-preview
 description: Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.
 argument-hint: Optional requested outcome, code area, doc path, or routing question
 user-invocable: true
-truthmark-version: 2.2.1
+truthmark-version: 2.3.0
 ---
 
 # Truthmark Preview
@@ -23,6 +27,6 @@ Quick procedure:
 - Hand off to the selected workflow after user approval.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output

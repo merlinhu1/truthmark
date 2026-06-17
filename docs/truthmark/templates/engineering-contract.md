@@ -65,7 +65,7 @@ Distinguish validation errors, dependency failures, authorization failures, and 
 
 <!--
 State backward/forward compatibility guarantees, tolerated inputs, deprecation rules, and breaking-change triggers.
-Include compatibility tests or review gates that protect the contract.
+Include compatibility tests or review questions that protect the contract.
 -->
 
 {{compatibility_rules}}

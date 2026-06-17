@@ -40,7 +40,7 @@ export type TruthmarkWorkflowManifestEntry = {
   positiveTriggers: string[];
   negativeTriggers: string[];
   forbiddenAdjacency: string[];
-  requiredGates: string[];
+  reviewQuestions: string[];
   allowedWrites: string[];
   reportSections: string[];
   subagents?: TruthmarkReadOnlySubagentId[];
@@ -54,7 +54,9 @@ const VALIDATE_SYNC_REPORT_HELPER = {
   id: "validate-sync-report",
   optional: true,
   runner: TRUTHMARK_CLI_RUNNER,
-  command: { argv: ["truthmark", "validate", "sync-report", "<report-file>", "--json"] },
+  command: {
+    argv: ["truthmark", "validate", "sync-report", "<report-file>", "--json"],
+  },
   inputs: ["sync report file"],
   output: "json",
   writes: false,
@@ -66,7 +68,15 @@ const VALIDATE_DOCUMENT_REPORT_HELPER = {
   id: "validate-document-report",
   optional: true,
   runner: TRUTHMARK_CLI_RUNNER,
-  command: { argv: ["truthmark", "validate", "document-report", "<report-file>", "--json"] },
+  command: {
+    argv: [
+      "truthmark",
+      "validate",
+      "document-report",
+      "<report-file>",
+      "--json",
+    ],
+  },
   inputs: ["document report file"],
   output: "json",
   writes: false,
@@ -121,13 +131,13 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "doc-first implementation belongs to Truth Realize",
       "manual topology design belongs to Truth Structure",
     ],
-    requiredGates: [
-      "topology quality",
+    reviewQuestions: [
+      "topology review",
       "truth-doc ownership",
       "lane classification",
       "Decision/Rationale preservation",
       "truth-doc shape repair when restructuring",
-      "Evidence Gate",
+      "Evidence checklist",
     ],
     allowedWrites: ["canonical truth docs", "truth routing files"],
     reportSections: [
@@ -169,13 +179,13 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "must not implement functional code",
       "must not patch mixed-owner docs as shape repair",
     ],
-    requiredGates: [
+    reviewQuestions: [
       "truth-doc ownership",
       "lane classification",
       "Decision/Rationale preservation",
       "lane split and relationship repair",
       "truth-doc shape repair when restructuring",
-      "Evidence Gate",
+      "Evidence checklist",
     ],
     allowedWrites: ["truth routing files", "starter canonical truth docs"],
     reportSections: [
@@ -214,11 +224,11 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "must not edit functional code",
       "must not repair mixed-owner docs in place",
     ],
-    requiredGates: [
+    reviewQuestions: [
       "truth-doc ownership",
       "lane classification",
       "Decision/Rationale preservation",
-      "Evidence Gate",
+      "Evidence checklist",
       "truth-doc shape repair when restructuring",
     ],
     allowedWrites: ["canonical truth docs", "truth routing files"],
@@ -244,7 +254,8 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     description:
       "Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.",
     shortDescription: "Realize truth docs into code",
-    defaultPrompt: "Use $truthmark-realize to realize the updated truth docs into code.",
+    defaultPrompt:
+      "Use $truthmark-realize to realize the updated truth docs into code.",
     allowImplicitInvocation: false,
     positiveTriggers: ["explicitly realize truth docs into functional code"],
     negativeTriggers: [
@@ -257,7 +268,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "must not edit truth docs except through follow-up Truth Sync",
       "must not edit truth routing except through follow-up Truth Sync",
     ],
-    requiredGates: ["lane classification", "truth-doc ownership"],
+    reviewQuestions: ["lane classification", "truth-doc ownership"],
     allowedWrites: ["functional code"],
     reportSections: ["Truth docs used", "Code updated", "Verification"],
   },
@@ -277,7 +288,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     ],
     negativeTriggers: [
       "normal validation or final correctness audit",
-      "automatic preflight or finish-time gate",
+      "automatic preflight or finish-time review",
       "request to mutate truth docs, routing, or code",
     ],
     forbiddenAdjacency: [
@@ -285,10 +296,10 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "must not run Truth Sync automatically",
       "must not authorize later edits or issue write leases",
     ],
-    requiredGates: [
+    reviewQuestions: [
       "read-only boundary",
       "intended-not-authorized handoff",
-      "blocking ambiguity disclosure",
+      "manual handoff questions",
     ],
     allowedWrites: ["none by default"],
     reportSections: [
@@ -299,7 +310,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "Expected write classes",
       "Expected target files",
       "Suggested subagent use",
-      "Blocking ambiguity",
+      "Manual handoff questions",
       "Handoff",
     ],
     subagents: ["truth_route_auditor"],
@@ -325,7 +336,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "must not replace ordinary verification",
       "must not silently rewrite docs",
     ],
-    requiredGates: ["audit Evidence Gate"],
+    reviewQuestions: ["audit evidence checklist"],
     allowedWrites: ["none by default"],
     reportSections: [
       "Files reviewed",
@@ -365,11 +376,11 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
       "machine-readable agent context",
     ],
     forbiddenAdjacency: [
-      "must not run as a completion gate",
+      "must not run automatically at completion",
       "must not replace Truth Sync, Truth Check, Truth Document, Truth Realize, or Truth Structure",
       "must not write outside the fixed Portal output directory",
     ],
-    requiredGates: [
+    reviewQuestions: [
       "manual-only invocation",
       "Portal output containment",
       "Markdown canonical statement",

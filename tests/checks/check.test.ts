@@ -89,6 +89,115 @@ describe("runCheck", () => {
     }
   });
 
+  it("reports missing canonical agent package files", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await fs.rm(
+        `${repo.rootDir}/.truthmark/agent/workflows/truthmark-sync/SKILL.md`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".truthmark/agent/workflows/truthmark-sync/SKILL.md" &&
+            diagnostic.message.includes("is missing"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports adapter-only workflow body duplication", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".agents/skills/truthmark-sync/SKILL.md",
+        `${await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")}
+Parent workflow:
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md" &&
+            diagnostic.message.includes("duplicates workflow body marker"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports adapter references to missing canonical files", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".agents/skills/truthmark-sync/SKILL.md",
+        `${await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")}
+- .truthmark/agent/workflows/truthmark-sync/missing.md
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md" &&
+            diagnostic.message.includes("references missing canonical package file"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports stale expanded adapter canonical hashes", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+        `${await repo.readFile(
+          ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+        )}
+Changed canonical content.
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".claude/skills/truthmark-sync/support/procedure.md" &&
+            diagnostic.message.includes("has stale canonical hash"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("returns links diagnostics for broken internal markdown links", async () => {
     const repo = await createTempRepo();
 
@@ -96,8 +205,8 @@ describe("runCheck", () => {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Missing](docs/missing.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Missing](docs/missing.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -127,8 +236,8 @@ describe("runCheck", () => {
         "utf8",
       );
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -138,7 +247,7 @@ describe("runCheck", () => {
           (diagnostic) =>
             diagnostic.category === "links" &&
             diagnostic.file ===
-              "docs/truthmark/engineering/repository/overview.md",
+              "docs/truthmark/engineering/repository/bootstrap-routing.md",
         ),
       ).toBe(true);
     } finally {
@@ -169,8 +278,8 @@ describe("runCheck", () => {
         path.resolve(repo.rootDir, "docs", "linked-outside.md"),
       );
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Outside](docs/linked-outside.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Outside](docs/linked-outside.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -180,7 +289,7 @@ describe("runCheck", () => {
           (diagnostic) =>
             diagnostic.category === "links" &&
             diagnostic.file ===
-              "docs/truthmark/engineering/repository/overview.md",
+              "docs/truthmark/engineering/repository/bootstrap-routing.md",
         ),
       ).toBe(true);
     } finally {

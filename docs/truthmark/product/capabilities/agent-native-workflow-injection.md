@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: product-capability
-last_reviewed: 2026-06-16
+last_reviewed: 2026-06-17
 ---
 
 # Agent-Native Workflow Injection
@@ -20,19 +20,20 @@ This capability covers generated host-native workflow files, managed instruction
 
 ## Current Product Behavior
 
-Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gemini CLI workflow files generated from the source templates and manifest. Agents may use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` and `truthmark impact --base <ref> --json` as optional compact helpers for applicability, write boundaries, routing, affected tests, and diagnostics; these helpers do not provide file-content packets. Truth Sync status can authorize indexed canonical truth docs and truth routing files broadly so agents can correct stale repository truth beyond the initially affected documents when supported by checkout evidence.
+Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gemini CLI workflow files generated from the source templates and manifest. Agents may use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` and `truthmark impact --base <ref> --json` as optional compact helpers for advisory workflow cards, affected files, likely route owners, suggested truth docs, review checklists, evidence prompts, open questions, skipped helper status, and diagnostics; these helpers do not provide file-content packets and are not sources of truth. Truth Sync status separates impacted `primaryTruthDocs`, `candidateStaleTruthDocs`, and `routeFiles` so agents start with affected route owners while preserving evidence-backed stale repository-truth correction beyond the initially affected documents.
 
 ## Acceptance Criteria
 
 - Each configured platform receives host-native workflow entrypoints.
 - Generated surfaces preserve workflow boundaries and direct-checkout fallback.
-- Agents can classify product-lane, engineering-lane, both-lane, or ambiguous work before writing truth docs.
+- Routine code-first Truth Sync defaults internal implementation changes to engineering truth unless a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed.
+- Workflows that create, structure, or audit truth docs still preserve product and engineering truth as separate lanes.
 
 ## Product Decisions
 
 - Decision (2026-06-14): Workflow surfaces remain committed repository files; optional CLI helpers validate after relevant work and do not orchestrate workflow execution.
 - Decision (2026-06-15): Agent-facing repository-intelligence handoff uses workflow status plus impact instead of a standalone ContextPack command.
-- Decision (2026-06-16): Truth Sync write authorization is broad across indexed repository truth surfaces; affected docs remain a focus signal rather than a write ceiling.
+- Decision (2026-06-17): Optional workflow status presents helper output as advisory workflow cards with review checklists, evidence prompts, open questions, and skipped-helper status; direct checkout inspection remains the fallback when helpers are skipped, unavailable, or unnecessary.
 
 ## Engineering Realization Links
 

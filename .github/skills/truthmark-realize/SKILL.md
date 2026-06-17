@@ -1,9 +1,13 @@
+<!-- truthmark:adapter-mode=expanded-adapter -->
+<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-realize/SKILL.md -->
+<!-- truthmark:canonical-sha256=5c805371df048f8e8da1e56e9835b8d07753d60a9d25a67a73dad6a19ad7d8dd -->
+<!-- truthmark:generated-sha256=4ac52d30f5108fa673f8ca4187eefd79831bdd2af4503ebb694d059177fecbb7 -->
 ---
 name: truthmark-realize
 description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: 2.2.1
+truthmark-version: 2.3.0
 ---
 
 # Truthmark Realize
@@ -23,5 +27,5 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report

@@ -50,11 +50,11 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain("Align existing docs to that template");
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
-    expect(skill).toContain("Truth-doc ownership gate");
+    expect(skill).toContain("Truth-doc ownership review");
     expect(skill).toContain(
       "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership",
     );
-    expect(skill).toContain("Decision/Rationale preservation gate");
+    expect(skill).toContain("Decision/Rationale preservation review");
     expect(skill).toContain(
       "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
     );
@@ -62,10 +62,10 @@ describe("renderTruthStructureSkillBody", () => {
       "preserve each current decision and rationale in the correct product or engineering lane owner",
     );
     expect(skill).toContain(
-      "if ownership of a decision or rationale is unclear, block with manual-review files",
+      "if ownership of a decision or rationale is unclear, stop with manual-review files",
     );
     expect(skill).toContain("Truth docs split");
-    expect(skill).toContain("Truth-doc shape repair gate");
+    expect(skill).toContain("Truth-doc shape repair review");
     expect(skill).toContain(
       "Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.",
     );
@@ -104,12 +104,12 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain(
       "If an existing canonical doc has wrong-lane sections, split or move them into the correct product or engineering lane.",
     );
-    expect(skill).toContain("Evidence Gate");
-    expect(skill).toContain("apply the Evidence Gate before finishing");
+    expect(skill).toContain("Evidence checklist");
+    expect(skill).toContain("apply the evidence checklist before finishing");
     expect(skill).toContain(
       "support ownership/behavior claims with topology or primary checkout evidence",
     );
-    expect(skill).toContain("remove, narrow, or block unsupported claims");
+    expect(skill).toContain("remove, narrow, or record unsupported or stale claims for manual handoff");
     expect(skill).toContain(
       "date active decisions inline when added or changed",
     );
@@ -140,7 +140,7 @@ describe("renderTruthStructureSkillBody", () => {
     expect(skill).toContain("inspect the named code area");
     expect(skill).toContain("infer bounded product or behavior ownership");
     expect(skill).toContain(
-      "choose the owning route when ownership is clear; otherwise propose the route and block for review",
+      "choose the owning route when ownership is clear; otherwise propose the route and stop for manual review",
     );
     expect(skill).toContain(
       "create starter truth docs only where current truth is missing",

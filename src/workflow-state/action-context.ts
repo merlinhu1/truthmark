@@ -20,20 +20,38 @@ const helperCommandsFor = (
   }));
 
 const evidenceFor = (manifestEntry: TruthmarkWorkflowManifestEntry): string[] =>
-  manifestEntry.requiredGates.filter((gate) => /evidence|ownership|containment/iu.test(gate));
+  manifestEntry.reviewQuestions.filter((question) =>
+    /evidence|ownership|containment/iu.test(question),
+  );
 
 const baseContext = (
   manifestEntry: TruthmarkWorkflowManifestEntry,
   mode: WorkflowActionMode,
   allowedWritePaths: string[],
+  routeFiles: string[],
+  primaryTruthDocs: string[],
+  candidateStaleTruthDocs: string[],
   forbiddenWritePaths: string[],
   writeLeaseRequired: boolean,
 ): WorkflowActionContext => ({
   mode,
   allowedWritePaths: uniqueSorted(allowedWritePaths),
+  routeFiles: uniqueSorted(routeFiles),
+  primaryTruthDocs: uniqueSorted(primaryTruthDocs),
+  candidateStaleTruthDocs: uniqueSorted(candidateStaleTruthDocs),
   forbiddenWritePaths: uniqueSorted(forbiddenWritePaths),
-  stopConditions: [...manifestEntry.negativeTriggers, ...manifestEntry.forbiddenAdjacency],
-  requiredEvidence: evidenceFor(manifestEntry),
+  stopConditions: [
+    ...manifestEntry.negativeTriggers,
+    ...manifestEntry.forbiddenAdjacency,
+  ],
+  evidencePrompts: uniqueSorted([
+    ...evidenceFor(manifestEntry),
+    ...(candidateStaleTruthDocs.length > 0
+      ? [
+          "Record checkout evidence and the reason before touching a candidate stale truth doc outside primaryTruthDocs.",
+        ]
+      : []),
+  ]),
   helperValidationCommands: helperCommandsFor(manifestEntry),
   writeLeaseRequired,
 });
@@ -42,15 +60,32 @@ export const buildWorkflowActionContext = (
   manifestEntry: TruthmarkWorkflowManifestEntry,
   data: WorkflowActionContextData = {},
 ): WorkflowActionContext => {
-  if (manifestEntry.id === "truthmark-preview" || manifestEntry.id === "truthmark-check") {
-    return baseContext(manifestEntry, "read-only", [], [], false);
+  if (
+    manifestEntry.id === "truthmark-preview" ||
+    manifestEntry.id === "truthmark-check"
+  ) {
+    return baseContext(manifestEntry, "read-only", [], [], [], [], [], false);
   }
 
-  if (manifestEntry.id === "truthmark-sync" || manifestEntry.id === "truthmark-document") {
+  if (
+    manifestEntry.id === "truthmark-sync" ||
+    manifestEntry.id === "truthmark-document"
+  ) {
+    const routeFiles = data.routeFiles ?? [];
+    const primaryTruthDocs = data.primaryTruthDocs ?? data.truthDocs ?? [];
+    const candidateStaleTruthDocs = data.candidateStaleTruthDocs ?? [];
     return baseContext(
       manifestEntry,
       "truth-doc-write",
-      [...(data.routeIndexPath ? [data.routeIndexPath] : []), ...(data.routeFiles ?? []), ...(data.truthDocs ?? [])],
+      [
+        ...(data.routeIndexPath ? [data.routeIndexPath] : []),
+        ...routeFiles,
+        ...primaryTruthDocs,
+        ...candidateStaleTruthDocs,
+      ],
+      routeFiles,
+      primaryTruthDocs,
+      candidateStaleTruthDocs,
       [],
       true,
     );
@@ -65,6 +100,9 @@ export const buildWorkflowActionContext = (
         ...(data.routeFiles ?? []),
         ...(data.starterTruthDocs ?? []),
       ],
+      data.routeFiles ?? [],
+      data.starterTruthDocs ?? [],
+      [],
       [],
       true,
     );
@@ -75,6 +113,9 @@ export const buildWorkflowActionContext = (
       manifestEntry,
       "code-write",
       data.codeWritePaths ?? [],
+      data.routeFiles ?? [],
+      data.truthDocs ?? [],
+      [],
       [
         ...(data.routeIndexPath ? [data.routeIndexPath] : []),
         ...(data.routeFiles ?? []),
@@ -88,7 +129,12 @@ export const buildWorkflowActionContext = (
   return baseContext(
     manifestEntry,
     "portal-write",
-    data.portalEnabled && data.portalOutputPath ? [`${data.portalOutputPath}/**`] : [],
+    data.portalEnabled && data.portalOutputPath
+      ? [`${data.portalOutputPath}/**`]
+      : [],
+    [],
+    [],
+    [],
     [],
     false,
   );

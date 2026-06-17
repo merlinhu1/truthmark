@@ -84,24 +84,34 @@ describe("workflow state contract", () => {
       schemaVersion: "truthmark-workflow/v0",
       workflow: "truthmark-check",
       applicability: {
-        state: "applicable",
+        state: "ready",
         reasons: [],
       },
       actionContext: {
         mode: "read-only",
         allowedWritePaths: [],
+        routeFiles: [],
+        primaryTruthDocs: [],
+        candidateStaleTruthDocs: [],
         forbiddenWritePaths: [],
         stopConditions: [],
-        requiredEvidence: [],
+        evidencePrompts: [],
         helperValidationCommands: [],
         writeLeaseRequired: false,
+      },
+      workflowCard: {
+        affectedFiles: [],
+        likelyRouteOwners: [],
+        suggestedTruthDocs: [],
+        openQuestions: [],
+        skippedHelperStatus: [],
       },
       changedFiles: [],
       affectedRoutes: [],
       targetTruthDocs: [],
       diagnostics: [],
       checks: {
-        required: [],
+        reviewChecklist: [],
         recommended: [],
         helpers: [],
         affectedTests: [],
@@ -240,9 +250,21 @@ describe("buildWorkflowState", () => {
     expect(state.actionContext.allowedWritePaths).toEqual(
       expect.arrayContaining(state.targetTruthDocs),
     );
-    expect(state.checks.required).toEqual(
-      expect.arrayContaining(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].requiredGates),
+    expect(state.checks.reviewChecklist).toEqual(
+      expect.arrayContaining(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reviewQuestions),
     );
+    expect(state.actionContext.evidencePrompts.join("\n")).toContain("Evidence checklist");
+    expect(state.workflowCard.affectedFiles).toContain("src/math.ts");
+    expect(state.workflowCard.likelyRouteOwners.length).toBeGreaterThan(0);
+    expect(state.workflowCard.suggestedTruthDocs).toEqual(state.targetTruthDocs);
+    expect(state.workflowCard.skippedHelperStatus).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ helper: "validate-sync-report", status: "skipped" }),
+      ]),
+    );
+    expect(JSON.stringify(state)).not.toContain(["required", "Gates"].join(""));
+    expect(JSON.stringify(state)).not.toContain("requiredEvidence");
+    expect(JSON.stringify(state)).not.toContain("reviewQuestions");
     expect(state.checks.helpers.map((helper) => helper.id)).toContain("validate-sync-report");
     expect(JSON.stringify((state.checks as { affectedTests?: string[] }).affectedTests ?? [])).toContain(
       "tests/math.test.ts",
@@ -268,10 +290,10 @@ describe("buildWorkflowState", () => {
     expect(state.affectedRoutes.map((route) => route.sourcePath)).toEqual([
       "docs/truthmark/routes/areas/repository.md",
     ]);
-    expect(state.targetTruthDocs).toEqual(["docs/truthmark/engineering/repository/overview.md"]);
+    expect(state.targetTruthDocs).toEqual(["docs/truthmark/engineering/repository/bootstrap-routing.md"]);
     expect(state.actionContext.allowedWritePaths).toEqual(
       expect.arrayContaining([
-        "docs/truthmark/engineering/repository/overview.md",
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
         "docs/truthmark/engineering/unrelated.md",
         "docs/truthmark/routes/areas.md",
         "docs/truthmark/routes/areas/repository.md",
@@ -316,8 +338,8 @@ describe("buildWorkflowState", () => {
 
     const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
 
-    expect(state.applicability.state).toBe("blocked");
-    expect(state.applicability.reasons.join("\n")).toContain("truthmark-sync requires --base");
+    expect(state.applicability.state).toBe("needs_manual_review");
+    expect(state.applicability.reasons.join("\n")).toContain("Choose a comparison base with --base <ref>");
     expect(state.actionContext.allowedWritePaths).toEqual([]);
     expect(state.changedFiles).toEqual([]);
     expect(state.targetTruthDocs).toEqual([]);
@@ -331,7 +353,7 @@ describe("buildWorkflowState", () => {
 
     const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
 
-    expect(["blocked", "not_applicable"]).toContain(state.applicability.state);
+    expect(["needs_manual_review", "not_applicable"]).toContain(state.applicability.state);
     expect(state.applicability.reasons.join("\n")).toContain("Missing .truthmark/config.yml");
     expect(state.actionContext.allowedWritePaths).toEqual([]);
   });
@@ -356,7 +378,7 @@ describe("buildWorkflowState", () => {
       base: "main",
     });
 
-    expect(["ambiguous", "blocked"]).toContain(state.applicability.state);
+    expect(["needs_routing_review", "needs_manual_review"]).toContain(state.applicability.state);
     expect(state.targetTruthDocs).toEqual([]);
     expect(state.nextSteps.join("\n")).toMatch(/Truth Structure|route repair/u);
   });

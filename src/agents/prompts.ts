@@ -27,7 +27,7 @@ const renderTruthRealizeLaneClassificationRuleBlock = (
       `read product truth under ${productTruthRoot} as requirements: product promises, boundaries, rationale, decisions, and success criteria`,
       `read engineering truth under ${engineeringTruthRoot} as implementation context: source-backed current realization, contracts, architecture, workflows, operations, or tests`,
       "do not write truth docs or truth routing; leave route YAML, realized_by, and realizes updates to Truth Structure, Truth Document, or finish-time Truth Sync",
-      "ambiguous lane ownership should block before code changes or route to Truth Structure",
+      "ambiguous lane ownership should stop before code changes or route to Truth Structure",
     ].join("\n"),
   );
 };
@@ -51,7 +51,7 @@ ${renderTruthRealizeLaneClassificationRuleBlock(config)}
 - use product truth as requirements and engineering truth as current implementation context; do not redefine product truth inside engineering docs
 ${renderTruthDocOwnershipGateSection(
     "source truth docs before writing code",
-    "if a source truth doc is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence, block before writing code and recommend Truth Structure or Truth Document",
+    "if a source truth doc is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence, stop before writing code and recommend Truth Structure or Truth Document",
   )}
 - write functional code only
 - do not edit truth docs or truth routing

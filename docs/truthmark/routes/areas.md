@@ -84,6 +84,7 @@ Code surface:
 - src/templates/agents-block.ts
 - src/templates/workflow-surfaces.ts
 - src/templates/generated-surfaces.ts
+- src/checks/generated-surfaces.ts
 - src/truth/\*\*
 - src/version.ts
 - tests/evals/\*\*

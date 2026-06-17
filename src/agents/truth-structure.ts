@@ -123,7 +123,7 @@ Use when a user asks to onboard a new code area into Truthmark, a new package, c
 Do:
 - inspect the named code area
 - infer bounded product or behavior ownership
-- choose the owning route when ownership is clear; otherwise propose the route and block for review
+- choose the owning route when ownership is clear; otherwise propose the route and stop for manual review
 - create or update the child route entry or file
 - create starter truth docs only where current truth is missing
 - report the initial truth boundary
@@ -139,7 +139,7 @@ Inspect controllers, routes, handlers, services, packages, tests, existing truth
 When topology pressure exists, repair structure before creating or extending truth docs.
 ${renderTruthDocOwnershipGateSection(
   "candidate route owners and current truth docs",
-  "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split and reroute into bounded truth docs when safe; otherwise block with manual-review files",
+  "if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split and reroute into bounded truth docs when safe; otherwise stop with manual-review files",
 )}
 ${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 Topology pressure signals:

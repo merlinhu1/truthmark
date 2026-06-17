@@ -49,7 +49,7 @@ describe("buildRepoIndex", () => {
     );
     expect(result.files.map((file) => file.path)).toContain("src/math.ts");
     expect(result.docs.map((doc) => doc.path)).toContain(
-      "docs/truthmark/engineering/repository/overview.md",
+      "docs/truthmark/engineering/repository/bootstrap-routing.md",
     );
     expect(result.files).toContainEqual(
       expect.objectContaining({ path: "AGENTS.md", kind: "generated" }),
@@ -69,9 +69,15 @@ describe("buildRepoIndex", () => {
   it("keeps polyglot source files visible as workflow files without semantic distinctions", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
-    await repo.writeFile("cmd/server/main.go", "package main\n\nfunc main() {}\n");
+    await repo.writeFile(
+      "cmd/server/main.go",
+      "package main\n\nfunc main() {}\n",
+    );
     await repo.writeFile("scripts/task.py", "print('task')\n");
-    await repo.writeFile("src/App/Program.cs", "namespace App;\n\npublic class Program {}\n");
+    await repo.writeFile(
+      "src/App/Program.cs",
+      "namespace App;\n\npublic class Program {}\n",
+    );
     await repo.writeFile(
       "src/main/java/com/example/App.java",
       "package com.example;\n\npublic class App {}\n",
@@ -83,12 +89,36 @@ describe("buildRepoIndex", () => {
 
     expect(result.files).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ path: "cmd/server/main.go", kind: "source", language: null }),
-        expect.objectContaining({ path: "scripts/task.py", kind: "source", language: null }),
-        expect.objectContaining({ path: "src/App/Program.cs", kind: "source", language: null }),
-        expect.objectContaining({ path: "src/main/java/com/example/App.java", kind: "source", language: null }),
-        expect.objectContaining({ path: "src/index.ts", kind: "source", language: "typescript" }),
-        expect.objectContaining({ path: "src/index.js", kind: "source", language: "javascript" }),
+        expect.objectContaining({
+          path: "cmd/server/main.go",
+          kind: "source",
+          language: null,
+        }),
+        expect.objectContaining({
+          path: "scripts/task.py",
+          kind: "source",
+          language: null,
+        }),
+        expect.objectContaining({
+          path: "src/App/Program.cs",
+          kind: "source",
+          language: null,
+        }),
+        expect.objectContaining({
+          path: "src/main/java/com/example/App.java",
+          kind: "source",
+          language: null,
+        }),
+        expect.objectContaining({
+          path: "src/index.ts",
+          kind: "source",
+          language: "typescript",
+        }),
+        expect.objectContaining({
+          path: "src/index.js",
+          kind: "source",
+          language: "javascript",
+        }),
       ]),
     );
     expect(result).not.toHaveProperty("imports");

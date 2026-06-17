@@ -1,9 +1,13 @@
+<!-- truthmark:adapter-mode=expanded-adapter -->
+<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-document/SKILL.md -->
+<!-- truthmark:canonical-sha256=e504ba6e14813248c87f7907fe0fc38a13f79b8cb52541c1c38aafe8ae517446 -->
+<!-- truthmark:generated-sha256=0db43f24c6799f52be166f2a4b2040985d651c5eda60cedfcbb74983e5fba83d -->
 ---
 name: truthmark-document
 description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: 2.2.1
+truthmark-version: 2.3.0
 ---
 
 # Truthmark Document
@@ -24,7 +28,7 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
 - helper-manifest.yml — read only when invoking helper validators or validating helper registration

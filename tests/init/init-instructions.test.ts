@@ -80,7 +80,7 @@ ignore: []
       expect(agents).toContain("Delegation is host-owned");
       expect(agents).not.toContain(".truthmark/local.yml");
       expect(agents).not.toContain("truth_sync.sync_agent");
-      expect(agents).toContain("later functional changes reopen the gate");
+      expect(agents).toContain("later functional changes need a fresh Sync review");
       expect(agents).not.toContain("Explicit invocation:");
     } finally {
       await repo.cleanup();

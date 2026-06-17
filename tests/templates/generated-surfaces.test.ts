@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
+import { TRUTHMARK_WORKFLOW_IDS } from "../../src/agents/workflow-manifest.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
 
@@ -19,16 +20,21 @@ const portalPaths = [
 ];
 
 const readOnlyProcedurePaths = [
-  ".agents/skills/truthmark-check/support/procedure.md",
-  ".agents/skills/truthmark-preview/support/procedure.md",
+  ".truthmark/agent/workflows/truthmark-check/support/procedure.md",
+  ".truthmark/agent/workflows/truthmark-preview/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
   ".claude/skills/truthmark-preview/support/procedure.md",
   ".gemini/skills/truthmark-check/support/procedure.md",
   ".gemini/skills/truthmark-preview/support/procedure.md",
   ".github/skills/truthmark-check/support/procedure.md",
   ".github/skills/truthmark-preview/support/procedure.md",
-  ".opencode/skills/truthmark-check/support/procedure.md",
-  ".opencode/skills/truthmark-preview/support/procedure.md",
+];
+
+const syncProcedurePaths = [
+  ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+  ".claude/skills/truthmark-sync/support/procedure.md",
+  ".gemini/skills/truthmark-sync/support/procedure.md",
+  ".github/skills/truthmark-sync/support/procedure.md",
 ];
 
 const staleWriteAuthorizingLaneText =
@@ -44,6 +50,29 @@ describe("Truthmark Portal generated surfaces", () => {
       );
       expect(content, procedurePath).toContain(
         "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
+      );
+    }
+  });
+
+  it("keeps checked-in Sync procedures on the cheap product-truth decision", () => {
+    for (const procedurePath of syncProcedurePaths) {
+      const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
+
+      expect(content, procedurePath).toContain("Product truth decision");
+      expect(content, procedurePath).toContain(
+        "ask whether a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed",
+      );
+      expect(content, procedurePath).toContain(
+        "if no, default to engineering truth under docs/truthmark/engineering for internal implementation changes",
+      );
+      expect(content, procedurePath).toContain(
+        "Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.",
+      );
+      expect(content, procedurePath).not.toContain(
+        staleWriteAuthorizingLaneText,
+      );
+      expect(content, procedurePath).not.toContain(
+        "classify lane impact as product-lane, engineering-lane, both-lane, or ambiguous before writing",
       );
     }
   });
@@ -91,21 +120,34 @@ describe("Truthmark Portal generated surfaces", () => {
     const syncSkill =
       byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
     const syncProcedure =
-      byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
+      byPath.get(
+        ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+      ) ?? "";
     const syncHelperManifest =
-      byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
+      byPath.get(
+        ".truthmark/agent/workflows/truthmark-sync/helper-manifest.yml",
+      ) ?? "";
     const syncHelperPolicy =
-      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ??
-      "";
+      byPath.get(
+        ".truthmark/agent/workflows/truthmark-sync/support/helper-policy.md",
+      ) ?? "";
     const previewSkill =
       byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
 
-    expect(syncSkill).toContain("Quick procedure:");
     expect(syncSkill).toContain(
-      "direct checkout inspection is the canonical path",
+      "not the workflow source of truth",
     );
     expect(syncSkill).toContain(
-      "Read support/procedure.md before editing truth docs.",
+      ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+    );
+    expect(syncSkill).not.toContain("Parent workflow:");
+    expect(syncSkill).not.toContain("Evidence checklist:");
+    expect(syncSkill).not.toContain("Report completion in this shape:");
+    expect(syncSkill).toContain(
+      ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+    );
+    expect(byPath.get(".opencode/skills/truthmark-sync/SKILL.md")).toContain(
+      ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
     );
     expect(syncProcedure).toContain("Code verification is parent-owned");
     expect(syncProcedure).toContain(
@@ -117,8 +159,57 @@ describe("Truthmark Portal generated surfaces", () => {
       "Optional helper CLI commands may collect deterministic checkout facts",
     );
     expect(syncHelperPolicy).toContain("truthmark validate ... --json");
-    expect(previewSkill).toContain("Truth Preview is read-only");
+    expect(previewSkill).toContain(
+      ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
+    );
     expect(previewSkill).not.toContain("CLI is unavailable");
+  });
+
+  it("renders canonical agent package manifest and workflow entrypoints", () => {
+    const config = createDefaultConfig();
+    const byPath = new Map(
+      renderGeneratedSurfaces(config).map((surface) => [
+        surface.path,
+        surface.content,
+      ]),
+    );
+    const manifest = JSON.parse(
+      byPath.get(".truthmark/agent/manifest.json") ?? "{}",
+    );
+
+    expect(manifest.schemaVersion).toBe("truthmark-agent-package/v1");
+    expect(manifest.packageRoot).toBe(".truthmark/agent");
+    expect(JSON.stringify(manifest)).not.toContain(process.cwd());
+
+    for (const workflowId of TRUTHMARK_WORKFLOW_IDS) {
+      const canonicalPath = `.truthmark/agent/workflows/${workflowId}/SKILL.md`;
+      const workflow = manifest.workflows[workflowId];
+
+      expect(byPath.has(canonicalPath), canonicalPath).toBe(true);
+      expect(workflow.entrypoint.path).toBe(canonicalPath);
+      expect(workflow.entrypoint.sha256).toMatch(/^[a-f0-9]{64}$/u);
+    }
+  });
+
+  it("marks expanded compatibility packages with provenance", () => {
+    const config = createDefaultConfig();
+    const byPath = new Map(
+      renderGeneratedSurfaces(config).map((surface) => [
+        surface.path,
+        surface.content,
+      ]),
+    );
+    const claudeProcedure =
+      byPath.get(".claude/skills/truthmark-sync/support/procedure.md") ?? "";
+
+    expect(claudeProcedure).toContain(
+      "truthmark:adapter-mode=expanded-adapter",
+    );
+    expect(claudeProcedure).toContain(
+      "truthmark:canonical=.truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+    );
+    expect(claudeProcedure).toMatch(/truthmark:canonical-sha256=[a-f0-9]{64}/u);
+    expect(claudeProcedure).toMatch(/truthmark:generated-sha256=[a-f0-9]{64}/u);
   });
 
   it("omits Portal surfaces and AGENTS wording when disabled", () => {
@@ -150,9 +241,12 @@ describe("Truthmark Portal generated surfaces", () => {
     }
 
     const portalSkill =
-      byPath.get(".agents/skills/truthmark-portal/SKILL.md") ?? "";
+      byPath.get(".truthmark/agent/workflows/truthmark-portal/SKILL.md") ??
+      "";
     const portalProcedure =
-      byPath.get(".agents/skills/truthmark-portal/support/procedure.md") ?? "";
+      byPath.get(
+        ".truthmark/agent/workflows/truthmark-portal/support/procedure.md",
+      ) ?? "";
     const copilotPrompt =
       byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
     const geminiCommand =

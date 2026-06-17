@@ -9,10 +9,10 @@ import type { RouteMapRoute } from "../repo-index/types.js";
 export type WorkflowStateSchemaVersion = "truthmark-workflow/v0";
 
 export type WorkflowApplicabilityState =
-  | "applicable"
+  | "ready"
   | "not_applicable"
-  | "blocked"
-  | "ambiguous";
+  | "needs_manual_review"
+  | "needs_routing_review";
 
 export type WorkflowActionMode =
   | "read-only"
@@ -31,9 +31,12 @@ export type WorkflowHelperValidationCommand = {
 export type WorkflowActionContext = {
   mode: WorkflowActionMode;
   allowedWritePaths: string[];
+  routeFiles: string[];
+  primaryTruthDocs: string[];
+  candidateStaleTruthDocs: string[];
   forbiddenWritePaths: string[];
   stopConditions: string[];
-  requiredEvidence: string[];
+  evidencePrompts: string[];
   helperValidationCommands: WorkflowHelperValidationCommand[];
   writeLeaseRequired: boolean;
 };
@@ -44,10 +47,24 @@ export type WorkflowApplicability = {
 };
 
 export type WorkflowStateChecks = {
-  required: string[];
+  reviewChecklist: string[];
   recommended: string[];
   helpers: WorkflowHelperValidationCommand[];
   affectedTests: string[];
+};
+
+export type WorkflowSkippedHelperStatus = {
+  helper: string;
+  status: "skipped";
+  reason: string;
+};
+
+export type WorkflowAdvisoryCard = {
+  affectedFiles: string[];
+  likelyRouteOwners: string[];
+  suggestedTruthDocs: string[];
+  openQuestions: string[];
+  skippedHelperStatus: WorkflowSkippedHelperStatus[];
 };
 
 export type WorkflowState = {
@@ -55,6 +72,7 @@ export type WorkflowState = {
   workflow: TruthmarkWorkflowId;
   applicability: WorkflowApplicability;
   actionContext: WorkflowActionContext;
+  workflowCard: WorkflowAdvisoryCard;
   changedFiles: ImpactFile[];
   affectedRoutes: ImpactRoute[];
   targetTruthDocs: string[];
@@ -74,6 +92,8 @@ export type WorkflowActionContextData = {
   routeFiles?: string[];
   truthRoot?: string;
   truthDocs?: string[];
+  primaryTruthDocs?: string[];
+  candidateStaleTruthDocs?: string[];
   starterTruthDocs?: string[];
   codeWritePaths?: string[];
   portalEnabled?: boolean;

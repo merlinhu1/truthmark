@@ -49,15 +49,15 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("When creating or updating a truth doc");
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
-    expect(skill).toContain("Truth-doc ownership gate");
+    expect(skill).toContain("Truth-doc ownership review");
     expect(skill).toContain(
       "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners",
     );
     expect(skill).toContain(
-      "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason",
+      "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason",
     );
     expect(skill).toContain(
-      "Decision/Rationale preservation gate",
+      "Decision/Rationale preservation review",
     );
     expect(skill).toContain(
       "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
@@ -66,9 +66,9 @@ describe("renderTruthDocumentSkillBody", () => {
       "preserve each current decision and rationale in the correct product or engineering lane owner",
     );
     expect(skill).toContain(
-      "if ownership of a decision or rationale is unclear, block with manual-review files",
+      "if ownership of a decision or rationale is unclear, stop with manual-review files",
     );
-    expect(skill).toContain("Truth-doc shape repair gate");
+    expect(skill).toContain("Truth-doc shape repair review");
     expect(skill).toContain(
       "Truth Document may restructure only truth docs for the implemented behavior being documented.",
     );
@@ -87,14 +87,14 @@ describe("renderTruthDocumentSkillBody", () => {
       "run Truth Structure first when routing repair is safe and in scope",
     );
     expect(skill).toContain(
-      "block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary",
+      "stop and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary",
     );
     expect(skill).toContain(
       "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
     expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
     expect(skill).toContain("repository-intelligence artifacts were not generated");
-    expect(skill).toContain("Evidence Gate");
+    expect(skill).toContain("Evidence checklist");
     expect(skill).toContain(
       "route-first: map the documented behavior to bounded route owners and primary canonical docs",
     );
@@ -102,7 +102,7 @@ describe("renderTruthDocumentSkillBody", () => {
       "support claims with primary checkout evidence",
     );
     expect(skill).toContain(
-      "remove, narrow, or block unsupported claims",
+      "remove, narrow, or record unsupported claims for manual handoff",
     );
     expect(skill).toContain("Truth Document: completed");
     expect(skill).toContain("Implementation reviewed");

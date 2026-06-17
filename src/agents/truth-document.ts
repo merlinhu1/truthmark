@@ -132,7 +132,7 @@ ${renderLaneClassificationRuleBlock(config)}
 - may write canonical truth docs and ${config.truthmark.paths.routesIndex} or relevant child route files only
 - must not write functional code
 - when routing is missing, stale, broad, overloaded, catch-all, or cannot map the behavior to a bounded truth owner, run Truth Structure first when routing repair is safe and in scope
-- block and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
+- stop and recommend Truth Structure when routing repair is unsafe, ambiguous, or outside the task boundary
 - keep feature README.md files as indexes rather than truth-document targets
 - create or update bounded leaf truth docs when behavior does not fit an existing leaf doc
 - write product capability/boundary truth under ${config.truthmark.paths.productTruthRoot} when documenting product promise, boundary, rationale, or user/stakeholder value
@@ -143,7 +143,7 @@ ${renderLaneClassificationRuleBlock(config)}
 - preserve unrelated authored content
 ${renderTruthDocOwnershipGateSection(
     "the implemented behavior and candidate truth docs",
-    "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, run Truth Structure first when safe and in scope; otherwise block and recommend Truth Structure",
+    "if the target doc is broad, mixed-owner, index-like, or the documented behavior spans independent owners, run Truth Structure first when safe and in scope; otherwise stop and recommend Truth Structure",
   )}
 ${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
 ${renderRouteFirstEvidenceGateSection(
@@ -166,9 +166,9 @@ Helper status reporting:
 - Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
-- block on functional code, generated host surfaces, or unrelated diffs caused by document work
-- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and required report fields before accepting it
-- verify the final report records ownership review, structure requirement, restructure, routing update, or blocked reason when applicable`;
+- stop on functional code, generated host surfaces, or unrelated diffs caused by document work
+- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and expected report fields before accepting it
+- verify the final report records ownership review, structure requirement, restructure, routing update, or manual handoff reason when applicable`;
 };
 
 export const renderTruthDocumentSkillBody = (

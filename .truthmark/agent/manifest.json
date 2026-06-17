@@ -1,0 +1,234 @@
+{
+  "schemaVersion": "truthmark-agent-package/v1",
+  "truthmarkVersion": "2.3.0",
+  "generatedBy": "truthmark init",
+  "manifestPath": ".truthmark/agent/manifest.json",
+  "packageRoot": ".truthmark/agent",
+  "workflows": {
+    "truthmark-sync": {
+      "id": "truthmark-sync",
+      "displayName": "Truthmark Sync",
+      "description": "Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-sync",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+        "sha256": "88d55417bbb97d38b3aa269c93e29c86beb14f17ee4e643fa2e4ed2fdcb5cef8"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-sync/helper-manifest.yml",
+          "sha256": "bb72906d8e6a5ac77ba7b1b9ce4ae0f2ecbfe29e6c23aa2e7620ba72b49fcfd2"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-sync/support/helper-policy.md",
+          "sha256": "9503afcad24b9ae1554e9ec0c61f571c9f2675064ee967f33226d5d1a5654850"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-sync/support/procedure.md",
+          "sha256": "7c0ae62617106879324d710f5a77dbf4d654b50039e446ec56c6f0ffd59e7d6f"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-sync/support/report-template.md",
+          "sha256": "1bf545126771b65ebf39fb5209613846304cdc88bdad9ae8ae103ffd5f0aa676"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-sync/support/subagents-and-leases.md",
+          "sha256": "ff489d593b091b319a267e74c62132b370c4c126dfcbfdfbd51b83d8b18cdf3e"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-structure": {
+      "id": "truthmark-structure",
+      "displayName": "Truthmark Structure",
+      "description": "Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-structure",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-structure/SKILL.md",
+        "sha256": "335be170b1d903a659b192bfae69e5ae44d936fdd41831896c7890bac528b7e7"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-structure/support/procedure.md",
+          "sha256": "d90cab8a884c32c5a95913d5f521260439f8549fe1b7c686e71e0a55aee83d0e"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-structure/support/report-template.md",
+          "sha256": "bd9d807176f94175e89f33a9a7d5e639765a2d5210521f10e7750ff777d554fd"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-structure/support/subagents-and-leases.md",
+          "sha256": "c8bc1e503ccedc41a12dd7366b9b0c30062e8f08fc51c1f62e312d527968b1d4"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-document": {
+      "id": "truthmark-document",
+      "displayName": "Truthmark Document",
+      "description": "Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-document",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-document/SKILL.md",
+        "sha256": "e504ba6e14813248c87f7907fe0fc38a13f79b8cb52541c1c38aafe8ae517446"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-document/helper-manifest.yml",
+          "sha256": "c49bc60e5f8966fd3bac01f3237ef18231f91fbf6a6af1ccfbefcb033de0b648"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-document/support/helper-policy.md",
+          "sha256": "13114a47e46e3b48ced5368609b70224ce5ad5a3a3423f841d606f2bdd57f5f5"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-document/support/procedure.md",
+          "sha256": "c8c1d639280d9d6d7be58723f3e952fbc732cc53ebdb32b75462c6b57c948a3e"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-document/support/report-template.md",
+          "sha256": "783a397bc0a3139f77557fd6c373792a3557dca6e4dc6a75c52165bf7521df99"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-document/support/subagents-and-leases.md",
+          "sha256": "d6bc04054fe32be27f7fee64a646367527d997cbd239851636b623581aef4a50"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-realize": {
+      "id": "truthmark-realize",
+      "displayName": "Truthmark Realize",
+      "description": "Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-realize",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-realize/SKILL.md",
+        "sha256": "5c805371df048f8e8da1e56e9835b8d07753d60a9d25a67a73dad6a19ad7d8dd"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-realize/support/procedure.md",
+          "sha256": "280ffe7bb3ae5e1330a958ed8f7b6e92e82caab03de6c4fa5a2f68dcfcf9e9b3"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-realize/support/report-template.md",
+          "sha256": "3e041c9a28473bbda4be87042f717a34274ea25cc6305314b7b979b79ee555b8"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-preview": {
+      "id": "truthmark-preview",
+      "displayName": "Truthmark Preview",
+      "description": "Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-preview",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
+        "sha256": "288d3ab94630d80e0d13985d6074239b32b683acd19482b90e7517609a6d971d"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-preview/support/procedure.md",
+          "sha256": "c4749dd5afa0fc76d4f0d13be1f5a20aa4b7cfaa6e90f299db92eea5ac48f4a4"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-preview/support/report-template.md",
+          "sha256": "5e64ba09922322f5cb961e1beb4efa917d9f80179827d36891bc072d46ad3437"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-preview/support/subagents-and-leases.md",
+          "sha256": "b68019daf7964f8d132fb764ff1e92b98eaffff90a0f53a6a5baac46c1b4508c"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-check": {
+      "id": "truthmark-check",
+      "displayName": "Truthmark Check",
+      "description": "Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-check",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-check/SKILL.md",
+        "sha256": "f6ccb4c9276a0eac2b4b37a458092e5dad832c6b9369bc0c277058a2f1925361"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-check/support/procedure.md",
+          "sha256": "f567350191f7bce303e09590a257b22e20fa340d0cf890bb6b4d4563495d3942"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-check/support/report-template.md",
+          "sha256": "3238afccc6f085aabfb5c5704679a2c4a4a381e2d6a38cd314bbd3775dc77ba0"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-check/support/subagents-and-leases.md",
+          "sha256": "8ef3d25126cc550ec741c403f5da7f95a182827d67707b0e63bd6afe69a53305"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    },
+    "truthmark-portal": {
+      "id": "truthmark-portal",
+      "displayName": "Truthmark Portal",
+      "description": "Use when the user explicitly asks to generate, refresh, or update the Truthmark Portal static HTML site. Not for code change sync, route repair, truth validation/checking, documenting behavior, realizing docs into code, or machine-readable agent context.",
+      "canonicalRoot": ".truthmark/agent/workflows/truthmark-portal",
+      "entrypoint": {
+        "path": ".truthmark/agent/workflows/truthmark-portal/SKILL.md",
+        "sha256": "1611a52e530b32d00c4f5cf411a1aa19beef5b4de8b43a16dc3a5c4044fd7ecf"
+      },
+      "supportFiles": [
+        {
+          "path": ".truthmark/agent/workflows/truthmark-portal/support/procedure.md",
+          "sha256": "9cc76e90948eb389293718f3be35943032b06a896613ad8218f699fb46d2dfa1"
+        },
+        {
+          "path": ".truthmark/agent/workflows/truthmark-portal/support/report-template.md",
+          "sha256": "61611efed7742227e991c4fa7bfa14ba71d3cc75f69b555f70595dc75555ce1b"
+        }
+      ],
+      "adapterModes": {
+        ".agents": "adapter",
+        ".opencode": "adapter",
+        ".claude": "expanded-adapter",
+        ".github": "expanded-adapter",
+        ".gemini": "expanded-adapter"
+      }
+    }
+  }
+}

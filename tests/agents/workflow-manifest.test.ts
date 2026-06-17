@@ -54,7 +54,7 @@ describe("Truthmark workflow manifest", () => {
       expect(workflow.positiveTriggers.length).toBeGreaterThan(0);
       expect(workflow.negativeTriggers.length).toBeGreaterThan(0);
       expect(workflow.forbiddenAdjacency.length).toBeGreaterThan(0);
-      expect(workflow.requiredGates.length).toBeGreaterThan(0);
+      expect(workflow.reviewQuestions.length).toBeGreaterThan(0);
       expect(workflow.allowedWrites.length).toBeGreaterThan(0);
       expect(workflow.reportSections.length).toBeGreaterThan(0);
     }
@@ -148,7 +148,7 @@ describe("Truthmark workflow manifest", () => {
       "Expected write classes",
       "Expected target files",
       "Suggested subagent use",
-      "Blocking ambiguity",
+      "Manual handoff questions",
       "Handoff",
     ]);
   });

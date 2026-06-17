@@ -21,13 +21,16 @@ describe("installed workflow contract", () => {
 
       const agents = await repo.readFile("AGENTS.md");
       const structureSkill = await repo.readFile(
-        ".agents/skills/truthmark-structure/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-structure/SKILL.md",
       );
       const syncSkill = await repo.readFile(
-        ".agents/skills/truthmark-sync/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
       );
       const documentSkill = await repo.readFile(
-        ".agents/skills/truthmark-document/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-document/SKILL.md",
+      );
+      const syncCodexAdapter = await repo.readFile(
+        ".agents/skills/truthmark-sync/SKILL.md",
       );
       const syncOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-sync/SKILL.md",
@@ -36,16 +39,16 @@ describe("installed workflow contract", () => {
         ".claude/skills/truthmark-sync/SKILL.md",
       );
       const realizeSkill = await repo.readFile(
-        ".agents/skills/truthmark-realize/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-realize/SKILL.md",
       );
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
       const previewSkill = await repo.readFile(
-        ".agents/skills/truthmark-preview/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-preview/SKILL.md",
       );
       const checkSkill = await repo.readFile(
-        ".agents/skills/truthmark-check/SKILL.md",
+        ".truthmark/agent/workflows/truthmark-check/SKILL.md",
       );
       const routeAuditorAgent = await repo.readFile(
         ".codex/agents/truth-route-auditor.toml",
@@ -96,6 +99,10 @@ describe("installed workflow contract", () => {
       expect(syncSkill).toContain(
         "direct checkout inspection is the canonical path",
       );
+      expect(syncCodexAdapter).toContain(
+        ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+      );
+      expect(syncCodexAdapter).toContain("not the workflow source of truth");
       expect(documentSkill).toContain("name: truthmark-document");
       expect(documentSkill).toContain("support/procedure.md");
       expect(documentSkill).toContain("support/report-template.md");

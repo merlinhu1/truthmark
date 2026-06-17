@@ -53,9 +53,10 @@ const WORKFLOW_SKILL_PACKAGE_PATHS = (
 const WORKFLOW_CONTRACT_PATH_GROUPS = (
   id: TruthmarkWorkflowId,
 ): readonly (readonly string[])[] => [
-  WORKFLOW_SKILL_PACKAGE_PATHS(".agents/skills", id),
-  WORKFLOW_SKILL_PACKAGE_PATHS(".opencode/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".truthmark/agent/workflows", id),
   WORKFLOW_SKILL_PACKAGE_PATHS(".claude/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".github/skills", id),
+  WORKFLOW_SKILL_PACKAGE_PATHS(".gemini/skills", id),
 ];
 
 const WORKFLOW_ADAPTER_PATHS = (id: TruthmarkWorkflowId): readonly string[] => [
@@ -91,7 +92,7 @@ const nonProhibitionLinesMatching = (
 const SURFACE_CONTRACT_TERMS: Record<TruthmarkWorkflowId, readonly string[]> = {
   "truthmark-sync": [
     "Skip docs-only",
-    "block and recommend Truth Structure",
+    "stop and recommend Truth Structure",
     "verify only truth docs and leased truth routing files changed",
     "Report completion in this shape:",
     "Changed code reviewed:",
@@ -389,8 +390,8 @@ describe("generated workflow surface conformance", () => {
         path,
       ).toEqual([]);
       if (
-        path.endsWith("/SKILL.md") ||
-        path.endsWith("/support/procedure.md")
+        !content.includes("not the workflow source of truth") &&
+        (path.endsWith("/SKILL.md") || path.endsWith("/support/procedure.md"))
       ) {
         expect(content, path).toMatch(
           /\b(?:do not|must not|never)\b.*\b(?:edit|write|update)\b.*\b(?:truth docs?|truth routing)\b/iu,
@@ -485,9 +486,9 @@ describe("generated workflow surface conformance", () => {
     for (const [id, expectedTerms] of Object.entries(
       writeWorkflowExpectations,
     )) {
-      const content = surfaces.get(`.agents/skills/${id}/SKILL.md`);
+      const content = surfaces.get(`.truthmark/agent/workflows/${id}/SKILL.md`);
 
-      expect(content, `${id} Codex skill is generated`).toBeDefined();
+      expect(content, `${id} canonical skill is generated`).toBeDefined();
       expect(content).toContain(
         "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       );
@@ -507,10 +508,12 @@ describe("generated workflow surface conformance", () => {
   });
 
   it("labels non-main progressive-disclosure files as conditional", () => {
-    const syncSkill = surfaces.get(".agents/skills/truthmark-sync/SKILL.md");
+    const syncSkill = surfaces.get(
+      ".truthmark/agent/workflows/truthmark-sync/SKILL.md",
+    );
 
     expect(syncSkill).toContain(
-      "support/procedure.md — read before edits or detailed auditing; contains core quality gates",
+      "support/procedure.md — read before edits or detailed auditing; contains core review questions",
     );
     expect(syncSkill).toContain(
       "support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output",

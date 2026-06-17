@@ -32,7 +32,7 @@ describe("renderTruthPreviewSkillBody", () => {
     expect(skill).toContain("Likely route owner");
     expect(skill).toContain("Expected write classes");
     expect(skill).toContain("Suggested subagent use");
-    expect(skill).toContain("Blocking ambiguity");
+    expect(skill).toContain("Manual handoff questions");
     expect(skill).toContain("Handoff:");
     expect(skill).toContain("truth_route_auditor");
     expect(skill).not.toContain("truth_doc_writer");

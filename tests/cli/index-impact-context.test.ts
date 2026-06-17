@@ -86,12 +86,26 @@ describe("repository intelligence CLI commands", () => {
         data: {
           workflowState: {
             applicability: { state: string; reasons: string[] };
-            actionContext: { allowedWritePaths: string[] };
+            actionContext: {
+              allowedWritePaths: string[];
+              primaryTruthDocs: string[];
+              evidencePrompts: string[];
+              requiredEvidence?: unknown;
+            };
             targetTruthDocs: string[];
             changedFiles: Array<{ path: string }>;
             affectedRoutes: unknown[];
+            workflowCard: {
+              affectedFiles: string[];
+              likelyRouteOwners: string[];
+              suggestedTruthDocs: string[];
+              openQuestions: string[];
+              skippedHelperStatus: Array<{ helper: string; status: string; reason: string }>;
+            };
             checks: {
-              required: string[];
+              reviewChecklist: string[];
+              reviewQuestions?: unknown;
+              required?: unknown;
               recommended: string[];
               helpers: unknown[];
               affectedTests?: string[];
@@ -110,17 +124,33 @@ describe("repository intelligence CLI commands", () => {
 
       expect(result.exitCode).toBe(0);
       expect(output.command).toBe("workflow status");
-      expect(state.applicability.state).toBe("applicable");
+      expect(state.applicability.state).toBe("ready");
       expect(state.applicability.reasons).toEqual([]);
       expect(state.actionContext.allowedWritePaths).toEqual(
         expect.arrayContaining(state.targetTruthDocs),
+      );
+      expect(state.actionContext.primaryTruthDocs).toEqual(
+        state.targetTruthDocs,
       );
       expect(state.actionContext.allowedWritePaths).toContain("docs/truthmark/routes/areas.md");
       expect(state.targetTruthDocs.length).toBeGreaterThan(0);
       expect(state.changedFiles.map((file) => file.path)).toContain("src/math.ts");
       expect(state.affectedRoutes.length).toBeGreaterThan(0);
-      expect(state.checks.required.length).toBeGreaterThan(0);
+      expect(state.actionContext.evidencePrompts.length).toBeGreaterThan(0);
+      expect(state.actionContext.requiredEvidence).toBeUndefined();
+      expect(state.checks.reviewChecklist.length).toBeGreaterThan(0);
+      expect(state.checks.reviewQuestions).toBeUndefined();
+      expect(state.checks.required).toBeUndefined();
       expect(state.checks.helpers.length).toBeGreaterThan(0);
+      expect(state.workflowCard.affectedFiles).toContain("src/math.ts");
+      expect(state.workflowCard.likelyRouteOwners.length).toBeGreaterThan(0);
+      expect(state.workflowCard.suggestedTruthDocs).toEqual(state.targetTruthDocs);
+      expect(state.workflowCard.openQuestions).toEqual([]);
+      expect(state.workflowCard.skippedHelperStatus).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ helper: "validate-sync-report", status: "skipped" }),
+        ]),
+      );
       expect(Array.isArray(state.nextSteps)).toBe(true);
       expect(Array.isArray(state.diagnostics)).toBe(true);
       expect(compactTestGuidance.join("\n")).toContain("tests/math.test.ts");

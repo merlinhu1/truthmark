@@ -13,7 +13,7 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain(
       "read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests",
     );
-    expect(prompt).toContain("Truth-doc ownership gate");
+    expect(prompt).toContain("Truth-doc ownership review");
     expect(prompt).toContain(
       "if a source truth doc is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence",
     );
@@ -35,7 +35,7 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).not.toContain("product-lane writes belong");
     expect(prompt).not.toContain("engineering-lane writes belong");
     expect(prompt).not.toContain("Truth-doc restructure gate");
-    expect(prompt).not.toContain("Truth-doc shape repair gate");
+    expect(prompt).not.toContain("Truth-doc shape repair review");
     expect(prompt).not.toContain("restructure truth docs");
     expect(prompt).toContain("Report changed code files and verification steps");
     expect(prompt).toContain("installed instruction or skill");

@@ -1,9 +1,13 @@
+<!-- truthmark:adapter-mode=expanded-adapter -->
+<!-- truthmark:canonical=.truthmark/agent/workflows/truthmark-structure/SKILL.md -->
+<!-- truthmark:canonical-sha256=335be170b1d903a659b192bfae69e5ae44d936fdd41831896c7890bac528b7e7 -->
+<!-- truthmark:generated-sha256=284cddd058f0a67fe7b5118a91709b270f4e784ab84d79d27202d197cb35bc6f -->
 ---
 name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 2.2.1
+truthmark-version: 2.3.0
 ---
 
 # Truthmark Structure
@@ -23,6 +27,6 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
