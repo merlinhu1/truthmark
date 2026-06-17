@@ -195,6 +195,10 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
         );
       }
 
+      if (report.syncIntent !== undefined) {
+        checks.push("Sync Intent");
+      }
+
       validateHelperScriptEntries(
         report.helperScripts,
         ["validate-write-lease"],

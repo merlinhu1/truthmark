@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -61,6 +64,51 @@ Notes:
       ],
       notes: ["Updated session timeout behavior."],
     });
+  });
+
+  it("round-trips optional Sync Intent without making it validator-required", () => {
+    const syncIntent = {
+      changedCodeReviewed: ["src/auth/session.ts"],
+      affectedRouteOrTruthOwner: ["docs/truthmark/routes/areas/repository.md"],
+      targetTruthDocs: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      intendedUpdate: ["Update documented session timeout behavior."],
+      evidenceToVerify: ["src/auth/session.ts:12"],
+      noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
+      blockers: ["none"],
+    };
+    const report = renderTruthSyncCompletedReport({
+      changedCode: ["src/auth/session.ts"],
+      syncIntent,
+      ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
+      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      evidenceChecked: [
+        {
+          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          evidence: ["src/auth/session.ts:12"],
+          result: "supported",
+        },
+      ],
+      notes: ["Updated session timeout behavior."],
+    });
+
+    expect(report).toContain(`Sync Intent:
+- Changed code reviewed: src/auth/session.ts
+- Affected route/truth owner: docs/truthmark/routes/areas/repository.md
+- Target truth docs: docs/truthmark/engineering/behaviors/authentication.md
+- Intended update: Update documented session timeout behavior.
+- Evidence to verify: src/auth/session.ts:12
+- No-update-needed rationale: not applicable; mapped truth is stale
+- Blockers: none`);
+    expect(parseTruthSyncReport(report)).toMatchObject({
+      syncIntent,
+      changedCode: ["src/auth/session.ts"],
+      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+    });
+  });
+
+  it("does not introduce persistent Sync Plan or lifecycle artifacts", () => {
+    expect(existsSync(join(process.cwd(), "src/sync/plan.ts"))).toBe(false);
+    expect(existsSync(join(process.cwd(), "truthmark/changes"))).toBe(false);
   });
 
   it("round-trips optional helper script statuses", () => {

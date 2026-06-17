@@ -450,6 +450,18 @@ const renderWorkflowReportTemplate = (
       return `Report completion in this shape:\n${renderMarkdownExample(
         renderTruthSyncCompletedReport({
           changedCode: ["src/auth/session.ts"],
+          syncIntent: {
+            changedCodeReviewed: ["src/auth/session.ts"],
+            affectedRouteOrTruthOwner: [config.truthmark.paths.routesIndex],
+            targetTruthDocs: [`${engineeringTruthRoot}/repository/overview.md`],
+            intendedUpdate: ["Update session timeout behavior."],
+            evidenceToVerify: [
+              "src/auth/session.ts:12",
+              `${config.truthmark.paths.routesIndex}:11`,
+            ],
+            noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
+            blockers: ["none"],
+          },
           ownershipReviewed: [config.truthmark.paths.routesIndex],
           truthDocsUpdated: [`${engineeringTruthRoot}/repository/overview.md`],
           evidenceChecked: [

@@ -132,6 +132,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     allowedWrites: ["canonical truth docs", "truth routing files"],
     reportSections: [
       "Changed code reviewed",
+      "Sync Intent",
       "Ownership reviewed",
       "Structure required",
       "Truth docs updated",

@@ -64,6 +64,11 @@ describe("Truthmark Portal generated surfaces", () => {
       "workflow instructions --json",
       ["workflow", "status", "--json"].join(" "),
       "live preflight",
+      "OpenSpec-style",
+      "proposal/spec/task",
+      "spec lifecycle",
+      "archive/apply",
+      "truthmark/changes",
     ];
 
     expect(publicWorkflowSurfaces.length).toBeGreaterThan(0);

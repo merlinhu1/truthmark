@@ -9,6 +9,15 @@ Truth Sync: completed
 Changed code reviewed:
 - src/auth/session.ts
 
+Sync Intent:
+- Changed code reviewed: src/auth/session.ts
+- Affected route/truth owner: docs/truthmark/routes/areas.md
+- Target truth docs: docs/truthmark/engineering/repository/overview.md
+- Intended update: Update session timeout behavior.
+- Evidence to verify: src/auth/session.ts:12 / docs/truthmark/routes/areas.md:11
+- No-update-needed rationale: not applicable; mapped truth is stale
+- Blockers: none
+
 Ownership reviewed:
 - docs/truthmark/routes/areas.md
 

@@ -23,6 +23,15 @@ Parent workflow:
 6. Update engineering truth first after code changes. Update product truth only when implemented user-visible product promise or capability boundary changed and explicit source/user evidence supports it; otherwise report product-lane review needed.
 7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+9. Fill Sync Intent before editing truth docs or truth routing files:
+   - Changed code reviewed: functional files, tests, configs, generated outputs, or other implementation evidence inspected
+   - Affected route/truth owner: bounded route area or canonical truth owner that maps the change
+   - Target truth docs: docs expected to change, or docs reviewed and left unchanged
+   - Intended update: claim/doc/routing update planned before writing
+   - Evidence to verify: checkout evidence that will support, narrow, remove, or block each claim
+   - No-update-needed rationale: why mapped truth is already current when no truth doc should change
+   - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
+10. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, block and recommend Truth Structure instead of guessing.
 Topology quality gate:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc

@@ -6,8 +6,19 @@ import {
 
 import type { TruthSyncSkipReason } from "./policy.js";
 
+export type TruthSyncIntent = {
+  changedCodeReviewed: string[];
+  affectedRouteOrTruthOwner: string[];
+  targetTruthDocs: string[];
+  intendedUpdate: string[];
+  evidenceToVerify: string[];
+  noUpdateNeededRationale: string[];
+  blockers: string[];
+};
+
 export type TruthSyncCompletedReportInput = {
   changedCode: string[];
+  syncIntent?: TruthSyncIntent;
   ownershipReviewed: string[];
   truthDocsUpdated: string[];
   evidenceChecked: ClaimEvidenceItem[];
@@ -69,6 +80,55 @@ const parseOptionalBulletSection = (source: string, title: string): string[] | u
   }
 
   return parseBulletLines(section);
+};
+
+const formatIntentValues = (values: string[]): string => values.join(" / ");
+
+const renderSyncIntentSection = (intent: TruthSyncIntent): string => {
+  return [
+    "Sync Intent:",
+    `- Changed code reviewed: ${formatIntentValues(intent.changedCodeReviewed)}`,
+    `- Affected route/truth owner: ${formatIntentValues(intent.affectedRouteOrTruthOwner)}`,
+    `- Target truth docs: ${formatIntentValues(intent.targetTruthDocs)}`,
+    `- Intended update: ${formatIntentValues(intent.intendedUpdate)}`,
+    `- Evidence to verify: ${formatIntentValues(intent.evidenceToVerify)}`,
+    `- No-update-needed rationale: ${formatIntentValues(intent.noUpdateNeededRationale)}`,
+    `- Blockers: ${formatIntentValues(intent.blockers)}`,
+  ].join("\n");
+};
+
+const parseIntentValues = (value: string): string[] => {
+  return value
+    .split(" / ")
+    .map((item) => item.trim())
+    .filter(hasContent);
+};
+
+const parseSyncIntentSection = (source: string): TruthSyncIntent | undefined => {
+  const entries = parseOptionalBulletSection(source, "Sync Intent");
+
+  if (entries === undefined) {
+    return undefined;
+  }
+
+  const values = new Map<string, string>();
+  for (const entry of entries) {
+    const separator = entry.indexOf(":");
+    if (separator === -1) {
+      continue;
+    }
+    values.set(entry.slice(0, separator), entry.slice(separator + 1).trim());
+  }
+
+  return {
+    changedCodeReviewed: parseIntentValues(values.get("Changed code reviewed") ?? ""),
+    affectedRouteOrTruthOwner: parseIntentValues(values.get("Affected route/truth owner") ?? ""),
+    targetTruthDocs: parseIntentValues(values.get("Target truth docs") ?? ""),
+    intendedUpdate: parseIntentValues(values.get("Intended update") ?? ""),
+    evidenceToVerify: parseIntentValues(values.get("Evidence to verify") ?? ""),
+    noUpdateNeededRationale: parseIntentValues(values.get("No-update-needed rationale") ?? ""),
+    blockers: parseIntentValues(values.get("Blockers") ?? ""),
+  };
 };
 
 const isClaimEvidenceResult = (value: string): value is ClaimEvidenceResult => {
@@ -137,6 +197,7 @@ export const renderTruthSyncCompletedReport = (
   return [
     "Truth Sync: completed",
     renderBulletSection("Changed code reviewed", input.changedCode),
+    ...(input.syncIntent === undefined ? [] : [renderSyncIntentSection(input.syncIntent)]),
     renderBulletSection("Ownership reviewed", input.ownershipReviewed),
     renderBulletSection("Truth docs updated", input.truthDocsUpdated),
     renderClaimEvidenceCheckedSection(input.evidenceChecked),
@@ -153,10 +214,12 @@ export const parseTruthSyncReport = (source: string): TruthSyncCompletedReport =
   }
 
   const helperScripts = parseOptionalBulletSection(source, "Helper scripts");
+  const syncIntent = parseSyncIntentSection(source);
 
   return {
     status: "completed",
     changedCode: parseBulletSection(source, "Changed code reviewed"),
+    ...(syncIntent === undefined ? {} : { syncIntent }),
     ownershipReviewed: parseBulletSection(source, "Ownership reviewed"),
     truthDocsUpdated: parseBulletSection(source, "Truth docs updated"),
     evidenceChecked: parseEvidenceCheckedSection(source),

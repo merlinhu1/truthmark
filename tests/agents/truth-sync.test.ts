@@ -170,6 +170,11 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change",
     );
+    expect(skillBody).toContain("Fill Sync Intent before editing truth docs");
+    expect(skillBody).toContain("Sync Intent");
+    expect(skillBody).toContain("Affected route/truth owner");
+    expect(skillBody).toContain("No-update-needed rationale");
+    expect(skillBody).toContain("Only edit allowed truth docs/routes after Sync Intent is clear");
     expect(skillBody).toContain("Evidence checked");
     expect(skillBody).toContain("Claim:");
     expect(skillBody).toContain("Result: supported");
@@ -300,6 +305,9 @@ describe("Truth Sync generated metadata", () => {
     );
     expect(procedure).not.toContain("Truth Sync: completed");
     expect(reportTemplate).toContain("Report completion in this shape:");
+    expect(reportTemplate).toContain("Sync Intent:");
+    expect(reportTemplate).toContain("Affected route/truth owner");
+    expect(reportTemplate).toContain("No-update-needed rationale");
     expect(reportTemplate).toContain("Truth Sync: completed");
     expect(reportTemplate).not.toContain("Parent post-sync verification");
   });

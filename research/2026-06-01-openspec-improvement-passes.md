@@ -21,8 +21,8 @@ Truthmark should add a thin workflow-state layer that composes existing systems 
 - `buildRepoIndex()` / route map remain the source for ownership and truth-doc mapping.
 - `runCheck()` / diagnostics remain the source for repository truth health.
 - `buildImpactSet()` remains the source for branch-diff effects when `--base` is provided.
-- `buildContextPack()` remains the source for bounded workflow context and write paths.
-- New `workflow status` and `workflow instructions` commands should compose the above into an agent-facing contract.
+- WorkflowState and ImpactSet expose compact path/metadata handoffs without embedding source-file or truth-doc body contents.
+- `workflow status` composes the above into an optional agent-facing status/debug contract; `workflow instructions` is intentionally absent in the current product boundary.
 
 This is OpenSpec-inspired ergonomics, not OpenSpec behavior. Truthmark workflow state is about routes, truth docs, evidence, health, and allowed writes — not proposals, specs, design docs, tasks, archive/apply, or artifact completion by file existence.
 
@@ -30,7 +30,7 @@ This is OpenSpec-inspired ergonomics, not OpenSpec behavior. Truthmark workflow 
 
 1. **Compose first, refactor later.** Build the workflow-state API from current data sources before reorganizing generated-surface internals.
 2. **Version the agent contract early.** Use a schema version such as `truthmark-workflow/v0` so generated agent surfaces can rely on it without pretending it is final.
-3. **Keep JSON stable and prose generated from data.** Agent surfaces should teach hosts to call the CLI instead of embedding stale workflow logic.
+3. **Keep JSON stable and prose generated from repository files.** Agent surfaces should remain host-native and should not require live CLI preflight to avoid embedding stale workflow logic.
 4. **Make write boundaries machine-readable.** Every workflow status should say whether it is read-only and exactly what it may write.
 5. **Keep OpenSpec non-goals visible in code review.** No `changes/`, proposal/spec/task DAGs, archive/apply semantics, arbitrary workflow schemas, or required pre-implementation planning artifacts.
 
@@ -40,10 +40,10 @@ This is OpenSpec-inspired ergonomics, not OpenSpec behavior. Truthmark workflow 
 |---|---|---|---|
 | 0 | Baseline contract and guardrails | Document and test the non-OpenSpec boundary before code changes | Yes |
 | 1 | Workflow state core | New typed `WorkflowState` builder composes manifest/check/index/impact/context | Yes, internal only |
-| 2 | Agent-facing CLI | `truthmark workflow status/instructions --json` expose the state contract | Yes |
-| 3 | Generated playbooks consume the contract | Host surfaces call the new CLI and receive operational playbooks | Yes |
+| 2 | Agent-facing CLI | `truthmark workflow status --json` exposes compact workflow state; `workflow instructions` is intentionally not shipped | Yes, status-only |
+| 3 | Generated playbooks consume the contract | Superseded: generated host surfaces stay host-native with direct-checkout fallback instead of live CLI preflight | No — superseded |
 | 4 | Compact truth health scorecard | `check --json` gets a tiny diagnostic triage index; workflow-state exposure is deferred | Yes |
-| 5 | Preview/Explore wording hardening | Keep `truthmark-preview`; improve read-only discovery instructions without new JSON | Yes |
+| 5 | Preview/Explore wording hardening | Implemented as read-only `truthmark-preview` wording/report hardening without new JSON or live preflight | Yes |
 | 6 | Lightweight Sync intent checklist | Add a pre-write intent section to Sync instructions/reports; no typed plan engine yet | Yes |
 | 7 | Platform surface adapter refactor | Deferred internal maintainability refactor after behavior stabilizes | No — explicitly deferred |
 
@@ -57,8 +57,8 @@ Before adding features, make the intended product boundary explicit so later imp
 
 ## Files
 
-- Modify: `docs/truth/contracts.md` or the current canonical CLI/workflow contract truth doc if routing points elsewhere.
-- Modify: `docs/truthmark/truth/**/*.md` only if existing routed truth docs already own CLI/workflow behavior.
+- Modify: the current routed engineering CLI/workflow contract truth doc if routing points there (for 2.2.x lanes, normally under `docs/truthmark/engineering/**`).
+- Modify: legacy `docs/truthmark/truth/**/*.md` only if the inspected checkout still uses that path as active routed truth.
 - Modify: `tests/cli/help.test.ts` for absence checks if new commands are not yet implemented.
 - Create: `tests/workflow-state/non-goals.test.ts` if a new test directory is acceptable, otherwise place absence tests in the closest existing CLI/workflow test file.
 
@@ -74,7 +74,7 @@ Before adding features, make the intended product boundary explicit so later imp
    - Inspect `docs/truthmark/routes/areas.md` and child area files when present.
    - Identify the truth doc that owns `src/cli/**`, `src/agents/workflow-manifest.ts`, and generated surfaces.
 2. Add a dated decision:
-   - Truthmark may add agent-readable workflow status/instructions/action-context behavior.
+   - Truthmark may add agent-readable workflow status/action-context behavior when it remains optional and compact.
    - Truthmark must not add OpenSpec-style proposal/spec/design/task lifecycle artifacts.
    - Truthmark must not add arbitrary workflow DAG schemas or archive/apply semantics.
 3. Keep the language product-scoped: Truthmark is a repository-truth governance layer, not an application feature.
@@ -311,13 +311,16 @@ npx vitest run tests/workflow-state/build.test.ts
 
 ## Objective
 
-Expose the workflow-state layer through stable JSON commands that agents can call before acting.
+Expose the workflow-state layer through a stable compact JSON status command that agents and humans may use for debugging or bounded repository-intelligence handoff.
 
-## Proposed CLI
+## Current status
+
+Implemented as **status-only**. `truthmark workflow status --workflow <workflow> [--base <ref>] --json` is the supported command. `truthmark workflow instructions` was intentionally removed/superseded because committed host-native surfaces and direct checkout inspection are the runtime contract; generated workflows must not depend on a live CLI playbook command.
+
+## Supported CLI
 
 ```bash
 truthmark workflow status --workflow truthmark-sync --base main --json
-truthmark workflow instructions --workflow truthmark-sync --base main --json
 ```
 
 Support legacy/short workflow aliases deliberately if needed:
@@ -332,7 +335,7 @@ If aliases are supported, add tests and document them. Do not add aliases accide
 
 - Modify: `src/cli/program.ts`
 - Modify: `src/cli/handlers.ts`
-- Create: `src/workflow-state/instructions.ts`
+- Do not create `src/workflow-state/instructions.ts` unless a later product decision reintroduces a workflow-instructions command.
 - Modify: `src/output/render.ts` only if special rendering is needed; prefer normal `CommandResult` JSON.
 - Test: `tests/cli/workflow.test.ts`
 - Test: `tests/integration/agent-workflow-contract.test.ts`
@@ -370,36 +373,20 @@ Expected before implementation: command not found. Expected after implementation
 npx vitest run tests/cli/workflow.test.ts -t "workflow status"
 ```
 
-### Task 2.2: Add CLI parser for `workflow instructions`
+### Task 2.2: Keep `workflow instructions` absent
 
-**Objective:** Give agents a workflow playbook and command sequence derived from the same state.
+**Objective:** Prevent stale CLI-first playbook behavior from returning through regressions.
 
-**Instruction output should include:**
+**Current contract:**
 
-- workflow id and display name
-- first commands to run
-- required reads
-- allowed writes
-- forbidden writes
-- stop conditions
-- helper validator commands
-- report sections
-- final report shape
-- source state summary
-
-**Test first:**
-
-Assert `workflow instructions --workflow truthmark-sync --json` includes:
-
-- `data.instructions.schemaVersion`
-- `data.instructions.commandSequence`
-- `data.instructions.actionContext`
-- `data.instructions.reportTemplate.sections`
+- `truthmark workflow --help` lists `status` but not `instructions`.
+- `truthmark workflow instructions --workflow truthmark-sync --json` exits non-zero as an unknown command.
+- Generated public workflow surfaces must not mention `truthmark workflow instructions`.
 
 **Verification:**
 
 ```bash
-npx vitest run tests/cli/workflow.test.ts -t "workflow instructions"
+npx vitest run tests/cli/check-workflow.test.ts tests/templates/generated-surfaces.test.ts
 ```
 
 ### Task 2.3: Document the Agent-Compatible CLI Contract
@@ -408,13 +395,13 @@ npx vitest run tests/cli/workflow.test.ts -t "workflow instructions"
 
 **Files:**
 
-- Modify: `docs/truth/contracts.md` or routed CLI contract truth doc.
+- Modify: the routed CLI contract truth doc.
 - Optionally modify: `README.md` only with a compact conceptual pointer, not a long command inventory.
 
 **Content:**
 
 - Human/setup commands: `config`, `init`.
-- Agent/context commands: `check`, `index`, `impact`, `context`, `validate`, `workflow status`, `workflow instructions`.
+- Agent/context commands: `check`, `index`, `impact`, `validate`, and optional `workflow status`. The standalone `context` command and `workflow instructions` command are intentionally absent in the current contract.
 - JSON command envelope guarantee: `command`, `summary`, `diagnostics`, `data`.
 - `schemaVersion` guarantees for nested workflow state.
 - Stable vs experimental fields.
@@ -452,11 +439,11 @@ npx vitest run tests/cli/build-artifact.test.ts
 
 # Pass 3: Generated Playbooks Consume The Workflow Contract
 
-## Objective
+## Current status
 
-Update generated agent surfaces so they call `truthmark workflow status/instructions --json` before acting, rather than relying only on embedded prose.
+**Superseded by the product boundary.** Truthmark now keeps committed host-native workflow files as the runtime contract. Generated skill packages contain compact procedures and support-file pointers; GitHub Copilot prompts and Gemini commands are thin adapters. Agents inspect the checkout directly and may use `workflow status` or `impact` only as optional compact helpers.
 
-This is the direct transfer of OpenSpec's strongest behavior: generated skills/commands teach agents to ask the local CLI for current state.
+Do not revive the original CLI-first/live-preflight design unless a later product decision explicitly changes the boundary. Mandatory or generic live preflight would move the CLI toward the product center of gravity and would weaken the no-blockade repository-file fallback.
 
 ## Files
 
@@ -470,32 +457,26 @@ This is the direct transfer of OpenSpec's strongest behavior: generated skills/c
 
 ## Required generated-surface behavior
 
-For each workflow skill/command/prompt surface, add an operational first step:
-
-```bash
-truthmark workflow status --workflow <workflow-id> [--base <ref>] --json
-truthmark workflow instructions --workflow <workflow-id> [--base <ref>] --json
-```
-
 Generated prose must say:
 
-- stop if status says blocked or not applicable unless the user explicitly changes scope;
-- obey `actionContext.allowedWritePaths` and `actionContext.forbiddenWritePaths`;
-- use helper validator commands when present;
+- committed host-native workflow files and support files are the normal runtime contract;
+- direct checkout inspection is the canonical fallback when optional helper commands are unavailable;
+- obey the workflow's documented write boundary and helper validator policy;
 - do not edit generated surfaces manually;
-- do not create OpenSpec-style change/spec/task artifacts.
+- do not create OpenSpec-style change/spec/task artifacts, proposal files, archive/apply lifecycle objects, or arbitrary workflow DAGs;
+- do not mention `truthmark workflow instructions` or generic live-preflight boilerplate.
 
 ## Tasks
 
-### Task 3.1: Add renderer tests for CLI-first workflow instructions
+### Task 3.1: Add renderer tests against CLI-first workflow instructions
 
 **Objective:** Pin the new generated-surface contract before changing renderer output.
 
 **Tests:**
 
-- Codex/OpenCode/Claude/GitHub Copilot/Gemini generated workflow surfaces mention `truthmark workflow status`.
-- They mention `truthmark workflow instructions`.
-- They mention `actionContext` or equivalent write-boundary JSON.
+- Codex/OpenCode/Claude/GitHub Copilot/Gemini generated public workflow surfaces do not mention `truthmark workflow instructions`.
+- They do not require `truthmark workflow status` as live preflight.
+- They keep direct-checkout fallback and compact host-surface adapter wording.
 - They do not instruct creation of proposal/spec/task/change lifecycle artifacts.
 
 **Verification:**
@@ -504,9 +485,9 @@ Generated prose must say:
 npx vitest run tests/templates/generated-surfaces.test.ts tests/agents/instructions.test.ts
 ```
 
-### Task 3.2: Update workflow surface rendering
+### Task 3.2: Preserve host-native workflow surface rendering
 
-**Objective:** Render the CLI-first operational playbook across all host surfaces.
+**Objective:** Keep generated surfaces compact, host-native, and non-CLI-dependent.
 
 **Implementation notes:**
 
@@ -537,7 +518,7 @@ npx tsx src/cli/main.ts index --json
 
 **Manual inspection:**
 
-- Generated bodies include CLI-first workflow status/instructions calls.
+- Generated bodies do not include CLI-first workflow status/instructions calls.
 - Managed blocks are preserved.
 - Generated outputs do not claim helper success unless the agent is instructed to run a validator and check `data.validation.ok: true`.
 - No generated output implies Truthmark is an application feature rather than workflow/tooling scaffolding.
@@ -562,7 +543,7 @@ Implement Pass 4 as **check-only**:
 - Keep raw diagnostics authoritative.
 - Keep JSON compact enough that routine checks do not become expensive to read or paste.
 
-Reason: `workflow instructions` currently embeds full `workflowState`; adding fields there directly increases agent token load. Workflow-state scorecard exposure should wait until there is evidence agents need it inside workflow status/instructions.
+Reason: routine `check --json` output should stay compact and triage-oriented. Workflow-state scorecard exposure should wait until there is evidence agents need it inside optional workflow status; do not reintroduce a workflow-instructions payload for scorecard delivery.
 
 ## Proposed dimensions
 
@@ -603,7 +584,7 @@ Rules:
 - Modify: `src/checks/check.ts`
 - Test: `tests/checks/scorecard.test.ts`
 - Modify: `tests/checks/check.test.ts`
-- Modify: the routed check/validation truth doc, likely `docs/truthmark/truth/contracts.md` after route confirmation.
+- Modify: the routed check/validation truth doc after route confirmation (for 2.2.x lanes, normally under `docs/truthmark/engineering/**`).
 
 Do **not** modify `src/workflow-state/**`, `src/templates/**`, generated platform surfaces, or report validators for this pass.
 
@@ -729,7 +710,7 @@ Reason: most of those fields duplicate existing workflow-state concepts or requi
 ## Files
 
 - Modify: `src/agents/workflow-manifest.ts` only if Preview manifest wording/report sections need tightening.
-- Modify: `src/workflow-state/instructions.ts` if generated instructions should call Preview “Truth Explore”.
+- Do not modify `src/workflow-state/instructions.ts`; Preview/Explore wording belongs in host-native workflow surfaces and reports.
 - Modify: `src/templates/workflow-surfaces.ts` only for wording emitted to generated surfaces.
 - Modify focused Preview/generated-surface tests that already cover Preview text.
 
@@ -809,7 +790,7 @@ Do not create `truthmark/changes/*`, proposal files, task files, sync-plan files
 
 ## Files
 
-- Modify: `src/workflow-state/instructions.ts`
+- Do not modify `src/workflow-state/instructions.ts`; Sync Intent is transient host-surface/report content, not a workflow-instructions payload.
 - Modify: `src/templates/workflow-surfaces.ts`
 - Modify: `src/agents/workflow-manifest.ts` if report sections/templates are centralized there.
 - Modify: `tests/agents/truth-sync.test.ts`
@@ -840,7 +821,7 @@ Do **not** create `src/sync/plan.ts` in this pass.
 
 **Instruction behavior:**
 
-- Run workflow status/instructions first.
+- Inspect the checkout and configured routes first; optionally use `workflow status` as a compact helper when available.
 - Fill the Sync Intent section before editing truth docs.
 - If route ownership is ambiguous, block and recommend Truth Structure instead of guessing.
 - Only edit allowed truth docs/routes after the intent is clear.
@@ -910,7 +891,7 @@ A pass is ready to merge only when:
 - New nested JSON contracts have `schemaVersion` fields.
 - Read-only workflows are machine-readably read-only.
 - Write workflows include allowed writes, forbidden writes, stop conditions, and helper validator commands where applicable.
-- Generated surfaces instruct agents to call the CLI and obey the returned state.
+- Generated surfaces remain host-native and operational from repository files alone; optional CLI helpers must not become required live preflight.
 - Generated surfaces do not hard-require optional repo-specific files unless proven/configured.
 - Tests cover source-tree and built CLI behavior where CLI surface changes.
 - Truthmark check/index are run after docs or generated-surface changes.
@@ -919,12 +900,12 @@ A pass is ready to merge only when:
 
 1. **Pass 0** first, because it prevents mission drift.
 2. **Pass 1** next, because all later behavior needs the internal state model.
-3. **Pass 2** next, because generated surfaces need a real CLI contract to call.
-4. **Pass 3** next, because it lets agents benefit from the new contract.
-5. **Pass 4** next, but only as a compact `check --json` scorecard; defer workflow-state exposure.
-6. **Pass 5** next as Preview/Explore wording hardening, with no new JSON object.
-7. **Pass 6** next as a lightweight Sync Intent checklist, with no typed plan engine yet.
-8. **Pass 7** is deferred out of the V2 value path until generated behavior is stable and parity tests justify the refactor.
+3. **Pass 2** is status-only in the current product boundary; keep `workflow instructions` absent.
+4. **Pass 3** is superseded; preserve host-native generated surfaces instead of CLI-first live preflight.
+5. **Pass 4** is implemented as a compact `check --json` scorecard; keep workflow-state exposure deferred.
+6. **Pass 5** is implemented as read-only Preview/Explore wording/report hardening, with no new JSON object.
+7. **Pass 6** is the next recommended feature: a lightweight Sync Intent checklist, with no typed plan engine yet.
+8. **Pass 7** remains deferred out of the V2 value path until generated behavior is stable and parity tests justify the refactor.
 
 # Defer explicitly
 
@@ -955,7 +936,7 @@ For CLI contract passes, also run:
 ```bash
 npm run build
 node dist/main.js workflow status --workflow truthmark-check --json
-node dist/main.js workflow instructions --workflow truthmark-check --json
+node dist/main.js workflow instructions --workflow truthmark-check --json # expected to fail: command intentionally absent
 ```
 
 For generated-surface passes, also run:
