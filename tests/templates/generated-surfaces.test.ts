@@ -70,6 +70,9 @@ describe("Truthmark Portal generated surfaces", () => {
       expect(content, procedurePath).toContain(
         "Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.",
       );
+      expect(content, procedurePath).toContain(
+        "User-provided decisions/rationale",
+      );
       expect(content, procedurePath).not.toContain(
         staleWriteAuthorizingLaneText,
       );
@@ -180,6 +183,7 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(claudeProcedure).toContain("Parent workflow:");
     expect(codexProcedure).toContain("Parent workflow:");
     expect(opencodeReport).toContain("Changed code reviewed:");
+    expect(opencodeReport).toContain("Decision/rationale captured:");
     expect(claudeProcedure).not.toContain("truthmark:adapter-mode=expanded-adapter");
   });
 

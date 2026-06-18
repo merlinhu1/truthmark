@@ -171,6 +171,9 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("Fill Sync Intent before editing truth docs");
     expect(skillBody).toContain("Sync Intent");
     expect(skillBody).toContain("Affected route/truth owner");
+    expect(skillBody).toContain("User-provided decisions/rationale");
+    expect(skillBody).toContain("Decision/rationale captured");
+    expect(skillBody).toContain("Preserve concise user-provided decision rationale");
     expect(skillBody).toContain("No-update-needed rationale");
     expect(skillBody).toContain(
       "Only edit allowed truth docs/routes after Sync Intent is clear",

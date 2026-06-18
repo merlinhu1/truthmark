@@ -19,18 +19,20 @@ Parent workflow:
   - if no, default to engineering truth under docs/truthmark/engineering for internal implementation changes
   - when both lanes change, keep separate product and engineering docs cross-linked through route YAML with realized_by and realizes
   - when ownership is ambiguous, stop or route to Truth Structure instead of writing a mixed document
-6. Update engineering truth first after code changes. Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
-7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
-9. Fill Sync Intent before editing truth docs or truth routing files:
+6. Capture decision context from the task conversation: ask whether the user provided a product or technical decision, rationale, constraint, tradeoff, rejection reason, or scope boundary. Preserve concise user-provided decision rationale in Sync Intent before truth edits, route it to Product Decisions, Engineering Decisions, Rationale, Capability Scope, Non-Goals, Maintenance Notes, or the relevant workflow/contract section, and report whether it was placed, skipped because none was provided, or needs manual handoff.
+7. Update engineering truth first after code changes. Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
+8. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
+9. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+10. Fill Sync Intent before editing truth docs or truth routing files:
    - Changed code reviewed: functional files, tests, configs, generated outputs, or other implementation evidence inspected
    - Affected route/truth owner: bounded route area or canonical truth owner that maps the change
    - Target truth docs: docs expected to change, or docs reviewed and left unchanged
    - Intended update: claim/doc/routing update planned before writing
    - Evidence to verify: checkout evidence that will support, narrow, remove, or record each claim for manual handoff
+   - User-provided decisions/rationale: decisions, rationale, constraints, tradeoffs, rejection reasons, or scope boundaries from the current task conversation, or "none provided"
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
-10. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
+11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
 Topology review:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc

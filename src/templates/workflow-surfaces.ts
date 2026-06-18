@@ -460,6 +460,9 @@ const renderWorkflowReportTemplate = (
               "src/auth/session.ts:12",
               `${config.truthmark.paths.routesIndex}:11`,
             ],
+            userProvidedDecisionRationale: [
+              "User rationale: session timeout behavior changed for internal implementation consistency",
+            ],
             noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
             blockers: ["none"],
           },
@@ -477,6 +480,9 @@ const renderWorkflowReportTemplate = (
               ],
               result: "supported",
             },
+          ],
+          decisionRationaleCaptured: [
+            "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
           ],
           helperScripts: ["validate-write-lease: skipped, no write lease used"],
           notes: ["Updated session timeout behavior."],

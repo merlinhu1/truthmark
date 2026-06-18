@@ -28,6 +28,7 @@ Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gem
 - Each configured host skill directory receives the workflow support files needed for native skill resource packaging.
 - Generated surfaces preserve workflow boundaries and direct-checkout fallback.
 - Routine code-first Truth Sync defaults internal implementation changes to engineering truth unless a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed.
+- Truth Sync carries user-provided decision rationale, constraints, tradeoffs, rejection reasons, and scope boundaries from the current task conversation into Sync Intent, routes them to the correct truth lane when supported, and reports placement, skip, or manual handoff.
 - Workflows that create, structure, or audit truth docs still preserve product and engineering truth as separate lanes.
 
 ## Product Decisions
@@ -36,6 +37,7 @@ Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, and Gem
 - Decision (2026-06-15): Agent-facing repository-intelligence handoff uses workflow status plus impact instead of a standalone ContextPack command.
 - Decision (2026-06-17): Optional workflow status presents helper output as advisory workflow cards with review checklists, evidence prompts, open questions, and skipped-helper status; direct checkout inspection remains the fallback when helpers are skipped, unavailable, or unnecessary.
 - Decision (2026-06-17): Host skill directories are product-owned native packages, not adapter-only pointers. Justification: agent skill systems may discover and package the skill directory as the resource boundary, so `SKILL.md` must be colocated with procedure, report-template, helper, and lease resources needed for progressive disclosure. Compact adapters may point to host-native packages, but removing those colocated resources from configured skill folders would make workflow behavior depend on manual cross-repository reads and could fail in hosts or sandboxes that package only the skill directory. A separate `.truthmark/agent/` workflow copy is not generated unless a host surface actually consumes it, because otherwise it is duplicate repository documentation rather than runtime surface.
+- Decision (2026-06-18): Truth Sync exposes conversation-provided decision rationale as a visible workflow input and report outcome, without transcript ingestion, hidden memory, required hooks, persistent inbox files, mandatory ADRs, or extra proposal artifacts.
 
 ## Engineering Realization Links
 

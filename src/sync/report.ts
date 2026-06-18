@@ -12,6 +12,7 @@ export type TruthSyncIntent = {
   targetTruthDocs: string[];
   intendedUpdate: string[];
   evidenceToVerify: string[];
+  userProvidedDecisionRationale: string[];
   noUpdateNeededRationale: string[];
   blockers: string[];
 };
@@ -21,13 +22,18 @@ export type TruthSyncCompletedReportInput = {
   syncIntent?: TruthSyncIntent;
   ownershipReviewed: string[];
   truthDocsUpdated: string[];
+  decisionRationaleCaptured?: string[];
   evidenceChecked: ClaimEvidenceItem[];
   helperScripts?: string[];
   notes: string[];
 };
 
-export type TruthSyncCompletedReport = TruthSyncCompletedReportInput & {
+export type TruthSyncCompletedReport = Omit<
+  TruthSyncCompletedReportInput,
+  "decisionRationaleCaptured"
+> & {
   status: "completed";
+  decisionRationaleCaptured: string[];
 };
 
 export type TruthSyncSkippedReportInput = {
@@ -82,6 +88,21 @@ const parseOptionalBulletSection = (source: string, title: string): string[] | u
   return parseBulletLines(section);
 };
 
+const parseRequiredBulletSection = (source: string, title: string): string[] => {
+  const section = findSection(source, title);
+
+  if (!section) {
+    throw new Error(`${title} section is required.`);
+  }
+
+  const entries = parseBulletLines(section);
+  if (entries.length === 0) {
+    throw new Error(`${title} must include at least one bullet.`);
+  }
+
+  return entries;
+};
+
 const formatIntentValues = (values: string[]): string => values.join(" / ");
 
 const renderSyncIntentSection = (intent: TruthSyncIntent): string => {
@@ -92,6 +113,7 @@ const renderSyncIntentSection = (intent: TruthSyncIntent): string => {
     `- Target truth docs: ${formatIntentValues(intent.targetTruthDocs)}`,
     `- Intended update: ${formatIntentValues(intent.intendedUpdate)}`,
     `- Evidence to verify: ${formatIntentValues(intent.evidenceToVerify)}`,
+    `- User-provided decisions/rationale: ${formatIntentValues(intent.userProvidedDecisionRationale)}`,
     `- No-update-needed rationale: ${formatIntentValues(intent.noUpdateNeededRationale)}`,
     `- Blockers: ${formatIntentValues(intent.blockers)}`,
   ].join("\n");
@@ -126,6 +148,9 @@ const parseSyncIntentSection = (source: string): TruthSyncIntent | undefined => 
     targetTruthDocs: parseIntentValues(values.get("Target truth docs") ?? ""),
     intendedUpdate: parseIntentValues(values.get("Intended update") ?? ""),
     evidenceToVerify: parseIntentValues(values.get("Evidence to verify") ?? ""),
+    userProvidedDecisionRationale: parseIntentValues(
+      values.get("User-provided decisions/rationale") ?? "",
+    ),
     noUpdateNeededRationale: parseIntentValues(values.get("No-update-needed rationale") ?? ""),
     blockers: parseIntentValues(values.get("Blockers") ?? ""),
   };
@@ -200,6 +225,10 @@ export const renderTruthSyncCompletedReport = (
     ...(input.syncIntent === undefined ? [] : [renderSyncIntentSection(input.syncIntent)]),
     renderBulletSection("Ownership reviewed", input.ownershipReviewed),
     renderBulletSection("Truth docs updated", input.truthDocsUpdated),
+    renderBulletSection(
+      "Decision/rationale captured",
+      input.decisionRationaleCaptured ?? ["none provided in task conversation"],
+    ),
     renderClaimEvidenceCheckedSection(input.evidenceChecked),
     ...(input.helperScripts === undefined
       ? []
@@ -222,6 +251,10 @@ export const parseTruthSyncReport = (source: string): TruthSyncCompletedReport =
     ...(syncIntent === undefined ? {} : { syncIntent }),
     ownershipReviewed: parseBulletSection(source, "Ownership reviewed"),
     truthDocsUpdated: parseBulletSection(source, "Truth docs updated"),
+    decisionRationaleCaptured: parseRequiredBulletSection(
+      source,
+      "Decision/rationale captured",
+    ),
     evidenceChecked: parseEvidenceCheckedSection(source),
     ...(helperScripts === undefined ? {} : { helperScripts }),
     notes: parseBulletSection(source, "Notes"),

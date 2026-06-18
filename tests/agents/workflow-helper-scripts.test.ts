@@ -137,6 +137,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 ${evidenceChecked}
 
@@ -302,6 +305,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
@@ -376,6 +382,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
@@ -449,6 +458,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - malformed entry only
 
@@ -479,6 +491,9 @@ Ownership reviewed:
 
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
+
+Decision/rationale captured:
+- none provided in task conversation
 
 Notes:
 - Missing evidence.

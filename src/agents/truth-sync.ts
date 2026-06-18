@@ -55,6 +55,8 @@ Worker rules:
 - inspect relevant staged, unstaged, and untracked functional code directly
 - inspect .truthmark/config.yml and configured route files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when they exist; then inspect canonical truth docs directly
 - ask whether a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed
+- review the task conversation for user-provided decisions, rationale, constraints, tradeoffs, rejection reasons, or scope boundaries before writing truth docs
+- if yes, carry that user-provided decision context into Sync Intent and report where it was placed or why it needs manual handoff
 - if yes, update or route product truth as well as engineering truth; if no, default internal implementation changes to engineering truth
 - Code verification is parent-owned; report what was run or why it was not run
 - may write only leased truth docs and leased truth routing files for Truth Sync alignment
@@ -66,12 +68,14 @@ Return result in this shape:
 - shard: string
 - filesChanged: string[]
 - changedCodeReviewed: string[]
+- userProvidedDecisionRationale: string[]
 - ownershipReviewed: string[]
 - structureRequired?: string[]
 - truthDocsUpdated: string[]
 - routingDocsUpdated: string[]
 - truthDocsSplit?: string[]
 - evidenceChecked: { claim: string; evidence: string[]; result: supported | narrowed | removed | blocked }[]
+- decisionRationaleCaptured: string[]
 - offLeaseChanges: string[]
 - notes: string[]
 - blockedReason?: string
@@ -130,18 +134,20 @@ Parent workflow:
 ${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 5. Product truth decision:
 ${renderTruthSyncProductDecisionRuleBlock(config)}
-6. Update engineering truth first after code changes. Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
-7. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
-8. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
-9. Fill Sync Intent before editing truth docs or truth routing files:
+6. Capture decision context from the task conversation: ask whether the user provided a product or technical decision, rationale, constraint, tradeoff, rejection reason, or scope boundary. Preserve concise user-provided decision rationale in Sync Intent before truth edits, route it to Product Decisions, Engineering Decisions, Rationale, Capability Scope, Non-Goals, Maintenance Notes, or the relevant workflow/contract section, and report whether it was placed, skipped because none was provided, or needs manual handoff.
+7. Update engineering truth first after code changes. Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
+8. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
+9. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.
+10. Fill Sync Intent before editing truth docs or truth routing files:
    - Changed code reviewed: functional files, tests, configs, generated outputs, or other implementation evidence inspected
    - Affected route/truth owner: bounded route area or canonical truth owner that maps the change
    - Target truth docs: docs expected to change, or docs reviewed and left unchanged
    - Intended update: claim/doc/routing update planned before writing
    - Evidence to verify: checkout evidence that will support, narrow, remove, or record each claim for manual handoff
+   - User-provided decisions/rationale: decisions, rationale, constraints, tradeoffs, rejection reasons, or scope boundaries from the current task conversation, or "none provided"
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
-10. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
+11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
 ${subagentMode}Topology review:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
@@ -227,6 +233,9 @@ ${renderMarkdownExample(
         "src/auth/session.ts:12",
         `${config.truthmark.paths.routesIndex}:11`,
       ],
+      userProvidedDecisionRationale: [
+        "User rationale: session timeout behavior changed for internal implementation consistency",
+      ],
       noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
       blockers: ["none"],
     },
@@ -244,6 +253,9 @@ ${renderMarkdownExample(
         ],
         result: "supported",
       },
+    ],
+    decisionRationaleCaptured: [
+      "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
     ],
     helperScripts,
     notes: ["Updated session timeout behavior."],

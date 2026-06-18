@@ -14,6 +14,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
@@ -35,6 +38,7 @@ const validSyncReportWithIntent = validSyncReport.replace(
 - Target truth docs: docs/truthmark/truth/init-and-scaffold.md
 - Intended update: Update init workflow truth.
 - Evidence to verify: src/init/init.ts
+- User-provided decisions/rationale: none provided in task conversation
 - No-update-needed rationale: not applicable; mapped truth is stale
 - Blockers: none
 

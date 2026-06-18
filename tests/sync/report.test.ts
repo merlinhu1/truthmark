@@ -40,6 +40,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/engineering/behaviors/authentication.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim: Session timeout behavior is documented in the authentication truth doc.
   Evidence: src/auth/session.ts:12 / docs/truthmark/routes/areas/repository.md:18
@@ -52,6 +55,7 @@ Notes:
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
       truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      decisionRationaleCaptured: ["none provided in task conversation"],
       evidenceChecked: [
         {
           claim: "Session timeout behavior is documented in the authentication truth doc.",
@@ -66,13 +70,17 @@ Notes:
     });
   });
 
-  it("round-trips optional Sync Intent without making it validator-required", () => {
+  it("round-trips optional Sync Intent with user decision context capture", () => {
     const syncIntent = {
       changedCodeReviewed: ["src/auth/session.ts"],
       affectedRouteOrTruthOwner: ["docs/truthmark/routes/areas/repository.md"],
       targetTruthDocs: ["docs/truthmark/engineering/behaviors/authentication.md"],
       intendedUpdate: ["Update documented session timeout behavior."],
       evidenceToVerify: ["src/auth/session.ts:12"],
+      userProvidedDecisionRationale: [
+        "User decision: preserve a 30 minute timeout because long-lived sessions are out of scope",
+        "Lane: engineering contract",
+      ],
       noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
       blockers: ["none"],
     };
@@ -88,6 +96,9 @@ Notes:
           result: "supported",
         },
       ],
+      decisionRationaleCaptured: [
+        "Placed user rationale in docs/truthmark/engineering/behaviors/authentication.md under Engineering Decisions and Rationale.",
+      ],
       notes: ["Updated session timeout behavior."],
     });
 
@@ -97,13 +108,42 @@ Notes:
 - Target truth docs: docs/truthmark/engineering/behaviors/authentication.md
 - Intended update: Update documented session timeout behavior.
 - Evidence to verify: src/auth/session.ts:12
+- User-provided decisions/rationale: User decision: preserve a 30 minute timeout because long-lived sessions are out of scope / Lane: engineering contract
 - No-update-needed rationale: not applicable; mapped truth is stale
 - Blockers: none`);
+    expect(report).toContain(`Decision/rationale captured:
+- Placed user rationale in docs/truthmark/engineering/behaviors/authentication.md under Engineering Decisions and Rationale.`);
     expect(parseTruthSyncReport(report)).toMatchObject({
       syncIntent,
+      decisionRationaleCaptured: [
+        "Placed user rationale in docs/truthmark/engineering/behaviors/authentication.md under Engineering Decisions and Rationale.",
+      ],
       changedCode: ["src/auth/session.ts"],
       truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
     });
+  });
+
+  it("requires completed reports to state how user decision rationale was captured", () => {
+    expect(() =>
+      parseTruthSyncReport(`Truth Sync: completed
+
+Changed code reviewed:
+- src/auth/session.ts
+
+Ownership reviewed:
+- docs/truthmark/routes/areas/repository.md
+
+Truth docs updated:
+- docs/truthmark/engineering/behaviors/authentication.md
+
+Evidence checked:
+- Claim: Session timeout behavior is documented.
+  Evidence: src/auth/session.ts:12
+  Result: supported
+
+Notes:
+- Updated session timeout behavior.`),
+    ).toThrow("Decision/rationale captured section is required");
   });
 
   it("does not introduce persistent Sync Plan or lifecycle artifacts", () => {
@@ -176,6 +216,9 @@ Changed code reviewed:
 Truth docs updated:
 - docs/truthmark/engineering/behaviors/authentication.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Session timeout behavior was reviewed.
 
@@ -194,6 +237,9 @@ Changed code reviewed:
 Truth docs updated:
 - docs/truthmark/engineering/behaviors/authentication.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim:${"   "}
   Evidence: src/auth/session.ts:12
@@ -211,6 +257,9 @@ Changed code reviewed:
 
 Truth docs updated:
 - docs/truthmark/engineering/behaviors/authentication.md
+
+Decision/rationale captured:
+- none provided in task conversation
 
 Evidence checked:
 - Claim: Session timeout behavior is documented.

@@ -15,6 +15,7 @@ Sync Intent:
 - Target truth docs: docs/truthmark/engineering/repository/bootstrap-routing.md
 - Intended update: Update session timeout behavior.
 - Evidence to verify: src/auth/session.ts:12 / docs/truthmark/routes/areas.md:11
+- User-provided decisions/rationale: User rationale: session timeout behavior changed for internal implementation consistency
 - No-update-needed rationale: not applicable; mapped truth is stale
 - Blockers: none
 
@@ -23,6 +24,9 @@ Ownership reviewed:
 
 Truth docs updated:
 - docs/truthmark/engineering/repository/bootstrap-routing.md
+
+Decision/rationale captured:
+- Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.
 
 Evidence checked:
 - Claim: Session timeout behavior is documented in the mapped repository truth doc.
