@@ -166,6 +166,24 @@ describe("loadConfig", () => {
     }
   });
 
+  it("does not assume a host platform when platforms are omitted", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace("platforms:\n  - codex\n", ""),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.config?.platforms).toEqual([]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("derives fixed internal paths from a custom workspace", async () => {
     const repo = await createTempRepo();
 

@@ -33,9 +33,6 @@ Evidence checked:
   Evidence: src/auth/session.ts:12 / docs/truthmark/routes/areas.md:11
   Result: supported
 
-Helper scripts:
-- validate-write-lease: skipped, no write lease used
-
 Notes:
 - Updated session timeout behavior.
 ```

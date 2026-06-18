@@ -11,6 +11,24 @@ import { createTempRepo } from "../helpers/temp-repo.js";
 
 const initializeRepo = async (rootDir: string): Promise<void> => {
   await runConfig(rootDir, {});
+  const configPath = path.join(rootDir, ".truthmark/config.yml");
+  const configFile = await fs.readFile(configPath, "utf8");
+  await fs.writeFile(
+    configPath,
+    configFile.replace(
+      "version: 2\n",
+      [
+        "version: 2",
+        "platforms:",
+        "  - codex",
+        "  - opencode",
+        "  - claude-code",
+        "  - github-copilot",
+        "  - gemini-cli",
+        "",
+      ].join("\n"),
+    ),
+  );
   await runInit(rootDir);
 };
 
@@ -812,22 +830,6 @@ Update truth when:
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        `version: 2
-platforms:
-  - github-copilot
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-frontmatter:
-  required: []
-  recommended: []
-ignore: []
-`,
-      );
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         ".github/prompts/truthmark-sync.prompt.md",

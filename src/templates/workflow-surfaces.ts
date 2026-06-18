@@ -1,5 +1,3 @@
-import { stringify } from "yaml";
-
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
@@ -55,7 +53,6 @@ import {
 import { TRUTHMARK_WRITE_WORKER_REPORT_FIELDS } from "../agents/write-lease.js";
 import {
   getTruthmarkWorkflow,
-  type TruthmarkWorkflowHelper,
   type TruthmarkWorkflowId,
   type TruthmarkReadOnlySubagentId,
   type TruthmarkWriteSubagentId,
@@ -230,15 +227,11 @@ const workflowSupportFiles = (workflowId: TruthmarkWorkflowId): string[] => {
     definition.parentRule !== undefined &&
     ((workflow.subagents?.length ?? 0) > 0 ||
       (workflow.writeSubagents?.length ?? 0) > 0);
-  const hasHelperSupport = (workflow.helpers?.length ?? 0) > 0;
 
   return [
     "support/procedure.md",
     "support/report-template.md",
     ...(hasSubagentSupport ? ["support/subagents-and-leases.md"] : []),
-    ...(hasHelperSupport
-      ? ["helper-manifest.yml", "support/helper-policy.md"]
-      : []),
   ];
 };
 
@@ -484,7 +477,6 @@ const renderWorkflowReportTemplate = (
           decisionRationaleCaptured: [
             "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
           ],
-          helperScripts: ["validate-write-lease: skipped, no write lease used"],
           notes: ["Updated session timeout behavior."],
         }),
       )}\nBlocked report example:\n${renderMarkdownExample(
@@ -559,69 +551,6 @@ ${body}
 `;
 };
 
-const renderHelperManifest = (helpers: TruthmarkWorkflowHelper[]): string => {
-  const manifest = {
-    helpers: Object.fromEntries(
-      helpers.map((helper) => [
-        helper.id,
-        {
-          optional: helper.optional,
-          runner: helper.runner,
-          command: helper.command,
-          inputs: helper.inputs,
-          output: helper.output,
-          writes: helper.writes,
-          ...(helper.allowedWrites === undefined
-            ? {}
-            : { allowedWrites: helper.allowedWrites }),
-          fallback: helper.fallback,
-        },
-      ]),
-    ),
-  };
-
-  return [
-    `# Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.`,
-    stringify(manifest, { lineWidth: 0 }),
-  ].join("\n");
-};
-
-const renderHelperPolicySupport = (
-  helpers: TruthmarkWorkflowHelper[],
-): string => {
-  const reportHelperId =
-    helpers.find((helper) => helper.id.endsWith("-report"))?.id ??
-    helpers[0]?.id;
-  const helperLines = helpers
-    .map(
-      (helper) =>
-        `- ${helper.id}: optional ${helper.runner}; manual fallback: ${helper.fallback}`,
-    )
-    .join("\n");
-
-  return renderSkillSupportFile(
-    "Optional Helper CLI Policy",
-    `Optional helper CLI commands may collect deterministic checkout facts or validate artifacts. If the Truthmark CLI is unavailable or cannot return the declared helper output, continue manually using this procedure and report which helper was skipped. Helper output is derived evidence; it does not override direct checkout inspection, workflow write boundaries, or parent acceptance.
-
-Runner detection:
-- Check that the declared Truthmark CLI runner is available before invoking a helper.
-- Invoke helpers through the installed \`truthmark validate ... --json\` CLI command using argv-style arguments from helper-manifest.yml.
-- If unavailable, failing, or returning incompatible output, treat the helper as skipped and use the manual fallback.
-- Do not fail the workflow solely because a helper cannot run.
-
-Available helpers:
-${helperLines}
-
-Final reports should include helper status when helpers are declared for this workflow:
-
-\`\`\`md
-Helper scripts:
-- ${reportHelperId}: ran, passed
-- validate-write-lease: skipped, no write lease used
-\`\`\``,
-  );
-};
-
 const renderWorkflowProcedure = (
   workflowId: TruthmarkWorkflowId,
   config: TruthmarkConfig,
@@ -663,14 +592,6 @@ const renderWorkflowEntrypoint = (
 
     if (supportFile === "support/subagents-and-leases.md") {
       return "read only when using subagents, leases, or accepting worker output";
-    }
-
-    if (supportFile === "support/helper-policy.md") {
-      return "read only when invoking helper validators or reporting helper status";
-    }
-
-    if (supportFile === "helper-manifest.yml") {
-      return "read only when invoking helper validators or validating helper registration";
     }
 
     return "available when relevant to the current step";
@@ -778,7 +699,6 @@ export const renderTruthmarkSkillPackage = ({
     config,
   );
   const subagents = renderWorkflowSubagentSupport(workflowId, host);
-  const helpers = getTruthmarkWorkflow(workflowId).helpers ?? [];
   const supportFiles = workflowSupportFiles(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const files: TruthmarkSkillPackageFile[] = [
@@ -810,19 +730,6 @@ export const renderTruthmarkSkillPackage = ({
         subagents,
       ),
     });
-  }
-
-  if (helpers.length > 0) {
-    files.push(
-      {
-        path: `${skillDirectory}/helper-manifest.yml`,
-        content: renderHelperManifest(helpers),
-      },
-      {
-        path: `${supportDirectory}/helper-policy.md`,
-        content: renderHelperPolicySupport(helpers),
-      },
-    );
   }
 
   return files;
@@ -1730,10 +1637,16 @@ export const renderTruthmarkGeminiCheckCommand = (
 export const renderTruthmarkGeminiPreviewCommand = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-preview",
-    ".gemini/skills/truthmark-preview",
+  const workflow = getTruthmarkWorkflow("truthmark-preview");
+
+  return renderGeminiCommand(
+    workflow.description,
+    `This command is the Gemini CLI entrypoint for Truthmark Preview.
+
+Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
+
+${renderTruthPreviewProcedureBody(config)}
+${renderWorkflowReportTemplate("truthmark-preview", config)}`,
   );
 };
 
@@ -1800,10 +1713,16 @@ export const renderTruthmarkCopilotCheckPrompt = (
 export const renderTruthmarkCopilotPreviewPrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
-  void config;
-  return renderCopilotWorkflowPrompt(
-    "truthmark-preview",
-    ".github/skills/truthmark-preview",
+  const workflow = getTruthmarkWorkflow("truthmark-preview");
+
+  return renderCopilotPromptFile(
+    workflow.description,
+    `This prompt is the GitHub Copilot entrypoint for Truthmark Preview.
+
+Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
+
+${renderTruthPreviewProcedureBody(config)}
+${renderWorkflowReportTemplate("truthmark-preview", config)}`,
   );
 };
 

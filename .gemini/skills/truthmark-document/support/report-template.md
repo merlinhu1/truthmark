@@ -29,9 +29,6 @@ Evidence checked:
   Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/routes/areas.md:9
   Result: supported
 
-Helper scripts:
-- validate-write-lease: skipped, no write lease used
-
 Notes:
 - Documented routing and behavior from route handlers and tests.
 ```

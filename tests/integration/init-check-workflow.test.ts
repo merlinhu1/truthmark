@@ -14,6 +14,14 @@ describe("init and check workflow acceptance", () => {
         cwd: repo.rootDir,
       });
       expect(configResult.exitCode).toBe(0);
+      const configFile = await repo.readFile(".truthmark/config.yml");
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        configFile.replace(
+          "version: 2\n",
+          "version: 2\nplatforms:\n  - codex\n  - claude-code\n",
+        ),
+      );
 
       const initResult = await runCli(["init", "--json"], {
         cwd: repo.rootDir,
@@ -139,6 +147,14 @@ describe("init and check workflow acceptance", () => {
         cwd: repo.rootDir,
       });
       expect(configResult.exitCode).toBe(0);
+      const configFile = await repo.readFile(".truthmark/config.yml");
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        configFile.replace(
+          "version: 2\n",
+          "version: 2\nplatforms:\n  - codex\n  - claude-code\n",
+        ),
+      );
 
       const initResult = await runCli(["init", "--json"], {
         cwd: repo.rootDir,

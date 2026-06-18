@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-18
 ---
 
 # Config, Route, And Check Contracts
@@ -16,7 +16,7 @@ It covers config normalization, route `truth_documents` metadata, diagnostic cat
 
 ## Current Implementation Behavior
 
-Default config exposes `truthmark.workspace` and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`; product `realized_by` and engineering `realizes` links are valid when their targets exist and point to the opposite lane, without requiring reciprocal declarations. Duplicate route entries for the same path, kind, and lane merge relationship metadata for `realized_by`, `realizes`, and `depends_on` by unique sorted set before validation and RouteMap output; conflicting duplicate kinds or lanes are reported as area-index errors. The public ContextPack command surface is retired. Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for an advisory workflow card, write-boundary suggestions, suggested truth docs, review checklist, evidence prompts, optional helper commands, open questions, skipped-helper status, diagnostics, next steps, and compact affected-test guidance, and `truthmark impact --base <ref> --json` for branch-diff routing. These replacement JSON outputs emit paths, metadata, diagnostics, and command arrays only; they do not embed source-file or truth-doc body contents.
+Default config exposes optional `platforms`, `truthmark.workspace`, and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. When `platforms` is omitted, the normalized config defaults to `codex` only instead of generating every supported host surface. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`; product `realized_by` and engineering `realizes` links are valid when their targets exist and point to the opposite lane, without requiring reciprocal declarations. Duplicate route entries for the same path, kind, and lane merge relationship metadata for `realized_by`, `realizes`, and `depends_on` by unique sorted set before validation and RouteMap output; conflicting duplicate kinds or lanes are reported as area-index errors. The public ContextPack command surface is retired. Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for an advisory workflow card, write-boundary suggestions, suggested truth docs, review checklist, evidence prompts, optional helper commands, open questions, skipped-helper status, diagnostics, next steps, and compact affected-test guidance, and `truthmark impact --base <ref> --json` for branch-diff routing. These replacement JSON outputs emit paths, metadata, diagnostics, and command arrays only; they do not embed source-file or truth-doc body contents.
 
 ## Contract Surface
 
@@ -57,6 +57,7 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 - Decision (2026-06-15): Duplicate route relationship metadata is additive for matching path, kind, and lane entries; kind and lane conflicts remain hard validation errors.
 - Decision (2026-06-15): Route relationships are route-local metadata; checks validate relationship targets for existence and lane compatibility without requiring a reciprocal global graph edge.
 - Decision (2026-06-15): ContextPack is folded into workflow status and impact; the standalone `truthmark context` command is hard-removed from the public CLI.
+- Decision (2026-06-18): Omitted `platforms` normalize to Codex only; multi-host generated surfaces are explicit opt-in config.
 
 ## Maintenance Notes
 

@@ -110,7 +110,6 @@ const validateHelperScriptEntries = (
   checks: string[],
 ): void => {
   if (entries === undefined || entries.length === 0) {
-    errors.push("Helper scripts must include status for optional helpers");
     return;
   }
 
@@ -135,7 +134,7 @@ const validateHelperScriptEntries = (
     }
   }
 
-  if (errors.length === 0) {
+  if (errors.length === 0 && requiredHelpers.length > 0) {
     checks.push(`Helper scripts statuses include ${requiredHelpers.join(", ")}`);
   }
 };
@@ -200,12 +199,7 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
         checks.push("Sync Intent");
       }
 
-      validateHelperScriptEntries(
-        report.helperScripts,
-        ["validate-write-lease"],
-        errors,
-        checks,
-      );
+      validateHelperScriptEntries(report.helperScripts, [], errors, checks);
     } catch (error) {
       errors.push(error instanceof Error ? error.message : "invalid Truth Sync report");
     }
@@ -246,12 +240,6 @@ export const validateTruthDocumentReportText = (text: string): WorkflowHelperVal
       errors.push("missing required section: Evidence checked");
     }
 
-    if (hasLabel(text, "Helper scripts")) {
-      checks.push("Helper scripts");
-    } else {
-      errors.push("missing required section: Helper scripts");
-    }
-
     const truthDocsUpdated = getSection(text, "Truth docs updated");
     const truthDocsCreated = getSection(text, "Truth docs created");
     if (truthDocsUpdated === null && truthDocsCreated === null) {
@@ -267,7 +255,7 @@ export const validateTruthDocumentReportText = (text: string): WorkflowHelperVal
     }
 
     validateEvidenceChecked(text, errors, checks);
-    validateHelperScripts(text, ["validate-write-lease"], errors, checks);
+    validateHelperScripts(text, [], errors, checks);
   } else if (status === "blocked") {
     requireBulletSection(text, "Reason", errors, checks);
   }

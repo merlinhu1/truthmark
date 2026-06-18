@@ -10,14 +10,7 @@ const SUPPORTED_PLATFORMS = [
 
 export type TruthmarkPlatform = (typeof SUPPORTED_PLATFORMS)[number];
 
-export const DEFAULT_PLATFORMS = [
-  "codex",
-  "opencode",
-  "claude-code",
-  "github-copilot",
-  "gemini-cli",
-] as const satisfies
-  readonly TruthmarkPlatform[];
+export const DEFAULT_PLATFORMS = [] as const satisfies readonly TruthmarkPlatform[];
 
 type TruthmarkPortalConfig = {
   enabled: boolean;

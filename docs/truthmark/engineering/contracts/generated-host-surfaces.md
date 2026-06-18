@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-15
+last_reviewed: 2026-06-18
 ---
 
 # Generated Host Surfaces
@@ -12,11 +12,11 @@ This doc owns the current generated host surface contract.
 
 ## Scope
 
-It covers configured platform output paths, generated workflow files, managed instruction blocks, and helper metadata.
+It covers configured platform output paths, generated workflow files, managed instruction blocks, and compact optional validation commands.
 
 ## Current Implementation Behavior
 
-Truthmark renders workflow surfaces for configured platforms and leaves already committed files in place when platforms are removed from config. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, subagent guidance, and helper policy. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: they identify the current host entrypoint, tell the agent not to invoke another Truthmark command from inside that entrypoint, point only to host-local skill package files, and use direct checkout inspection as fallback instead of duplicating full workflow bodies.
+Truthmark renders workflow surfaces only for configured platforms and leaves already committed files in place when platforms are removed from config. When `platforms` is omitted, fresh config does not assume a host platform; `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents; generated helper manifest and helper policy files are intentionally not emitted. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: most point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint. Truth Preview remains a read-only prompt/command body for Copilot and Gemini instead of a standalone host skill package.
 
 ## Contract Surface
 
@@ -32,7 +32,7 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 ## Outputs
 
 - Host-native workflow skill packages and compact prompt/command adapters
-- Optional helper manifests
+- Procedure, report-template, and subagent/lease support files only when a workflow needs them
 - Managed instruction blocks with non-versioned refresh guidance
 
 ## Product Truth Links
@@ -44,10 +44,14 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 - Decision (2026-06-14): Generated surfaces must preserve Truthmark as a workflow injector, not a runtime authority.
 - Decision (2026-06-15): GitHub Copilot prompt files and Gemini command files stay compact workflow adapters when a host skill package exists; canonical workflow bodies remain in generated skill support files.
 - Decision (2026-06-15): GitHub Copilot prompt files and Gemini command files must not embed cross-host Truthmark invocation lists; those lists belong in human-facing docs or skill metadata, not adapter bodies.
+- Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are opt-in through explicit `platforms` entries.
+- Decision (2026-06-18): Generated helper manifest and helper policy files are removed; optional validation commands remain in workflow metadata and report validation accepts manual fallback evidence.
+- Decision (2026-06-18): Truth Preview stays a read-only Copilot/Gemini prompt-command surface instead of a standalone generated skill package.
+- Decision (2026-06-18): Truth Sync keeps bounded topology repair in the finish-time path; Sync runs or applies Truth Structure-style repair when safe and scoped, and hands off only unsafe or ambiguous topology work.
 
 ## Maintenance Notes
 
-Update when platform paths, supported hosts, helper manifests, or managed block content changes.
+Update when platform paths, supported hosts, optional validation commands, or managed block content changes.
 
 ## Source References
 

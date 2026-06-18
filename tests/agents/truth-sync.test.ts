@@ -77,10 +77,8 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.",
     );
-    expect(skillBody).toContain(
-      "RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context",
-    );
-    expect(skillBody).toContain(
+    expect(skillBody).not.toContain("RepoIndex, RouteMap, ImpactSet");
+    expect(skillBody).not.toContain(
       "repository-intelligence artifacts were not generated",
     );
     expect(skillBody).not.toContain(
@@ -96,16 +94,15 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "Inspect .truthmark/config.yml and configured route files only when they exist",
     );
-    expect(skillBody).toContain("configured route files");
-    expect(skillBody).toContain("Topology review");
-    expect(skillBody).toContain(
-      "missing, stale, broad, overloaded, catch-all route only",
-    );
+    expect(skillBody).toContain("Topology review and repair");
     expect(skillBody).toContain(
       "run Truth Structure before syncing when topology repair is safe and in scope",
     );
     expect(skillBody).toContain(
-      "stop and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary",
+      "safe in-scope topology repair may update truth routing files and create or update bounded leaf truth docs",
+    );
+    expect(skillBody).toContain(
+      "stop and recommend Truth Structure only when topology repair is unsafe, ambiguous, or outside the current task boundary",
     );
     expect(skillBody).toContain("do not create another generic truth doc");
     expect(skillBody).toContain(
@@ -114,56 +111,13 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "must not append behavior details to a README.md index",
     );
-    expect(skillBody).toContain("create or update a bounded leaf truth doc");
-    expect(skillBody).toContain("Evidence checklist");
-    expect(skillBody).toContain(
-      "route-first: map changed functional files to bounded route owners and primary canonical docs",
+    expect(skillBody).not.toContain("Truth-doc shape repair review");
+    expect(skillBody).not.toContain(
+      "Truth Sync may restructure leased canonical truth docs",
     );
-    expect(skillBody).toContain(
-      "support claims with primary checkout evidence",
-    );
-    expect(skillBody).toContain("tests/examples/canonical docs corroborate");
-    expect(skillBody).toContain(
-      "remove, narrow, or record unsupported claims for manual handoff",
-    );
-    expect(skillBody).toContain(
-      "Maintain architecture docs only for structure-level changes",
-    );
-    expect(skillBody).toContain(
-      "Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs",
-    );
-    expect(skillBody).toContain("When creating or updating a truth doc");
-    expect(skillBody).toContain("configured Truthmark templates root");
-    expect(skillBody).toContain("inspect the routed truth kind");
-    expect(skillBody).toContain("Align existing docs to that template");
-    expect(skillBody).toContain("HTML comments under each template section");
-    expect(skillBody).toContain("normative authoring guidance");
-    expect(skillBody).toContain("Truth-doc ownership review");
-    expect(skillBody).toContain(
-      "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners",
-    );
-    expect(skillBody).toContain(
-      "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason",
-    );
-    expect(skillBody).toContain("Decision/Rationale preservation review");
-    expect(skillBody).toContain(
-      "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
-    );
-    expect(skillBody).toContain(
-      "preserve each current decision and rationale in the correct product or engineering lane owner",
-    );
-    expect(skillBody).toContain(
-      "if ownership of a decision or rationale is unclear, stop with manual-review files",
-    );
-    expect(skillBody).toContain("Truth-doc shape repair review");
-    expect(skillBody).toContain(
-      "Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale",
-    );
-    expect(skillBody).toContain("use Truth Structure for ownership splits");
-    expect(skillBody).toContain(
-      "repair shape when a narrow edit would make truth worse",
-    );
-    expect(skillBody).toContain("report docs restructured and why");
+    expect(skillBody).not.toContain("When creating or updating a truth doc");
+    expect(skillBody).not.toContain("Truth-doc ownership review");
+    expect(skillBody).not.toContain("Decision/Rationale preservation review");
     expect(skillBody).not.toContain("# {{title}}");
     expect(skillBody).toContain(
       "update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change",
@@ -350,8 +304,8 @@ describe("Truth Sync generated metadata", () => {
       );
       expect(surface).toContain("support/procedure.md");
       expect(surface).toContain("support/report-template.md");
-      expect(surface).toContain("helper-manifest.yml");
-      expect(surface).toContain("support/helper-policy.md");
+      expect(surface).not.toContain("helper-manifest.yml");
+      expect(surface).not.toContain("support/helper-policy.md");
       expect(surface).not.toContain("helper package unavailable");
     }
   });
@@ -368,7 +322,7 @@ describe("Truth Sync generated metadata", () => {
       "Parent agent owns Truth Sync acceptance, lease validation, and final report",
     );
     expect(renderTruthmarkSyncSkill()).toContain(
-      "validate the worker report against the actual worker diff",
+      "parent must inspect the actual checkout diff against each lease before accepting a worker report",
     );
     expect(renderTruthmarkSyncClaudeSkill()).toContain(
       "Claude Code subagent mode:",

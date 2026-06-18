@@ -1,21 +1,13 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
-  ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS,
-  DECISION_TRUTH_INSTRUCTIONS,
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
-  FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
-  REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
-  TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
   renderCopilotCustomAgentModeSection,
   renderOpenCodeSubagentModeSection,
-  renderRouteFirstEvidenceGateSection,
   renderHierarchySummary,
   renderBulletBlock,
-  renderTruthDocOwnershipGateSection,
-  renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
 } from "./shared.js";
 import {
@@ -147,50 +139,28 @@ ${renderTruthSyncProductDecisionRuleBlock(config)}
    - User-provided decisions/rationale: decisions, rationale, constraints, tradeoffs, rejection reasons, or scope boundaries from the current task conversation, or "none provided"
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
-11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
-${subagentMode}Topology review:
+11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, repair topology first when the repair is safe and in scope, otherwise stop and recommend Truth Structure instead of guessing.
+${subagentMode}Topology review and repair:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
-- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
-- run Truth Structure before syncing when topology repair is safe and in scope
-- stop and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary
-- report the route files and changed code paths that require structure repair
+- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when topology repair is safe and in scope
+- safe in-scope topology repair may update truth routing files and create or update bounded leaf truth docs needed to map the changed functional code; keep the repair limited to the affected route owner
+- stop and recommend Truth Structure only when topology repair is unsafe, ambiguous, or outside the current task boundary
+- report the route files and changed code paths that required structure repair
+- do not create another generic truth doc
 - README.md files are indexes, not Truth Sync targets
 - must not append behavior details to a README.md index
-- create or update a bounded leaf truth doc when behavior changes do not fit an existing leaf doc
 - write engineering truth under ${config.truthmark.paths.engineeringTruthRoot}; product truth updates under ${config.truthmark.paths.productTruthRoot} are allowed only for explicit current product behavior changes
-${renderTruthDocOwnershipGateSection(
-  "changed functional files and impacted truth docs",
-  "if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners, run Truth Structure before syncing when safe and in scope; otherwise stop and recommend Truth Structure",
-)}
-${TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS}
-${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
-${renderTruthDocRestructureGateSection(
-  "Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale, even when the doc is outside the initially affected route focus.",
-)}
-${ARCHITECTURE_DOC_BOUNDARY_INSTRUCTIONS}
-${renderRouteFirstEvidenceGateSection(
-  "changed functional files",
-  "if no impacted doc changed, report why truth was already current or why sync was skipped",
-)}
-${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 Optional validation tooling:
 - you may run truthmark check when local tooling is available
+- you may validate the final report with \`truthmark validate sync-report <report-file> --json\` when available
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
 - update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change
-Helper status reporting:
-- Validate the report body before adding this validator's own success status; the body may omit \`validate-sync-report\` while validation is pending.
-- After \`truthmark validate sync-report <report-file> --json\` returns \`data.validation.ok: true\`, append or update \`validate-sync-report: ran, passed\` in the final report.
-- If the installed Truthmark CLI is unavailable or the helper is skipped, record \`validate-sync-report: skipped, <reason>\` and manually validate the report shape.
-- Record \`validate-write-lease: ran, passed\` only after validating a concrete write lease; otherwise use a truthful skipped status such as \`skipped, no write lease used\`.
-- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 ${renderHierarchySummary(config)}
-${DECISION_TRUTH_INSTRUCTIONS}
 Parent post-sync verification:
 - verify only truth docs and leased truth routing files changed during sync
 - stop on any unrelated diff caused by the sync step
 - stop if functional code changed during sync
-- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and expected report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction made within the sync write lease
 - verify the final report records ownership review, structure requirement, split, restructure, or manual handoff reason when the ownership review applies
@@ -208,8 +178,6 @@ export const renderTruthSyncSkillBody = (
 ): string => {
   const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
   const workflow = getTruthmarkWorkflow("truthmark-sync");
-  const helperScripts = ["validate-write-lease: skipped, no write lease used"];
-
   return `---
 name: truthmark-sync
 description: ${workflow.description}
@@ -257,16 +225,15 @@ ${renderMarkdownExample(
     decisionRationaleCaptured: [
       "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
     ],
-    helperScripts,
     notes: ["Updated session timeout behavior."],
   }),
 )}
 Blocked report example:
 ${renderMarkdownExample(
   renderTruthSyncBlockedReport({
-    reason: "routing repair is not allowed",
+    reason: "routing repair is unsafe or ambiguous",
     manualReviewFiles: [config.truthmark.paths.routesIndex],
-    nextAction: "update routing metadata and rerun Truth Sync",
+    nextAction: "run Truth Structure with the listed files before rerunning Truth Sync",
   }),
 )}`;
 };
