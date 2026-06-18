@@ -45,7 +45,7 @@ If a linked `truthmark` binary points at this checkout's `dist/main.js`, `truthm
 - Run `npm run dev -- check` when canonical docs, authority order, or areas routing changes.
 - Run `npm run check` before closing out broader code changes unless a narrower command is the only relevant one.
 - Run `npm run release:check` before publishing or handing off release-sensitive packaging changes.
-- Run `npm run dev -- init --json`, inspect generated version-marker diffs, and then run `npm run dev -- check` when the package version changes.
+- Run `npm run dev -- init --json`, inspect generated-surface diffs, and then run `npm run dev -- check` when generated surfaces are expected to refresh.
 
 ## Documentation-Only Changes
 

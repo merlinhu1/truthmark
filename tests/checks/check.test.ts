@@ -744,7 +744,7 @@ Update truth when:
     }
   });
 
-  it("reports stale generated workflow surfaces and version mismatches", async () => {
+  it("reports stale generated workflow surfaces and machine-readable version mismatches", async () => {
     const repo = await createTempRepo();
 
     try {

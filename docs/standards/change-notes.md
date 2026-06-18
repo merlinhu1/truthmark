@@ -84,7 +84,7 @@ Verification:
 - `Version action` must match [versioning.md](versioning.md).
 - If `Version action` is `patch`, `minor`, or `major`, the package version must change in the same working change.
 - If the package version changes, a matching change note for the new version is required because Truthmark releases whenever the package version changes.
-- Versioned change notes must describe all release-worthy pending changes since the previous release tag, not only the package metadata edit or generated version-marker refresh.
+- Versioned change notes must describe all release-worthy pending changes since the previous release tag, not only the package metadata edit or generated-surface refresh.
 - Versioned change notes must name the previous version, new version, diff basis, SemVer rationale, release payload, user-facing release text, and verification.
 - Verification entries should report final useful checks only; do not include red-test scaffolding, agent mistakes, or process chatter in release-facing change notes.
 - Internal-only repository standards may use `Version action: none`.

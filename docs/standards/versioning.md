@@ -43,12 +43,12 @@ No bump examples:
 
 ## Decision Table
 
-| Change | Version action |
-| --- | --- |
-| Backward-incompatible public API or shipped workflow change | `MAJOR + 1`, reset `MINOR` and `PATCH` to `0` |
-| Backward-compatible public API addition, generated-surface capability, shipped workflow capability, deprecation, or substantial user-visible improvement | `MINOR + 1`, reset `PATCH` to `0` |
-| Backward-compatible bug fix, diagnostic correction, packaging fix, or published documentation correction | `PATCH + 1` |
-| Internal-only maintenance with no published package behavior change | no version change |
+| Change                                                                                                                                                   | Version action                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| Backward-incompatible public API or shipped workflow change                                                                                              | `MAJOR + 1`, reset `MINOR` and `PATCH` to `0` |
+| Backward-compatible public API addition, generated-surface capability, shipped workflow capability, deprecation, or substantial user-visible improvement | `MINOR + 1`, reset `PATCH` to `0`             |
+| Backward-compatible bug fix, diagnostic correction, packaging fix, or published documentation correction                                                 | `PATCH + 1`                                   |
+| Internal-only maintenance with no published package behavior change                                                                                      | no version change                             |
 
 Do not use prerelease or build metadata in the committed package version unless the release task explicitly asks for it.
 
@@ -76,7 +76,7 @@ When changing a version number:
 1. State the previous version, requested version, required bump class, and SemVer rationale in the handoff, PR, or release note.
 2. Create or update the matching `changes/` note from [change-notes.md](change-notes.md), covering the full release payload since the previous version.
 3. Update `package.json` and the root package entries in `package-lock.json` together.
-4. Rerun `truthmark init` only when the package version actually changes, then inspect generated version-marker diffs.
+4. Rerun `truthmark init` when generated surfaces need refresh, then inspect the generated-surface diffs. Agent-visible generated text uses managed/stale-surface wording instead of package version markers; machine-readable helper metadata may still carry versions.
 5. Run the focused verification required by [testing-and-verification.md](testing-and-verification.md). For release-sensitive package version changes, `npm run release:check` is the default final gate.
 
 ## Agent Output
