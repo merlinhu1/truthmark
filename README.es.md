@@ -171,7 +171,7 @@ Los archivos exactos dependen de `.truthmark/config.yml`, pero la instalación s
 
 La mayoría de los repositorios necesita una pasada de limpieza después de la inicialización.
 
-El scaffold predeterminado empieza con un área amplia `repository`. Los repositorios reales suelen necesitar rutas más precisas.
+El scaffold predeterminado empieza con un área amplia provisional de arranque `repository`. Antes de sincronizar código real de forma normal, divide esa ruta de arranque en rutas precisas.
 
 Pide a tu agente que divida la ruta amplia en áreas reales de producto, servicio, dominio o propiedad:
 
@@ -538,7 +538,7 @@ Una ruta le dice al agente:
 - cuándo debe actualizarse la verdad
 - qué tipo de documento de verdad participa
 
-El scaffold predeterminado empieza amplio. Los repositorios existentes suelen tener que dividir la ruta predeterminada en áreas reales de propiedad.
+El scaffold predeterminado empieza con una ruta amplia provisional de arranque para que un repositorio nuevo sea enrutable. Cuando se toca código real, divide esa ruta de arranque en áreas reales de producto, servicio, dominio o propiedad antes de Truth Sync normal; no conviertas el handoff de arranque en un documento comodín de comportamiento.
 
 Ejemplo:
 

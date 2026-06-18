@@ -178,6 +178,7 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
         ["Changed code reviewed", report.changedCode],
         ["Ownership reviewed", report.ownershipReviewed],
         ["Truth docs updated", report.truthDocsUpdated],
+        ["Decision/rationale captured", report.decisionRationaleCaptured],
         ["Notes", report.notes],
       ] as const) {
         if (items.length === 0) {
@@ -193,6 +194,10 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
         checks.push(
           "Evidence checked entries include Claim:, Evidence:, and Result: supported | narrowed | removed | blocked",
         );
+      }
+
+      if (report.syncIntent !== undefined) {
+        checks.push("Sync Intent");
       }
 
       validateHelperScriptEntries(

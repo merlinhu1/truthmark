@@ -171,7 +171,7 @@ The exact files depend on `.truthmark/config.yml`, but the install always has th
 
 Most repositories need one cleanup pass after initialization.
 
-The default scaffold starts with a broad `repository` area. Real repositories usually need more precise routing.
+The default scaffold starts with a provisional broad `repository` bootstrap area. Before normal syncing on real code, split that bootstrap route into precise routing.
 
 Ask your agent to split the broad route into actual product, service, domain, or ownership areas:
 
@@ -461,7 +461,7 @@ It is deliberately separate from the core truth workflow:
 
 - Markdown truth docs remain canonical.
 - Generated Portal HTML is presentation only.
-- Portal is manual-only; it does not run as a completion gate, Truth Sync step, `truthmark check` step, or automatic post-change hook.
+- Portal is manual-only; it does not run as a completion review, Truth Sync step, `truthmark check` step, or automatic post-change hook.
 - Portal writes stay inside the fixed Truthmark-derived output directory.
 - Generated pages should use local assets, source provenance, and a visible Markdown-canonical disclaimer.
 
@@ -538,7 +538,7 @@ A route tells the agent:
 - when truth should be updated
 - what kind of truth doc is involved
 
-The default scaffold starts broad. Existing repositories should usually split the default route into real ownership areas.
+The default scaffold starts with a provisional broad bootstrap route so a fresh repository is routeable. When real code is touched, split that bootstrap route into real product, service, domain, or ownership areas before normal Truth Sync; do not turn the bootstrap handoff into a catch-all behavior doc.
 
 Example:
 

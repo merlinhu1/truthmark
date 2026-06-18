@@ -37,7 +37,7 @@ export const renderTruthSyncInstructions = (
   return `### Truth Sync
 Automatic finish-time trigger: use the truthmark-sync skill before finishing if changed functional code exists; inspect staged, unstaged, and untracked functional code files.
 Explicit invocation runs immediately: ${TRUTH_SYNC_EXPLICIT_INVOCATIONS}
-Later functional-code changes reopen the finish-time requirement, and an earlier explicit run only satisfies the finish gate if no later functional-code changes occur.
+Later functional-code changes need a fresh finish-time review, and an earlier explicit run only satisfies the finish-time review if no later functional-code changes occur.
 Memory anchor: code changed -> relevant tests -> Truth Sync -> report.
 Delegate to a subagent only when the host supports subagent dispatch; the acting agent and environment own that choice.
 Inspect the current checkout directly. WorkflowState and ImpactSet are optional compact derived context; they do not override checkout evidence or write boundaries.
@@ -49,7 +49,7 @@ Truthmark is agent-native: installed skills and this managed block are the workf
 Code first: code leads; truth docs follow; Truth Sync never rewrites code for alignment.
 May write truth docs and configured truth routing files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when present; must not rewrite functional code.
 Read configured route files (${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/) only when they exist and routing resolution requires them.
-If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when repair is safe and in scope; otherwise block and recommend Truth Structure.
+If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when repair is safe and in scope; otherwise stop and recommend Truth Structure.
 If mapped truth is missing, extend mapped truth docs first, create an area-local truth doc second, and create a new area only as a last resort.
 Skip only for: ${TRUTH_SYNC_SKIP_REASONS.join("; ")}.`;
 };

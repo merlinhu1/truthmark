@@ -21,14 +21,22 @@ const portalPaths = [
 const readOnlyProcedurePaths = [
   ".agents/skills/truthmark-check/support/procedure.md",
   ".agents/skills/truthmark-preview/support/procedure.md",
+  ".opencode/skills/truthmark-check/support/procedure.md",
+  ".opencode/skills/truthmark-preview/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
   ".claude/skills/truthmark-preview/support/procedure.md",
   ".gemini/skills/truthmark-check/support/procedure.md",
   ".gemini/skills/truthmark-preview/support/procedure.md",
   ".github/skills/truthmark-check/support/procedure.md",
   ".github/skills/truthmark-preview/support/procedure.md",
-  ".opencode/skills/truthmark-check/support/procedure.md",
-  ".opencode/skills/truthmark-preview/support/procedure.md",
+];
+
+const syncProcedurePaths = [
+  ".agents/skills/truthmark-sync/support/procedure.md",
+  ".opencode/skills/truthmark-sync/support/procedure.md",
+  ".claude/skills/truthmark-sync/support/procedure.md",
+  ".gemini/skills/truthmark-sync/support/procedure.md",
+  ".github/skills/truthmark-sync/support/procedure.md",
 ];
 
 const staleWriteAuthorizingLaneText =
@@ -44,6 +52,32 @@ describe("Truthmark Portal generated surfaces", () => {
       );
       expect(content, procedurePath).toContain(
         "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
+      );
+    }
+  });
+
+  it("keeps checked-in Sync procedures on the cheap product-truth decision", () => {
+    for (const procedurePath of syncProcedurePaths) {
+      const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
+
+      expect(content, procedurePath).toContain("Product truth decision");
+      expect(content, procedurePath).toContain(
+        "ask whether a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed",
+      );
+      expect(content, procedurePath).toContain(
+        "if no, default to engineering truth under docs/truthmark/engineering for internal implementation changes",
+      );
+      expect(content, procedurePath).toContain(
+        "Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.",
+      );
+      expect(content, procedurePath).toContain(
+        "User-provided decisions/rationale",
+      );
+      expect(content, procedurePath).not.toContain(
+        staleWriteAuthorizingLaneText,
+      );
+      expect(content, procedurePath).not.toContain(
+        "classify lane impact as product-lane, engineering-lane, both-lane, or ambiguous before writing",
       );
     }
   });
@@ -64,6 +98,11 @@ describe("Truthmark Portal generated surfaces", () => {
       "workflow instructions --json",
       ["workflow", "status", "--json"].join(" "),
       "live preflight",
+      "OpenSpec-style",
+      "proposal/spec/task",
+      "spec lifecycle",
+      "archive/apply",
+      "truthmark/changes",
     ];
 
     expect(publicWorkflowSurfaces.length).toBeGreaterThan(0);
@@ -90,17 +129,16 @@ describe("Truthmark Portal generated surfaces", () => {
     const syncHelperManifest =
       byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
     const syncHelperPolicy =
-      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ??
-      "";
+      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ?? "";
     const previewSkill =
       byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
 
-    expect(syncSkill).toContain("Quick procedure:");
-    expect(syncSkill).toContain(
-      "direct checkout inspection is the canonical path",
-    );
-    expect(syncSkill).toContain(
-      "Read support/procedure.md before editing truth docs.",
+    expect(syncSkill).toContain("Use this skill automatically before finishing");
+    expect(syncSkill).not.toContain("Parent workflow:");
+    expect(syncSkill).toContain("support/procedure.md");
+    expect(syncSkill).toContain("support/report-template.md");
+    expect(byPath.get(".opencode/skills/truthmark-sync/SKILL.md")).toContain(
+      "Use this skill automatically before finishing",
     );
     expect(syncProcedure).toContain("Code verification is parent-owned");
     expect(syncProcedure).toContain(
@@ -114,6 +152,39 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(syncHelperPolicy).toContain("truthmark validate ... --json");
     expect(previewSkill).toContain("Truth Preview is read-only");
     expect(previewSkill).not.toContain("CLI is unavailable");
+  });
+
+  it("does not render unused repo-local agent package copies", () => {
+    const config = createDefaultConfig();
+    const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
+
+    expect(paths.some((path) => path.startsWith(".truthmark/agent/"))).toBe(false);
+    expect(paths).toContain(".agents/skills/truthmark-sync/SKILL.md");
+    expect(paths).toContain(".agents/skills/truthmark-sync/support/procedure.md");
+    expect(paths).toContain(".opencode/skills/truthmark-sync/support/procedure.md");
+  });
+
+  it("renders host skill packages with colocated native resources", () => {
+    const config = createDefaultConfig();
+    const byPath = new Map(
+      renderGeneratedSurfaces(config).map((surface) => [
+        surface.path,
+        surface.content,
+      ]),
+    );
+    const claudeProcedure =
+      byPath.get(".claude/skills/truthmark-sync/support/procedure.md") ?? "";
+    const codexProcedure =
+      byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
+    const opencodeReport =
+      byPath.get(".opencode/skills/truthmark-sync/support/report-template.md") ??
+      "";
+
+    expect(claudeProcedure).toContain("Parent workflow:");
+    expect(codexProcedure).toContain("Parent workflow:");
+    expect(opencodeReport).toContain("Changed code reviewed:");
+    expect(opencodeReport).toContain("Decision/rationale captured:");
+    expect(claudeProcedure).not.toContain("truthmark:adapter-mode=expanded-adapter");
   });
 
   it("omits Portal surfaces and AGENTS wording when disabled", () => {

@@ -13,7 +13,6 @@ import {
   renderHierarchySummary,
   renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
@@ -142,7 +141,6 @@ name: truthmark-check
 description: ${workflow.description}
 argument-hint: Optional area, doc path, or audit focus
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthCheckProcedureBody(config, options)}

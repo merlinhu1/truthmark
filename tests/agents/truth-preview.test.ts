@@ -9,7 +9,6 @@ import {
   renderTruthmarkPreviewSkill,
   renderTruthmarkPreviewSkillMetadata,
 } from "../../src/templates/workflow-surfaces.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthPreviewSkillBody", () => {
   it("renders a thin explicit read-only preview workflow", () => {
@@ -17,7 +16,6 @@ describe("renderTruthPreviewSkillBody", () => {
 
     expect(TRUTH_PREVIEW_EXPLICIT_INVOCATIONS).toContain("/truthmark:preview");
     expect(skill).toContain("name: truthmark-preview");
-    expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
     expect(skill).toContain("Truth Preview is read-only");
     expect(skill).toContain("intended, not authorized");
     expect(skill).toContain("must not edit files");
@@ -32,7 +30,7 @@ describe("renderTruthPreviewSkillBody", () => {
     expect(skill).toContain("Likely route owner");
     expect(skill).toContain("Expected write classes");
     expect(skill).toContain("Suggested subagent use");
-    expect(skill).toContain("Blocking ambiguity");
+    expect(skill).toContain("Manual handoff questions");
     expect(skill).toContain("Handoff:");
     expect(skill).toContain("truth_route_auditor");
     expect(skill).not.toContain("truth_doc_writer");

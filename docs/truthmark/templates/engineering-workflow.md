@@ -47,7 +47,7 @@ Include validation, defaults, and normalization that happen before execution.
 
 <!--
 Describe synchronous/asynchronous execution, concurrency, locking, leases, batching, ordering, and idempotency behavior.
-State whether the workflow is user-blocking, background, distributed, or delegated to another system.
+State whether the workflow waits for user action, runs in the background, is distributed, or is delegated to another system.
 -->
 
 {{execution_model}}

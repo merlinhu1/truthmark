@@ -31,6 +31,7 @@ import {
   renderTruthmarkGeminiRouteAuditorAgent,
   renderTruthmarkGeminiStructureCommand,
   renderTruthmarkGeminiSyncCommand,
+  renderTruthmarkSkillPackage,
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkOpenCodeClaimVerifierAgent,
   renderTruthmarkOpenCodeDocReviewerAgent,
@@ -40,7 +41,6 @@ import {
   renderTruthmarkPreviewSkillMetadata,
   renderTruthmarkRealizeSkillMetadata,
   renderTruthmarkRouteAuditorAgent,
-  renderTruthmarkSkillPackage,
   renderTruthmarkStructureSkillMetadata,
   renderTruthmarkSyncSkillMetadata,
   TRUTHMARK_CHECK_SKILL_METADATA_PATH,
@@ -185,7 +185,7 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
         skillPath: TRUTHMARK_PORTAL_SKILL_PATH,
         workflowId: "truthmark-portal",
         host: "codex",
-        config,
+      config,
       }),
       {
         path: TRUTHMARK_PORTAL_SKILL_METADATA_PATH,
@@ -259,7 +259,7 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
         skillPath: ".opencode/skills/truthmark-portal/SKILL.md",
         workflowId: "truthmark-portal",
         host: "opencode",
-        config,
+      config,
       }),
     );
   }

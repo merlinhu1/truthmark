@@ -65,7 +65,7 @@ Include user-facing authorization behavior and operator access requirements when
 
 <!--
 Describe deployment mechanism, migration ordering, compatibility windows, rollback path, and known irreversible operations.
-Call out manual gates, smoke checks, and post-deploy verification responsibilities.
+Call out manual review points, smoke checks, and post-deploy verification responsibilities.
 -->
 
 {{deployment_and_rollback}}

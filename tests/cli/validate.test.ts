@@ -14,6 +14,9 @@ Ownership reviewed:
 Truth docs updated:
 - docs/truthmark/truth/init-and-scaffold.md
 
+Decision/rationale captured:
+- none provided in task conversation
+
 Evidence checked:
 - Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
@@ -26,6 +29,21 @@ Helper scripts:
 Notes:
 - Complete.
 `;
+
+const validSyncReportWithIntent = validSyncReport.replace(
+  "Ownership reviewed:",
+  `Sync Intent:
+- Changed code reviewed: src/init/init.ts
+- Affected route/truth owner: docs/truthmark/routes/areas.md
+- Target truth docs: docs/truthmark/truth/init-and-scaffold.md
+- Intended update: Update init workflow truth.
+- Evidence to verify: src/init/init.ts
+- User-provided decisions/rationale: none provided in task conversation
+- No-update-needed rationale: not applicable; mapped truth is stale
+- Blockers: none
+
+Ownership reviewed:`,
+);
 
 const validDocumentReport = `Truth Document: completed
 
@@ -83,6 +101,26 @@ describe("truthmark validate CLI helpers", () => {
         },
       });
       expect(output.data?.validation?.checks).toContain("status: completed");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("validates sync reports that include optional Sync Intent", async () => {
+    const repo = await createTempRepo();
+    try {
+      await repo.writeFile("report.md", validSyncReportWithIntent);
+
+      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
+        cwd: repo.rootDir,
+      });
+      const output = JSON.parse(result.stdout) as {
+        data?: { validation?: { ok: boolean; checks?: string[] } };
+      };
+
+      expect(result.exitCode).toBe(0);
+      expect(output.data?.validation?.ok).toBe(true);
+      expect(output.data?.validation?.checks).toContain("Sync Intent");
     } finally {
       await repo.cleanup();
     }

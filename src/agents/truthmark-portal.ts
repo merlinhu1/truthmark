@@ -1,5 +1,4 @@
 import type { TruthmarkConfig } from "../config/schema.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 import { defaultAgentConfig, renderHierarchySummary } from "./shared.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
@@ -14,7 +13,7 @@ export const renderTruthmarkPortalProcedureBody = (
 
   return `# Truthmark Portal
 
-Truthmark Portal is a manual-only presentation workflow. It is never a completion gate, never Truth Sync, and runs only when the user explicitly asks to generate, refresh, or update the committed static HTML Portal.
+Truthmark Portal is a manual-only presentation workflow. It is never an automatic completion workflow, never Truth Sync, and runs only when the user explicitly asks to generate, refresh, or update the committed static HTML Portal.
 
 Invocations: ${TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS}
 
@@ -57,7 +56,6 @@ name: truthmark-portal
 description: ${workflow.description}
 argument-hint: Optional portal generation focus
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthmarkPortalProcedureBody(config)}

@@ -48,7 +48,7 @@ export const renderReadOnlyLaneClassificationRuleBlock = (
       `product-lane ownership belongs under ${productTruthRoot} and describes product promises, boundaries, rationale, decisions, and success criteria`,
       `engineering-lane ownership belongs under ${engineeringTruthRoot} and describes source-backed current realization, contracts, architecture, workflows, operations, or tests`,
       "both-lane ownership uses separate product and engineering docs cross-linked in route YAML with realized_by and realizes, not in doc frontmatter",
-      "ambiguous lane ownership should be reported as blocked or routed to Truth Structure",
+      "ambiguous lane ownership should be reported for manual handoff or routed to Truth Structure",
       LANE_INVARIANT,
     ].join("\n"),
     indent,
@@ -76,12 +76,12 @@ export const renderLaneClassificationInstructions = (
   const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
 
   return [
-    "Lane classification gate:",
+    "Lane review questions:",
     "- before writing canonical truth docs, classify the request or change as product-lane, engineering-lane, both-lane, or ambiguous",
     `- product-lane writes belong under ${productTruthRoot} and state product promises, boundaries, rationale, decisions, and success criteria`,
     `- engineering-lane writes belong under ${engineeringTruthRoot} and state source-backed current realization, contracts, architecture, workflows, operations, or tests`,
     "- both-lane work must write separate product and engineering docs and cross-link them in route YAML with realized_by and realizes, not in doc frontmatter",
-    "- ambiguous lane ownership must block or invoke Truth Structure instead of writing a mixed document",
+    "- ambiguous lane ownership must stop or invoke Truth Structure instead of writing a mixed document",
     `- ${LANE_INVARIANT}`,
   ].join("\n");
 };
@@ -111,31 +111,31 @@ export const renderTruthDocOwnershipGateSection = (
   outcome: string,
 ): string => {
   return [
-    "Truth-doc ownership gate:",
+    "Truth-doc ownership review:",
     `- before editing or relying on ${subject}, verify each target/source truth doc is a bounded owner for the behavior`,
     "- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it",
     `- ${outcome}`,
-    "- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Blocked reason as applicable",
+    "- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason as applicable",
   ].join("\n");
 };
 
 export const TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS = [
-  "Decision/Rationale preservation gate:",
+  "Decision/Rationale preservation review:",
   "- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections in every source or touched truth doc",
   "- preserve each current decision and rationale in the correct product or engineering lane owner; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index",
   "- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result",
-  "- if ownership of a decision or rationale is unclear, block with manual-review files instead of deleting it or guessing",
+  "- if ownership of a decision or rationale is unclear, stop with manual-review files instead of deleting it or guessing",
   "- after the edit, verify every touched truth doc keeps lane-appropriate decision/rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked",
 ].join("\n");
 
 export const renderTruthDocRestructureGateSection = (scope: string): string => {
   return [
-    "Truth-doc shape repair gate:",
+    "Truth-doc shape repair review:",
     `- ${scope}`,
-    "- repair shape in place only after the ownership gate confirms the doc is the right bounded owner",
+    "- repair shape in place only after the ownership review confirms the doc is the right bounded owner",
     "- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work",
     "- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings",
-    "- preserve supported claims; remove, narrow, or block unsupported or stale claims",
+    "- preserve supported claims; remove, narrow, or record unsupported or stale claims for manual handoff",
     "- report docs restructured and why a narrow edit was not sufficient",
   ].join("\n");
 };
@@ -150,28 +150,28 @@ export const renderRouteFirstEvidenceGateSection = (
   noImpactedDocOutcome: string,
 ): string => {
   return [
-    "Evidence Gate:",
+    "Evidence checklist:",
     `- route-first: map ${subject} to bounded route owners and primary canonical docs`,
     "- review new or changed behavior-bearing claims only in touched docs, route ownership, lane-specific decisions, and rationale",
     "- support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions",
     "- tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts",
-    "- remove, narrow, or block unsupported claims",
+    "- remove, narrow, or record unsupported claims for manual handoff",
     `- ${noImpactedDocOutcome}`,
   ].join("\n");
 };
 
 export const renderTopologyEvidenceGateSection = (): string => {
   return [
-    "Evidence Gate:",
-    "- apply the Evidence Gate before finishing when Truth Structure writes routed docs, ownership claims, lane-specific decisions, or rationale",
+    "Evidence checklist:",
+    "- apply the evidence checklist before finishing when Truth Structure writes routed docs, ownership claims, lane-specific decisions, or rationale",
     "- support ownership/behavior claims with topology or primary checkout evidence from layout, implementation boundaries, docs, config, route files, tests, templates, schemas, or contracts",
-    "- tests/examples/canonical docs corroborate; remove, narrow, or block unsupported claims",
+    "- tests/examples/canonical docs corroborate; remove, narrow, or record unsupported claims for manual handoff",
   ].join("\n");
 };
 
 export const renderAuditEvidenceGateSection = (): string => {
   return [
-    "Evidence Gate:",
+    "Evidence checklist:",
     "- support each finding and suggested fix with evidence from config, route files, canonical docs, implementation, templates, or tests",
     "- canonical docs are context, not sole proof when implementation conflicts",
     "- remove unsupported findings or mark open questions; validate changed claims if you edit docs",

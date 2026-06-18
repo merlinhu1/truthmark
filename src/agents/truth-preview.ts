@@ -6,7 +6,6 @@ import {
   renderHierarchySummary,
   renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 const renderMarkdownExample = (content: string): string => {
@@ -50,7 +49,7 @@ Suggested subagent use:
 - write workers: none in Preview
 - leases needed: none in Preview
 
-Blocking ambiguity:
+Manual handoff questions:
 - none identified in preview
 
 Handoff:
@@ -67,7 +66,7 @@ Invocations: ${TRUTH_PREVIEW_EXPLICIT_INVOCATIONS}
 Truth Preview is read-only. Its report is intended, not authorized.
 
 Purpose:
-- preview the likely Truthmark workflow, route owner, target files, expected write classes, suggested subagent use, and blocking ambiguity before edits happen
+- preview the likely Truthmark workflow, route owner, target files, expected write classes, suggested subagent use, and manual handoff questions before edits happen
 - report likely product lane impact, engineering lane impact, target docs, and ambiguity before edits
 - hand off to the selected workflow after user approval
 - keep the selector thin so agents can avoid loading or acting through heavier workflows prematurely
@@ -110,7 +109,6 @@ name: truthmark-preview
 description: ${workflow.description}
 argument-hint: Optional requested outcome, code area, doc path, or routing question
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthPreviewProcedureBody(config)}

@@ -33,7 +33,7 @@ Truthmark renders workflow surfaces for configured platforms and leaves already 
 
 - Host-native workflow skill packages and compact prompt/command adapters
 - Optional helper manifests
-- Managed instruction blocks with the Truthmark version marker
+- Managed instruction blocks with non-versioned refresh guidance
 
 ## Product Truth Links
 

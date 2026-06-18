@@ -3,7 +3,6 @@ name: truthmark-sync
 description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: 2.2.1
 ---
 
 # Truthmark Sync
@@ -23,7 +22,7 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
 - helper-manifest.yml — read only when invoking helper validators or validating helper registration

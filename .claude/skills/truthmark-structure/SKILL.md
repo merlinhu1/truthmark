@@ -3,7 +3,6 @@ name: truthmark-structure
 description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: 2.2.1
 ---
 
 # Truthmark Structure
@@ -21,6 +20,6 @@ Quick procedure:
 - Read support/report-template.md before the final report.
 
 Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core quality gates
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output

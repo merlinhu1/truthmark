@@ -15,8 +15,14 @@ describe("buildImpactSet", () => {
   it("maps changed files to routes, truth docs, and tests", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
-    await repo.writeFile("src/math.ts", "export function add(left: number, right: number) { return left + right; }\n");
-    await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\n");
+    await repo.writeFile(
+      "src/math.ts",
+      "export function add(left: number, right: number) { return left + right; }\n",
+    );
+    await repo.writeFile(
+      "tests/math.test.ts",
+      "import { add } from '../src/math.js';\n",
+    );
     await runConfig(repo.rootDir, { force: false, stdout: false });
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
@@ -30,7 +36,9 @@ describe("buildImpactSet", () => {
     const impact = await buildImpactSet(repo.rootDir, { base: "main" });
 
     expect(impact.schemaVersion).toBe("impact-set/v0");
-    expect(impact.changedFiles).toContainEqual(expect.objectContaining({ path: "src/math.ts", status: "modified" }));
+    expect(impact.changedFiles).toContainEqual(
+      expect.objectContaining({ path: "src/math.ts", status: "modified" }),
+    );
     expect(impact.affectedTruthDocs.length).toBeGreaterThan(0);
     expect(impact.affectedTests).toContain("tests/math.test.ts");
     expect(impact).not.toHaveProperty("changedPublicSymbols");
@@ -45,7 +53,8 @@ describe("buildImpactSet", () => {
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
 
-    const truthDocPath = "docs/truthmark/engineering/repository/overview.md";
+    const truthDocPath =
+      "docs/truthmark/engineering/repository/bootstrap-routing.md";
     await repo.writeFile(
       truthDocPath,
       `${await repo.readFile(truthDocPath)}\nUpdated direct truth-doc edit.\n`,
@@ -57,9 +66,11 @@ describe("buildImpactSet", () => {
       expect.objectContaining({ path: truthDocPath, status: "modified" }),
     );
     expect(impact.affectedTruthDocs).toContain(truthDocPath);
-    expect(impact.affectedRoutes.some((route) => route.truthDocs.includes(truthDocPath))).toBe(
-      true,
-    );
+    expect(
+      impact.affectedRoutes.some((route) =>
+        route.truthDocs.includes(truthDocPath),
+      ),
+    ).toBe(true);
   });
 
   it("reports when a base ref cannot be compared", async () => {
@@ -75,7 +86,9 @@ describe("buildImpactSet", () => {
       expect.objectContaining({
         category: "impact",
         severity: "error",
-        message: expect.stringContaining("Unable to compare base ref missing-ref"),
+        message: expect.stringContaining(
+          "Unable to compare base ref missing-ref",
+        ),
       }),
     );
   });
@@ -99,7 +112,9 @@ describe("buildImpactSet", () => {
         category: "impact",
         severity: "review",
         file: "src/index.ts",
-        message: expect.stringContaining("affected truth docs but none were changed"),
+        message: expect.stringContaining(
+          "affected truth docs but none were changed",
+        ),
       }),
     );
   });
@@ -109,12 +124,18 @@ describe("buildImpactSet", () => {
     repos.push(repo);
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await repo.writeFile("tests/index.test.ts", "import { value } from '../src/index.js';\n");
+    await repo.writeFile(
+      "tests/index.test.ts",
+      "import { value } from '../src/index.js';\n",
+    );
     await runConfig(repo.rootDir, { force: false, stdout: false });
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
-    await repo.writeFile("tests/index.test.ts", "import { value } from '../src/index.js';\nvoid value;\n");
+    await repo.writeFile(
+      "tests/index.test.ts",
+      "import { value } from '../src/index.js';\nvoid value;\n",
+    );
 
     const impact = await buildImpactSet(repo.rootDir, { base: "main" });
 
@@ -130,7 +151,10 @@ describe("buildImpactSet", () => {
   it("selects package-level tests for changed package files", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
-    await repo.writeFile("src/repo-index/package-metadata.ts", "export const manager = 'npm';\n");
+    await repo.writeFile(
+      "src/repo-index/package-metadata.ts",
+      "export const manager = 'npm';\n",
+    );
     await repo.writeFile(
       "tests/repo-index/build.test.ts",
       "import { describe, it } from 'vitest';\ndescribe('repo index package', () => { it('builds', () => undefined); });\n",
@@ -201,7 +225,10 @@ Update truth when:
         status: "renamed",
       }),
     );
-    expect(impact.affectedTruthDocs).toEqual(["docs/truthmark/truth/new.md", "docs/truthmark/truth/old.md"]);
+    expect(impact.affectedTruthDocs).toEqual([
+      "docs/truthmark/truth/new.md",
+      "docs/truthmark/truth/old.md",
+    ]);
     expect(impact).not.toHaveProperty("changedPublicSymbols");
   });
 });

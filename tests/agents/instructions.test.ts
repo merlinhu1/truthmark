@@ -24,7 +24,7 @@ describe("renderTruthSyncInstructions", () => {
     );
     expect(instructions).toContain("documentation-only change");
     expect(instructions).toContain("Explicit invocation runs immediately");
-    expect(instructions).toContain("Later functional-code changes reopen the finish-time requirement");
+    expect(instructions).toContain("Later functional-code changes need a fresh finish-time review");
     expect(instructions).toContain("must not rewrite functional code");
     expect(instructions).toContain("host supports subagent dispatch");
     expect(instructions).toContain("WorkflowState and ImpactSet are optional compact derived context");
@@ -32,7 +32,7 @@ describe("renderTruthSyncInstructions", () => {
       "If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner",
     );
     expect(instructions).toContain("run Truth Structure before syncing");
-    expect(instructions).toContain("otherwise block and recommend Truth Structure");
+    expect(instructions).toContain("otherwise stop and recommend Truth Structure");
     expect(instructions).not.toContain(".truthmark/local.yml");
     expect(instructions).not.toContain("truth_sync.sync_agent");
     expect(instructions).not.toContain("Truth Sync: completed");

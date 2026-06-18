@@ -18,7 +18,7 @@ import {
   renderHierarchicalAreasIndexTemplate,
   renderOperationsDocTemplateFile,
   renderProductCapabilityDocTemplateFile,
-  renderBehaviorLeafDocTemplate,
+  renderBootstrapRoutingDocTemplate,
   renderTestBehaviorDocTemplateFile,
   renderWorkflowDocTemplateFile,
 } from "../templates/init-files.js";
@@ -53,26 +53,6 @@ const truthTemplatePath = (
   fileName: string,
 ): string => {
   return `${config.truthmark.paths.templatesRoot}/${fileName}`;
-};
-
-const readBehaviorDocTemplate = async (
-  rootDir: string,
-  config: TruthmarkConfig,
-): Promise<string> => {
-  try {
-    return await fs.readFile(
-      resolveRepoPath(
-        rootDir,
-        truthTemplatePath(config, BEHAVIOR_DOC_TEMPLATE_FILE_NAME),
-      ),
-      "utf8",
-    );
-  } catch (error: unknown) {
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
-      return renderBehaviorDocTemplateFile();
-    }
-    throw error;
-  }
 };
 
 const ensureOrUpdateTruthDocTemplate = async (
@@ -203,12 +183,11 @@ export const scaffoldHierarchy = async (
       renderProductCapabilityDocTemplateFile(),
     ),
   );
-  const behaviorDocTemplate = await readBehaviorDocTemplate(rootDir, config);
   results.push(
     await ensureRepoFile(
       rootDir,
-      `${truthDomainRoot}/overview.md`,
-      renderBehaviorLeafDocTemplate(config, behaviorDocTemplate),
+      `${truthDomainRoot}/bootstrap-routing.md`,
+      renderBootstrapRoutingDocTemplate(config),
     ),
   );
   return results;

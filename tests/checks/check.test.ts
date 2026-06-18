@@ -7,7 +7,6 @@ import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
 import type { TruthHealthScorecard } from "../../src/checks/scorecard.js";
 import { runConfig } from "../../src/config/command.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const initializeRepo = async (rootDir: string): Promise<void> => {
@@ -89,6 +88,88 @@ describe("runCheck", () => {
     }
   });
 
+  it("reports missing host skill package support files", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await fs.rm(
+        `${repo.rootDir}/.agents/skills/truthmark-sync/support/procedure.md`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".agents/skills/truthmark-sync/support/procedure.md" &&
+            diagnostic.message.includes("is missing"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports stale host skill package entrypoints", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".agents/skills/truthmark-sync/SKILL.md",
+        `${await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")}
+Local stale edit.
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === ".agents/skills/truthmark-sync/SKILL.md" &&
+            diagnostic.message.includes("is stale"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports stale host skill package support files", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".claude/skills/truthmark-sync/support/procedure.md",
+        `${await repo.readFile(
+          ".claude/skills/truthmark-sync/support/procedure.md",
+        )}
+Local stale edit.
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.some(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".claude/skills/truthmark-sync/support/procedure.md" &&
+            diagnostic.message.includes("is stale"),
+        ),
+      ).toBe(true);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("returns links diagnostics for broken internal markdown links", async () => {
     const repo = await createTempRepo();
 
@@ -96,8 +177,8 @@ describe("runCheck", () => {
       await runConfig(repo.rootDir, {});
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Missing](docs/missing.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Missing](docs/missing.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -127,8 +208,8 @@ describe("runCheck", () => {
         "utf8",
       );
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Outside](../truthmark-outside-link.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -138,7 +219,7 @@ describe("runCheck", () => {
           (diagnostic) =>
             diagnostic.category === "links" &&
             diagnostic.file ===
-              "docs/truthmark/engineering/repository/overview.md",
+              "docs/truthmark/engineering/repository/bootstrap-routing.md",
         ),
       ).toBe(true);
     } finally {
@@ -169,8 +250,8 @@ describe("runCheck", () => {
         path.resolve(repo.rootDir, "docs", "linked-outside.md"),
       );
       await repo.writeFile(
-        "docs/truthmark/engineering/repository/overview.md",
-        `${await repo.readFile("docs/truthmark/engineering/repository/overview.md")}\nSee [Outside](docs/linked-outside.md).\n`,
+        "docs/truthmark/engineering/repository/bootstrap-routing.md",
+        `${await repo.readFile("docs/truthmark/engineering/repository/bootstrap-routing.md")}\nSee [Outside](docs/linked-outside.md).\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -180,7 +261,7 @@ describe("runCheck", () => {
           (diagnostic) =>
             diagnostic.category === "links" &&
             diagnostic.file ===
-              "docs/truthmark/engineering/repository/overview.md",
+              "docs/truthmark/engineering/repository/bootstrap-routing.md",
         ),
       ).toBe(true);
     } finally {
@@ -662,18 +743,16 @@ Update truth when:
     }
   });
 
-  it("reports stale generated workflow surfaces and version mismatches", async () => {
+  it("reports stale generated workflow surfaces by comparing rendered content", async () => {
     const repo = await createTempRepo();
 
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         ".agents/skills/truthmark-sync/SKILL.md",
-        `${(
-          await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")
-        ).replace(
-          `truthmark-version: ${TRUTHMARK_VERSION}`,
-          "truthmark-version: 0.9.0",
+        `${(await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")).replace(
+          "Truthmark-managed generated file.",
+          "Locally edited generated file.",
         )}\n`,
       );
       const result = await runCheck(repo.rootDir);
@@ -686,9 +765,12 @@ Update truth when:
             file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("stale"),
           }),
+        ]),
+      );
+      expect(result.diagnostics).not.toEqual(
+        expect.arrayContaining([
           expect.objectContaining({
             category: "generated-surface",
-            severity: "review",
             file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("version"),
           }),

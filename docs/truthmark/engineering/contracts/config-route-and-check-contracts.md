@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-15
+last_reviewed: 2026-06-17
 ---
 
 # Config, Route, And Check Contracts
@@ -16,7 +16,7 @@ It covers config normalization, route `truth_documents` metadata, diagnostic cat
 
 ## Current Implementation Behavior
 
-Default config exposes `truthmark.workspace` and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`; product `realized_by` and engineering `realizes` links are valid when their targets exist and point to the opposite lane, without requiring reciprocal declarations. Duplicate route entries for the same path, kind, and lane merge relationship metadata for `realized_by`, `realizes`, and `depends_on` by unique sorted set before validation and RouteMap output; conflicting duplicate kinds or lanes are reported as area-index errors. The public ContextPack command surface is retired. Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for workflow applicability, write boundaries, target truth docs, checks, helper commands, diagnostics, next steps, and compact affected-test guidance, and `truthmark impact --base <ref> --json` for branch-diff routing. These replacement JSON outputs emit paths, metadata, diagnostics, and command arrays only; they do not embed source-file or truth-doc body contents.
+Default config exposes `truthmark.workspace` and `truthmark.generated.portal.enabled`; it does not expose route layout, template layout, or truth lane roots as knobs. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`, the default area is the product invariant `repository`, max delegation depth is the product invariant `1`, templates are fixed at `<workspace>/templates`, product truth is fixed at `<workspace>/product`, and engineering truth is fixed at `<workspace>/engineering`. User-provided `truthmark.routes`, `truthmark.templates`, or `truthmark.truth` blocks are rejected as unsupported additional properties. Route entries can declare `kind`, optional `lane`, `realized_by`, `realizes`, and `depends_on`; product `realized_by` and engineering `realizes` links are valid when their targets exist and point to the opposite lane, without requiring reciprocal declarations. Duplicate route entries for the same path, kind, and lane merge relationship metadata for `realized_by`, `realizes`, and `depends_on` by unique sorted set before validation and RouteMap output; conflicting duplicate kinds or lanes are reported as area-index errors. The public ContextPack command surface is retired. Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for an advisory workflow card, write-boundary suggestions, suggested truth docs, review checklist, evidence prompts, optional helper commands, open questions, skipped-helper status, diagnostics, next steps, and compact affected-test guidance, and `truthmark impact --base <ref> --json` for branch-diff routing. These replacement JSON outputs emit paths, metadata, diagnostics, and command arrays only; they do not embed source-file or truth-doc body contents.
 
 ## Contract Surface
 
@@ -69,6 +69,9 @@ Update when config fields, route metadata, diagnostics, route/index output schem
 - ../../../../src/config/load.ts
 - ../../../../src/routing/areas.ts
 - ../../../../src/output/diagnostic.ts
+- ../../../../src/workflow-state/types.ts
+- ../../../../src/workflow-state/build.ts
+- ../../../../tests/cli/index-impact-context.test.ts
 - `src/config/schema.ts`
 - `src/routing/areas.ts`
 - `src/repo-index/types.ts`
