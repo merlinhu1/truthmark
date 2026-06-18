@@ -22,7 +22,6 @@ import {
   renderTruthSyncBlockedReport,
   renderTruthSyncCompletedReport,
 } from "../sync/report.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 export const TRUTH_SYNC_EXPLICIT_INVOCATIONS =
@@ -210,7 +209,6 @@ name: truthmark-sync
 description: ${workflow.description}
 argument-hint: Optional changed-code area, truth-doc area, or sync focus
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthSyncProcedureBody(config, options)}

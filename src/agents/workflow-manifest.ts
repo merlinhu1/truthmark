@@ -1,5 +1,3 @@
-import { TRUTHMARK_VERSION } from "../version.js";
-
 export type TruthmarkWorkflowId =
   | "truthmark-sync"
   | "truthmark-structure"
@@ -48,7 +46,7 @@ export type TruthmarkWorkflowManifestEntry = {
   helpers?: TruthmarkWorkflowHelper[];
 };
 
-const TRUTHMARK_CLI_RUNNER = `truthmark>=${TRUTHMARK_VERSION}`;
+const TRUTHMARK_CLI_RUNNER = "truthmark";
 
 const VALIDATE_SYNC_REPORT_HELPER = {
   id: "validate-sync-report",

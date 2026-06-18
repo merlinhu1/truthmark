@@ -26,7 +26,7 @@ Do not load this standard for ordinary docs, workflow text, generated-surface, o
 
 Choose Truthmark's own package version using Semantic Versioning 2.0.0. Normal committed versions use `MAJOR.MINOR.PATCH`.
 
-`package.json` is the maintained version source. `package-lock.json` follows it. Generated version markers follow the package version only after `truthmark init` is rerun.
+`package.json` is the maintained version source. `package-lock.json` follows it. Generated workflow surfaces are refreshed by rendered-content comparison plus `truthmark init`; they do not carry package-version freshness markers.
 
 This is an internal repository maintenance standard. It is not a user-facing feature, installed workflow feature, or generated workflow capability.
 
@@ -58,7 +58,7 @@ Treat these as published package behavior:
 
 - CLI command names, options, exit behavior, result envelopes, and diagnostics contracts
 - `.truthmark/config.yml` schema and hierarchy behavior
-- generated instruction blocks, skill metadata, prompt files, and version markers produced by the package
+- generated instruction blocks, skill metadata, prompt files, helper manifests, and managed refresh markers produced by the package
 - installed workflow boundaries, trigger contracts, report shapes, and completion gates as shipped package behavior
 - runtime compatibility and npm package contents
 
@@ -76,7 +76,7 @@ When changing a version number:
 1. State the previous version, requested version, required bump class, and SemVer rationale in the handoff, PR, or release note.
 2. Create or update the matching `changes/` note from [change-notes.md](change-notes.md), covering the full release payload since the previous version.
 3. Update `package.json` and the root package entries in `package-lock.json` together.
-4. Rerun `truthmark init` when generated surfaces need refresh, then inspect the generated-surface diffs. Agent-visible generated text uses managed/stale-surface wording instead of package version markers; machine-readable helper metadata may still carry versions.
+4. Rerun `truthmark init` when generated surfaces need refresh, then inspect the generated-surface diffs. Generated surfaces use managed/stale-surface wording instead of package-version freshness markers; helper manifests name the runner and command shape without pinning the package version.
 5. Run the focused verification required by [testing-and-verification.md](testing-and-verification.md). For release-sensitive package version changes, `npm run release:check` is the default final gate.
 
 ## Agent Output

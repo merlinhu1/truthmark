@@ -19,7 +19,6 @@ import {
   resolveProductTruthRoot,
 } from "./shared.js";
 
-import { TRUTHMARK_VERSION } from "../version.js";
 
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
@@ -198,7 +197,6 @@ name: truthmark-structure
 description: ${workflow.description}
 argument-hint: Optional area, directory, or routing concern
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthStructureProcedureBody(config, options)}

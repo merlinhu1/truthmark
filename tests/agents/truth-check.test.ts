@@ -27,7 +27,6 @@ import {
   renderTruthmarkCopilotRouteAuditorAgent,
   renderTruthmarkRouteAuditorAgent,
 } from "../../src/templates/workflow-surfaces.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthCheckSkillBody", () => {
   it("renders the agent-led truth audit workflow", () => {
@@ -35,7 +34,6 @@ describe("renderTruthCheckSkillBody", () => {
 
     expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("/truthmark:check");
     expect(skill).toContain("name: truthmark-check");
-    expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
     expect(skill).toContain(
       "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
     );
@@ -124,7 +122,7 @@ describe("Truth Check generated surfaces", () => {
       "allow_implicit_invocation: false",
     );
     expect(renderTruthmarkCheckSkillMetadata()).toContain(
-      `version: "${TRUTHMARK_VERSION}"`,
+      'refresh_command: "truthmark init"',
     );
   });
 

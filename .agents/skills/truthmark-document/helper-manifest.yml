@@ -2,7 +2,7 @@
 helpers:
   validate-document-report:
     optional: true
-    runner: truthmark>=2.2.2
+    runner: truthmark
     command:
       argv:
         - truthmark
@@ -17,7 +17,7 @@ helpers:
     fallback: manually validate support/report-template.md required sections and structured Evidence checked entries
   validate-write-lease:
     optional: true
-    runner: truthmark>=2.2.2
+    runner: truthmark
     command:
       argv:
         - truthmark

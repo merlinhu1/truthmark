@@ -8,7 +8,6 @@ import {
   TRUTHMARK_BLOCK_START,
 } from "../templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../templates/generated-surfaces.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 
 const readOptionalFile = async (
   rootDir: string,
@@ -46,24 +45,6 @@ const normalizeGeneratedSurfaceContent = (
   return content.replace(/\r\n/g, "\n").replace(/\n$/u, "");
 };
 
-const versionMarkers = (content: string): string[] => {
-  const markers: string[] = [];
-  const patterns = [
-    /truthmark-version:\s*([^\s]+)/gu,
-    /^version:\s*"(\d+\.\d+\.\d+)"\s*$/gmu,
-  ];
-
-  for (const pattern of patterns) {
-    for (const match of content.matchAll(pattern)) {
-      if (match[1]) {
-        markers.push(match[1]);
-      }
-    }
-  }
-
-  return markers;
-};
-
 export const checkGeneratedSurfaces = async (
   rootDir: string,
   config: TruthmarkConfig,
@@ -97,21 +78,6 @@ export const checkGeneratedSurfaces = async (
       });
     }
 
-    const versionContent = surface.managedBlock
-      ? (comparableContent ?? "")
-      : content;
-    const mismatchedVersions = versionMarkers(versionContent).filter(
-      (version) => version !== TRUTHMARK_VERSION,
-    );
-
-    if (mismatchedVersions.length > 0) {
-      diagnostics.push({
-        category: "generated-surface",
-        severity: "review",
-        message: `Generated surface ${surface.path} has Truthmark version ${mismatchedVersions[0]} but current version is ${TRUTHMARK_VERSION}; rerun truthmark init.`,
-        file: surface.path,
-      });
-    }
   }
 
   return diagnostics;

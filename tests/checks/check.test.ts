@@ -7,7 +7,6 @@ import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
 import type { TruthHealthScorecard } from "../../src/checks/scorecard.js";
 import { runConfig } from "../../src/config/command.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const initializeRepo = async (rootDir: string): Promise<void> => {
@@ -744,18 +743,16 @@ Update truth when:
     }
   });
 
-  it("reports stale generated workflow surfaces and machine-readable version mismatches", async () => {
+  it("reports stale generated workflow surfaces by comparing rendered content", async () => {
     const repo = await createTempRepo();
 
     try {
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         ".agents/skills/truthmark-sync/SKILL.md",
-        `${(
-          await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")
-        ).replace(
-          `truthmark-version: ${TRUTHMARK_VERSION}`,
-          "truthmark-version: 0.9.0",
+        `${(await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")).replace(
+          "Truthmark-managed generated file.",
+          "Locally edited generated file.",
         )}\n`,
       );
       const result = await runCheck(repo.rootDir);
@@ -768,9 +765,12 @@ Update truth when:
             file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("stale"),
           }),
+        ]),
+      );
+      expect(result.diagnostics).not.toEqual(
+        expect.arrayContaining([
           expect.objectContaining({
             category: "generated-surface",
-            severity: "review",
             file: ".agents/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("version"),
           }),

@@ -40,4 +40,6 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../src/config/defaults.ts
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
-- ../../../../tests/init/init.test.ts
+- ../../../../tests/init/init-instructions.test.ts
+- ../../../../tests/templates/init-files.test.ts
+- ../../../../tests/integration/init-check-workflow.test.ts

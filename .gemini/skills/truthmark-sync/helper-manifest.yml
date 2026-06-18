@@ -2,7 +2,7 @@
 helpers:
   validate-sync-report:
     optional: true
-    runner: truthmark>=2.2.2
+    runner: truthmark
     command:
       argv:
         - truthmark
@@ -17,7 +17,7 @@ helpers:
     fallback: "manually validate support/report-template.md and check Evidence checked entries match Claim, indented Evidence, and Result: supported | narrowed | removed | blocked"
   validate-write-lease:
     optional: true
-    runner: truthmark>=2.2.2
+    runner: truthmark
     command:
       argv:
         - truthmark

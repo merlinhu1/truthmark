@@ -20,7 +20,6 @@ import {
   renderTruthDocRestructureGateSection,
   resolveEngineeringTruthRoot,
 } from "./shared.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
@@ -187,7 +186,6 @@ name: truthmark-document
 description: ${workflow.description}
 argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthDocumentProcedureBody(config, options)}

@@ -1,5 +1,4 @@
 import type { TruthmarkConfig } from "../config/schema.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 import { defaultAgentConfig, renderHierarchySummary } from "./shared.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
@@ -57,7 +56,6 @@ name: truthmark-portal
 description: ${workflow.description}
 argument-hint: Optional portal generation focus
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthmarkPortalProcedureBody(config)}

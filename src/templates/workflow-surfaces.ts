@@ -60,7 +60,6 @@ import {
   type TruthmarkReadOnlySubagentId,
   type TruthmarkWriteSubagentId,
 } from "../agents/workflow-manifest.js";
-import { TRUTHMARK_VERSION } from "../version.js";
 
 export const TRUTHMARK_STRUCTURE_SKILL_PATH =
   ".agents/skills/truthmark-structure/SKILL.md";
@@ -596,12 +595,12 @@ const renderHelperPolicySupport = (
 
   return renderSkillSupportFile(
     "Optional Helper CLI Policy",
-    `Optional helper CLI commands may collect deterministic checkout facts or validate artifacts. If the Truthmark CLI is unavailable or too old for a declared helper, continue manually using this procedure and report which helper was skipped. Helper output is derived evidence; it does not override direct checkout inspection, workflow write boundaries, or parent acceptance.
+    `Optional helper CLI commands may collect deterministic checkout facts or validate artifacts. If the Truthmark CLI is unavailable or cannot return the declared helper output, continue manually using this procedure and report which helper was skipped. Helper output is derived evidence; it does not override direct checkout inspection, workflow write boundaries, or parent acceptance.
 
 Runner detection:
-- Check the declared Truthmark CLI runner before invoking a helper.
+- Check that the declared Truthmark CLI runner is available before invoking a helper.
 - Invoke helpers through the installed \`truthmark validate ... --json\` CLI command using argv-style arguments from helper-manifest.yml.
-- If unavailable or version-mismatched, treat the helper as skipped and use the manual fallback.
+- If unavailable, failing, or returning incompatible output, treat the helper as skipped and use the manual fallback.
 - Do not fail the workflow solely because a helper cannot run.
 
 Available helpers:
@@ -685,7 +684,6 @@ name: ${workflowId}
 description: ${workflow.description}
 argument-hint: ${definition.argumentHint}
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 # ${definition.title}
@@ -1387,7 +1385,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1426,7 +1423,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1461,7 +1457,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1515,7 +1510,6 @@ name: truthmark-realize
 description: ${workflow.description}
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
-truthmark-version: ${TRUTHMARK_VERSION}
 ---
 
 ${renderTruthmarkRealizeProcedureBody(config)}
@@ -1555,7 +1549,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1584,7 +1577,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1619,7 +1611,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };
@@ -1642,7 +1633,6 @@ policy:
   allow_implicit_invocation: ${workflow.allowImplicitInvocation}
 
 truthmark:
-  version: "${TRUTHMARK_VERSION}"
   refresh_command: "truthmark init"
 `;
 };

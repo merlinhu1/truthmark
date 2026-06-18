@@ -7,5 +7,4 @@ policy:
   allow_implicit_invocation: false
 
 truthmark:
-  version: "2.2.2"
   refresh_command: "truthmark init"

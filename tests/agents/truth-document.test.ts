@@ -15,7 +15,6 @@ import {
   renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkGeminiDocumentCommand,
 } from "../../src/templates/workflow-surfaces.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthDocumentSkillBody", () => {
   it("renders parseable skill frontmatter", () => {
@@ -40,7 +39,6 @@ describe("renderTruthDocumentSkillBody", () => {
 
     expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("/truthmark:document");
     expect(skill).toContain("name: truthmark-document");
-    expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
     expect(skill).toContain("manual and implementation-first");
     expect(skill).toContain("existing implemented behavior");
     expect(skill).toContain("no functional-code changes");
@@ -188,7 +186,7 @@ describe("Truth Document generated surfaces", () => {
       "allow_implicit_invocation: false",
     );
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
-      `version: "${TRUTHMARK_VERSION}"`,
+      'refresh_command: "truthmark init"',
     );
     expect(renderTruthmarkGeminiDocumentCommand()).toContain(
       "This command is the Gemini CLI entrypoint for Truthmark Document.",

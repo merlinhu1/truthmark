@@ -94,7 +94,7 @@ Update truth when:
 
 - installed workflow boundaries or report shapes change
 - generated instruction block or skill content changes
-- workflow version markers or sync classification behavior changes
+- generated-surface refresh markers or sync classification behavior changes
 
 ## Release Automation
 

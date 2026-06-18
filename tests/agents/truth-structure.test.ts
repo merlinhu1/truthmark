@@ -13,7 +13,6 @@ import {
   renderTruthmarkStructureSkill,
   renderTruthmarkStructureSkillMetadata,
 } from "../../src/templates/workflow-surfaces.js";
-import { TRUTHMARK_VERSION } from "../../src/version.js";
 
 describe("renderTruthStructureSkillBody", () => {
   it("renders parseable skill frontmatter", () => {
@@ -37,7 +36,7 @@ describe("renderTruthStructureSkillBody", () => {
     const lines = skill.split("\n");
 
     expect(lines[0]).toBe("---");
-    expect(lines[6]).toBe("---");
+    expect(lines[5]).toBe("---");
     expect(skill).toContain(
       "Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, and last_reviewed inside that frontmatter. Put source references in the final ## Source References section, not in frontmatter.",
     );
@@ -79,7 +78,6 @@ describe("renderTruthStructureSkillBody", () => {
       "/truthmark:structure",
     );
     expect(skill).toContain("name: truthmark-structure");
-    expect(skill).toContain(`truthmark-version: ${TRUTHMARK_VERSION}`);
     expect(skill).toContain("inspect repository layout");
     expect(skill).toContain(
       "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
@@ -233,7 +231,7 @@ describe("Truth Structure generated surfaces", () => {
       "allow_implicit_invocation: false",
     );
     expect(renderTruthmarkStructureSkillMetadata()).toContain(
-      `version: "${TRUTHMARK_VERSION}"`,
+      'refresh_command: "truthmark init"',
     );
   });
 });
