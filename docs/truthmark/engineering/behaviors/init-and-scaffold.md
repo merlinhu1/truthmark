@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-18
 ---
 
 # Init And Scaffold
@@ -16,9 +16,60 @@ It covers config defaults, lane root creation, template files, and starter route
 
 ## Current Implementation Behavior
 
-Defaults derive all scaffold paths from `truthmark.workspace`. Fresh configs do not assume a host platform: `platforms` is omitted by default, so host-specific workflow surfaces are generated only after maintainers explicitly list Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`; the default scaffolded route area is `repository`; max route delegation depth is `1`; product truth is fixed at `<workspace>/product`; engineering truth is fixed at `<workspace>/engineering`; editable truth templates are fixed at `<workspace>/templates`. Template filenames match `truth_kind` values directly: `product-capability.md`, `engineering-behavior.md`, `engineering-contract.md`, `engineering-architecture.md`, `engineering-workflow.md`, `engineering-operations.md`, and `engineering-test-behavior.md`. Generated truth-doc frontmatter includes `truth_kind` and does not include `doc_type` or `truth_lane`.
+Scaffold paths derive from `truthmark.workspace`:
 
-Init seeds the broad default `repository` route as provisional bootstrap routing, not as normal behavior ownership. The route still maps `src/**` so a fresh repository is routeable, but it points at `engineering/repository/bootstrap-routing.md` as an `engineering-workflow` handoff that tells agents to run Truth Structure before normal Truth Sync when real code touches only the broad default route. Init does not create `engineering/repository/overview.md` from `engineering-behavior.md`; behavior truth should be created in bounded areas after ownership is known. Downstream product truth uses the `product-capability` template only. Capability docs own a single user-visible capability promise, users/value, scope including boundary constraints and adjacent systems, current product behavior, acceptance criteria, decisions, realization links, and non-goals.
+- Routes live at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`.
+- Product truth lives at `<workspace>/product`.
+- Engineering truth lives at `<workspace>/engineering`.
+- Editable truth templates live at `<workspace>/templates`.
+- The default scaffolded route area is `repository`.
+- Max route delegation depth is `1`.
+
+Fresh configs do not assume a host platform:
+
+- `platforms` is omitted by default.
+- Host-specific workflow surfaces are generated only after maintainers explicitly list Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI.
+
+Editable truth template filenames match `truth_kind` values directly:
+
+- `product-capability.md`
+- `engineering-behavior.md`
+- `engineering-contract.md`
+- `engineering-architecture.md`
+- `engineering-workflow.md`
+- `engineering-operations.md`
+- `engineering-test-behavior.md`
+
+Generated truth-doc frontmatter includes `truth_kind`.
+
+Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
+
+Generated truth-doc templates include diff-friendly authoring guidance:
+
+- Prefer one durable claim per bullet or line.
+- Keep paragraphs to one or two short sentences.
+- Use bullets or tables for rules, criteria, fields, files, and lists.
+
+Init seeds the broad default `repository` route as provisional bootstrap routing, not as normal behavior ownership:
+
+- The route still maps `src/**` so a fresh repository is routeable.
+- The route points at `engineering/repository/bootstrap-routing.md` as an `engineering-workflow` handoff.
+- The handoff tells agents to run Truth Structure before normal Truth Sync when real code touches only the broad default route.
+- Init does not create `engineering/repository/overview.md` from `engineering-behavior.md`.
+- Behavior truth should be created in bounded areas after ownership is known.
+
+Downstream product truth uses the `product-capability` template only.
+
+Capability docs own:
+
+- a single user-visible capability promise
+- users and value
+- scope including boundary constraints and adjacent systems
+- current product behavior
+- acceptance criteria
+- decisions
+- realization links
+- non-goals
 
 ## Product Truth Links
 

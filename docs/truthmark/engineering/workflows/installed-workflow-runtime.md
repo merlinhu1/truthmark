@@ -16,9 +16,117 @@ It owns generated workflow runtime behavior, managed instruction blocks, optiona
 
 ## Current Implementation Behavior
 
-The source manifest and renderers are the package-generation authority; `truthmark init` projects that source into configured host-native workflow files. Fresh configs do not assume a host platform; host-specific surfaces are generated only when `.truthmark/config.yml` explicitly lists platforms such as Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI. Generated host skill directories are native skill packages for write-capable and audit workflows: their `SKILL.md` files keep package-local `support/procedure.md`, `support/report-template.md`, and subagent/lease guidance only when the workflow uses subagents, so hosts that package skill-directory resources do not depend on arbitrary cross-repository file reads. Generated helper manifests and helper policy support files are not emitted; optional validation commands stay in workflow metadata and report validation accepts manual fallback evidence. Truth Preview is read-only and explicit, so it is emitted as Copilot/Gemini prompt-command bodies instead of standalone skill packages. Truthmark does not emit a separate `.truthmark/agent/` workflow copy because host surfaces are the runtime surfaces agents actually load; duplicating them under `.truthmark/agent/` would add repository docs with no active host consumer. GitHub Copilot prompts, Gemini commands, and top-level managed instruction blocks stay thin and point to host-native workflow entrypoints when a host skill package exists rather than embedding full workflow bodies. Generated-surface checks report missing or stale configured host-native skill package files.
+The source manifest and renderers are the package-generation authority.
 
-Workflow manifest entries use review-oriented questions that surface as a WorkflowState `reviewChecklist`, while evidence-oriented entries surface as `evidencePrompts`. Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters: they direct the current invocation to host-local skill package files and explicitly avoid dispatching another Truthmark command rather than embedding duplicate workflow bodies or cross-host invocation lists. Truth Sync generated procedures use a product-truth decision before canonical truth writes: update or route product truth only when a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed; otherwise internal implementation changes default to engineering truth. Truth Sync also owns bounded topology repair before normal syncing: when changed functional code maps only to missing, stale, broad, overloaded, or catch-all routing, Sync runs or applies Truth Structure-style repair first when the repair is safe and in scope, limited to affected route/truth owners; only unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure. Truth Sync also performs decision context capture from the current task conversation: agents review user-provided decisions, rationale, constraints, tradeoffs, rejection reasons, and scope boundaries, carry that context into Sync Intent, place it in the correct product or engineering truth lane when supported, and report whether it was placed, skipped because none was provided, or needs manual handoff. Other write-capable truth workflows preserve lane-specific classification before canonical truth writes, while read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing. The manual Truth Realize prompt path uses Realize-specific lane guidance: read product truth as requirements, read engineering truth as implementation context, and do not write truth docs or truth routing while realizing docs into code. Truth Preview keeps route selection thin by reading the root route index first and then only child route files relevant to the selected scope or changed paths, and reports unresolved manual handoff questions rather than final correctness. Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks: narrow audits stay within the routed area plus directly linked counterpart docs, root-wide health first builds a route-map/index from route files, and missing product links for user-visible engineering docs are second-pass review diagnostics rather than default full-document reads. Truth Sync generated procedures and report templates include a transient Sync Intent checkpoint that records changed code reviewed, affected route/truth owner, target truth docs, intended update, evidence to verify, user-provided decisions/rationale, no-update-needed rationale, and blockers before canonical truth writes. Optional CLI repository-intelligence helpers are compact advisory cards: workflow status reports affected files, likely route owners, suggested truth docs, open questions, skipped helper status, and compact write-boundary suggestions; impact exposes branch-diff routing data; neither helper emits source-file or truth-doc body contents. Truth Sync workflow status separates impacted primary truth docs from candidate stale truth docs and route files so stale repository-truth correction remains available without making every indexed doc look like the starting scope.
+`truthmark init` projects source renderers into configured host-native workflow files.
+
+Fresh configs do not assume a host platform:
+
+- Host-specific surfaces are generated only when `.truthmark/config.yml` explicitly lists platforms such as Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI.
+
+Generated host skill directories are native skill packages for write-capable and audit workflows:
+
+- `SKILL.md` files keep package-local `support/procedure.md` and `support/report-template.md`.
+- Subagent and lease guidance is kept only when the workflow uses subagents.
+- Hosts that package skill-directory resources do not depend on arbitrary cross-repository file reads.
+
+Generated helper manifests and helper policy support files are not emitted:
+
+- Optional validation commands stay in workflow metadata.
+- Report validation accepts manual fallback evidence.
+
+Truth Preview is read-only and explicit:
+
+- Copilot and Gemini receive prompt-command bodies instead of standalone skill packages.
+
+Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
+
+- Host surfaces are the runtime surfaces agents actually load.
+- Duplicating workflow packages under `.truthmark/agent/` would add repository docs with no active host consumer.
+
+GitHub Copilot prompts, Gemini commands, and top-level managed instruction blocks stay thin:
+
+- They point to host-native workflow entrypoints when a host skill package exists.
+- They do not embed full workflow bodies or cross-host invocation lists.
+
+Generated-surface checks report missing or stale configured host-native skill package files.
+
+Workflow manifest entries use review-oriented questions that surface as a WorkflowState `reviewChecklist`.
+
+Evidence-oriented entries surface as `evidencePrompts`.
+
+Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters:
+
+- They direct the current invocation to host-local skill package files.
+- They avoid dispatching another Truthmark command.
+- They do not embed duplicate workflow bodies or cross-host invocation lists.
+
+Truth Sync generated procedures use a product-truth decision before canonical truth writes:
+
+- Update or route product truth only when a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed.
+- Internal implementation changes default to engineering truth.
+
+Truth Sync owns bounded topology repair before normal syncing:
+
+- Missing, stale, broad, overloaded, or catch-all routing is repaired inside Sync when the repair is safe and in scope.
+- Safe repair stays limited to affected route/truth owners.
+- Unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure.
+
+Truth Sync performs decision context capture from the current task conversation:
+
+- Agents review user-provided decisions, rationale, constraints, tradeoffs, rejection reasons, and scope boundaries.
+- Agents carry that context into Sync Intent.
+- Supported context is placed in the correct product or engineering truth lane.
+- The report records whether context was placed, skipped because none was provided, or handed off for manual review.
+
+Truth Document and Truth Structure procedures tell agents to write diff-friendly truth docs:
+
+- Prefer one durable claim per bullet or line.
+- Keep paragraphs to one or two short sentences.
+- Use bullets or tables for rules, criteria, fields, files, and lists.
+
+Other write-capable truth workflows preserve lane-specific classification before canonical truth writes.
+
+Read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing.
+
+The manual Truth Realize prompt path uses Realize-specific lane guidance:
+
+- Read product truth as requirements.
+- Read engineering truth as implementation context.
+- Do not write truth docs or truth routing while realizing docs into code.
+
+Truth Preview keeps route selection thin:
+
+- Read the root route index first.
+- Read only child route files relevant to the selected scope or changed paths.
+- Report unresolved manual handoff questions rather than final correctness.
+
+Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks:
+
+- Narrow audits stay within the routed area plus directly linked counterpart docs.
+- Root-wide health first builds a route-map/index from route files.
+- Missing product links for user-visible engineering docs are second-pass review diagnostics rather than default full-document reads.
+
+Truth Sync generated procedures and report templates include a transient Sync Intent checkpoint that records:
+
+- changed code reviewed
+- affected route/truth owner
+- target truth docs
+- intended update
+- evidence to verify
+- user-provided decisions/rationale
+- no-update-needed rationale
+- blockers
+
+Optional CLI repository-intelligence helpers are compact advisory cards:
+
+- `workflow status` reports affected files, likely route owners, suggested truth docs, open questions, skipped helper status, and compact write-boundary suggestions.
+- `impact` exposes branch-diff routing data.
+- Neither helper emits source-file or truth-doc body contents.
+
+Truth Sync workflow status separates impacted primary truth docs from candidate stale truth docs and route files.
+
+This keeps stale repository-truth correction available without making every indexed doc look like the starting scope.
 
 ## Triggers
 
@@ -60,6 +168,7 @@ Update this doc when workflow manifest fields, generated surface paths, optional
 - ../../../../src/agents/workflow-manifest.ts
 - ../../../../src/agents/truth-sync.ts
 - ../../../../src/sync/report.ts
+- ../../../../src/agents/shared.ts
 - ../../../../src/templates/workflow-surfaces.ts
 - ../../../../src/templates/generated-surfaces.ts
 - ../../../../src/checks/generated-surfaces.ts

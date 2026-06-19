@@ -6,6 +6,11 @@ last_reviewed: 2026-06-14
 
 # {{title}}
 
+<!--
+Prefer diff-friendly Markdown: one durable claim per bullet or line.
+Keep paragraphs to one or two short sentences, and use bullets or tables for rules, criteria, fields, files, and lists.
+-->
+
 ## Purpose
 
 <!--
