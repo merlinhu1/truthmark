@@ -188,6 +188,57 @@ Local stale edit.
     }
   });
 
+  it("reports obsolete generated workflow surfaces from retired renderer packages", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        ".agents/skills/truthmark-preview/SKILL.md",
+        "# Legacy preview entrypoint\n",
+      );
+      await repo.writeFile(
+        ".agents/skills/truthmark-sync/helper-manifest.yml",
+        "id: truthmark-sync\n",
+      );
+      await repo.writeFile(
+        ".opencode/skills/truthmark-check/support/helper-policy.md",
+        "Legacy helper policy.\n",
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === ".agents/skills/truthmark-preview/SKILL.md" &&
+            diagnostic.message.includes("obsolete"),
+        ),
+      ).toHaveLength(1);
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".agents/skills/truthmark-sync/helper-manifest.yml" &&
+            diagnostic.message.includes("obsolete"),
+        ),
+      ).toHaveLength(1);
+      expect(
+        result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file ===
+              ".opencode/skills/truthmark-check/support/helper-policy.md" &&
+            diagnostic.message.includes("obsolete"),
+        ),
+      ).toHaveLength(1);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("returns links diagnostics for broken internal markdown links", async () => {
     const repo = await createTempRepo();
 

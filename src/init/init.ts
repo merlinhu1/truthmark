@@ -6,6 +6,7 @@ import type { CommandResult, DiagnosticCategory } from "../output/diagnostic.js"
 import { getGitRepository } from "../git/repository.js";
 import { resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
 import { scaffoldHierarchy } from "./hierarchy.js";
+import { findRetiredGeneratedSurfaces } from "../checks/generated-surfaces.js";
 import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
 import { renderGeneratedSurfaces, type GeneratedSurface } from "../templates/generated-surfaces.js";
 
@@ -265,9 +266,19 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
   results.push(...(await scaffoldHierarchy(rootDir, config)));
   const block = renderAgentsBlock(config);
   const platformFiles = renderGeneratedSurfaces(config, block);
+  const expectedSurfacePaths = new Set(platformFiles.map((file) => file.path));
 
   for (const file of platformFiles) {
     results.push(await writePlatformFile(rootDir, file));
+  }
+
+  const obsoleteSurfacePaths = await findRetiredGeneratedSurfaces(
+    rootDir,
+    expectedSurfacePaths,
+  );
+
+  for (const obsoletePath of obsoleteSurfacePaths) {
+    await fs.rm(resolveRepoPath(rootDir, obsoletePath), { force: true });
   }
 
   const changedResults = results.filter((result) => result.status !== "unchanged");

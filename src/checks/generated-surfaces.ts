@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import type { Dirent } from "node:fs";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import { resolveRepoPath } from "../fs/paths.js";
@@ -45,13 +46,136 @@ const normalizeGeneratedSurfaceContent = (
   return content.replace(/\r\n/g, "\n").replace(/\n$/u, "");
 };
 
+const GENERATED_HOST_SKILL_ROOTS = [
+  ".agents/skills",
+  ".opencode/skills",
+  ".claude/skills",
+  ".github/skills",
+  ".gemini/skills",
+] as const;
+
+const RETIRED_SKILL_HELPER_PATHS = [
+  "helper-manifest.yml",
+  "support/helper-policy.md",
+] as const;
+
+const RETIRED_PACKAGE_DIRECTORIES = ["truthmark-preview"] as const;
+
+const pathExists = async (absolutePath: string): Promise<boolean> => {
+  try {
+    await fs.access(absolutePath);
+    return true;
+  } catch (error: unknown) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return false;
+    }
+
+    throw error;
+  }
+};
+
+const listDirectoryFiles = async (
+  rootDir: string,
+  packageRoot: string,
+): Promise<string[]> => {
+  const stack = [packageRoot];
+  const files: string[] = [];
+
+  while (stack.length > 0) {
+    const current = stack.pop();
+
+    if (current === undefined) {
+      continue;
+    }
+
+    const absoluteCurrent = resolveRepoPath(rootDir, current);
+    const entries = await fs.readdir(absoluteCurrent, {
+      withFileTypes: true,
+    });
+
+    for (const entry of entries) {
+      const next = `${current}/${entry.name}`;
+
+      if (entry.isDirectory()) {
+        stack.push(next);
+      } else {
+        files.push(next);
+      }
+    }
+  }
+
+  return files;
+};
+
+const collectRetiredGeneratedSurfaces = async (
+  rootDir: string,
+  expectedSurfacePaths: Set<string>,
+): Promise<string[]> => {
+  const legacyCandidates = new Set<string>();
+
+  for (const skillRoot of GENERATED_HOST_SKILL_ROOTS) {
+    const absoluteSkillRoot = resolveRepoPath(rootDir, skillRoot);
+
+    let skillPackages: Dirent[] = [];
+
+    try {
+      skillPackages = await fs.readdir(absoluteSkillRoot, {
+        withFileTypes: true,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+        continue;
+      }
+
+      throw error;
+    }
+
+    const packageNames = skillPackages
+      .filter((entry) => entry.isDirectory() && entry.name.startsWith("truthmark-"))
+      .map((entry) => entry.name);
+
+    for (const packageName of RETIRED_PACKAGE_DIRECTORIES) {
+      if (!packageNames.includes(packageName)) {
+        continue;
+      }
+
+      const packageRoot = `${skillRoot}/${packageName}`;
+      const packageFiles = await listDirectoryFiles(rootDir, packageRoot);
+
+      for (const filePath of packageFiles) {
+        if (!expectedSurfacePaths.has(filePath)) {
+          legacyCandidates.add(filePath);
+        }
+      }
+    }
+
+    for (const packageName of packageNames) {
+      for (const retiredName of RETIRED_SKILL_HELPER_PATHS) {
+        const retiredPath = `${packageName}/${retiredName}`;
+        const relativeRetiredPath = `${skillRoot}/${retiredPath}`;
+        const absoluteRetiredPath = resolveRepoPath(rootDir, relativeRetiredPath);
+
+        if (
+          (await pathExists(absoluteRetiredPath)) &&
+          !expectedSurfacePaths.has(relativeRetiredPath)
+        ) {
+          legacyCandidates.add(relativeRetiredPath);
+        }
+      }
+    }
+  }
+
+  return Array.from(legacyCandidates);
+};
+
 export const checkGeneratedSurfaces = async (
   rootDir: string,
   config: TruthmarkConfig,
 ): Promise<Diagnostic[]> => {
   const diagnostics: Diagnostic[] = [];
+  const renderedSurfaces = renderGeneratedSurfaces(config);
 
-  for (const surface of renderGeneratedSurfaces(config)) {
+  for (const surface of renderedSurfaces) {
     const content = await readOptionalFile(rootDir, surface.path);
 
     if (content === null) {
@@ -77,8 +201,28 @@ export const checkGeneratedSurfaces = async (
         file: surface.path,
       });
     }
+  }
 
+  const staleSurfaces = await collectRetiredGeneratedSurfaces(
+    rootDir,
+    new Set(renderedSurfaces.map((surface) => surface.path)),
+  );
+
+  for (const surfacePath of staleSurfaces) {
+    diagnostics.push({
+      category: "generated-surface",
+      severity: "review",
+      message: `Generated surface ${surfacePath} is obsolete; rerun truthmark init.`,
+      file: surfacePath,
+    });
   }
 
   return diagnostics;
+};
+
+export const findRetiredGeneratedSurfaces = async (
+  rootDir: string,
+  expectedSurfacePaths: Set<string>,
+): Promise<string[]> => {
+  return collectRetiredGeneratedSurfaces(rootDir, expectedSurfacePaths);
 };

@@ -89,4 +89,41 @@ ignore: []
       await repo.cleanup();
     }
   });
+
+  it("removes retired generated surfaces from older versions", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await runInit(repo.rootDir);
+      await repo.writeFile(
+        ".agents/skills/truthmark-preview/SKILL.md",
+        "# Legacy Preview Skill\n",
+      );
+      await repo.writeFile(
+        ".agents/skills/truthmark-sync/helper-manifest.yml",
+        "id: truthmark-sync\n",
+      );
+      await repo.writeFile(
+        ".opencode/skills/truthmark-sync/support/helper-policy.md",
+        "Legacy helper policy\n",
+      );
+
+      await runInit(repo.rootDir);
+
+      await expect(
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-preview/SKILL.md`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(
+          `${repo.rootDir}/.opencode/skills/truthmark-sync/support/helper-policy.md`,
+        ),
+      ).rejects.toThrow();
+    } finally {
+      await repo.cleanup();
+    }
+  });
 });

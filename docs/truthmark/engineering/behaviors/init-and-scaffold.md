@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-18
+last_reviewed: 2026-06-19
 ---
 
 # Init And Scaffold
@@ -43,6 +43,8 @@ Editable truth template filenames match `truth_kind` values directly:
 Generated truth-doc frontmatter includes `truth_kind`.
 
 Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
+
+`truthmark init` also removes retired generated-surface artifacts under host skill roots (for example `truthmark-preview` package files and legacy `helper-manifest.yml`/`support/helper-policy.md`) when those paths are no longer part of current generated output.
 
 Generated truth-doc templates include diff-friendly authoring guidance:
 

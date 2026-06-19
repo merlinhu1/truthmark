@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-18
+last_reviewed: 2026-06-19
 ---
 
 # Generated Host Surfaces
@@ -16,7 +16,15 @@ It covers configured platform output paths, generated workflow files, managed in
 
 ## Current Implementation Behavior
 
-Truthmark renders workflow surfaces only for configured platforms and leaves already committed files in place when platforms are removed from config. When `platforms` is omitted, fresh config does not assume a host platform; `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries. Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents; generated helper manifest and helper policy files are intentionally not emitted. GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: most point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint. Truth Preview remains a read-only prompt/command body for Copilot and Gemini instead of a standalone host skill package.
+Truthmark renders workflow surfaces only for configured platforms. Legacy package artifacts are explicitly retired.
+
+- `truthmark init` removes obsolete generated files that are no longer in `renderGeneratedSurfaces(...)`, including `truthmark-preview` package contents and legacy `helper-manifest.yml` and `support/helper-policy.md` files under host skill roots.
+- `truthmark check` reports missing, stale, or obsolete generated surfaces when render outputs and committed files differ.
+
+When `platforms` is omitted, fresh config does not assume a host platform; `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries.
+Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents; generated helper manifest and helper policy files are intentionally not emitted.
+GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: most point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint.
+Truth Preview remains a read-only prompt/command body for Copilot and Gemini instead of a standalone host skill package.
 
 ## Contract Surface
 
