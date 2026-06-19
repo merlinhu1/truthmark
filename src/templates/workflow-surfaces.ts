@@ -28,7 +28,6 @@ import {
   TRUTH_PREVIEW_EXPLICIT_INVOCATIONS,
   renderTruthPreviewProcedureBody,
   renderTruthPreviewReportExample,
-  renderTruthPreviewSkillBody,
 } from "../agents/truth-preview.js";
 import {
   TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
@@ -87,12 +86,6 @@ export const TRUTHMARK_CHECK_SKILL_PATH =
 
 export const TRUTHMARK_CHECK_SKILL_METADATA_PATH =
   ".agents/skills/truthmark-check/agents/openai.yaml";
-
-export const TRUTHMARK_PREVIEW_SKILL_PATH =
-  ".agents/skills/truthmark-preview/SKILL.md";
-
-export const TRUTHMARK_PREVIEW_SKILL_METADATA_PATH =
-  ".agents/skills/truthmark-preview/agents/openai.yaml";
 
 export const TRUTHMARK_PORTAL_SKILL_PATH =
   ".agents/skills/truthmark-portal/SKILL.md";
@@ -353,7 +346,7 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     title: "Truthmark Preview",
     argumentHint:
       "Optional requested outcome, code area, doc path, or routing question",
-    invocations: TRUTH_PREVIEW_EXPLICIT_INVOCATIONS,
+    invocations: TRUTH_PREVIEW_EXPLICIT_INVOCATIONS.copilot,
     use: () =>
       "Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.",
     quickRules: (config) => [
@@ -1466,34 +1459,6 @@ truthmark:
 `;
 };
 
-export const renderTruthmarkPreviewSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthPreviewSkillBody(config);
-};
-
-export const renderTruthmarkPreviewLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthPreviewSkillBody(config);
-};
-
-export const renderTruthmarkPreviewSkillMetadata = (): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return `interface:
-  display_name: "${workflow.displayName}"
-  short_description: "${workflow.shortDescription}"
-  default_prompt: "${workflow.defaultPrompt}"
-
-policy:
-  allow_implicit_invocation: ${workflow.allowImplicitInvocation}
-
-truthmark:
-  refresh_command: "truthmark init"
-`;
-};
-
 export const renderTruthmarkCheckSkill = (
   config: TruthmarkConfig = defaultAgentConfig(),
 ): string => {
@@ -1645,7 +1610,7 @@ export const renderTruthmarkGeminiPreviewCommand = (
 
 Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
 
-${renderTruthPreviewProcedureBody(config)}
+${renderTruthPreviewProcedureBody(config, "gemini")}
 ${renderWorkflowReportTemplate("truthmark-preview", config)}`,
   );
 };
@@ -1721,7 +1686,7 @@ export const renderTruthmarkCopilotPreviewPrompt = (
 
 Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
 
-${renderTruthPreviewProcedureBody(config)}
+${renderTruthPreviewProcedureBody(config, "copilot")}
 ${renderWorkflowReportTemplate("truthmark-preview", config)}`,
   );
 };

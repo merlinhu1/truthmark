@@ -12,8 +12,12 @@ const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
 };
 
-export const TRUTH_PREVIEW_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.";
+export const TRUTH_PREVIEW_EXPLICIT_INVOCATIONS = {
+  copilot: "GitHub Copilot /truthmark-preview.",
+  gemini: "Gemini CLI /truthmark:preview.",
+} as const;
+
+type TruthPreviewHost = keyof typeof TRUTH_PREVIEW_EXPLICIT_INVOCATIONS;
 
 export const renderTruthPreviewReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -58,12 +62,14 @@ Handoff:
 
 export const renderTruthPreviewProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
+  host?: TruthPreviewHost,
 ): string => {
+  const invocationLine =
+    host === undefined ? "" : `Invocations: ${TRUTH_PREVIEW_EXPLICIT_INVOCATIONS[host]}\n\n`;
+
   return `Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
-Invocations: ${TRUTH_PREVIEW_EXPLICIT_INVOCATIONS}
-
-Truth Preview is read-only. Its report is intended, not authorized.
+${invocationLine}Truth Preview is read-only. Its report is intended, not authorized.
 
 Purpose:
 - preview the likely Truthmark workflow, route owner, target files, expected write classes, suggested subagent use, and manual handoff questions before edits happen

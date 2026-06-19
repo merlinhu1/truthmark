@@ -9,7 +9,7 @@ Truth Preview is read-only and explicit. Do not invoke another Truthmark command
 
 Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.
 
-Invocations: OpenCode /skill truthmark-preview; Codex /truthmark-preview or $truthmark-preview; Claude Code /truthmark-preview; GitHub Copilot /truthmark-preview; Gemini CLI /truthmark:preview.
+Invocations: GitHub Copilot /truthmark-preview.
 
 Truth Preview is read-only. Its report is intended, not authorized.
 

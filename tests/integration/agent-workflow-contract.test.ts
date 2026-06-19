@@ -85,7 +85,7 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("/skill truthmark-structure");
       expect(agents).not.toContain("/skill truthmark-check");
       expect(agents).toContain(
-        "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check",
+        "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
       );
       expect(agents).not.toContain(
         "truthmark check --json --workflow truth-sync",
@@ -142,6 +142,9 @@ describe("installed workflow contract", () => {
       expect(realizeOpenCodeSkill).toContain("support/report-template.md");
       await expect(
         repo.readFile(".agents/skills/truthmark-preview/SKILL.md"),
+      ).rejects.toThrow();
+      await expect(
+        repo.readFile(".agents/skills/truthmark-preview/agents/openai.yaml"),
       ).rejects.toThrow();
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/report-template.md");

@@ -276,7 +276,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     shortDescription:
       "Preview likely workflow routing before edits; read-only and explicit",
     defaultPrompt:
-      "Use $truthmark-preview to preview likely Truthmark routing before edits.",
+      "Use Truthmark Preview to estimate likely workflow routing before edits.",
     allowImplicitInvocation: false,
     positiveTriggers: [
       "explicit request to preview Truthmark workflow routing before edits",

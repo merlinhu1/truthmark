@@ -91,7 +91,6 @@ Examples:
 /truthmark-document
 /truthmark-structure
 /truthmark-realize
-/truthmark-preview
 /truthmark-check
 ```
 
@@ -198,7 +197,7 @@ When the agent changes functional code, Truth Sync acts as the finish-time guard
 | Git-native truth | Keeps repository truth in committed Markdown and config. |
 | Branch-scoped documentation | Truth moves with the branch instead of living in a private session. |
 | Human CLI | Gives maintainers setup, refresh, validation, and inspection commands. |
-| AI-facing workflows | Gives agents host-native workflows for sync, documentation, structure, preview, realization, and audit. |
+| AI-facing workflows | Gives agents host-native workflows for sync, documentation, structure, realization, and audit. |
 | Explicit routing | Maps code areas to canonical truth docs. |
 | Reviewable handoffs | Produces ordinary Git diffs for both code and truth docs. |
 | Local-first operation | Requires no hosted service, daemon, database, or MCP server. |
@@ -334,7 +333,6 @@ They are used by agents or agent hosts during repository work. They are not top-
 | Truth Structure | topology-first | The default route is too broad, ownership spans multiple areas, or route files still point at placeholders. | Creates or repairs routing and starter truth docs. |
 | Truth Document | implementation-first | Behavior already exists in code, but canonical truth docs are missing or weak. | Writes truth docs and routing only. Functional code must not change. |
 | Truth Sync | code-first | Functional code changed and mapped truth docs may need to be updated before handoff. | Updates truth docs. Functional code must not be rewritten by Truth Sync. |
-| Truth Preview | read-only | The agent needs to preview likely routing before edits. | Reads only. Does not authorize writes. |
 | Truth Realize | doc-first | Product or architecture truth docs lead and code should be updated to match. | Updates code only. The agent must not edit the truth docs it is realizing. |
 | Truth Check | audit-first | A reviewer or agent needs to audit repository truth health. | Audits and reports. |
 | Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the fixed Portal output directory. |
@@ -408,7 +406,8 @@ The agent must not edit the truth docs it is realizing.
 Use Truth Preview before a change when the agent needs to understand likely routing.
 
 ```text
-/truthmark-preview preview the likely truth routing for changes to the billing API
+/truthmark-preview preview the likely truth routing for changes to the billing API (GitHub Copilot)
+/truthmark:preview preview the likely truth routing for changes to the billing API (Gemini CLI)
 ```
 
 Truth Preview is read-only.

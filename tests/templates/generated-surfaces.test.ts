@@ -152,6 +152,16 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(byPath.has(".agents/skills/truthmark-preview/SKILL.md")).toBe(false);
     expect(previewPrompt).toContain("Truth Preview is read-only");
     expect(previewCommand).toContain("Truth Preview is read-only");
+    expect(previewPrompt).not.toContain("OpenCode /skill truthmark-preview");
+    expect(previewPrompt).not.toContain("Codex /truthmark-preview");
+    expect(previewPrompt).not.toContain("Claude Code /truthmark-preview");
+    expect(previewCommand).not.toContain("OpenCode /skill truthmark-preview");
+    expect(previewCommand).not.toContain("Codex /truthmark:preview");
+    expect(previewCommand).not.toContain("Claude Code /truthmark:preview");
+    expect(previewCommand).not.toContain("GitHub Copilot /truthmark-preview");
+    expect(byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml")).toBe(
+      false,
+    );
   });
 
   it("does not render unused repo-local agent package copies", () => {
