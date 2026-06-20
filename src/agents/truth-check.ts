@@ -91,8 +91,6 @@ export const renderTruthCheckProcedureBody = (
 
 Use this skill to audit repository truth health.
 
-Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
-
 Truth Check is agent-led:
 
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly

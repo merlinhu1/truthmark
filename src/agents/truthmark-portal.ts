@@ -15,8 +15,6 @@ export const renderTruthmarkPortalProcedureBody = (
 
 Truthmark Portal is a manual-only presentation workflow. It is never an automatic completion workflow, never Truth Sync, and runs only when the user explicitly asks to generate, refresh, or update the committed static HTML Portal.
 
-Invocations: ${TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS}
-
 Core rules:
 
 - Markdown remains canonical; generated HTML is presentation only.

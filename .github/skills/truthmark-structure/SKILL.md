@@ -11,15 +11,11 @@ Use this skill to design or repair Truthmark area structure.
 
 Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs.
 
-Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Antigravity @truthmark-structure; Cursor @truthmark-structure.
-
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
 - Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect current docs and relevant code directly.
 - Define areas by product or behavior ownership, not by mechanical directory mirroring.
 - Do not edit functional code.
-- Read support/procedure.md before writing route or starter truth-doc changes.
-- Read support/report-template.md before the final report.
 
 Progressive disclosure:
 - support/procedure.md — read before edits or detailed auditing; contains core review questions

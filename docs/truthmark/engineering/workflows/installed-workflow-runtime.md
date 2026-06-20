@@ -45,10 +45,16 @@ Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
 - Host surfaces are the runtime surfaces agents actually load.
 - Duplicating workflow packages under `.truthmark/agent/` would add repository docs with no active host consumer.
 
-GitHub Copilot prompts, Antigravity rules, Cursor rules, and top-level managed instruction blocks stay thin:
+GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 
 - They point to host-native workflow entrypoints when a host skill package exists.
 - They do not embed full workflow bodies or cross-host invocation lists.
+
+Antigravity and Cursor rule files are flat host rule surfaces:
+
+- They inline the workflow procedure and report template because those hosts do not consume the package-local `support/` directory model.
+- They omit the duplicate quick-procedure block and do not reference nonexistent `support/` files.
+- They keep only host-local invocation framing and do not embed cross-host invocation lists.
 
 Generated-surface checks report missing or stale configured host-native skill package files.
 
@@ -56,7 +62,7 @@ Workflow manifest entries use review-oriented questions that surface as a Workfl
 
 Evidence-oriented entries surface as `evidencePrompts`.
 
-Generated GitHub Copilot prompts plus Antigravity and Cursor rule files act as compact host entrypoint adapters:
+Generated GitHub Copilot prompt files act as compact host entrypoint adapters:
 
 - They direct the current invocation to host-local skill package files.
 - They avoid dispatching another Truthmark command.

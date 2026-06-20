@@ -115,8 +115,7 @@ export const renderTruthSyncProcedureBody = (
   const subagentMode = `${claudeSubagentMode}${codexSubagentMode}${copilotCustomAgentMode}${openCodeSubagentMode}`;
 
   return `Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
-Invocations: ${TRUTH_SYNC_EXPLICIT_INVOCATIONS}
-Explicit invocation runs immediately. Later functional-code changes need a fresh finish-time review, and an earlier explicit run satisfies the finish-time review only if no later functional-code changes occur.
+Explicit invocation runs immediately when the user directly requests this workflow. Later functional-code changes need a fresh finish-time review, and an earlier explicit run satisfies the finish-time review only if no later functional-code changes occur.
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
 Parent workflow:
 1. Inspect git status, staged changes, unstaged changes, and untracked files directly.

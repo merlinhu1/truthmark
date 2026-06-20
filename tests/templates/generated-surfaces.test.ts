@@ -117,6 +117,63 @@ describe("Truthmark Portal generated surfaces", () => {
     }
   });
 
+  it("keeps generated runtime surfaces free of repeated host/support overhead", () => {
+    const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
+    const surfaces = renderGeneratedSurfaces(config);
+    const runtimeSurfaces = surfaces.filter(
+      (surface) =>
+        surface.path.startsWith(".agents/") ||
+        surface.path.startsWith(".opencode/") ||
+        surface.path.startsWith(".claude/") ||
+        surface.path.startsWith(".github/") ||
+        surface.path.startsWith(".antigravity/") ||
+        surface.path.startsWith(".cursor/"),
+    );
+    const crossHostInvocationText = [
+      "Invocations:",
+      "OpenCode /skill truthmark-",
+      "Codex /truthmark-",
+      "Claude Code /truthmark-",
+      "GitHub Copilot /truthmark-",
+      "Antigravity @truthmark-",
+      "Cursor @truthmark-",
+    ];
+
+    for (const surface of runtimeSurfaces) {
+      for (const text of crossHostInvocationText) {
+        expect(surface.content, surface.path).not.toContain(text);
+      }
+    }
+
+    const skillEntrypoints = runtimeSurfaces.filter((surface) =>
+      surface.path.endsWith("/SKILL.md"),
+    );
+    for (const surface of skillEntrypoints) {
+      expect(surface.content, surface.path).toContain("Progressive disclosure:");
+      expect(surface.content, surface.path).not.toContain("Read support/");
+    }
+
+    const flatRules = runtimeSurfaces.filter(
+      (surface) =>
+        surface.path.startsWith(".antigravity/rules/") ||
+        surface.path.startsWith(".cursor/rules/"),
+    );
+    expect(flatRules.length).toBeGreaterThan(0);
+    for (const surface of flatRules) {
+      expect(surface.content, surface.path).not.toContain("Quick procedure:");
+      expect(surface.content, surface.path).not.toContain("support/procedure.md");
+      expect(surface.content, surface.path).not.toContain(
+        "support/report-template.md",
+      );
+      expect(surface.content, surface.path).not.toContain(
+        "support/subagents-and-leases.md",
+      );
+      expect(surface.content, surface.path).toContain("## Procedure");
+      expect(surface.content, surface.path).toContain("## Report Template");
+    }
+  });
+
   it("keeps compact workflow-specific validation and procedure guidance", () => {
     const config = createDefaultConfig();
     config.platforms = [...allPlatforms];

@@ -93,7 +93,7 @@ export const renderTruthStructureProcedureBody = (
   const subagentMode = `${claudeSubagentMode}${copilotCustomAgentMode}`;
 
   return `Use this skill to design or repair Truthmark area structure.
-Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
+
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - Evidence authority:

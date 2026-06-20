@@ -6,8 +6,6 @@ Truthmark-managed generated file. Refresh with truthmark init when truthmark che
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Antigravity @truthmark-realize; Cursor @truthmark-realize.
-
 Truth Realize is doc-first:
 
 - truth docs lead

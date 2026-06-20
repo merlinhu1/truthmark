@@ -12,30 +12,25 @@ import {
   resolveProductTruthRoot,
 } from "../agents/shared.js";
 import {
-  TRUTH_CHECK_EXPLICIT_INVOCATIONS,
   renderTruthCheckProcedureBody,
   renderTruthCheckReportExample,
   renderTruthCheckSkillBody,
 } from "../agents/truth-check.js";
 import {
-  TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
   renderTruthDocumentProcedureBody,
   renderTruthDocumentReportExample,
   renderTruthDocumentSkillBody,
 } from "../agents/truth-document.js";
 import {
-  TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
   renderTruthmarkPortalProcedureBody,
   renderTruthmarkPortalSkillBody,
 } from "../agents/truthmark-portal.js";
 import {
-  TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
   renderTruthStructureProcedureBody,
   renderTruthStructureReportExample,
   renderTruthStructureSkillBody,
 } from "../agents/truth-structure.js";
 import {
-  TRUTH_SYNC_EXPLICIT_INVOCATIONS,
   renderTruthSyncProcedureBody,
   renderTruthSyncSkillBody,
 } from "../agents/truth-sync.js";
@@ -256,14 +251,10 @@ type TruthmarkSkillPackageFile = {
 type WorkflowPackageDefinition = {
   title: string;
   argumentHint: string;
-  invocations: string;
   use: (config: TruthmarkConfig) => string;
   quickRules: (config: TruthmarkConfig) => string[];
   parentRule?: string;
 };
-
-const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Antigravity @truthmark-realize; Cursor @truthmark-realize.";
 
 const routeFilesHint = (config: TruthmarkConfig): string =>
   `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
@@ -275,15 +266,12 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   "truthmark-structure": {
     title: "Truthmark Structure",
     argumentHint: "Optional area, directory, or routing concern",
-    invocations: TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
     use: () => "Use this skill to design or repair Truthmark area structure.",
     quickRules: (config) => [
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect current docs and relevant code directly.`,
       "Define areas by product or behavior ownership, not by mechanical directory mirroring.",
       "Do not edit functional code.",
-      "Read support/procedure.md before writing route or starter truth-doc changes.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns all Truth Structure writes and final topology decisions",
@@ -292,7 +280,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     title: "Truthmark Document",
     argumentHint:
       "Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document",
-    invocations: TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill to document existing implemented behavior when no functional-code changes are required for the task.",
     quickRules: (config) => [
@@ -300,9 +287,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect existing canonical docs, implementation code, and tests directly.`,
       "Document current implemented behavior; do not invent future behavior.",
       "May write canonical truth docs and truth routing files only; must not write functional code.",
-      "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
@@ -310,7 +294,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   "truthmark-sync": {
     title: "Truthmark Sync",
     argumentHint: "Optional changed-code area, truth-doc area, or sync focus",
-    invocations: TRUTH_SYNC_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.",
     quickRules: (config) => [
@@ -319,9 +302,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect relevant canonical docs directly.`,
       "direct checkout inspection is the canonical path; do not require the truthmark binary.",
       "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
-      "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns Truth Sync acceptance, lease validation, and final report",
@@ -330,7 +310,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     title: "Truthmark Realize",
     argumentHint:
       "Optional truth doc path, area, or desired code behavior to realize",
-    invocations: TRUTH_REALIZE_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to realize truth docs into code.",
     quickRules: (config) => [
@@ -338,29 +317,22 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Read the source truth docs, inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist, then inspect tests and relevant functional code directly.`,
       "Truth docs lead; code follows.",
       "may write functional code only; must not edit truth docs or truth routing while realizing those docs.",
-      "Read support/procedure.md before changing code.",
-      "Read support/report-template.md before the final report.",
     ],
   },
   "truthmark-check": {
     title: "Truthmark Check",
     argumentHint: "Optional area, doc path, or audit focus",
-    invocations: TRUTH_CHECK_EXPLICIT_INVOCATIONS,
     use: () => "Use this skill to audit repository truth health.",
     quickRules: (config) => [
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect canonical docs and relevant implementation directly.`,
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
-      "Read support/procedure.md before auditing details.",
-      "Read support/subagents-and-leases.md only when dispatching verifier subagents.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule: "Parent agent owns the final Truth Check report",
   },
   "truthmark-portal": {
     title: "Truthmark Portal",
     argumentHint: "Optional portal generation focus",
-    invocations: TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to generate or refresh the committed static HTML Truthmark Portal.",
     quickRules: (config) => [
@@ -372,8 +344,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Write only under fixed Portal output ${config.truthmark.paths.portalOutput}.`,
       `Use determined Portal template ${config.truthmark.paths.portalTemplate} when present; no .truthmark/index.json dependency.`,
       "Use no remote dependencies by default and include source provenance on every page.",
-      "Read support/procedure.md before generating Portal output.",
-      "Read support/report-template.md before the final report.",
     ],
   },
 };
@@ -568,8 +538,6 @@ user-invocable: true
 # ${definition.title}
 
 ${definition.use(config)}${hostUsage === undefined ? "" : `\n\n${hostUsage}`}
-
-Invocations: ${definition.invocations}
 
 Quick procedure:
 ${definition
@@ -1263,8 +1231,6 @@ const renderTruthmarkRealizeProcedureBody = (
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Antigravity @truthmark-realize; Cursor @truthmark-realize.
-
 Truth Realize is doc-first:
 
 - truth docs lead
@@ -1436,14 +1402,6 @@ Manual invocation: @${ruleName}
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
 Description: ${workflow.description}
-
-Invocations: ${definition.invocations}
-
-Quick procedure:
-${definition
-  .quickRules(config)
-  .map((rule) => `- ${rule}`)
-  .join("\n")}
 
 ## Procedure
 

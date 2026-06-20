@@ -170,16 +170,14 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentClaudeSkill()).toContain(
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).toContain(
-      "/skill truthmark-document",
-    );
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
       "Codex subagent mode:",
     );
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).toContain("Cursor @truthmark-document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("OpenCode /skill truthmark-document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("Cursor @truthmark-document");
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'display_name: "Truthmark Document"',
     );
@@ -199,13 +197,25 @@ describe("Truth Document generated surfaces", () => {
       renderTruthmarkCursorDocumentRule(),
       renderTruthmarkCopilotDocumentPrompt(),
     ]) {
-      expect(surface).toContain("support/procedure.md");
-      expect(surface).toContain("support/report-template.md");
       expect(surface).toContain("Do not invoke another Truthmark command from here.");
       expect(surface).toContain(
         "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
       );
       expect(surface).not.toContain("render the full workflow");
     }
+
+    expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
+      "support/procedure.md",
+    );
+    expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
+      "support/procedure.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain("Quick procedure:");
   });
 });

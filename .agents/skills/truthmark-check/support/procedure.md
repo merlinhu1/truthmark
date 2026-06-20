@@ -6,8 +6,6 @@ Truthmark-managed generated file. Refresh with truthmark init when truthmark che
 
 Use this skill to audit repository truth health.
 
-Invocations: OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Antigravity @truthmark-check; Cursor @truthmark-check.
-
 Truth Check is agent-led:
 
 - inspect .truthmark/config.yml and configured route files only when they exist; then inspect canonical docs and relevant implementation directly

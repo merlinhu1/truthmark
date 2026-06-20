@@ -39,11 +39,10 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).not.toContain("restructure truth docs");
     expect(prompt).toContain("Report changed code files and verification steps");
     expect(prompt).toContain("installed instruction or skill");
-    expect(prompt).toContain("/truthmark-realize");
-    expect(prompt).toContain("$truthmark-realize");
-    expect(prompt).toContain("Cursor @truthmark-realize");
-    expect(prompt).toContain("OpenCode");
-    expect(prompt).toContain("/skill truthmark-realize");
+    expect(prompt).not.toContain("Invocations:");
+    expect(prompt).not.toContain("OpenCode /skill truthmark-realize");
+    expect(prompt).not.toContain("Codex /truthmark-realize");
+    expect(prompt).not.toContain("Cursor @truthmark-realize");
     expect(prompt).not.toContain("truthmark realize");
   });
 

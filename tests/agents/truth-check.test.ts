@@ -98,9 +98,6 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckSkill()).toContain(
       "Parent agent owns the final Truth Check report",
     );
-    expect(renderTruthmarkCheckLocalSkill()).toContain(
-      "/skill truthmark-check",
-    );
     expect(renderTruthmarkCheckLocalSkill()).not.toContain("Codex subagent mode:");
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
       "Claude Code subagent mode:",
@@ -114,7 +111,8 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
       "truth-doc-reviewer subagent",
     );
-    expect(renderTruthmarkCheckLocalSkill()).toContain("Cursor @truthmark-check");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain("OpenCode /skill truthmark-check");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain("Cursor @truthmark-check");
     expect(renderTruthmarkCheckSkillMetadata()).toContain(
       'display_name: "Truthmark Check"',
     );

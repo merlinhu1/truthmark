@@ -146,7 +146,8 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction",
     );
-    expect(skillBody).toContain("Cursor @truthmark-sync");
+    expect(skillBody).not.toContain("OpenCode /skill truthmark-sync");
+    expect(skillBody).not.toContain("Cursor @truthmark-sync");
   });
 
   it("uses the provided hierarchy config in embedded report examples", () => {
@@ -301,12 +302,20 @@ describe("Truth Sync generated metadata", () => {
       expect(surface).toContain(
         "Do not invoke another Truthmark command from here.",
       );
-      expect(surface).toContain("support/procedure.md");
-      expect(surface).toContain("support/report-template.md");
       expect(surface).not.toContain("helper-manifest.yml");
       expect(surface).not.toContain("support/helper-policy.md");
       expect(surface).not.toContain("helper package unavailable");
     }
+
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain("support/procedure.md");
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorSyncRule()).not.toContain("support/procedure.md");
+    expect(renderTruthmarkCursorSyncRule()).not.toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorSyncRule()).not.toContain("Quick procedure:");
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {

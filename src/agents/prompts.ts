@@ -40,7 +40,7 @@ export const renderTruthRealizePrompt = (
 
   return `### Manual Truth Realize
 Only run when the user explicitly asks to realize truth docs into code. This is a manual installed instruction or skill, not a dedicated CLI command.
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Antigravity @truthmark-realize; Cursor @truthmark-realize.
+
 Doc first:
 - read the updated truth docs plus any present Truthmark config, route files, relevant code, and tests
 - Evidence authority:

@@ -113,7 +113,6 @@ export const renderTruthDocumentProcedureBody = (
   return `# Truthmark Document
 
 Use this skill to document existing implemented behavior when no functional-code changes are required for the task.
-Invocations: ${TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS}
 
 Truth Document is manual and implementation-first:
 

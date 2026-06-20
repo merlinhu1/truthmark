@@ -23,7 +23,8 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
 
 When `platforms` is omitted, fresh config does not assume a host platform; `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries.
 Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents; generated helper manifest and helper policy files are intentionally not emitted.
-GitHub Copilot prompt files, Antigravity rule files, and Cursor rule files are lightweight workflow adapters for supported generated workflows: they point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint.
+GitHub Copilot prompt files are lightweight workflow adapters for supported generated workflows: they point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint.
+Antigravity and Cursor rule files are flat rule surfaces that inline the workflow procedure and report template, omit the duplicate quick-procedure block, and do not reference package-local `support/` files that those hosts do not consume.
 Truth Preview is not generated as a skill package, prompt file, or command file for any host.
 
 ## Contract Surface
@@ -45,7 +46,7 @@ Truth Preview is not generated as a skill package, prompt file, or command file 
 
 ## Outputs
 
-- Host-native workflow skill packages and compact prompt/command adapters
+- Host-native workflow skill packages, compact prompt adapters, and flat Antigravity/Cursor rule surfaces
 - No generated Truth Preview skill package, prompt, or command
 - Procedure, report-template, and subagent/lease support files only when a workflow needs them
 - Managed instruction blocks with non-versioned refresh guidance
@@ -74,8 +75,8 @@ Truth Preview is not generated as a skill package, prompt file, or command file 
 ## Engineering Decisions
 
 - Decision (2026-06-14): Generated surfaces must preserve Truthmark as a workflow injector, not a runtime authority.
-- Decision (2026-06-15): GitHub Copilot prompt files, Antigravity rules, and Cursor rules stay compact workflow adapters; canonical workflow bodies remain in generated skill support files or rendered rule bodies.
-- Decision (2026-06-15): GitHub Copilot prompt files, Antigravity rules, and Cursor rules must keep host invocation framing compact; cross-host invocation lists belong in human-facing docs or skill metadata, not adapter bodies.
+- Decision (2026-06-15): GitHub Copilot prompt files stay compact workflow adapters; Antigravity and Cursor rules are flat rendered rule bodies that carry procedure/report content directly.
+- Decision (2026-06-20): Runtime surfaces must not carry redundant host-switch or support-file overhead. Cross-host invocation lists belong in human-facing docs or platform-reference contracts, native `SKILL.md` quick procedures do not repeat support-file read instructions already listed under Progressive disclosure, and flat Antigravity/Cursor rules do not reference nonexistent `support/` files.
 - Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are opt-in through explicit `platforms` entries.
 - Decision (2026-06-18): Generated helper manifest and helper policy files are removed; optional validation commands remain in workflow metadata and report validation accepts manual fallback evidence.
 - Decision (2026-06-20): Truth Preview generated host surfaces are retired. Truthmark no longer emits Preview skill packages, Copilot prompts, Antigravity rules, or Cursor rules; preview-like route/workflow selection remains internal advisory behavior rather than an installed workflow surface.
@@ -83,7 +84,7 @@ Truth Preview is not generated as a skill package, prompt file, or command file 
 
 ## Rationale
 
-Host-native skill packages preserve progressive disclosure for agents that package skill directories, while compact adapters prevent prompt and command surfaces from duplicating full workflow bodies.
+Host-native skill packages preserve progressive disclosure for agents that package skill directories. Compact prompt adapters avoid duplicating full workflow bodies, while flat Antigravity/Cursor rules inline only the procedure/report body those rule hosts can load directly.
 
 ## Non-Goals
 
