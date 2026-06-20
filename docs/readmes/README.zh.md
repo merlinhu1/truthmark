@@ -428,11 +428,7 @@ truthmark check
 | `truthmark init` | 从已审查配置安装或刷新已配置的工作流接口。 |
 | `truthmark check` | 验证配置、权限边界、路由、承载决策的文档、frontmatter、内部链接、分支范围、生成接口、freshness 和覆盖率诊断。 |
 
-<<<<<<<< HEAD:docs/readmes/README.zh.md
 Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
-========
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
->>>>>>>> origin/main:docs/README.zh.md
 
 它们不是事实来源。
 
@@ -744,11 +740,7 @@ README 是评估和设置的快速路径。
 
 详细的当前行为位于 `docs/` 下：
 
-<<<<<<<< HEAD:docs/readmes/README.zh.md
 - [文档索引](../README.md)
-========
-- [文档索引](README.md)
->>>>>>>> origin/main:docs/README.zh.md
 - [架构概览](truthmark/engineering/architecture/overview.md)
 - [API 和 CLI 契约](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Init 和脚手架行为](truthmark/engineering/behaviors/init-and-scaffold.md)

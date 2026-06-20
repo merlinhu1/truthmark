@@ -332,11 +332,7 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-<<<<<<<< HEAD:docs/readmes/README.tr.md
 Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
-========
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
->>>>>>>> origin/main:docs/README.tr.md
 
 They are not sources of truth.
 
@@ -646,11 +642,7 @@ The README is the fast path for evaluation and setup.
 
 Detailed current behavior lives under `docs/`:
 
-<<<<<<<< HEAD:docs/readmes/README.tr.md
 - [Docs index](../README.md)
-========
-- [Docs index](README.md)
->>>>>>>> origin/main:docs/README.tr.md
 - [Architecture overview](truthmark/engineering/architecture/overview.md)
 - [API and CLI contracts](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Init and scaffold behavior](truthmark/engineering/behaviors/init-and-scaffold.md)
