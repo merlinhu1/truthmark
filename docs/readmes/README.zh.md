@@ -29,7 +29,7 @@ truthmark:
       enabled: false
 ```
 
-然后安装仓库本地的事实文档、路由和代理工作流界面：
+然后安装仓库本地的事实文档、路由和 AI 宿主指令：
 
 ```bash
 truthmark init
@@ -69,7 +69,7 @@ Truthmark 不只是另一个文档工具。它深度集成到 AI 工作流中：
 
 * **🚫 零供应商锁定：** 没有托管服务、隐藏数据库，也没有需要额外运维的服务器。
 * **🌳 100% Git 原生：** 一切都存在于你的仓库中。事实随分支一起移动。
-* **🤝 双界面架构：** 它清晰分离人类用于管理仓库的工具，以及 AI 代理用于编写代码的工作流。
+* **🤝 人类拥有、代理遵循的契约：**维护者拥有仓库契约；代理在编码时遵循已安装的指令。
 * **✅ 通过验证建立信任：** 因为改变行为的工作会包含可由人类审查的事实文档决策或 diff，AI 工作更容易被信任。
 
 ## 🔄 工作原理
@@ -78,27 +78,40 @@ Truthmark 不只是另一个文档工具。它深度集成到 AI 工作流中：
 
 1. 💻 **代码：** 代理修改功能代码。
 2. 🧪 **测试：** 执行相关测试。
-3. 🔍 **检查：** 已安装工作流运行时，`Truth Sync` 会检查已映射的文档。
+3. 🔍 **检查：**Truthmark 会把映射到的文档作为已安装收尾审查的一部分进行检查。
 4. 📝 **记录：** 当仓库事实发生变化时，代理更新文档。
 5. 👀 **审查：** 人类审查*代码 diff* + *事实 diff*。
 
-## 🛠 两个界面，一个事实系统
+## 🛠 你如何使用 Truthmark
 
-Truthmark 有意拆分为两个不同界面，以同时服务人类维护者和 AI 代理。
+Truthmark 有一个仓库本地契约，以及两种使用方式。
 
-### 1. 🧑‍💻 人类 CLI（维护者和 CI）
-供开发者设置、配置和验证仓库使用。
+### 人类安装并验证契约
+
+维护者和 CI 使用 CLI：
+
 * `truthmark config` - 创建初始配置。
-* `truthmark init` - 安装必要的路由、脚手架和指令。
-* `truthmark check` - 从终端验证事实产物。
+* `truthmark init` - 安装或刷新路由、事实文档脚手架和 AI 宿主指令。
+* `truthmark check` - 从终端验证仓库事实。
 
-### 2. 🤖 面向 AI 的工作流（代理）
-Truthmark 会安装受支持 AI 宿主（如 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor）能够理解的原生技能、提示和命令。这些*不是* shell 命令；它们是 AI 的工作流入口点。
-* `/truthmark-sync` - 代理在功能代码变化后遵循的收尾工作流；不是普通的用户启动命令。
-* `/truthmark-document` - 为尚未记录的既有代码生成文档。
-* `/truthmark-structure` - 将宽泛的仓库区域组织为具体领域。
-* `/truthmark-realize` - **文档优先开发：** 阅读架构文档并生成与之匹配的代码。
-* `/truthmark-check` - 由代理驱动的仓库事实审计。
+### 代理在编码时遵循契约
+
+Truthmark 会为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 等受支持的 AI 编码宿主安装仓库本地指令。
+
+正常循环很简单：
+
+1. 让代理修改代码，或让它记录已有行为。
+2. 已安装的指令会告诉代理何时测试、何时更新事实文档、何时停下来交给人类审查。
+3. 你审查普通的 Git diff：代码，以及任何事实文档变更。
+
+用户主动发起的代理请求刻意保持很少：
+
+* `/truthmark-document` - 根据代码和测试记录已有实现行为。
+* `/truthmark-realize` - 根据已有事实文档实现代码。
+* `/truthmark-check` - 审计仓库事实。
+
+Truth Sync 不是通常的开工方式；它是功能代码变更后的收尾审查。
+Truth Structure 不是日常命令；只有当路由或所有权阻塞工作时，它才进行修复。
 
 ## 你会得到什么
 
@@ -107,7 +120,7 @@ Truthmark 会安装受支持 AI 宿主（如 Codex、Claude Code、GitHub Copilo
 | Git 原生事实 | 将仓库事实保存在已提交的 Markdown 和配置中。 |
 | 按分支生效的文档 | 事实随分支移动，而不是存在于私有会话中。 |
 | 人类 CLI | 为维护者提供设置、刷新、验证和检查命令。 |
-| 面向 AI 的工作流 | 为代理提供宿主原生的同步、文档、结构、实现和审计工作流。 |
+| 已安装的代理指引 | 告诉编码代理何时记录文档、测试、同步事实、审计或停下来等待审查。 |
 | 显式路由 | 将代码区域映射到规范事实文档。 |
 | 可审查交接 | 为代码和事实文档都产生普通 Git diff。 |
 | 本地优先运行 | 不需要托管服务、守护进程、数据库或 MCP 服务器。 |
@@ -119,7 +132,7 @@ Truthmark 会安装受支持 AI 宿主（如 Codex、Claude Code、GitHub Copilo
 
 ![Truthmark 功能](../assets/truthmark-features.png)
 
-**功能：** Truthmark 会安装什么，以及工作流界面如何拆分。
+**功能：** Truthmark 会安装什么，以及代理如何使用仓库本地指令。
 
 ![Truthmark 定位](../assets/truthmark-position.png)
 
@@ -172,7 +185,7 @@ Truthmark 的边界有意很窄：
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+围绕它安装代理指引
 keep the result reviewable in Git
 ```
 
@@ -187,7 +200,7 @@ README 是门面：快速背景、快速开始和核心心智模型。
 当前版本提供：
 
 - 用于 config、init、check、index、impact 和 workflow status 的本地 CLI 命令
-- 为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 生成的 AI 工作流界面
+- 为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 生成的仓库本地代理指令
 - 路由、权限、frontmatter、链接、新鲜度、生成界面、分支范围和覆盖率诊断
 - 按分支生效的事实文档和派生的仓库智能产物
 

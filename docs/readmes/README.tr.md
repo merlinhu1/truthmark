@@ -69,7 +69,7 @@ Truthmark sıradan bir dokümantasyon aracı değildir. AI iş akışına derinl
 
 * **🚫 Tedarikçi kilidi yok:** Barındırılan hizmet yok, gizli veritabanı yok, işletilecek ek sunucu yok.
 * **🌳 %100 Git'e özgü:** Her şey deponuzda yaşar. Gerçek, dalınızla birlikte hareket eder.
-* **🤝 Çift yüzeyli mimari:** İnsanların depoyu yönetmek için kullandığı araçları, AI ajanlarının kod yazmak için kullandığı iş akışlarından temiz biçimde ayırır.
+* **🤝 İnsanların sahip olduğu, ajanların izlediği sözleşme:** Bakımcılar depo sözleşmesine sahiptir; ajanlar kod yazarken kurulu talimatları izler.
 * **✅ Doğrulama yoluyla güven:** Davranışı değiştiren işlerde insan tarafından incelenebilir bir gerçeklik belgesi kararı veya farkı bulunduğu için AI çalışmasına güvenmek kolaylaşır.
 
 ## 🔄 Nasıl çalışır
@@ -78,29 +78,40 @@ Bir AI ajanı kodunuzu değiştirdiğinde iş bitmiş sayılmaz. Truthmark, ajan
 
 1. 💻 **Kod:** Ajan işlevsel kodu değiştirir.
 2. 🧪 **Test:** İlgili testler çalıştırılır.
-3. 🔍 **Kontrol:** Kurulu iş akışı çalıştığında `Truth Sync` eşlenmiş belgeleri kontrol eder.
+3. 🔍 **Kontrol:** Truthmark, kurulu bitiş incelemesinin parçası olarak eşlenen dokümantasyonu kontrol eder.
 4. 📝 **Belgeleme:** Depo gerçeği değiştiğinde belgeler ajan tarafından güncellenir.
 5. 👀 **İnceleme:** Bir insan *kod farkını* + *gerçeklik farkını* inceler.
 
-## 🛠 İki yüzey, tek gerçeklik sistemi
+## 🛠 Truthmark ile nasıl etkileşirsiniz
 
-Truthmark, hem insan bakımcılarına hem de AI ajanlarına hizmet etmek için bilinçli olarak iki ayrı yüzeye bölünmüştür.
+Truthmark’ın depo yerelinde tek bir sözleşmesi ve onu kullanmanın iki yolu vardır.
 
-### 1. 🧑‍💻 İnsan CLI'si (Bakımcılar ve CI)
+### İnsanlar sözleşmeyi kurar ve doğrular
 
-Geliştiriciler tarafından depoyu kurmak, yapılandırmak ve doğrulamak için kullanılır.
-* `truthmark config` - İlk yapılandırmanızı oluşturur.
-* `truthmark init` - Gerekli yönlendirmeyi, iskeletleri ve talimatları kurar.
-* `truthmark check` - Gerçeklik artefaktlarını terminalden doğrular.
+Bakımcılar ve CI, CLI kullanır:
 
-### 2. 🤖 AI'ye yönelik iş akışları (Ajanlar)
+* `truthmark config` - ilk yapılandırmayı oluşturur.
+* `truthmark init` - yönlendirmeyi, truth-doc iskelelerini ve AI ana makine talimatlarını kurar veya yeniler.
+* `truthmark check` - depo gerçeğini terminalden doğrular.
 
-Truthmark, desteklenen AI ana makinelerinin (Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor gibi) anlayabildiği yerel beceriler, istemler ve komutlar kurar. Bunlar shell komutları *değildir*; AI için iş akışı giriş noktalarıdır.
-* `/truthmark-sync` - İşlevsel kod değişikliklerinden sonra ajanların izlediği bitiş zamanı iş akışı; normal bir kullanıcı başlatma komutu değildir.
-* `/truthmark-document` - Belgesiz mevcut kod için belgeler üretir.
-* `/truthmark-structure` - Geniş depo alanlarını belirli alan adları halinde düzenler.
-* `/truthmark-realize` - **Belge-öncelikli geliştirme:** Mimari belgelerini okur ve bunlara uyan kod üretir.
-* `/truthmark-check` - Ajan tarafından yürütülen depo gerçeği denetimi.
+### Ajanlar kod yazarken sözleşmeyi izler
+
+Truthmark, Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor gibi desteklenen AI kodlama ana makineleri için depo yerelinde talimatlar kurar.
+
+Normal döngü basittir:
+
+1. Ajanınızdan kod değişikliği isteyin veya mevcut bir davranışı belgelemesini isteyin.
+2. Kurulu talimatlar ajana ne zaman test edeceğini, ne zaman truth dokümanlarını güncelleyeceğini ve ne zaman insan incelemesi için duracağını söyler.
+3. Siz sıradan Git diff’lerini incelersiniz: kod ve varsa truth-doc değişiklikleri.
+
+Kullanıcı tarafından başlatılan ajan istekleri bilinçli olarak azdır:
+
+* `/truthmark-document` - kod ve testlerden mevcut uygulanmış davranışı belgeler.
+* `/truthmark-realize` - mevcut truth dokümanlarından kod uygular.
+* `/truthmark-check` - depo gerçeğini denetler.
+
+Truth Sync işe başlamanın olağan yolu değildir; işlevsel kod değişikliklerinden sonraki bitiş incelemesidir.
+Truth Structure günlük bir komut değildir; yalnızca çalışmayı engellediğinde yönlendirmeyi veya sahipliği onarır.
 
 ## Neler elde edersiniz
 
@@ -109,7 +120,7 @@ Truthmark, desteklenen AI ana makinelerinin (Codex, Claude Code, GitHub Copilot,
 | Git'e özgü gerçeklik | Depo gerçeğini commit edilmiş Markdown ve yapılandırmada tutar. |
 | Dal kapsamlı dokümantasyon | Gerçek, özel bir oturumda yaşamak yerine dalla birlikte hareket eder. |
 | İnsan CLI'si | Bakımcılara kurulum, yenileme, doğrulama ve inceleme komutları sağlar. |
-| AI'ye yönelik iş akışları | Ajanlara senkronizasyon, dokümantasyon, yapılandırma, gerçekleştirme ve denetim için ana makineye özgü iş akışları sağlar. |
+| Kurulu ajan rehberliği | Kodlama ajanlarına ne zaman belge yazacağını, test edeceğini, gerçeği senkronize edeceğini, denetleyeceğini veya inceleme için duracağını söyler. |
 | Açık yönlendirme | Kod alanlarını kanonik gerçeklik belgelerine eşler. |
 | İncelenebilir teslimler | Hem kod hem de gerçeklik belgeleri için sıradan Git farkları üretir. |
 | Yerel-öncelikli çalışma | Barındırılan hizmet, daemon, veritabanı veya MCP sunucusu gerektirmez. |
@@ -174,7 +185,7 @@ Truthmark'ın alanı tasarım gereği dardır:
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+etrafına ajan rehberliği kurmak
 keep the result reviewable in Git
 ```
 
@@ -189,7 +200,7 @@ Komut komut kullanım, yüzey karşılaştırmaları, desteklenen platform ayrı
 Mevcut sürüm şunları sağlar:
 
 - config, init, check, index, impact ve iş akışı durumu için yerel CLI komutları
-- Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor için üretilmiş AI iş akışı yüzeyleri
+- Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor için oluşturulan depo yerelinde ajan talimatları
 - yönlendirme, yetki, frontmatter, bağlantı, güncellik, üretilmiş yüzey, dal kapsamı ve kapsam tanıları
 - dal kapsamlı gerçeklik belgeleri ve türetilmiş depo zekâsı artefaktları
 

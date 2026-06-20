@@ -29,7 +29,7 @@ truthmark:
       enabled: false
 ```
 
-Then install the repo-local truth docs, routing, and agent workflow surfaces:
+Then install the repo-local truth docs, routing, and AI-host instructions:
 
 ```bash
 truthmark init
@@ -69,7 +69,7 @@ Truthmark isn't just another documentation tool. It is deeply integrated into th
 
 * **🚫 Zero Vendor Lock-in:** No hosted services, no hidden databases, no extra servers to operate.
 * **🌳 100% Git-Native:** Everything lives in your repository. The truth moves with your branch.
-* **🤝 Dual-Surface Architecture:** It cleanly separates the tools humans use to manage the repo from the workflows AI agents use to write code.
+* **🤝 Human-owned, agent-followed contract:** Maintainers own the repo contract; agents follow the installed instructions while coding.
 * **✅ Trust Through Verification:** AI work becomes easier to trust because behavior-changing work includes a human-reviewable truth-doc decision or diff.
 
 ## 🔄 How It Works
@@ -78,27 +78,40 @@ When an AI agent modifies your code, the job isn't finished. Truthmark installs 
 
 1. 💻 **Code:** Agent modifies functional code.
 2. 🧪 **Test:** Relevant tests are executed.
-3. 🔍 **Check:** `Truth Sync` checks mapped documentation when the installed workflow runs.
+3. 🔍 **Check:** Truthmark checks mapped documentation as part of the installed finish-time review.
 4. 📝 **Document:** Docs are updated by the agent when repository truth has changed.
 5. 👀 **Review:** A human reviews the *code diff* + the *truth diff*.
 
-## 🛠 Two Surfaces, One Truth System
+## 🛠 How you interact with Truthmark
 
-Truthmark is intentionally split into two distinct surfaces to serve both human maintainers and AI agents.
+Truthmark has one repo-local contract with two ways to use it.
 
-### 1. 🧑‍💻 The Human CLI (Maintainers & CI)
-Used by developers to set up, configure, and validate the repository.
-* `truthmark config` - Creates your initial configuration.
-* `truthmark init` - Installs the necessary routing, scaffolds, and instructions.
-* `truthmark check` - Validates truth artifacts from the terminal.
+### Humans install and validate the contract
 
-### 2. 🤖 The AI-Facing Workflows (Agents)
-Truthmark installs native skills, prompts, and commands that supported AI hosts (like Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor) understand. These are *not* shell commands; they are workflow entry points for the AI.
-* `/truthmark-sync` - The finish-time workflow agents follow after functional code changes; not a normal user-start command.
-* `/truthmark-document` - Generate docs for undocumented existing code.
-* `/truthmark-structure` - Organize broad repository areas into specific domains.
-* `/truthmark-realize` - **Doc-First Development:** Read architecture docs and generate code to match.
-* `/truthmark-check` - Agent-driven audit of the repository's truth.
+Maintainers and CI use the CLI:
+
+* `truthmark config` - create the initial configuration.
+* `truthmark init` - install or refresh routing, truth-doc scaffolds, and AI-host instructions.
+* `truthmark check` - validate the repository truth from the terminal.
+
+### Agents follow the contract while coding
+
+Truthmark installs repo-local instructions for supported AI coding hosts such as Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor.
+
+The normal loop is simple:
+
+1. Ask your agent for a code change, or ask it to document existing behavior.
+2. The installed instructions tell the agent when to test, when to update truth docs, and when to stop for human review.
+3. You review ordinary Git diffs: code plus any truth-doc changes.
+
+The user-started agent requests are intentionally few:
+
+* `/truthmark-document` - document existing implemented behavior from code and tests.
+* `/truthmark-realize` - implement code from existing truth docs.
+* `/truthmark-check` - audit repository truth.
+
+Truth Sync is not the usual way to start work; it is the finish-time review after functional code changes.
+Truth Structure is not a day-to-day command; it repairs routing or ownership only when that blocks the work.
 
 ## What you get
 
@@ -107,7 +120,7 @@ Truthmark installs native skills, prompts, and commands that supported AI hosts 
 | Git-native truth | Keeps repository truth in committed Markdown and config. |
 | Branch-scoped documentation | Truth moves with the branch instead of living in a private session. |
 | Human CLI | Gives maintainers setup, refresh, validation, and inspection commands. |
-| AI-facing workflows | Gives agents host-native workflows for sync, documentation, structure, realization, and audit. |
+| Installed agent guidance | Tells coding agents when to document, test, sync truth, audit, or stop for review. |
 | Explicit routing | Maps code areas to canonical truth docs. |
 | Reviewable handoffs | Produces ordinary Git diffs for both code and truth docs. |
 | Local-first operation | Requires no hosted service, daemon, database, or MCP server. |
@@ -119,7 +132,7 @@ Truthmark installs native skills, prompts, and commands that supported AI hosts 
 
 ![Truthmark features](docs/assets/truthmark-features.png)
 
-**Features:** what Truthmark installs and how the workflow surface is split.
+**Features:** what Truthmark installs and how agents use repo-local instructions.
 
 ![Truthmark position](docs/assets/truthmark-position.png)
 
@@ -150,7 +163,7 @@ It is useful when you need:
 - explicit ownership between docs and code
 - safer agent write boundaries
 - reviewable documentation instead of hidden memory
-- AI workflows that still work from committed repo files
+- agent guidance that still works from committed repo files
 
 ## Where Truthmark fits
 
@@ -172,7 +185,7 @@ Truthmark’s lane is narrow by design:
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+install agent guidance around it
 keep the result reviewable in Git
 ```
 
@@ -187,7 +200,7 @@ For command-by-command usage, surface comparisons, supported platform details, c
 The current release provides:
 
 - local CLI commands for config, init, check, index, impact, and workflow status
-- generated AI workflow surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
+- generated repo-local agent instructions for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
 - route, authority, frontmatter, link, freshness, generated-surface, branch-scope, and coverage diagnostics
 - branch-scoped truth docs and derived repository-intelligence artifacts
 

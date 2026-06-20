@@ -69,7 +69,7 @@ Truthmark bukan sekadar alat dokumentasi lain. Ia terintegrasi mendalam ke dalam
 
 * **🚫 Tanpa ketergantungan vendor:** Tidak ada layanan ter-host, tidak ada basis data tersembunyi, tidak ada server tambahan untuk dioperasikan.
 * **🌳 100% native Git:** Semuanya hidup di repositori Anda. Kebenaran bergerak bersama branch Anda.
-* **🤝 Arsitektur dua permukaan:** Memisahkan dengan bersih alat yang digunakan manusia untuk mengelola repositori dari alur kerja yang digunakan agen AI untuk menulis kode.
+* **🤝 Kontrak yang dimiliki manusia dan diikuti agen:** Pemelihara memiliki kontrak repositori; agen mengikuti instruksi yang terpasang saat membuat kode.
 * **✅ Kepercayaan melalui verifikasi:** Pekerjaan AI menjadi lebih mudah dipercaya karena pekerjaan yang mengubah perilaku menyertakan keputusan atau diff dokumen kebenaran yang dapat ditinjau manusia.
 
 ## 🔄 Cara kerjanya
@@ -78,29 +78,40 @@ Ketika agen AI memodifikasi kode Anda, pekerjaannya belum selesai. Truthmark mem
 
 1. 💻 **Kode:** Agen memodifikasi kode fungsional.
 2. 🧪 **Uji:** Pengujian yang relevan dijalankan.
-3. 🔍 **Periksa:** `Truth Sync` memeriksa dokumentasi yang dipetakan saat alur kerja terpasang berjalan.
+3. 🔍 **Periksa:** Truthmark memeriksa dokumentasi yang dipetakan sebagai bagian dari tinjauan akhir yang terpasang.
 4. 📝 **Dokumentasikan:** Dokumen diperbarui oleh agen ketika kebenaran repositori berubah.
 5. 👀 **Tinjau:** Manusia meninjau *diff kode* + *diff kebenaran*.
 
-## 🛠 Dua permukaan, satu sistem kebenaran
+## 🛠 Cara Anda berinteraksi dengan Truthmark
 
-Truthmark sengaja dibagi menjadi dua permukaan berbeda untuk melayani pemelihara manusia dan agen AI.
+Truthmark memiliki satu kontrak lokal repositori dengan dua cara pemakaian.
 
-### 1. 🧑‍💻 CLI manusia (Pemelihara & CI)
+### Manusia memasang dan memvalidasi kontrak
 
-Digunakan oleh pengembang untuk menyiapkan, mengonfigurasi, dan memvalidasi repositori.
-* `truthmark config` - Membuat konfigurasi awal Anda.
-* `truthmark init` - Memasang perutean, kerangka, dan instruksi yang diperlukan.
-* `truthmark check` - Memvalidasi artefak kebenaran dari terminal.
+Pemelihara dan CI menggunakan CLI:
 
-### 2. 🤖 Alur kerja yang menghadap AI (Agen)
+* `truthmark config` - membuat konfigurasi awal.
+* `truthmark init` - memasang atau menyegarkan perutean, scaffold dokumen kebenaran, dan instruksi host AI.
+* `truthmark check` - memvalidasi kebenaran repositori dari terminal.
 
-Truthmark memasang skill, prompt, dan perintah native yang dipahami host AI yang didukung (seperti Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor). Ini *bukan* perintah shell; ini adalah titik masuk alur kerja untuk AI.
-* `/truthmark-sync` - Alur kerja saat penyelesaian yang diikuti agen setelah perubahan kode fungsional; bukan perintah awal pengguna yang biasa.
-* `/truthmark-document` - Menghasilkan dokumen untuk kode yang sudah ada namun belum terdokumentasi.
-* `/truthmark-structure` - Mengorganisasi area repositori yang luas menjadi domain tertentu.
-* `/truthmark-realize` - **Pengembangan berawal dari dokumen:** Membaca dokumen arsitektur dan menghasilkan kode yang sesuai.
-* `/truthmark-check` - Audit truth repositori yang digerakkan agen.
+### Agen mengikuti kontrak saat membuat kode
+
+Truthmark memasang instruksi lokal repositori untuk host pengodean AI yang didukung seperti Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor.
+
+Alur normalnya sederhana:
+
+1. Minta agen Anda melakukan perubahan kode, atau minta ia mendokumentasikan perilaku yang sudah ada.
+2. Instruksi yang terpasang memberi tahu agen kapan harus menguji, kapan memperbarui dokumen kebenaran, dan kapan berhenti untuk tinjauan manusia.
+3. Anda meninjau diff Git biasa: kode plus perubahan dokumen kebenaran apa pun.
+
+Permintaan agen yang dimulai pengguna sengaja dibuat sedikit:
+
+* `/truthmark-document` - mendokumentasikan perilaku terimplementasi yang sudah ada dari kode dan pengujian.
+* `/truthmark-realize` - mengimplementasikan kode dari dokumen kebenaran yang sudah ada.
+* `/truthmark-check` - mengaudit kebenaran repositori.
+
+Truth Sync bukan cara biasa untuk memulai pekerjaan; itu adalah tinjauan akhir setelah perubahan kode fungsional.
+Truth Structure bukan perintah harian; ia memperbaiki perutean atau kepemilikan hanya ketika hal itu memblokir pekerjaan.
 
 ## Yang Anda dapatkan
 
@@ -109,7 +120,7 @@ Truthmark memasang skill, prompt, dan perintah native yang dipahami host AI yang
 | Kebenaran native Git | Menyimpan kebenaran repositori dalam Markdown dan konfigurasi yang di-commit. |
 | Dokumentasi berlingkup branch | Kebenaran bergerak bersama branch alih-alih hidup dalam sesi privat. |
 | CLI manusia | Memberi pemelihara perintah penyiapan, penyegaran, validasi, dan inspeksi. |
-| Alur kerja yang menghadap AI | Memberi agen alur kerja native host untuk sinkronisasi, dokumentasi, struktur, realisasi, dan audit. |
+| Kontrak agen terpasang | Memberi agen panduan native host untuk dokumentasi, realisasi, audit, sinkronisasi akhir, dan perbaikan perutean terbatas. |
 | Perutean eksplisit | Memetakan area kode ke dokumen kebenaran kanonis. |
 | Serah terima yang dapat ditinjau | Menghasilkan diff Git biasa untuk kode maupun dokumen kebenaran. |
 | Operasi lokal terlebih dahulu | Tidak membutuhkan layanan ter-host, daemon, basis data, atau server MCP. |
@@ -174,7 +185,7 @@ Jalur Truthmark sengaja dirancang sempit:
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+memasang panduan agen di sekelilingnya
 keep the result reviewable in Git
 ```
 
@@ -189,7 +200,7 @@ Untuk penggunaan per perintah, perbandingan permukaan, detail platform yang didu
 Rilis saat ini menyediakan:
 
 - perintah CLI lokal untuk config, init, check, index, impact, dan status alur kerja
-- permukaan alur kerja AI yang dihasilkan untuk Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor
+- instruksi agen lokal repositori yang dihasilkan untuk Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor
 - diagnostik perutean, otoritas, frontmatter, tautan, kesegaran, permukaan yang dihasilkan, cakupan branch, dan coverage
 - dokumen kebenaran berlingkup branch dan artefak kecerdasan repositori turunan
 
