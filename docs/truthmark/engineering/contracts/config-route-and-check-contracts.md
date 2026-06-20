@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-18
+last_reviewed: 2026-06-20
 ---
 
 # Config, Route, And Check Contracts
@@ -91,9 +91,22 @@ They do not embed source-file or truth-doc body contents.
 - ImpactSet data preserving branch-diff routing and affected tests without file contents
 - Diagnostics including `lane-shape`, `lane-drift`, and `traceability`
 
+## Errors And Diagnostics
+
+- Unsupported config fields are validation diagnostics.
+- Conflicting duplicate route kinds or lanes are area-index errors.
+- Missing or stale truth-doc relationships are traceability diagnostics.
+- Unmapped functional-code changes are freshness or routing diagnostics depending on command context.
+
 ## Compatibility Rules
 
 The target model is lane-first and does not use `docs/truthmark/truth` as the canonical scaffold target.
+
+## Versioning And Migration
+
+- Config files use `version: 2`.
+- Removed public command surfaces, such as standalone ContextPack, are hard-removed rather than preserved as aliases in this branch.
+- Legacy canonical truth roots are migrated into product and engineering lane roots.
 
 ## Product Truth Links
 
@@ -108,6 +121,16 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 - Decision (2026-06-15): Route relationships are route-local metadata; checks validate relationship targets for existence and lane compatibility without requiring a reciprocal global graph edge.
 - Decision (2026-06-15): ContextPack is folded into workflow status and impact; the standalone `truthmark context` command is hard-removed from the public CLI.
 - Decision (2026-06-18): Omitted `platforms` normalize to an empty platform list; all host-specific generated surfaces, including Codex, are explicit opt-in config.
+
+## Rationale
+
+The public contract exposes compact routing and workflow metadata instead of file-body packets so agents can choose bounded reads from the checkout.
+
+## Non-Goals
+
+- This contract does not define language-semantic import graphs or symbol indexes.
+- This contract does not preserve legacy ContextPack aliases.
+- This contract does not make route relationships a required reciprocal global graph.
 
 ## Maintenance Notes
 

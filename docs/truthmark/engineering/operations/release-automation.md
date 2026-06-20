@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-operations
-last_reviewed: 2026-06-14
+last_reviewed: 2026-06-20
 ---
 
 # Release Automation
@@ -27,6 +27,27 @@ Release and CI behavior is implemented through checked-in GitHub workflow files 
 
 Automation runs in GitHub Actions. There is no Truthmark daemon or persistent runtime service.
 
+## Configuration
+
+- GitHub workflow YAML files define CI and release triggers.
+- `src/templates/github-action.ts` owns generated GitHub Action template behavior.
+
+## Permissions
+
+Permissions are owned by the checked-in GitHub workflow and action template definitions.
+
+This doc does not add permissions beyond those source files.
+
+## Deployment And Rollback
+
+- Workflow changes deploy when repository workflow files are committed to the target branch.
+- Rollback is a normal Git revert or follow-up workflow-file change.
+
+## Availability And Observability
+
+- GitHub Actions provides run status and logs.
+- Truthmark has no separate release automation runtime to monitor.
+
 ## Product Truth Links
 
 - None.
@@ -34,6 +55,15 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 ## Engineering Decisions
 
 - Decision (2026-06-14): Release automation truth is engineering/operational truth because it describes current repository mechanics.
+
+## Rationale
+
+Release automation is documented as operations truth because failures, permissions, and rollback are repository mechanics rather than product capability promises.
+
+## Non-Goals
+
+- This doc does not define package versioning policy.
+- This doc does not own npm publishing credentials or external registry behavior.
 
 ## Maintenance Notes
 

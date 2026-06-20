@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-15
+last_reviewed: 2026-06-20
 ---
 
 # Check Diagnostics
@@ -33,6 +33,17 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 - Duplicate route entries for the same path, kind, and lane merge `realized_by`, `realizes`, and `depends_on` by unique sorted set.
 - Check reports structure and evidence only; it does not judge product strategy.
 
+## Flows And States
+
+- Check loads config and routed truth docs from the active checkout.
+- It runs structural, generated-surface, routing, traceability, and truth-doc checks.
+- It reports diagnostics and scorecard dimensions without mutating files.
+
+## Contracts
+
+- Diagnostic names, severities, and JSON shape are owned by contract truth.
+- Route relationship validation is described in `docs/truthmark/engineering/contracts/config-route-and-check-contracts.md`.
+
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/lane-separated-truth.md`
@@ -43,6 +54,16 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 - Decision (2026-06-14): Downstream injected/default product truth supports `product-capability` only; boundary material belongs inside capability scope, acceptance criteria, and non-goals.
 - Decision (2026-06-15): Duplicate route entries with the same path, kind, and lane are an additive relationship model; divergent relationship arrays merge instead of erroring so area-local route entries do not have to repeat the full relationship closure.
 - Decision (2026-06-15): `realized_by` and `realizes` route metadata is route-local navigation metadata, not a canonical global graph, so check validates target existence and lane compatibility without requiring reciprocal edges.
+
+## Rationale
+
+Check keeps diagnostics local to repository truth and route metadata so agents can repair docs without treating Truthmark as a hidden graph database.
+
+## Non-Goals
+
+- Check does not execute workflow agents.
+- Check does not rewrite truth docs or route files.
+- Check does not judge product strategy beyond structure and traceability rules.
 
 ## Maintenance Notes
 

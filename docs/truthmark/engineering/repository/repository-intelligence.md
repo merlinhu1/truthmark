@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-20
 ---
 
 # Repository Intelligence
@@ -28,6 +28,24 @@ Evidence validation checks repository containment, referenced file or glob exist
 
 Generated-surface diagnostics are checkout-derived repository intelligence for the installed workflow runtime. `truthmark check` compares rendered generated surfaces with committed files and reports missing or stale generated host-native skill package files so skill-directory resources stay colocated with `SKILL.md`.
 
+## Core Rules
+
+- Repository intelligence is advisory checkout context, not hidden memory or off-repo authority.
+- WorkflowState and ImpactSet expose paths, metadata, diagnostics, and checklists without embedding source-file or truth-doc bodies.
+- Route relationships remain route-local metadata.
+
+## Flows And States
+
+- RepoIndex and RouteMap are built from committed repository files.
+- ImpactSet maps branch changes to affected routes, truth docs, and tests.
+- WorkflowState packages workflow-specific handoff data and open questions.
+- Evidence validation checks referenced paths, globs, line spans, and hashes.
+
+## Contracts
+
+- Public JSON shapes are contract truth owned by `docs/truthmark/engineering/contracts/config-route-and-check-contracts.md`.
+- Generated-surface freshness behavior is contract truth owned by `docs/truthmark/engineering/contracts/generated-host-surfaces.md`.
+
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/lane-separated-truth.md`
@@ -41,6 +59,16 @@ Generated-surface diagnostics are checkout-derived repository intelligence for t
 - Decision (2026-06-17): WorkflowState presents optional helper output as an advisory workflow card with affected files, likely route owners, suggested truth docs, open questions, skipped helper status, `reviewChecklist`, and `evidencePrompts`; it does not expose retired enforcement-shaped names such as `checks.required`, the old gate alias, or `requiredEvidence`.
 - Decision (2026-06-16): Sync Intent is a transient report-section checklist exposed through workflow/report surfaces and WorkflowState report sections; it is not repository-intelligence state or a persisted plan.
 - Decision (2026-06-17): Generated-surface freshness includes host-native package diagnostics; these diagnostics are review output and do not add hooks, live services, duplicate workflow packages, or mandatory workflow preflight execution.
+
+## Rationale
+
+Compact repository intelligence saves agent context by pointing to likely routes and evidence without replacing direct checkout inspection.
+
+## Non-Goals
+
+- Repository intelligence does not maintain language-specific semantic indexes.
+- Repository intelligence does not emit complete file contents.
+- WorkflowState does not execute workflows or decide final correctness.
 
 ## Maintenance Notes
 

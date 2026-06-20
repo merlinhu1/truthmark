@@ -141,9 +141,36 @@ This keeps stale repository-truth correction available without making every inde
 - Explicit host invocations run manual workflows.
 - Truth Sync is the finish-time workflow when functional code changed.
 
+## Inputs
+
+- Source workflow renderers and manifest entries under `src/agents/**` and `src/templates/**`.
+- `.truthmark/config.yml` platform selections.
+- Committed host-native workflow files and managed instruction blocks.
+- Optional workflow-status and impact helper outputs.
+
 ## Execution Model
 
 Committed workflow files are the runtime contract. The CLI installs and validates surfaces but does not act as daemon, database, or workflow orchestrator.
+
+## Steps
+
+- Maintainers edit source renderers, workflow manifest entries, or shared workflow guidance.
+- `truthmark init` refreshes configured generated surfaces.
+- Agents load host-native skill packages, prompt adapters, command adapters, or managed instruction blocks.
+- Agents inspect the checkout directly and use optional helpers only as compact advisory context.
+
+## State, Retry, And Failure Behavior
+
+- Generated-surface state is represented by committed files.
+- Stale generated surfaces are reported by check and repaired by rerunning init.
+- Missing helper output does not block direct-checkout workflow execution.
+
+## Outputs
+
+- Host-native skill packages and support files for configured platforms.
+- Compact prompt and command adapters where applicable.
+- Managed instruction blocks with non-versioned refresh guidance.
+- Workflow reports produced by the running agent, not by a Truthmark daemon.
 
 ## Product Truth Links
 
@@ -163,6 +190,16 @@ Committed workflow files are the runtime contract. The CLI installs and validate
 - Decision (2026-06-18): Generated helper manifest and helper policy files are retired. Validation helpers remain as optional workflow metadata and explicit `truthmark validate ...` commands, not package support files.
 - Decision (2026-06-18): Truth Preview is read-only and explicit, so it remains a compact Copilot/Gemini prompt-command body instead of a standalone native skill package.
 - Decision (2026-06-18): Truth Sync retains bounded topology repair. Missing, stale, broad, overloaded, or catch-all route ownership is repaired inside Sync when safe and scoped to the changed functional code; only unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure.
+
+## Rationale
+
+Committed host-native workflow files keep agent behavior reviewable in Git while avoiding a required live Truthmark runtime.
+
+## Non-Goals
+
+- The runtime does not orchestrate agents.
+- The runtime does not create hidden off-repo workflow packets.
+- The runtime does not make optional helpers mandatory preflight steps.
 
 ## Maintenance Notes
 

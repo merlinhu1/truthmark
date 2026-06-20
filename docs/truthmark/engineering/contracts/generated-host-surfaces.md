@@ -45,6 +45,23 @@ Preview prompt/command bodies stay compact by listing the report fields instead 
 - Procedure, report-template, and subagent/lease support files only when a workflow needs them
 - Managed instruction blocks with non-versioned refresh guidance
 
+## Errors And Diagnostics
+
+- `truthmark check` reports missing, stale, or obsolete generated surfaces.
+- `truthmark init` removes retired managed artifacts when they are no longer rendered.
+- Generated-surface freshness uses rendered-content comparison rather than package-version markers.
+
+## Compatibility Rules
+
+- Host-specific workflow files are generated only for configured platforms.
+- Thin adapters are reserved for prompt, command, and top-level instruction surfaces.
+- Host skill directories remain native generated packages with colocated support files when the host consumes skill-directory resources.
+
+## Versioning And Migration
+
+- Retired generated files are removed during init instead of remaining as stale runtime guidance.
+- Generated surfaces use non-versioned refresh wording; package versions are not runtime authority.
+
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/agent-native-workflow-injection.md`
@@ -59,6 +76,16 @@ Preview prompt/command bodies stay compact by listing the report fields instead 
 - Decision (2026-06-18): Truth Preview stays a read-only Copilot/Gemini prompt-command surface instead of a standalone generated skill package.
 - Decision (2026-06-20): Preview adapters list concise report fields rather than embedding the full markdown report example, keeping Preview thin while preserving report shape.
 - Decision (2026-06-18): Truth Sync keeps bounded topology repair in the finish-time path; Sync runs or applies Truth Structure-style repair when safe and scoped, and hands off only unsafe or ambiguous topology work.
+
+## Rationale
+
+Host-native skill packages preserve progressive disclosure for agents that package skill directories, while compact adapters prevent prompt and command surfaces from duplicating full workflow bodies.
+
+## Non-Goals
+
+- Generated surfaces are not a live daemon or orchestration layer.
+- Preview is not a standalone write-capable workflow package.
+- Optional validators do not require generated helper manifest files.
 
 ## Maintenance Notes
 

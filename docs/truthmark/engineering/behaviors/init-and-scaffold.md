@@ -75,6 +75,24 @@ Capability docs own:
 - realization links
 - non-goals
 
+## Core Rules
+
+- Scaffolded paths derive from `truthmark.workspace`.
+- Template filenames match `truth_kind` values.
+- Fresh configs do not assume any AI host platform.
+- Global prose style guidance belongs in writer-facing workflow procedures, not every truth-doc template preamble.
+
+## Flows And States
+
+- `truthmark init` creates or refreshes workspace scaffold files.
+- It renders current templates and generated host surfaces from source renderers.
+- It removes retired generated-surface artifacts that are no longer part of current generated output.
+
+## Contracts
+
+- Config normalization and route metadata contracts are owned by `docs/truthmark/engineering/contracts/config-route-and-check-contracts.md`.
+- Generated host-surface contracts are owned by `docs/truthmark/engineering/contracts/generated-host-surfaces.md`.
+
 ## Product Truth Links
 
 - `docs/truthmark/product/capabilities/lane-separated-truth.md`
@@ -86,6 +104,18 @@ Capability docs own:
 - Decision (2026-06-14): Init scaffolds routes, templates, product truth, and engineering truth at fixed workspace-derived paths rather than accepting route or template roots from config.
 - Decision (2026-06-17): The default broad `repository` route is provisional bootstrap state; init creates a compact `bootstrap-routing.md` workflow handoff instead of a catch-all behavior overview so agents run Truth Structure before normal Sync on real touched code.
 - Decision (2026-06-18): Fresh configs omit `platforms` by default. Truthmark does not infer Codex, OpenCode, or any other host from a fresh checkout; host-native workflow surfaces require explicit platform configuration.
+
+## Rationale
+
+Fixed workspace-derived scaffold paths keep Truthmark predictable while route files provide the semantic ownership layer.
+
+Keeping templates kind-specific and moving global prose style into workflow guidance reduces generated-template bloat.
+
+## Non-Goals
+
+- Init does not infer a preferred agent host.
+- Init does not create behavior truth for unknown code ownership beyond the provisional bootstrap routing handoff.
+- Init does not maintain a legacy `docs/truthmark/truth` tree.
 
 ## Maintenance Notes
 
