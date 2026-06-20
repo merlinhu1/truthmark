@@ -1,4 +1,4 @@
-Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.
+Repository rule source of truth: [docs/ai/repo-rules.md](docs/ai/repo-rules.md). Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.
 
 Use explicitly configured repository policy docs only when they exist in this checkout.
 
