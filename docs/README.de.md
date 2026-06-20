@@ -2,9 +2,9 @@
 
 **Deine Agenten schreiben Code. Truthmark hält menschenlesbare Dokumentation in Git überprüfbar.**
 
-[🇺🇸 English](README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark-Banner](docs/assets/truthmark-banner.png)
+![Truthmark-Banner](assets/truthmark-banner.png)
 
 KI-Coding-Agenten können ein Repository schneller verändern, als Menschen die Dokumentation ausrichten können.
 
@@ -154,7 +154,7 @@ Das installiert oder aktualisiert:
 - verwaltete Instruktionsblöcke
 - KI-seitige Workflow-Schnittstellen für konfigurierte Plattformen
 
-Die Standardvorlagen für Truth-Dokumente werden in [Template Standards](docs/standards/template-standards.md) begründet. Dort werden sie anerkannten Software-Engineering-Referenzen wie ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE und Diátaxis zugeordnet.
+Die Standardvorlagen für Truth-Dokumente werden in [Template Standards](standards/template-standards.md) begründet. Dort werden sie anerkannten Software-Engineering-Referenzen wie ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE und Diátaxis zugeordnet.
 
 ### Das Setup validieren
 
@@ -207,15 +207,15 @@ Wenn der Agent funktionalen Code ändert, wirkt Truth Sync als Abschlusskontroll
 
 ## Visueller Überblick
 
-![Truthmark-Funktionen](docs/assets/truthmark-features.png)
+![Truthmark-Funktionen](assets/truthmark-features.png)
 
 **Funktionen:** was Truthmark installiert und wie die Workflow-Oberfläche aufgeteilt ist.
 
-![Truthmark-Positionierung](docs/assets/truthmark-position.png)
+![Truthmark-Positionierung](assets/truthmark-position.png)
 
 **Positionierung:** wo Truthmark im Verhältnis zu Prompts, Memory und Spec-Workflows steht.
 
-![Truthmark-Sync-Ablauf](docs/assets/truthmark-syncflow.png)
+![Truthmark-Sync-Ablauf](assets/truthmark-syncflow.png)
 
 **Sync-Ablauf:** wie Truth Sync normale Codeänderungen vor der Übergabe abschließt.
 
@@ -691,7 +691,7 @@ Bitte den Agenten-Host anschließend ausdrücklich, den installierten Portal-Wor
 
 ## Projektstatus
 
-Truthmark V1 bietet derzeit:
+The current release provides:
 
 - `truthmark config`
 - `truthmark init`
@@ -745,7 +745,7 @@ Nützliche Skripte:
 | `npm run check` | Führt Lint, Typecheck, Tests und Build aus. |
 | `npm run release:check` | Führt release-orientierte Validierung aus. |
 
-Wenn du Truthmark selbst änderst, siehe [CONTRIBUTING.md](CONTRIBUTING.md).
+Wenn du Truthmark selbst änderst, siehe [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Dokumentation
 
@@ -753,13 +753,13 @@ Die README ist der schnelle Pfad für Evaluation und Setup.
 
 Aktuelles Verhalten im Detail lebt unter `docs/`:
 
-- [Dokumentationsindex](docs/README.md)
-- [Architekturüberblick](docs/truthmark/engineering/architecture/overview.md)
-- [API- und CLI-Verträge](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Init- und Scaffold-Verhalten](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Check-Diagnostik](docs/truthmark/engineering/behaviors/check-diagnostics.md)
-- [Installierte Workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Leitfaden zur Pflege von Repository-Truth](docs/standards/maintaining-repository-truth.md)
+- [Dokumentationsindex](README.md)
+- [Architekturüberblick](truthmark/engineering/architecture/overview.md)
+- [API- und CLI-Verträge](truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Init- und Scaffold-Verhalten](truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Check-Diagnostik](truthmark/engineering/behaviors/check-diagnostics.md)
+- [Installierte Workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
+- [Leitfaden zur Pflege von Repository-Truth](standards/maintaining-repository-truth.md)
 
 ## Designgrenzen
 
@@ -820,4 +820,4 @@ branch-gebundene Dokumentation
 
 ## Lizenz
 
-MIT. Siehe [LICENSE](LICENSE).
+MIT. Siehe [LICENSE](../LICENSE).
