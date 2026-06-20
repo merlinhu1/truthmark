@@ -1,810 +1,212 @@
 # Truthmark
 
-**Ваши агенты пишут код. Truthmark поддерживает документацию для людей, версионируемую и проверяемую в Git.**
+**Ваши агенты пишут код. Truthmark поддерживает понятную людям документацию, которую можно проверять в Git.**
 
-[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Баннер Truthmark](assets/truthmark-banner.png)
+![Баннер Truthmark](../assets/truthmark-banner.png)
 
-ИИ-агенты разработки могут менять репозиторий быстрее, чем люди успевают поддерживать его документацию в актуальном состоянии.
+## 🚀 Быстрый старт: локальный запуск за пять минут
 
-Truthmark чинит ту часть, которая обычно ломается после написания кода: актуальное описание репозитория.
-
-Он устанавливает Git-native, ограниченный веткой слой рабочего процесса, который помогает ИИ-агентам обновлять правильные документы, соблюдать границы владения и оставлять людям обычные diff для ревью.
-
-Без размещенного сервиса.
-
-Без базы данных.
-
-Без скрытого слоя памяти.
-
-Без дополнительного сервера в эксплуатации.
-
-Только актуальное описание репозитория, которое движется вместе с веткой.
-
-## Проблема
-
-ИИ-агенты разработки хорошо создают код. Это порождает новый режим отказа.
-
-Реализация меняется, но история репозитория начинает расходиться:
-
-- поведение живет в истории чата
-- архитектурные документы отстают
-- продуктовые решения исчезают после передачи работы
-- ревьюеры видят diff кода без связанных diff истины
-- ветки незаметно развивают разные версии того, «что является правдой»
-- каждой сессии агента приходится заново понимать актуальное состояние репозитория
-
-Truthmark превращает это хрупкое описание текущего состояния в зафиксированную инфраструктуру репозитория.
-
-Вместо надежды на то, что каждый человек и каждый агент вспомнят нужную дисциплину документирования, Truthmark устанавливает эту привычку в репозиторий.
-
-## Обещание
-
-Когда агент меняет функциональный код, работа не должна заканчиваться только diff кода.
-
-Обычный путь Truthmark:
-
-```text
-агент меняет функциональный код
-запускаются релевантные тесты
-Truth Sync проверяет сопоставленные документы истины
-документы истины обновляются при необходимости
-человек проверяет diff кода + diff истины
-коммит или передача работы
-```
-
-Главная ценность такова: **ИИ-работе легче доверять, потому что репозиторий остается понятным.**
-
-## Два интерфейса, одна система истины
-
-Truthmark — это не только CLI.
-
-У него два разных интерфейса, и это различие важно.
-
-### 1. CLI для людей
-
-CLI предназначен для мейнтейнеров, ревьюеров и автоматизации.
-
-Используйте его, чтобы настроить репозиторий, установить или обновить файлы рабочих процессов, проверить артефакты истины и создать дополнительные материалы для ревью.
-
-```bash
-truthmark config
-truthmark init
-truthmark check
-```
-
-CLI подготавливает и валидирует среду репозитория.
-
-Он не является runtime для ИИ-рабочего процесса.
-
-### 2. Интерфейсы рабочих процессов для ИИ
-
-Интерфейсы для ИИ предназначены для coding agents.
-
-Truthmark устанавливает host-native skills, prompts, commands, управляемые блоки инструкций и поддерживаемые интерфейсы subagents, чтобы ИИ-агенты могли следовать специфичным для репозитория truth-workflows внутри своих обычных инструментов разработки.
-
-Примеры:
-
-```text
-/truthmark-sync
-/truthmark-document
-/truthmark-structure
-/truthmark-realize
-/truthmark-check
-```
-
-Они выглядят как команды, потому что agent hosts раскрывают workflows через slash commands, prompts, skills или project commands.
-
-Это не shell-команды.
-
-Это точки входа workflow для ИИ.
-
-Разделение и есть продукт:
-
-```text
-люди владеют контрактом репозитория
-Truthmark устанавливает контракт в репозиторий
-агенты работают внутри этого контракта
-обновления истины появляются как Git diff
-люди проверяют результат
-```
-
-## Быстрый старт
-
-### Требования
-
-- Node.js `>=24`
-- npm
-- Git-репозиторий
-
-### Установить Truthmark
-
-Выполните это внутри репозитория, который хотите инициализировать:
+Выполните это внутри Git-репозитория, которым должен управлять Truthmark:
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-```
-
-### Создать контракт истины репозитория
-
-```bash
 truthmark config
 ```
 
-Это создает:
+Включите AI-хост, которым вы действительно пользуетесь. Новые конфигурации нейтральны к хостам, поэтому перед инициализацией добавьте список верхнего уровня `platforms` в `.truthmark/config.yml`:
 
-```text
-.truthmark/config.yml
+```yaml
+version: 2
+platforms:
+  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
 ```
 
-Проверьте этот файл перед продолжением. Он определяет зафиксированный контракт иерархии для репозитория.
-
-### Установить интерфейсы рабочих процессов
+Затем установите локальные для репозитория truth-документы, маршрутизацию и поверхности рабочих процессов агентов:
 
 ```bash
 truthmark init
-```
-
-Это устанавливает или обновляет:
-
-- файлы маршрутов
-- scaffolding документов истины
-- управляемые блоки инструкций
-- интерфейсы рабочих процессов для ИИ для настроенных платформ
-
-Обоснование стандартных шаблонов документов истины находится в [Template Standards](standards/template-standards.md). В документе показано, как они соотносятся с признанными источниками по инженерии ПО, включая ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE и Diátaxis.
-
-### Проверить настройку
-
-```bash
 truthmark check
+git diff
 ```
 
-Затем проверьте сгенерированные файлы перед коммитом.
-
-Точный набор файлов зависит от `.truthmark/config.yml`, но форма установки всегда одна: routing, truth scaffolding, компактные managed instructions и host-native интерфейсы workflow для включённых платформ.
-
-## Первое реальное использование
-
-Большинству репозиториев после инициализации нужен один этап очистки.
-
-Стандартный scaffold начинается с временной широкой bootstrap-области `repository`. Перед обычной синхронизацией реального кода разделите этот bootstrap-маршрут на точные маршруты.
-
-Попросите агента разделить широкий маршрут на реальные области продукта, сервиса, домена или владения:
+Теперь попробуйте самый распространенный путь внедрения: задокументируйте одно существующее поведение по коду и тестам. В вашем AI-хосте для разработки попросите установленный рабочий процесс:
 
 ```text
-/truthmark-structure раздели широкий repo area на auth, billing и notifications
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
 ```
 
-Если в проекте уже есть реализованные функции, но документы истины отсутствуют или слабы, попросите установленный workflow Truth Document задокументировать сфокусированный scope:
+После этого пользователям обычно не следует напрямую вызывать Truth Sync. Продолжайте писать код через ваш AI-хост; установленные инструкции репозитория скажут агенту запускать релевантные тесты и выполнять проверку Truth Sync перед передачей, когда меняется функциональный код. Вы просматриваете получившийся diff кода вместе с diff truth-документов.
 
-```text
-/truthmark-document задокументируй реализованное поведение payment retry в src/billing/retry.ts и связанных тестах
-```
+Если вам нужна только CLI-валидация, а хост-специфичные AI workflow пока не нужны, оставьте `platforms` неуказанным и выполните `truthmark init && truthmark check`; позже можно добавить платформу и заново выполнить `truthmark init`.
 
-Truth Document — самый частый первый workflow для существующих проектов. Он инспектирует реализацию, тесты, маршруты и существующие документы, затем создает или исправляет документы истины и маршрутизацию, не меняя функциональный код.
+## 💡 Проблема: разрыв в AI-документации
 
-После этого используйте своего ИИ-агента для разработки как обычно.
+AI-агенты разработки невероятно быстро пишут код. Но эта скорость создает новый опасный режим отказа: **история репозитория начинает расходиться с реальностью.**
 
-Когда агент меняет функциональный код, Truth Sync действует как финальная защита, которая перед передачей работы проверяет, должны ли измениться сопоставленные документы истины.
+* Поведение теряется в эфемерных историях чатов.
+* Архитектурная документация быстро устаревает.
+* Продуктовые решения исчезают после передачи работы.
+* Ревьюерам кода приходится изучать сырые diff кода без понимания «почему».
+* Каждая новая AI-сессия вынуждена заново обнаруживать truth репозитория.
+
+## 🎯 Решение: Truthmark
+
+**Truthmark** устанавливает в ваш репозиторий Git-native слой рабочего процесса. Он исправляет ту часть AI-разработки, которая обычно ломается: помогает документации оставаться согласованной с кодом.
+
+Вместо надежды на то, что люди и AI-агенты вспомнят об обновлении документации, Truthmark делает документирование системной и проверяемой привычкой прямо внутри репозитория.
+
+### ✨ Почему Truthmark уникален
+
+Truthmark — не просто очередной инструмент документации. Он глубоко интегрирован в AI workflow:
+
+* **🚫 Никакой привязки к поставщику:** нет hosted-сервисов, скрытых баз данных и дополнительных серверов для эксплуатации.
+* **🌳 100% Git-native:** всё находится в вашем репозитории. Truth движется вместе с веткой.
+* **🤝 Архитектура с двумя поверхностями:** она четко разделяет инструменты, которыми люди управляют репозиторием, и workflows, которыми AI-агенты пишут код.
+* **✅ Доверие через проверку:** AI-работе проще доверять, потому что работа, меняющая поведение, включает human-reviewable решение или diff в truth-doc.
+
+## 🔄 Как это работает
+
+Когда AI-агент меняет ваш код, работа еще не завершена. Truthmark устанавливает guard рабочего процесса на момент завершения, которому агенты следуют перед передачей:
+
+1. 💻 **Код:** агент изменяет функциональный код.
+2. 🧪 **Тест:** выполняются релевантные тесты.
+3. 🔍 **Проверка:** `Truth Sync` проверяет сопоставленную документацию, когда запускается установленный workflow.
+4. 📝 **Документирование:** агент обновляет docs, когда truth репозитория изменился.
+5. 👀 **Ревью:** человек проверяет *diff кода* + *diff truth*.
+
+## 🛠 Две поверхности, одна система truth
+
+Truthmark намеренно разделен на две разные поверхности, чтобы обслуживать и людей-мейнтейнеров, и AI-агентов.
+
+### 1. 🧑‍💻 CLI для людей (мейнтейнеры и CI)
+Используется разработчиками для настройки, конфигурации и проверки репозитория.
+* `truthmark config` - Создает начальную конфигурацию.
+* `truthmark init` - Устанавливает необходимые маршруты, scaffold и инструкции.
+* `truthmark check` - Проверяет truth-артефакты из терминала.
+
+### 2. 🤖 Workflows для AI (агенты)
+Truthmark устанавливает native skills, prompts и commands, которые понимают поддерживаемые AI-хосты, такие как Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity и Cursor. Это *не* shell-команды; это точки входа workflow для AI.
+* `/truthmark-sync` - Завершающий workflow, которому агенты следуют после изменений функционального кода; не обычная команда, запускаемая пользователем.
+* `/truthmark-document` - Генерирует docs для недокументированного существующего кода.
+* `/truthmark-structure` - Организует широкие области репозитория в конкретные домены.
+* `/truthmark-realize` - **Doc-First Development:** читает архитектурные docs и генерирует соответствующий код.
+* `/truthmark-check` - Управляемый агентом аудит truth репозитория.
 
 ## Что вы получаете
 
 | Возможность | Что она делает |
 | --- | --- |
-| Git-native истина | Хранит актуальное описание репозитория в зафиксированных Markdown и config. |
-| Документация в пределах ветки | Истина движется с веткой вместо жизни в приватной сессии. |
+| Git-native truth | Хранит truth репозитория в закоммиченных Markdown и конфигурации. |
+| Документация в пределах ветки | Truth движется с веткой, а не живет в приватной сессии. |
 | CLI для людей | Дает мейнтейнерам команды настройки, обновления, валидации и инспекции. |
-| Workflows для ИИ | Дает агентам host-native workflows для sync, documentation, structure, preview, realization и audit. |
-| Явная маршрутизация | Сопоставляет области кода с каноническими документами истины. |
-| Проверяемые передачи работы | Создает обычные Git diff для кода и документов истины. |
-| Local-first работа | Не требует размещенного сервиса, daemon, базы данных или MCP-сервера. |
+| Workflows для AI | Дает агентам host-native workflows для sync, documentation, structure, realization и audit. |
+| Явная маршрутизация | Сопоставляет области кода с каноническими truth-docs. |
+| Проверяемая передача | Создает обычные Git diff как для кода, так и для truth-docs. |
+| Local-first работа | Не требует hosted-сервиса, daemon, базы данных или MCP-сервера. |
 | Более безопасные границы записи | Разделяет code-first, doc-first, read-only и doc-only workflows. |
-| Валидация | Сообщает о проблемах маршрутизации, authority, frontmatter, ссылок, generated surfaces, branch scope, freshness и coverage. |
-| Опциональный Portal | Генерирует зафиксированный статический HTML-сайт презентации из Markdown-документов истины, когда он явно включен и запрошен. |
+| Валидация | Сообщает о проблемах routing, authority, frontmatter, links, generated-surface, branch-scope, freshness и coverage. |
+| Опциональный Portal | Генерирует закоммиченный статический HTML-сайт презентации из Markdown truth-docs, когда он явно включен и запрошен. |
 
 ## Визуальный обзор
 
-![Возможности Truthmark](assets/truthmark-features.png)
+![Возможности Truthmark](../assets/truthmark-features.png)
 
-**Возможности:** что устанавливает Truthmark и как устроен интерфейс workflow.
+**Возможности:** что устанавливает Truthmark и как разделена workflow surface.
 
-![Позиционирование Truthmark](assets/truthmark-position.png)
+![Позиционирование Truthmark](../assets/truthmark-position.png)
 
 **Позиция:** где Truthmark находится относительно prompts, memory и spec workflows.
 
-![Поток sync Truthmark](assets/truthmark-syncflow.png)
+![Поток синхронизации Truthmark](../assets/truthmark-syncflow.png)
 
-**Поток sync:** как Truth Sync закрывает обычные изменения кода перед передачей.
+**Поток синхронизации:** как Truth Sync завершает обычные изменения кода перед передачей.
 
 ## Почему команды выбирают его
 
-Truthmark предназначен для команд, которые уже знают, что ИИ-агенты могут генерировать код.
+Truthmark создан для команд, которые уже знают, что AI-агенты могут генерировать код.
 
 Следующая проблема — governance.
 
 Не governance как церемония. Governance как простой вопрос:
 
-> После этого ИИ-ассистированного изменения репозиторий все еще говорит правду?
+> После этого AI-assisted изменения репозиторий все еще говорит truth?
 
-Truthmark помогает командам отвечать на это с помощью зафиксированных файлов, явной маршрутизации и проверяемых diff.
+Truthmark помогает командам отвечать на это с помощью закоммиченных файлов, явной маршрутизации и проверяемых diff.
 
-Он полезен, когда нужны:
+Он полезен, когда вам нужны:
 
 - меньший дрейф документации
-- лучшие передачи работы
-- продуктовая истина, специфичная для ветки
+- лучшая передача работы
+- branch-specific продуктовая truth
 - долговечная архитектурная и API-документация
-- явное владение между документацией и кодом
+- явное владение между docs и кодом
 - более безопасные границы записи для агентов
-- проверяемая документация вместо скрытой памяти
-- ИИ-workflows, которые продолжают работать из зафиксированных файлов репозитория
+- проверяемая документация вместо скрытой memory
+- AI workflows, которые всё еще работают из закоммиченных файлов репозитория
 
 ## Где уместен Truthmark
 
 Truthmark не заменяет prompts, memory, specs, tests или code review.
 
-Он дает этим workflows долговечное место в Git.
+Он дает этим workflows долговечное место для фиксации в Git.
 
 | Потребность | Лучше подходит |
 | --- | --- |
 | Лучший результат из одной сессии агента | Лучший prompt |
-| Персональная или сессионная преемственность | Memory tool |
-| Работа над функцией plan-first | Spec workflow |
-| Истина в пределах ветки, которая путешествует с кодом | Truthmark |
+| Персональная или сессионная непрерывность | Memory tool |
+| Plan-first работа над функцией | Spec workflow |
+| Branch-scoped truth, которая перемещается вместе с кодом | Truthmark |
 | Проверка корректности поведения | Tests and review |
-| Ревью изменений документации, выполненных с ИИ | Truthmark plus Git review |
+| Ревью изменений документации, выполненных с AI | Truthmark плюс Git review |
 
 Область Truthmark намеренно узкая:
 
 ```text
-сделать актуальное состояние репозитория явным
-связать ее с кодом
-установить вокруг нее workflows агентов
-сохранить результат проверяемым в Git
+make repository truth explicit
+route it to code
+install agent workflows around it
+keep the result reviewable in Git
 ```
 
-## Как работает Truthmark
+## Подробнее
 
-Truthmark работает локально с активным Git worktree.
+README — это витрина: быстрый контекст, быстрый старт и основная ментальная модель.
 
-CLI для людей читает и записывает файлы репозитория, а затем завершается.
-
-Интерфейсы рабочих процессов для ИИ — это зафиксированные файлы, которые agent hosts могут загрузить позже. Поэтому агенты могут следовать установленному workflow из состояния репозитория, не завися от фонового процесса Truthmark.
-
-Эти слои связаны так:
-
-```mermaid
-flowchart LR
-  Human["Human / CI"] --> CLI["Truthmark CLI"]
-  CLI --> Config["Config и routing"]
-  CLI --> Truth["Канонические truth docs"]
-  CLI --> Surfaces["Сгенерированные host-native workflows"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
-  Hosts --> Worktree["Активный Git worktree"]
-  Hosts -->|"helper checks / validate / index"| CLI
-  Worktree --> Truth
-```
-
-Agents не подключаются к daemon Truthmark, но могут запускать установленный Truthmark CLI, когда workflow требует validation, indexing или helper checks.
-
-Truthmark владеет сгенерированными интерфейсами workflow, но главный контракт архитектурный: repo-local config и routing направляют agents к каноническим truth docs, а host-native workflows дают каждому поддерживаемому agent способ выполнять одни и те же процедуры Truthmark.
-
-Сгенерированные интерфейсы workflow включают маркеры версии Truthmark. После обновления Truthmark снова выполните:
-
-```bash
-truthmark init
-```
-
-Затем проверьте сгенерированные diff.
-
-## Поддерживаемые платформы агентов
-
-Конфигурация по умолчанию включает все поддерживаемые платформы.
-
-Удалите платформы, которыми не пользуетесь, из `.truthmark/config.yml`, затем снова выполните:
-
-```bash
-truthmark init
-```
-
-| Имя платформы в config | Сгенерированный интерфейс | Форма вызова |
-| --- | --- | --- |
-| `codex` | `.agents/skills/truthmark-*/`, `.codex/agents/` | `/truthmark-*` или `$truthmark-*` |
-| `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
-| `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` в поддерживаемых Copilot IDE; custom agents `@truth-*` в Copilot CLI |
-| `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `antigravity` | `.antigravity/rules/truthmark-*.md` | `@truthmark-*` |
-| `cursor` | `.cursor/rules/truthmark-*.mdc` | `@truthmark-*` |
-
-Неизвестные имена платформ являются ошибками config.
-
-Удаление платформы останавливает будущие обновления для нее. Оно не удаляет ранее сгенерированные файлы.
-
-## Workflows для ИИ
-
-Эти workflows устанавливаются в поддерживаемые ИИ coding hosts.
-
-Они используются агентами или agent hosts во время работы с репозиторием. Это не shell-команды верхнего уровня.
-
-| Workflow | Направление | Когда использовать | Граница записи |
-| --- | --- | --- | --- |
-| Truth Structure | topology-first | Стандартный маршрут слишком широкий, владение охватывает несколько областей или файлы маршрутов все еще указывают на placeholders. | Создает или исправляет маршрутизацию и стартовые документы истины. |
-| Truth Document | implementation-first | Поведение уже есть в коде, но канонические документы истины отсутствуют или слабы. | Пишет только документы истины и маршрутизацию. Функциональный код менять нельзя. |
-| Truth Sync | code-first | Функциональный код изменился, и сопоставленные документы истины могут потребовать обновления перед передачей. | Обновляет документы истины. Truth Sync не должен переписывать функциональный код. |
-| Truth Realize | doc-first | Продуктовые или архитектурные документы истины ведут, и код нужно обновить под них. | Обновляет только код. Агент не должен редактировать документы истины, которые реализует. |
-| Truth Check | audit-first | Ревьюеру или агенту нужно проверить актуальность истины репозитория. | Аудитирует и сообщает. |
-| Truthmark Portal | presentation-only | Человек явно просит доступный для просмотра статический HTML Portal по документам истины репозитория. | Пишет только сгенерированные неканонические статические файлы в настроенную директорию вывода Portal. |
-
-### Важное различие
-
-Не путайте эти два интерфейса:
-
-| Интерфейс | Используется | Пример | Значение |
-| --- | --- | --- | --- |
-| CLI для людей | людьми, скриптами, CI-подобными проверками | `truthmark check` | Проверить артефакты истины репозитория из терминала. |
-| Workflow для ИИ | coding agents и agent hosts | `/truthmark-check` | Попросить агента выполнить установленный audit workflow. |
-
-Имена намеренно похожи, но интерфейсы разные.
-
-## Обычное изменение кода с помощью ИИ
-
-Большинству пользователей не нужно вручную вызывать Truth Sync каждый раз.
-
-Truth Sync — установленная финальная защита для изменений функционального кода.
-
-```text
-агент меняет функциональный код
-агент запускает или запрашивает релевантные тесты
-установленный workflow обнаруживает, что функциональный код изменился
-Truth Sync проверяет сопоставленные документы истины
-агент обновляет документы истины при необходимости
-человек проверяет diff кода + diff истины
-```
-
-Прямой вызов все равно полезен для отладки, принудительной ранней синхронизации или явной передачи работы:
-
-```text
-/truthmark-sync синхронизируй истину репозитория прямо сейчас перед передачей
-```
-
-## Существующее поведение без docs
-
-Используйте Truth Document, когда реализация уже существует, но истина репозитория неполна. Это обычный путь для зрелых репозиториев, которые внедряют Truthmark после того, как кодовая база уже существует.
-
-```text
-/truthmark-document задокументируй реализованное поведение session timeout в src/auth/session.ts, src/auth/middleware.ts и tests/auth/session.test.ts
-```
-
-Укажите имя функции, пути к коду, пути к тестам или желаемую область truth-документов. В OpenCode-подобных хостах тот же workflow вызывается как `/skill truthmark-document ...`; в Antigravity and Cursor используйте `/truthmark:doc ...`.
-
-Для большого репозитория, где все еще есть один широкий placeholder-маршрут, сначала запустите Truth Structure, а затем вызывайте Truth Document для одной ограниченной функции или области за раз.
-
-Truth Document проверяет реализацию, тесты, файлы маршрутов и существующие документы как подтверждения.
-
-Он пишет только документы истины и маршрутизацию.
-
-Он не должен менять функциональный код.
-
-## Doc-first изменения
-
-Используйте Truth Realize, когда продуктовое или архитектурное решение начинается в docs и код нужно обновить под него.
-
-```text
-/truthmark-realize реализуй docs/truthmark/product/capabilities/session-timeout.md в коде
-```
-
-Truth Realize работает doc-first.
-
-Документы истины ведут. Код следует.
-
-Агент не должен редактировать документы истины, которые реализует.
-
-## Аудит истины репозитория
-
-Используйте Truth Check, когда нужен audit workflow для агента.
-
-```text
-/truthmark-check проверь routing и truth coverage перед review
-```
-
-Используйте CLI для людей, когда нужна terminal validation:
-
-```bash
-truthmark check
-```
-
-Оба варианта полезны. Это не одна и та же поверхность.
-
-## CLI-команды для людей
-
-Большинство мейнтейнеров начинают с трех команд.
-
-| Команда | Назначение |
-| --- | --- |
-| `truthmark config` | Создает `.truthmark/config.yml`. Пишет только этот файл, если не используется `--stdout`. |
-| `truthmark init` | Устанавливает или обновляет настроенные интерфейсы workflow из проверенной config. |
-| `truthmark check` | Валидирует config, authority, routing, документы с decisions, frontmatter, внутренние ссылки, branch scope, generated surfaces, freshness и coverage diagnostics. |
-
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
-
-Они не являются источниками истины.
-
-| Команда | Назначение |
-| --- | --- |
-| `truthmark index` | Строит JSON RepoIndex и RouteMap для активного checkout. |
-| `truthmark impact --base <ref>` | Сопоставляет измененные файлы с routed truth docs, owning routes и nearby tests. |
-| `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Возвращает применимость workflow, границы записи, целевые truth docs, checks, helper commands и компактные hints по affected tests. |
-
-Структурированный вывод доступен с `--json` там, где поддерживается.
-
-## Truthmark Portal
-
-Truthmark Portal — опциональный презентационный workflow для команд, которым нужен человекочитаемый сайт поверх зафиксированных документов истины.
-
-Он намеренно отделен от основного workflow истины:
-
-- Markdown-документы истины остаются каноническими.
-- Сгенерированный HTML Portal предназначен только для презентации.
-- Portal запускается только вручную; он не выполняется как completion review, шаг Truth Sync, шаг `truthmark check` или автоматический post-change hook.
-- Записи Portal остаются внутри настроенной директории вывода, если пользователь явно не меняет scope.
-- Сгенерированные страницы должны использовать локальные assets, provenance источников и видимое уведомление, что Markdown является каноническим источником.
-
-Включите его namespaced config-блоком:
-
-```yaml
-truthmark:
-  generated:
-    portal:
-      enabled: true
-```
-
-Затем запустите снова:
-
-```bash
-truthmark init
-```
-
-Когда Portal включен, Truthmark устанавливает host-native Portal-интерфейсы workflow для настроенных платформ, например `/truthmark-portal` или `/truthmark:portal` в зависимости от agent host.
-
-## Конфигурация
-
-Truthmark работает config-first.
-
-Главный config-файл:
-
-```text
-.truthmark/config.yml
-```
-
-Новые репозитории должны выполнить:
-
-```bash
-truthmark config
-```
-
-Затем проверить сгенерированную config перед запуском:
-
-```bash
-truthmark init
-```
-
-Важные области config:
-
-| Область config | Назначение |
-| --- | --- |
-| `version` | Версия контракта config. |
-| `platforms` | Agent hosts, которые должны получить сгенерированные интерфейсы для платформы. |
-| `truthmark.workspace` | Workspace, принадлежащий Truthmark, для маршрутов, документов истины, шаблонов и сгенерированного презентационного вывода. |
-| Фиксированные маршруты | Маршруты находятся в `routes/areas.md` и `routes/areas/` внутри `truthmark.workspace`; область по умолчанию — `repository`, глубина делегирования — `1`. |
-| Фиксированные дорожки истины | Product truth находится в `product/`, а engineering truth в `engineering/` внутри `truthmark.workspace`. |
-| Фиксированные шаблоны | Шаблоны документов истины находятся в `templates/` внутри `truthmark.workspace`. |
-| `truthmark.generated.portal` | Опциональное включение ручного презентационного workflow: `enabled`. |
-| `instruction_targets` | Файлы, которые получают общие управляемые блоки инструкций, например `AGENTS.md`. |
-| `frontmatter.required` | Поля metadata, которые создают error diagnostics при отсутствии. |
-| `frontmatter.recommended` | Поля metadata, которые создают review diagnostics при отсутствии. |
-| `ignore` | Glob-паттерны, исключенные из релевантных checks и routing logic. |
-
-## Маршрутизация истины репозитория
-
-Truthmark сопоставляет code surfaces с документами истины.
-
-Основные файлы маршрутизации:
-
-```text
-docs/truthmark/routes/areas.md
-docs/truthmark/routes/areas/**/*.md
-```
-
-Маршрут сообщает агенту:
-
-- какая code surface принадлежит области
-- какие документы истины владеют этой областью
-- когда истину нужно обновлять
-- какой тип документа истины участвует
-
-Стандартный scaffold сначала создаёт временный широкий bootstrap-маршрут, чтобы новый репозиторий можно было маршрутизировать. Когда затронут реальный код, до обычного Truth Sync разделите этот bootstrap-маршрут на реальные области продукта, сервиса, домена или владения; не превращайте bootstrap-handoff в универсальный документ поведения.
-
-Пример:
-
-```text
-/truthmark-structure раздели широкий repo area на frontend, backend, billing и deployment
-```
-
-Хороший routing дает Truth Sync точные цели.
-
-Плохой routing заставляет агентов гадать.
-
-## Что устанавливает Truthmark
-
-Truthmark устанавливает компактный, встроенный в репозиторий слой истины.
-
-Он устанавливает четыре слоя:
-
-- config и routing для границ владения
-- канонические truth docs и стартовые шаблоны
-- компактные управляемые instruction blocks для repo-wide agent instructions
-- host-native workflow packages, commands, prompts и verifier agents для платформ, включённых в config
-
-Truthmark сохраняет ручной контент вне управляемых блоков инструкций.
-
-Сгенерированные интерфейсы workflow управляются Truthmark и могут обновляться повторным запуском:
-
-```bash
-truthmark init
-```
-
-## Subagents и ограниченные проверки evidence
-
-Там, где host поддерживает это, Truthmark может устанавливать project-scoped verifier agents и leased `truth-doc-writer`.
-
-Они помогают держать большие truth-задачи ограниченными:
-
-- route auditors проверяют владение маршрутами
-- claim verifiers проверяют, поддержаны ли claims документов evidence
-- doc reviewers проверяют качество truth docs
-- leased doc writers обрабатывают ограниченные shards записи truth docs
-
-Родительский workflow все еще владеет финальной интерпретацией, границами записи, проверкой diff и приемкой.
-
-Это важно: subagents помогают с ограниченной evidence work. Они не заменяют основной контракт workflow.
-
-## Цикл ревью
-
-Truthmark спроектирован для обычного Git review.
-
-Хорошая ИИ-ассистированная передача работы должна показывать:
-
-```text
-diff кода
-test evidence
-diff truth docs, если нужен
-изменения routing, если нужны
-отчет агента
-```
-
-Ревьюер должен уметь ответить:
-
-- Какой код изменился?
-- Какие документы истины владеют этим кодом?
-- Нужно ли было обновлять эти документы?
-- Если нет, почему?
-- Остался ли агент внутри границы записи workflow?
-- Приложена ли evidence тестов или проверки?
-
-## Примеры
-
-### Инициализировать репозиторий
-
-```bash
-npm install -g truthmark
-truthmark config
-truthmark init
-truthmark check
-```
-
-### Удалить неиспользуемые платформы агентов
-
-Отредактируйте:
-
-```text
-.truthmark/config.yml
-```
-
-Затем снова выполните:
-
-```bash
-truthmark init
-truthmark check
-```
-
-### Разделить широкий routing
-
-```text
-/truthmark-structure раздели широкий repo area на auth, billing, notifications и deployment
-```
-
-### Документировать реализованное поведение
-
-```text
-/truthmark-document задокументируй реализованный password reset flow в docs/truthmark/engineering/behaviors/authentication
-```
-
-### Синхронизировать после изменений кода
-
-```text
-/truthmark-sync синхронизируй истину репозитория прямо сейчас перед передачей
-```
-
-### Реализовать doc-first решение
-
-```text
-/truthmark-realize реализуй docs/truthmark/product/capabilities/invoice-retry-policy.md в коде
-```
-
-### Проверить здоровье истины из терминала
-
-```bash
-truthmark check
-```
-
-### Создать summary branch-impact
-
-```bash
-truthmark impact --base main
-```
-
-### Проверить workflow status
-
-```bash
-truthmark workflow status --workflow truthmark-sync --base main --json
-```
-
-### Включить опциональный Portal workflow
-
-```yaml
-truthmark:
-  generated:
-    portal:
-      enabled: true
-```
-
-```bash
-truthmark init
-```
-
-Затем явно попросите agent host выполнить установленный Portal workflow, когда нужно сгенерировать или обновить статический презентационный сайт.
+Для пошагового использования команд, сравнения поверхностей, деталей поддерживаемых платформ, конфигурации, маршрутизации, Portal и примеров читайте [руководство пользователя Truthmark](../user-guide.md).
 
 ## Статус проекта
 
-The current release provides:
+Текущий релиз предоставляет:
 
-- `truthmark config`
-- `truthmark init`
-- `truthmark check`
-- `truthmark index`
-- `truthmark impact`
-- `truthmark workflow status`
-- branch-scope metadata
-- управляемые блоки инструкций
-- сгенерированные интерфейсы workflow Truth Structure
-- сгенерированные интерфейсы workflow Truth Document
-- сгенерированные интерфейсы workflow Truth Sync
-- сгенерированные интерфейсы workflow Truth Realize
-- сгенерированные интерфейсы workflow Truth Check
-- опциональные сгенерированные интерфейсы workflow Truthmark Portal
-- diagnostics для route, authority, decision-structure, frontmatter, links, freshness, generated-surface и coverage
-- производные артефакты RepoIndex, RouteMap, ImpactSet и WorkflowState
-- host-specific интерфейсы для Codex, Claude Code, GitHub Copilot, OpenCode и Antigravity and Cursor
-
-## Разработка
-
-Установить зависимости:
-
-```bash
-npm install
-```
-
-Запустить локальную development CLI:
-
-```bash
-npm run dev -- init
-npm run dev -- check
-```
-
-Запустить полный project check:
-
-```bash
-npm run check
-```
-
-Полезные scripts:
-
-| Script | Назначение |
-| --- | --- |
-| `npm run dev` | Запускает TypeScript CLI entry point через `tsx`. |
-| `npm run build` | Собирает package. |
-| `npm run lint` | Запускает ESLint. |
-| `npm run typecheck` | Запускает TypeScript checks. |
-| `npm run test` | Запускает tests. |
-| `npm run check` | Запускает lint, typecheck, tests и build. |
-| `npm run release:check` | Запускает release-oriented validation. |
-
-Когда меняете сам Truthmark, смотрите [CONTRIBUTING.md](../CONTRIBUTING.md).
+- локальные CLI-команды для config, init, check, index, impact и workflow status
+- сгенерированные AI workflow surfaces для Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity и Cursor
+- диагностику route, authority, frontmatter, links, freshness, generated-surface, branch-scope и coverage
+- branch-scoped truth docs и производные артефакты repository intelligence
 
 ## Документация
 
-README — быстрый путь для оценки и настройки.
-
-Подробное текущее поведение живет в `docs/`:
-
+- [Руководство пользователя](../user-guide.md)
 - [Индекс документации](../README.md)
-- [Обзор архитектуры](truthmark/engineering/architecture/overview.md)
-- [Контракты API и CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Поведение init и scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Диагностика check](truthmark/engineering/behaviors/check-diagnostics.md)
-- [Установленные workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Руководство по поддержанию истины репозитория](standards/maintaining-repository-truth.md)
+- [Обзор архитектуры](../truthmark/engineering/architecture/overview.md)
+- [Контракты API и CLI](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Руководство по поддержанию repository truth](../standards/maintaining-repository-truth.md)
+
+Команды для локальной разработки и участия см. в [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## Границы дизайна
 
-Truthmark намеренно небольшой.
+Truthmark намеренно мал: локальный, закоммиченный, scoped по ветке и проверяемый.
 
-Он не является:
-
-- размещенным сервисом
-- MCP-сервером
-- векторной базой данных
-- каноническим генератором сайтов документации или hosted docs platform
-- CI- или PR-enforcement продуктом
-- заменой tests, code review или technical leadership
-- автономным движком переписывания кода
-- framework для model training или fine-tuning
-- скрытым слоем памяти
-
-Эти границы — часть продукта.
-
-Truthmark держит workflow локальным, зафиксированным, ограниченным веткой и проверяемым.
-
-## Безопасность и дисциплина ревью
-
-Truthmark помогает репозиторию оставаться честным. Он не доказывает, что код корректен.
-
-Команды все равно должны:
-
-- запускать релевантные тесты
-- проверять изменения функционального кода
-- проверять изменения документов истины
-- держать secrets вне документации
-- держать специфичные для репозитория инструкции вне managed blocks
-- проверять diff сгенерированных интерфейсов workflow после upgrades
-- сохранять человеческое владение продуктовыми и архитектурными решениями
-
-Truthmark делает видимой ориентированную на агента истину репозитория. Он не заменяет человеческое суждение.
-
-## Направление roadmap
-
-Текущее будущее направление делает акцент на:
-
-- более подробной отчетности по подтверждениям в `truthmark check`
-- более ясных примерах adoption
-- примерных репозиториях, показывающих реальные циклы Truth Sync
-- migration guides для команд, уже использующих agent instruction files
-- conformance tests для generated host surfaces
-- route-aware подсказках о stale truth
-- ограниченных implementation checklists для doc-first work
-
-Центр тяжести остается прежним:
-
-```text
-истина репозитория
-agent-native workflows
-Git review
-документация в пределах ветки
-```
+Это не hosted-сервис, MCP-сервер, векторная база данных, скрытый слой memory, продукт для принудительного CI-контроля или автономный движок переписывания кода. Он помогает truth репозитория оставаться видимой; он не заменяет tests, code review или человеческое суждение.
 
 ## Лицензия
 
-MIT. См. [LICENSE](../LICENSE).
+MIT. См. [LICENSE](../../LICENSE).

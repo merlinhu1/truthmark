@@ -1,172 +1,173 @@
 # Truthmark
 
-**당신의 에이전트는 코드를 작성합니다. Truthmark는 사람 중심으로 Git에서 검토 가능한 문서를 유지합니다.**
+**당신의 에이전트는 코드를 작성합니다. Truthmark는 사람이 읽고 Git에서 검토할 수 있는 문서를 유지합니다.**
 
-[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark banner](assets/truthmark-banner.png)
+![Truthmark 배너](../assets/truthmark-banner.png)
 
-## 💡 The Problem: The AI Documentation Gap
+## 🚀 빠른 시작: 5분 안에 로컬에서 실행하기
 
-AI coding agents are incredible at writing code fast. But this speed creates a dangerous new failure mode: **the repository's story drifts from reality.**
-
-* Behavior is lost in ephemeral chat histories.
-* Architecture documents quickly fall behind.
-* Product decisions vanish after handoff.
-* Code reviewers are left examining raw code diffs without understanding the "why."
-* Every new AI session is forced to rediscover your repository's truth from scratch.
-
-## 🎯 The Solution: Truthmark
-
-**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: helping the documentation stay aligned with the code.
-
-Instead of hoping humans and AI agents remember to update docs, Truthmark makes documentation a systematic, reviewable habit right inside your repo.
-
-### ✨ Why Truthmark is Unique
-
-Truthmark isn't just another documentation tool. It is deeply integrated into the AI workflow:
-
-* **🚫 Zero Vendor Lock-in:** No hosted services, no hidden databases, no extra servers to operate.
-* **🌳 100% Git-Native:** Everything lives in your repository. The truth moves with your branch.
-* **🤝 Dual-Surface Architecture:** It cleanly separates the tools humans use to manage the repo from the workflows AI agents use to write code.
-* **✅ Trust Through Verification:** AI work becomes easier to trust because behavior-changing work includes a human-reviewable truth-doc decision or diff.
-
-## 🔄 How It Works
-
-When an AI agent modifies your code, the job isn't finished. Truthmark installs a finish-time workflow guard that agents follow before handoff:
-
-1. 💻 **Code:** Agent modifies functional code.
-2. 🧪 **Test:** Relevant tests are executed.
-3. 🔍 **Check:** `Truth Sync` checks mapped documentation when the installed workflow runs.
-4. 📝 **Document:** Docs are updated by the agent when repository truth has changed.
-5. 👀 **Review:** A human reviews the *code diff* + the *truth diff*.
-
-## 🛠 Two Surfaces, One Truth System
-
-Truthmark is intentionally split into two distinct surfaces to serve both human maintainers and AI agents.
-
-### 1. 🧑‍💻 The Human CLI (Maintainers & CI)
-Used by developers to set up, configure, and validate the repository.
-* `truthmark config` - Creates your initial configuration.
-* `truthmark init` - Installs the necessary routing, scaffolds, and instructions.
-* `truthmark check` - Validates truth artifacts from the terminal.
-
-### 2. 🤖 The AI-Facing Workflows (Agents)
-Truthmark installs native skills, prompts, and commands that supported AI hosts (like Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor) understand. These are *not* shell commands; they are workflow entry points for the AI.
-* `/truthmark-sync` - Keep docs aligned with recent code changes.
-* `/truthmark-document` - Generate docs for undocumented existing code.
-* `/truthmark-structure` - Organize broad repository areas into specific domains.
-* `/truthmark-realize` - **Doc-First Development:** Read architecture docs and generate code to match.
-* `/truthmark-check` - Agent-driven audit of the repository's truth.
-
-## 🚀 Quick Start
-
-### Prerequisites
-* Node.js `>= 24`
-* `npm`
-* A Git repository
-
-### Installation
-
-Run this inside the Git repository you want to initialize:
+Truthmark가 관리하길 원하는 Git 저장소 안에서 실행하세요:
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark config
-truthmark init
-truthmark check
 ```
 
-Review `.truthmark/config.yml` after `truthmark config`, then review the generated files before committing. Truthmark's templates are aligned with recognized engineering documentation practices; they do not certify standards compliance.
+실제로 사용하는 AI 호스트를 활성화하세요. 새 설정은 기본적으로 호스트 중립적이므로, 초기화 전에 `.truthmark/config.yml`에 최상위 `platforms` 목록을 추가하세요:
 
-### 📖 Common AI Workflows
+```yaml
+version: 2
+platforms:
+  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
+```
 
-#### 🏗️ Bringing Existing Code to Truth
+그런 다음 저장소 로컬 truth 문서, 라우팅, 에이전트 워크플로 표면을 설치하세요:
 
-If you have a large existing codebase with poor documentation, start here. Give the agent the feature name and paths:
+```bash
+truthmark init
+truthmark check
+git diff
+```
+
+이제 가장 흔한 도입 경로를 시도해 보세요. 코드와 테스트에서 기존 동작 하나를 문서화합니다. AI 코딩 호스트에서 설치된 워크플로에 요청하세요:
 
 ```text
 /truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
 ```
 
-#### 📐 Doc-First Implementation (Truth Realize)
+그 이후에는 사용자가 일반적으로 Truth Sync를 직접 호출할 필요가 없습니다. AI 호스트를 통해 계속 코딩하세요. 설치된 저장소 지침이 기능 코드가 변경될 때 에이전트에게 관련 테스트를 실행하고 인계 전에 Truth Sync 검토를 수행하라고 알려줍니다. 사용자는 결과 코드 diff와 truth-doc diff를 함께 검토합니다.
 
-When product decisions start in documentation, have the AI build the code to match the truth:
+아직 호스트별 AI 워크플로는 원하지 않고 CLI 검증만 원한다면 `platforms`를 생략한 채 `truthmark init && truthmark check`를 실행하세요. 나중에 플랫폼을 추가하고 `truthmark init`을 다시 실행할 수 있습니다.
 
-```text
-/truthmark-realize realize docs/truthmark/product/capabilities/session-timeout.md into code
-```
+## 💡 문제: AI 문서화 격차
 
+AI 코딩 에이전트는 코드를 빠르게 작성하는 데 탁월합니다. 하지만 이 속도는 위험한 새로운 실패 모드를 만듭니다. **저장소가 말하는 이야기가 현실과 어긋나는 것**입니다.
 
-## What you get
+* 동작은 일시적인 채팅 기록 속에서 사라집니다.
+* 아키텍처 문서는 빠르게 뒤처집니다.
+* 제품 결정은 인계 후 사라집니다.
+* 코드 리뷰어는 “왜”를 이해하지 못한 채 원시 코드 diff만 보게 됩니다.
+* 모든 새 AI 세션은 저장소의 truth를 처음부터 다시 발견해야 합니다.
 
-| Capability | What it does |
+## 🎯 해결책: Truthmark
+
+**Truthmark**는 저장소에 Git 네이티브 워크플로 계층을 설치합니다. AI 개발에서 보통 깨지는 부분, 즉 문서가 코드와 계속 정렬되도록 돕는 일을 해결합니다.
+
+사람과 AI 에이전트가 문서 업데이트를 기억하길 기대하는 대신, Truthmark는 문서화를 저장소 안의 체계적이고 검토 가능한 습관으로 만듭니다.
+
+### ✨ Truthmark가 특별한 이유
+
+Truthmark는 단순한 또 하나의 문서화 도구가 아닙니다. AI 워크플로에 깊이 통합되어 있습니다:
+
+* **🚫 벤더 종속 없음:** 호스팅 서비스, 숨겨진 데이터베이스, 운영해야 할 추가 서버가 없습니다.
+* **🌳 100% Git 네이티브:** 모든 것이 저장소 안에 있습니다. truth는 브랜치와 함께 이동합니다.
+* **🤝 이중 표면 아키텍처:** 사람이 저장소를 관리하는 데 쓰는 도구와 AI 에이전트가 코드를 작성하는 데 쓰는 워크플로를 명확히 분리합니다.
+* **✅ 검증을 통한 신뢰:** 동작을 바꾸는 작업에는 사람이 검토할 수 있는 truth-doc 결정 또는 diff가 포함되므로 AI 작업을 더 쉽게 신뢰할 수 있습니다.
+
+## 🔄 작동 방식
+
+AI 에이전트가 코드를 수정해도 작업은 끝난 것이 아닙니다. Truthmark는 인계 전에 에이전트가 따르는 완료 시점 워크플로 보호 장치를 설치합니다:
+
+1. 💻 **코드:** 에이전트가 기능 코드를 수정합니다.
+2. 🧪 **테스트:** 관련 테스트가 실행됩니다.
+3. 🔍 **확인:** 설치된 워크플로가 실행될 때 `Truth Sync`가 매핑된 문서를 확인합니다.
+4. 📝 **문서화:** 저장소 truth가 변경되면 에이전트가 문서를 업데이트합니다.
+5. 👀 **검토:** 사람이 *코드 diff* + *truth diff*를 검토합니다.
+
+## 🛠 두 표면, 하나의 truth 시스템
+
+Truthmark는 사람 유지관리자와 AI 에이전트 모두를 지원하기 위해 의도적으로 두 가지 별도 표면으로 나뉩니다.
+
+### 1. 🧑‍💻 사람용 CLI(유지관리자 및 CI)
+개발자가 저장소를 설정, 구성, 검증하는 데 사용합니다.
+* `truthmark config` - 초기 설정을 만듭니다.
+* `truthmark init` - 필요한 라우팅, 스캐폴드, 지침을 설치합니다.
+* `truthmark check` - 터미널에서 truth 산출물을 검증합니다.
+
+### 2. 🤖 AI용 워크플로(에이전트)
+Truthmark는 Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor 같은 지원 AI 호스트가 이해하는 네이티브 스킬, 프롬프트, 명령을 설치합니다. 이것들은 shell 명령이 *아니라*, AI를 위한 워크플로 진입점입니다.
+* `/truthmark-sync` - 기능 코드 변경 후 에이전트가 따르는 완료 시점 워크플로입니다. 일반적인 사용자 시작 명령이 아닙니다.
+* `/truthmark-document` - 문서화되지 않은 기존 코드에 대한 문서를 생성합니다.
+* `/truthmark-structure` - 넓은 저장소 영역을 구체적인 도메인으로 조직합니다.
+* `/truthmark-realize` - **문서 우선 개발:** 아키텍처 문서를 읽고 그에 맞는 코드를 생성합니다.
+* `/truthmark-check` - 에이전트가 주도하는 저장소 truth 감사입니다.
+
+## 얻는 것
+
+| 역량 | 하는 일 |
 | --- | --- |
-| Git-native truth | Keeps repository truth in committed Markdown and config. |
-| Branch-scoped documentation | Truth moves with the branch instead of living in a private session. |
-| Human CLI | Gives maintainers setup, refresh, validation, and inspection commands. |
-| AI-facing workflows | Gives agents host-native workflows for sync, documentation, structure, realization, and audit. |
-| Explicit routing | Maps code areas to canonical truth docs. |
-| Reviewable handoffs | Produces ordinary Git diffs for both code and truth docs. |
-| Local-first operation | Requires no hosted service, daemon, database, or MCP server. |
-| Safer write boundaries | Separates code-first, doc-first, read-only, and doc-only workflows. |
-| Validation | Reports routing, authority, frontmatter, link, generated-surface, branch-scope, freshness, and coverage issues. |
-| Optional Portal | Generates a committed static HTML presentation site from Markdown truth docs when explicitly enabled and requested. |
+| Git 네이티브 truth | 저장소 truth를 커밋된 Markdown과 설정에 보관합니다. |
+| 브랜치 범위 문서화 | truth는 비공개 세션에 머무르지 않고 브랜치와 함께 이동합니다. |
+| 사람용 CLI | 유지관리자에게 설정, 새로고침, 검증, 검사 명령을 제공합니다. |
+| AI용 워크플로 | 에이전트에게 동기화, 문서화, 구조화, 실현, 감사를 위한 호스트 네이티브 워크플로를 제공합니다. |
+| 명시적 라우팅 | 코드 영역을 정식 truth 문서에 매핑합니다. |
+| 검토 가능한 인계 | 코드와 truth 문서 모두에 대해 일반 Git diff를 생성합니다. |
+| 로컬 우선 운영 | 호스팅 서비스, 데몬, 데이터베이스, MCP 서버가 필요 없습니다. |
+| 더 안전한 쓰기 경계 | 코드 우선, 문서 우선, 읽기 전용, 문서 전용 워크플로를 분리합니다. |
+| 검증 | 라우팅, 권한, frontmatter, 링크, 생성 표면, 브랜치 범위, 신선도, 커버리지 문제를 보고합니다. |
+| 선택적 Portal | 명시적으로 활성화하고 요청한 경우 Markdown truth 문서에서 커밋된 정적 HTML 프레젠테이션 사이트를 생성합니다. |
 
-## Visual overview
+## 시각적 개요
 
-![Truthmark features](assets/truthmark-features.png)
+![Truthmark 기능](../assets/truthmark-features.png)
 
-**Features:** what Truthmark installs and how the workflow surface is split.
+**기능:** Truthmark가 무엇을 설치하고 워크플로 표면이 어떻게 나뉘는지.
 
-![Truthmark position](assets/truthmark-position.png)
+![Truthmark 위치](../assets/truthmark-position.png)
 
-**Position:** where Truthmark fits relative to prompts, memory, and spec workflows.
+**위치:** Truthmark가 프롬프트, 메모리, 사양 워크플로와 비교해 어디에 들어맞는지.
 
-![Truthmark sync flow](assets/truthmark-syncflow.png)
+![Truthmark 동기화 흐름](../assets/truthmark-syncflow.png)
 
-**Sync flow:** how Truth Sync closes out normal code changes before handoff.
+**동기화 흐름:** Truth Sync가 일반적인 코드 변경을 인계 전에 어떻게 마무리하는지.
 
-## Why teams adopt it
+## 팀이 도입하는 이유
 
-Truthmark is for teams that already know AI agents can generate code.
+Truthmark는 AI 에이전트가 코드를 생성할 수 있음을 이미 아는 팀을 위한 것입니다.
 
-The next problem is governance.
+다음 문제는 거버넌스입니다.
 
-Not governance as ceremony. Governance as a simple question:
+의식으로서의 거버넌스가 아닙니다. 거버넌스란 단순한 질문입니다:
 
-> After this AI-assisted change, does the repository still tell the truth?
+> 이 AI 지원 변경 이후에도 저장소는 여전히 truth를 말하는가?
 
-Truthmark helps teams answer that with committed files, explicit routing, and reviewable diffs.
+Truthmark는 커밋된 파일, 명시적 라우팅, 검토 가능한 diff로 팀이 그 질문에 답하도록 돕습니다.
 
-It is useful when you need:
+다음이 필요할 때 유용합니다:
 
-- less documentation drift
-- better handoffs
-- branch-specific product truth
-- durable architecture and API documentation
-- explicit ownership between docs and code
-- safer agent write boundaries
-- reviewable documentation instead of hidden memory
-- AI workflows that still work from committed repo files
+- 문서 드리프트 감소
+- 더 나은 인계
+- 브랜치별 제품 truth
+- 지속 가능한 아키텍처 및 API 문서
+- 문서와 코드 사이의 명시적 소유권
+- 더 안전한 에이전트 쓰기 경계
+- 숨겨진 메모리가 아닌 검토 가능한 문서
+- 커밋된 저장소 파일에서 계속 작동하는 AI 워크플로
 
-## Where Truthmark fits
+## Truthmark가 들어맞는 곳
 
-Truthmark does not replace prompts, memory, specs, tests, or code review.
+Truthmark는 프롬프트, 메모리, 사양, 테스트, 코드 리뷰를 대체하지 않습니다.
 
-It gives those workflows a durable place to land in Git.
+그 워크플로들이 Git 안에 지속적으로 자리 잡을 수 있는 장소를 제공합니다.
 
-| Need | Better fit |
+| 필요 | 더 적합한 것 |
 | --- | --- |
-| Better output from one agent session | Better prompt |
-| Personal or session-level continuity | Memory tool |
-| Plan-first feature work | Spec workflow |
-| Branch-scoped truth that travels with code | Truthmark |
-| Validating behavior correctness | Tests and review |
-| Reviewing AI-assisted documentation changes | Truthmark plus Git review |
+| 한 번의 에이전트 세션에서 더 나은 출력 | 더 나은 프롬프트 |
+| 개인 또는 세션 수준의 연속성 | 메모리 도구 |
+| 계획 우선 기능 작업 | 사양 워크플로 |
+| 코드와 함께 이동하는 브랜치 범위 truth | Truthmark |
+| 동작 정확성 검증 | 테스트와 리뷰 |
+| AI 지원 문서 변경 검토 | Truthmark와 Git 리뷰 |
 
-Truthmark’s lane is narrow by design:
+Truthmark의 영역은 의도적으로 좁게 설계되었습니다:
 
 ```text
 make repository truth explicit
@@ -175,538 +176,37 @@ install agent workflows around it
 keep the result reviewable in Git
 ```
 
-## How Truthmark runs
+## 더 깊이 보기
 
-Truthmark runs locally against the active Git worktree.
+README는 쇼윈도입니다. 빠른 맥락, 빠른 시작, 핵심 사고 모델을 제공합니다.
 
-The human-facing CLI reads and writes repository files, then exits.
+명령별 사용법, 표면 비교, 지원 플랫폼 상세, 설정, 라우팅, Portal, 예시는 [Truthmark 사용자 가이드](../user-guide.md)를 읽어보세요.
 
-The AI-facing workflow surfaces are committed files that agent hosts can load later. That means agents can follow the installed workflow from repository state instead of depending on a background Truthmark process.
+## 프로젝트 상태
 
-The layers fit together like this:
+현재 릴리스는 다음을 제공합니다:
 
-```mermaid
-flowchart LR
-  Human["Human / CI"] --> CLI["Truthmark CLI"]
-  CLI --> Config["Config and route map"]
-  CLI --> Truth["Canonical truth docs"]
-  CLI --> Surfaces["Generated host-native workflows"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
-  Hosts --> Worktree["Active Git worktree"]
-  Hosts -->|"helper checks / validate / index"| CLI
-  Worktree --> Truth
-```
+- config, init, check, index, impact, workflow status를 위한 로컬 CLI 명령
+- Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor용 생성 AI 워크플로 표면
+- 라우팅, 권한, frontmatter, 링크, 신선도, 생성 표면, 브랜치 범위, 커버리지 진단
+- 브랜치 범위 truth 문서와 파생된 저장소 인텔리전스 산출물
 
-Agents do not talk to a Truthmark daemon, but they can run the installed Truthmark CLI when a workflow asks for validation, indexing, or helper checks.
+## 문서
 
-Truthmark owns the generated workflow surfaces it creates, but the important contract is architectural: repo-local config and routing point agents at canonical truth docs, while host-native workflows give each supported agent a way to run the same Truthmark procedures.
+- [사용자 가이드](../user-guide.md)
+- [문서 색인](../README.md)
+- [아키텍처 개요](../truthmark/engineering/architecture/overview.md)
+- [API 및 CLI 계약](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [저장소 truth 유지관리 가이드](../standards/maintaining-repository-truth.md)
 
-Generated workflow surfaces use non-versioned refresh guidance. After upgrading Truthmark or changing workflow configuration, rerun:
+로컬 개발 및 기여 명령은 [CONTRIBUTING.md](../../CONTRIBUTING.md)를 참조하세요.
 
-```bash
-truthmark init
-```
+## 설계 경계
 
-Then review the generated diffs.
+Truthmark는 의도적으로 작습니다. 로컬이고, 커밋되며, 브랜치 범위이고, 검토 가능합니다.
 
-## Supported agent platforms
+Truthmark는 호스팅 서비스, MCP 서버, 벡터 데이터베이스, 숨겨진 메모리 계층, CI 강제 제품, 자율 코드 재작성 엔진이 아닙니다. 저장소 truth가 보이도록 돕지만, 테스트, 코드 리뷰, 사람의 판단을 대체하지는 않습니다.
 
-Fresh configs omit host platforms by default. Add the platforms you use to `.truthmark/config.yml`, then rerun:
+## 라이선스
 
-```bash
-truthmark init
-```
-
-| Platform config name | Generated surface | Invocation shape |
-| --- | --- | --- |
-| `codex` | Skill packages and verifier agents | `/truthmark-*` or `$truthmark-*` |
-| `claude-code` | Project skills, verifier agents, and managed instructions | `/truthmark-*` |
-| `github-copilot` | Agent skills, prompt commands, custom agents, and managed instructions | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
-| `opencode` | Skill packages and verifier agents | `/skill truthmark-*` |
-| `antigravity` | Project rule files for Truthmark workflows | `@truthmark-*` |
-| `cursor` | Project rule files under `.cursor/rules` | `@truthmark-*` |
-
-Unknown platform names are config errors.
-
-Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
-
-## AI-facing workflows
-
-These workflows are installed into supported AI coding hosts.
-
-They are used by agents or agent hosts during repository work. They are not top-level shell commands.
-
-| Workflow | Direction | Use it when | Write boundary |
-| --- | --- | --- | --- |
-| Truth Structure | topology-first | The default route is too broad, ownership spans multiple areas, or route files still point at placeholders. | Creates or repairs routing and starter truth docs. |
-| Truth Document | implementation-first | Behavior already exists in code, but canonical truth docs are missing or weak. | Writes truth docs and routing only. Functional code must not change. |
-| Truth Sync | code-first | Functional code changed and mapped truth docs may need to be updated before handoff. | Updates truth docs. Functional code must not be rewritten by Truth Sync. |
-| Truth Realize | doc-first | Product or architecture truth docs lead and code should be updated to match. | Updates code only. The agent must not edit the truth docs it is realizing. |
-| Truth Check | audit-first | A reviewer or agent needs to audit repository truth health. | Audits and reports. |
-| Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the fixed Portal output directory. |
-
-### Important distinction
-
-Do not confuse these two surfaces:
-
-| Surface | Used by | Example | Meaning |
-| --- | --- | --- | --- |
-| Human CLI | humans, scripts, CI-like checks | `truthmark check` | Validate repository truth artifacts from the terminal. |
-| AI-facing workflow | coding agents and agent hosts | `/truthmark-check` | Ask an agent to run the installed audit workflow. |
-
-The names are intentionally related, but the surfaces are different.
-
-## Normal AI-assisted code change
-
-Users should not treat Truth Sync as the normal command they call to start work.
-
-Truth Sync is the installed finish-time review that the agent follows after functional code changes.
-
-```text
-user asks agent for a code change
-agent changes functional code
-agent runs or asks for relevant tests
-installed repository instructions require Sync review before handoff
-Truth Sync checks mapped truth docs
-agent updates truth docs if needed
-human reviews code diff + truth diff
-```
-
-Manual Sync invocation is mainly for troubleshooting or explicit maintainer review, not the standard onboarding or day-to-day start path.
-
-## Existing behavior without docs
-
-Use Truth Document when the implementation already exists but the repository truth is incomplete. This is the normal path for established repositories adopting Truthmark after the codebase already exists.
-
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts, src/auth/middleware.ts, and tests/auth/session.test.ts
-```
-
-Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Antigravity or Cursor, use `@truthmark-document ...`.
-
-Start with Truth Document for one bounded feature or area at a time.
-
-Truth Document inspects implementation, tests, route files, and existing docs as evidence.
-
-It writes truth docs and routing only.
-
-It must not change functional code.
-
-## Doc-first changes
-
-Use Truth Realize when a product or architecture decision starts in docs and code should be updated to match.
-
-```text
-/truthmark-realize realize docs/truthmark/product/capabilities/session-timeout.md into code
-```
-
-Truth Realize is doc-first.
-
-The truth docs lead. The code follows.
-
-The agent must not edit the truth docs it is realizing.
-
-## Repository truth audit
-
-Use Truth Check when you want an agent-facing audit workflow.
-
-```text
-/truthmark-check audit routing and truth coverage before review
-```
-
-Use the human-facing CLI when you want terminal validation:
-
-```bash
-truthmark check
-```
-
-Both are useful. They are not the same surface.
-
-## Human-facing CLI commands
-
-Most maintainers start with three commands.
-
-| Command | Purpose |
-| --- | --- |
-| `truthmark config` | Create `.truthmark/config.yml`. Writes only that file unless `--stdout` is used. |
-| `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
-| `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
-
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
-
-They are not sources of truth.
-
-| Command | Purpose |
-| --- | --- |
-| `truthmark index` | Build RepoIndex and RouteMap JSON for the active checkout. |
-| `truthmark impact --base <ref>` | Map changed files to routed truth docs, owning routes, and nearby tests. |
-| `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Return workflow applicability, write boundaries, target truth docs, checks, helper commands, and compact affected-test guidance. |
-
-Structured output is available with `--json` where supported.
-
-## Truthmark Portal
-
-Truthmark Portal is an optional presentation workflow for teams that want a human-readable site over their committed truth docs.
-
-It is deliberately separate from the core truth workflow:
-
-- Markdown truth docs remain canonical.
-- Generated Portal HTML is presentation only.
-- Portal is manual-only; it does not run as a completion review, Truth Sync step, `truthmark check` step, or automatic post-change hook.
-- Portal writes stay inside the fixed Truthmark-derived output directory.
-- Generated pages should use local assets, source provenance, and a visible Markdown-canonical disclaimer.
-
-Enable it with the namespaced config block:
-
-```yaml
-truthmark:
-  generated:
-    portal:
-      enabled: true
-```
-
-Then rerun:
-
-```bash
-truthmark init
-```
-
-When enabled, Truthmark installs host-native Portal workflow surfaces for the configured platforms, such as `/truthmark-portal` or `/truthmark:portal` depending on the agent host.
-
-## Configuration
-
-Truthmark is config-first.
-
-The main config file is:
-
-```text
-.truthmark/config.yml
-```
-
-New repositories should run:
-
-```bash
-truthmark config
-```
-
-Then review the generated config before running:
-
-```bash
-truthmark init
-```
-
-Important config areas include:
-
-| Config area | Purpose |
-| --- | --- |
-| `version` | Config contract version. |
-| `platforms` | Agent hosts that should receive platform-specific generated surfaces. |
-| `truthmark.workspace` | Truthmark-owned workspace for routes, truth docs, templates, and generated presentation output. |
-| Fixed routes | Routes live under `routes/areas.md` and `routes/areas/` inside `truthmark.workspace`; the default area is `repository` and delegation depth is `1`. |
-| Fixed truth lanes | Product truth lives under `product/` and engineering truth under `engineering/` inside `truthmark.workspace`. |
-| Fixed templates | Truth-doc templates live under `templates/` inside `truthmark.workspace`. |
-| `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
-| `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
-| `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
-| `frontmatter.recommended` | Metadata fields that produce review diagnostics when missing. |
-| `ignore` | Glob patterns excluded from relevant checks and routing logic. |
-
-## Repository truth routing
-
-Truthmark maps code surfaces to truth docs.
-
-The main routing files are:
-
-```text
-docs/truthmark/routes/areas.md
-docs/truthmark/routes/areas/**/*.md
-```
-
-A route tells the agent:
-
-- which code surface belongs to an area
-- which truth docs own that area
-- when truth should be updated
-- what kind of truth doc is involved
-
-The default scaffold starts with a provisional broad bootstrap route so a fresh repository is routeable. When real code is touched, split that bootstrap route into real product, service, domain, or ownership areas before normal Truth Sync; do not turn the bootstrap handoff into a catch-all behavior doc.
-
-Example:
-
-```text
-/truthmark-structure split the broad repository area into frontend, backend, billing, and deployment
-```
-
-Good routing gives Truth Sync precise destinations.
-
-Bad routing makes agents guess.
-
-## What Truthmark installs
-
-Truthmark installs a compact repository-native truth layer.
-
-It does this in four layers:
-
-- configuration and routing for ownership boundaries
-- canonical truth docs and starter templates
-- compact managed instruction blocks for repository-wide agent instructions
-- host-native workflow packages, commands, prompts, and verifier agents for the platforms enabled in config
-
-Truthmark preserves manual content outside managed instruction blocks.
-
-Generated workflow surfaces are managed by Truthmark and may be refreshed by rerunning:
-
-```bash
-truthmark init
-```
-
-## Subagents and bounded evidence checks
-
-Where supported by the host, Truthmark can install project-scoped verifier agents and a leased `truth-doc-writer`.
-
-These help keep large truth tasks bounded:
-
-- route auditors inspect route ownership
-- claim verifiers check whether doc claims are supported by evidence
-- doc reviewers inspect truth-doc quality
-- leased doc writers handle bounded truth-doc writing shards
-
-The parent workflow still owns final interpretation, write boundaries, diff validation, and acceptance.
-
-This is important: subagents help with bounded evidence work. They do not replace the main workflow contract.
-
-## Review loop
-
-Truthmark is designed for ordinary Git review.
-
-A good AI-assisted handoff should show:
-
-```text
-code diff
-test evidence
-truth-doc diff, if needed
-routing changes, if needed
-agent report
-```
-
-The reviewer should be able to answer:
-
-- What code changed?
-- Which truth docs own that code?
-- Did those docs need updates?
-- If not, why not?
-- Did the agent stay inside the workflow write boundary?
-- Are tests or verification evidence included?
-
-## Examples
-
-### Initialize a repository
-
-```bash
-npm install -g truthmark
-truthmark config
-truthmark init
-truthmark check
-```
-
-### Remove unused agent platforms
-
-Edit:
-
-```text
-.truthmark/config.yml
-```
-
-Then rerun:
-
-```bash
-truthmark init
-truthmark check
-```
-
-### Split broad routing
-
-```text
-/truthmark-structure split the broad repository area into auth, billing, notifications, and deployment
-```
-
-### Document implemented behavior
-
-```text
-/truthmark-document document the implemented password reset flow under docs/truthmark/engineering/behaviors/authentication
-```
-
-### Normal code-change handoff
-
-Do not start normal work by calling Truth Sync yourself. Ask the agent for the code change; the installed repository instructions tell it to run relevant tests and perform Sync review before handoff.
-
-### Realize a doc-first decision
-
-```text
-/truthmark-realize realize docs/truthmark/product/capabilities/invoice-retry-policy.md into code
-```
-
-### Audit truth health from the terminal
-
-```bash
-truthmark check
-```
-
-### Generate branch-impact summary
-
-```bash
-truthmark impact --base main
-```
-
-### Inspect workflow status
-
-```bash
-truthmark workflow status --workflow truthmark-sync --base main --json
-```
-
-### Enable the optional Portal workflow
-
-```yaml
-truthmark:
-  generated:
-    portal:
-      enabled: true
-```
-
-```bash
-truthmark init
-```
-
-Then explicitly ask the agent host to run the installed Portal workflow when you want the static presentation site generated or refreshed.
-
-## Project status
-
-The current release provides:
-
-- `truthmark config`
-- `truthmark init`
-- `truthmark check`
-- `truthmark index`
-- `truthmark impact`
-- `truthmark workflow status`
-- branch-scope metadata
-- managed instruction blocks
-- generated Truth Structure workflow surfaces
-- generated Truth Document workflow surfaces
-- generated Truth Sync workflow surfaces
-- generated Truth Realize workflow surfaces
-- generated Truth Check workflow surfaces
-- optional generated Truthmark Portal workflow surfaces
-- route, authority, decision-structure, frontmatter, link, freshness, generated-surface, and coverage diagnostics
-- derived RepoIndex, RouteMap, ImpactSet, and WorkflowState artifacts
-- host-specific surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
-
-## Development
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the local development CLI:
-
-```bash
-npm run dev -- init
-npm run dev -- check
-```
-
-Run the full project check:
-
-```bash
-npm run check
-```
-
-Useful scripts:
-
-| Script | Purpose |
-| --- | --- |
-| `npm run dev` | Run the TypeScript CLI entry point with `tsx`. |
-| `npm run build` | Build the package. |
-| `npm run lint` | Run ESLint. |
-| `npm run typecheck` | Run TypeScript checks. |
-| `npm run test` | Run tests. |
-| `npm run check` | Run lint, typecheck, tests, and build. |
-| `npm run release:check` | Run release-oriented validation. |
-
-When changing Truthmark itself, see [CONTRIBUTING.md](../CONTRIBUTING.md).
-
-## Documentation
-
-The README is the fast path for evaluation and setup.
-
-Detailed current behavior lives under `docs/`:
-
-- [Docs index](../README.md)
-- [Architecture overview](truthmark/engineering/architecture/overview.md)
-- [API and CLI contracts](truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Init and scaffold behavior](truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Check diagnostics](truthmark/engineering/behaviors/check-diagnostics.md)
-- [Installed workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Repository truth maintenance guide](standards/maintaining-repository-truth.md)
-
-## Design boundaries
-
-Truthmark is intentionally small.
-
-It is not:
-
-- a hosted service
-- an MCP server
-- a vector database
-- a canonical documentation website generator or hosted docs platform
-- a CI or PR enforcement product
-- a replacement for tests, code review, or technical leadership
-- an autonomous code rewrite engine
-- a model-training or fine-tuning framework
-- a hidden memory layer
-
-Those boundaries are part of the product.
-
-Truthmark keeps the workflow local, committed, branch-scoped, and reviewable.
-
-## Safety and review discipline
-
-Truthmark helps the repository stay honest. It does not prove the code is correct.
-
-Teams should still:
-
-- run relevant tests
-- review functional code changes
-- review truth-doc changes
-- keep secrets out of docs
-- keep repository-specific instructions outside managed blocks
-- review generated workflow-surface diffs after upgrades
-- keep human ownership over product and architecture decisions
-
-Truthmark makes agent-facing repository truth visible. It does not replace human judgment.
-
-## Roadmap direction
-
-The current future direction emphasizes:
-
-- stronger `truthmark check` evidence reporting
-- clearer adoption examples
-- example repositories showing real Truth Sync cycles
-- migration guides for teams already using agent instruction files
-- conformance tests for generated host surfaces
-- route-aware stale-truth hints
-- bounded implementation checklists for doc-first work
-
-The center of gravity stays the same:
-
-```text
-repository truth
-agent-native workflows
-Git review
-branch-scoped documentation
-```
-
-## License
-
-MIT. See [LICENSE](../LICENSE).
+MIT. [LICENSE](../../LICENSE)를 참조하세요.
