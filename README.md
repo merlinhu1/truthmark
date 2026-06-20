@@ -2,7 +2,7 @@
 
 **Your agents write code. Truthmark maintains human-facing, Git-reviewable documentation.**
 
-English | [Deutsch](README.de.md) | [中文](README.zh.md) | [Español](README.es.md) | [Русский](README.ru.md)
+🇺🇸 English | 🇨🇳 简体中文 | 🇯🇵 日本語 | 🇰🇷 한국어 | 🇩🇪 Deutsch | 🇫🇷 Français | 🇪🇸 Español | 🇧🇷 Português | 🇷🇺 Русский | 🇸🇦 العربية | 🇮🇹 Italiano | 🇵🇱 Polski | 🇹🇷 Türkçe | 🇻🇳 Tiếng Việt | 🇮🇩 Bahasa Indonesia | 🇬🇷 Ελληνικά |
 
 ![Truthmark banner](docs/assets/truthmark-banner.png)
 
