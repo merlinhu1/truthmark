@@ -20,7 +20,7 @@ const localizedReadmeFiles = [
   "docs/readmes/README.ja.md",
   "docs/readmes/README.ko.md",
   "docs/readmes/README.pl.md",
-  "docs/readmes/README.pt-BR.md",
+  "docs/readmes/README.pt.md",
   "docs/readmes/README.ru.md",
   "docs/readmes/README.tr.md",
   "docs/readmes/README.vi.md",
