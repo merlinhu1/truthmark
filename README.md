@@ -6,189 +6,87 @@ English | [Deutsch](README.de.md) | [中文](README.zh.md) | [Español](README.e
 
 ![Truthmark banner](docs/assets/truthmark-banner.png)
 
-AI coding agents can change a repository faster than humans can keep its documentation aligned.
+## 💡 The Problem: The AI Documentation Gap
 
-Truthmark fixes the part that usually breaks after the code is written: the repository truth.
+AI coding agents are incredible at writing code fast. But this speed creates a dangerous new failure mode: **the repository's story drifts from reality.**
 
-It installs a Git-native, branch-scoped workflow layer that helps AI coding agents update the right docs, respect ownership boundaries, and leave humans with normal diffs they can review.
+* Behavior is lost in ephemeral chat histories.
+* Architecture documents quickly fall behind.
+* Product decisions vanish after handoff.
+* Code reviewers are left examining raw code diffs without understanding the "why."
+* Every new AI session is forced to rediscover your repository's truth from scratch.
 
-No hosted service.
+## 🎯 The Solution: Truthmark
 
-No database.
+**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: keeping the documentation perfectly aligned with the code.
 
-No hidden memory layer.
+Instead of hoping humans and AI agents remember to update docs, Truthmark makes documentation a systematic, enforceable habit right inside your repo.
 
-No extra server to operate.
+### ✨ Why Truthmark is Unique
 
-Just repository truth that moves with the branch.
+Truthmark isn't just another documentation tool. It is deeply integrated into the AI workflow:
 
-## The problem
+* **🚫 Zero Vendor Lock-in:** No hosted services, no hidden databases, no extra servers to operate.
+* **🌳 100% Git-Native:** Everything lives in your repository. The truth moves with your branch.
+* **🤝 Dual-Surface Architecture:** It cleanly separates the tools humans use to manage the repo from the workflows AI agents use to write code.
+* **✅ Trust Through Verification:** AI work becomes vastly easier to trust because every functional change is accompanied by a human-reviewable documentation diff.
 
-AI coding agents are good at producing code. That creates a new failure mode.
+## 🔄 How It Works
 
-The implementation changes, but the repository story drifts:
+When an AI agent modifies your code, the job isn't finished. Truthmark enforces a complete development cycle:
 
-- behavior lives in chat history
-- architecture docs fall behind
-- product decisions disappear after handoff
-- reviewers see code diffs without the related truth diffs
-- branches quietly develop different versions of “what is true”
-- each agent session has to rediscover repository truth from scratch
+1. 💻 **Code:** Agent modifies functional code.
+2. 🧪 **Test:** Relevant tests are executed.
+3. 🔍 **Check:** `Truth Sync` automatically checks mapped documentation.
+4. 📝 **Document:** Docs are updated by the agent if the behavior changed.
+5. 👀 **Review:** A human reviews the *code diff* + the *truth diff*.
 
-Truthmark turns that fragile repository truth into committed repository infrastructure.
+## 🛠 Two Surfaces, One Truth System
 
-Instead of relying on every human and every agent to remember the right documentation habit, Truthmark installs the habit into the repository.
+Truthmark is intentionally split into two distinct surfaces to serve both human maintainers and AI agents.
 
-## The promise
+### 1. 🧑‍💻 The Human CLI (Maintainers & CI)
+Used by developers to setup, configure, and validate the repository.
+* `truthmark config` - Creates your initial configuration.
+* `truthmark init` - Installs the necessary routing, scaffolds, and instructions.
+* `truthmark check` - Validates truth artifacts from the terminal.
 
-When an agent changes functional code, the work should not end with only a code diff.
+### 2. 🤖 The AI-Facing Workflows (Agents)
+Truthmark installs native skills, prompts, and commands that your AI agents (like Copilot, Cursor, or Gemini) understand. These are *not* shell commands; they are workflow entry points for the AI.
+* `/truthmark-sync` - Keep docs aligned with recent code changes.
+* `/truthmark-document` - Generate docs for undocumented existing code.
+* `/truthmark-structure` - Organize broad repository areas into specific domains.
+* `/truthmark-realize` - **Doc-First Development:** Read architecture docs and generate code to match.
+* `/truthmark-check` - Agent-driven audit of the repository's truth.
 
-The normal Truthmark path is:
+## 🚀 Quick Start
 
-```text
-agent changes functional code
-relevant tests run
-Truth Sync checks mapped truth docs
-truth docs update when needed
-human reviews code diff + truth diff
-commit or hand off
-```
+### Prerequisites
+* Node.js `>= 20`
+* `npm`
+* A Git repository
 
-That is the core value: **AI work becomes easier to trust because the repository stays legible.**
+### Installation
+Note: Once initialized, review the generated files before committing. Truthmark's templates map to recognized engineering standards (ISO/IEC/IEEE, C4, arc42, SemVer, etc.).
 
-## Two surfaces, one truth system
+### 📖 Common AI Workflows
 
-Truthmark is not just a CLI.
+#### 🏗️ Bringing Existing Code to Truth
 
-It has two distinct surfaces, and the distinction matters.
-
-### 1. Human-facing CLI
-
-The CLI is for maintainers, reviewers, and automation.
-
-Use it to configure a repository, install or refresh workflow files, validate truth artifacts, and generate optional review material.
-
-```bash
-truthmark config
-truthmark init
-truthmark check
-```
-
-The CLI prepares and validates the repository environment.
-
-It is not the AI workflow runtime.
-
-### 2. AI-facing workflow surfaces
-
-The AI-facing surfaces are for coding agents.
-
-Truthmark installs host-native skills, prompts, commands, managed instruction blocks, and supported subagent surfaces so AI agents can follow repository-specific truth workflows inside their normal coding tools.
-
-Examples:
+If you have a large existing codebase with poor documentation, start here. Give the agent the feature name and paths:
 
 ```text
-/truthmark-sync
-/truthmark-document
-/truthmark-structure
-/truthmark-realize
-/truthmark-check
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
 ```
 
-These look like commands because agent hosts expose workflows through slash commands, prompts, skills, or project commands.
+#### 📐 Doc-First Implementation (Truth Realize)
 
-They are not shell commands.
-
-They are AI-facing workflow entrypoints.
-
-The split is the product:
+When product decisions start in documentation, have the AI build the code to match the truth:
 
 ```text
-humans own the repository contract
-Truthmark installs the contract into the repo
-agents operate inside that contract
-truth updates appear as Git diffs
-humans review the result
+/truthmark-realize realize docs/truthmark/product/capabilities/session-timeout.md into code
 ```
 
-## Quick start
-
-### Requirements
-
-- Node.js `>=20`
-- npm
-- a Git repository
-
-### Install Truthmark
-
-Run this inside the repository you want to initialize:
-
-```bash
-cd /path/to/your-repo
-npm install -g truthmark
-```
-
-### Create the repository truth contract
-
-```bash
-truthmark config
-```
-
-This creates:
-
-```text
-.truthmark/config.yml
-```
-
-Review this file before continuing. It defines the committed hierarchy contract for the repository.
-
-### Install the workflow surfaces
-
-```bash
-truthmark init
-```
-
-This installs or refreshes:
-
-- route files
-- truth-doc scaffolding
-- managed instruction blocks
-- AI-facing workflow surfaces for configured platforms
-
-Default truth-doc templates are justified in [Template Standards](docs/standards/template-standards.md), which maps them to recognized software engineering references such as ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE, and Diátaxis.
-
-### Validate the setup
-
-```bash
-truthmark check
-```
-
-Then review the generated files before committing.
-
-The exact files depend on `.truthmark/config.yml`, but the install always has the same shape: routing, truth scaffolding, compact managed instructions, and host-native workflow surfaces for the enabled platforms.
-
-## First real use
-
-Most repositories need one cleanup pass after initialization.
-
-The default scaffold starts with a provisional broad `repository` bootstrap area. Before normal syncing on real code, split that bootstrap route into precise routing.
-
-Ask your agent to split the broad route into actual product, service, domain, or ownership areas:
-
-```text
-/truthmark-structure split the broad repository area into auth, billing, and notifications
-```
-
-If the project already has implemented features but missing or weak truth docs, ask the installed Truth Document workflow to document a focused scope:
-
-```text
-/truthmark-document document the implemented payment retry behavior in src/billing/retry.ts and related tests
-```
-
-Truth Document is the common first workflow for existing projects. It inspects implementation, tests, routes, and existing docs, then creates or repairs truth docs and routing without changing functional code.
-
-After that, use your AI coding agent normally.
-
-When the agent changes functional code, Truth Sync acts as the finish-time guard that checks whether mapped truth docs need to change before handoff.
 
 ## What you get
 
