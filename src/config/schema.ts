@@ -5,7 +5,8 @@ const SUPPORTED_PLATFORMS = [
   "opencode",
   "claude-code",
   "github-copilot",
-  "gemini-cli",
+  "antigravity",
+  "cursor",
 ] as const;
 
 export type TruthmarkPlatform = (typeof SUPPORTED_PLATFORMS)[number];

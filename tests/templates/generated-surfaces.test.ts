@@ -12,7 +12,8 @@ const allPlatforms = [
   "opencode",
   "claude-code",
   "github-copilot",
-  "gemini-cli",
+  "antigravity",
+  "cursor",
 ] as const;
 
 const portalPaths = [
@@ -22,15 +23,14 @@ const portalPaths = [
   ".claude/skills/truthmark-portal/SKILL.md",
   ".github/skills/truthmark-portal/SKILL.md",
   ".github/prompts/truthmark-portal.prompt.md",
-  ".gemini/skills/truthmark-portal/SKILL.md",
-  ".gemini/commands/truthmark/portal.toml",
+  ".antigravity/rules/truthmark-portal.md",
+  ".cursor/rules/truthmark-portal.mdc",
 ];
 
 const readOnlyProcedurePaths = [
   ".agents/skills/truthmark-check/support/procedure.md",
   ".opencode/skills/truthmark-check/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
-  ".gemini/skills/truthmark-check/support/procedure.md",
   ".github/skills/truthmark-check/support/procedure.md",
 ];
 
@@ -38,7 +38,6 @@ const syncProcedurePaths = [
   ".agents/skills/truthmark-sync/support/procedure.md",
   ".opencode/skills/truthmark-sync/support/procedure.md",
   ".claude/skills/truthmark-sync/support/procedure.md",
-  ".gemini/skills/truthmark-sync/support/procedure.md",
   ".github/skills/truthmark-sync/support/procedure.md",
 ];
 
@@ -93,7 +92,8 @@ describe("Truthmark Portal generated surfaces", () => {
       (surface) =>
         surface.path.endsWith("/SKILL.md") ||
         surface.path.startsWith(".github/prompts/") ||
-        surface.path.startsWith(".gemini/commands/"),
+        surface.path.startsWith(".antigravity/rules/") ||
+        surface.path.startsWith(".cursor/rules/"),
     );
     const forbiddenText = [
       "## Optional local CLI validation",
@@ -131,10 +131,6 @@ describe("Truthmark Portal generated surfaces", () => {
       byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
     const syncProcedure =
       byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
-    const previewPrompt =
-      byPath.get(".github/prompts/truthmark-preview.prompt.md") ?? "";
-    const previewCommand =
-      byPath.get(".gemini/commands/truthmark/preview.toml") ?? "";
 
     expect(syncSkill).toContain("Use this skill automatically before finishing");
     expect(syncSkill).not.toContain("Parent workflow:");
@@ -150,15 +146,13 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(byPath.has(".agents/skills/truthmark-sync/helper-manifest.yml")).toBe(false);
     expect(byPath.has(".agents/skills/truthmark-sync/support/helper-policy.md")).toBe(false);
     expect(byPath.has(".agents/skills/truthmark-preview/SKILL.md")).toBe(false);
-    expect(previewPrompt).toContain("Truth Preview is read-only");
-    expect(previewCommand).toContain("Truth Preview is read-only");
-    expect(previewPrompt).not.toContain("OpenCode /skill truthmark-preview");
-    expect(previewPrompt).not.toContain("Codex /truthmark-preview");
-    expect(previewPrompt).not.toContain("Claude Code /truthmark-preview");
-    expect(previewCommand).not.toContain("OpenCode /skill truthmark-preview");
-    expect(previewCommand).not.toContain("Codex /truthmark:preview");
-    expect(previewCommand).not.toContain("Claude Code /truthmark:preview");
-    expect(previewCommand).not.toContain("GitHub Copilot /truthmark-preview");
+    expect(byPath.has(".github/prompts/truthmark-preview.prompt.md")).toBe(false);
+    expect(byPath.has(".gemini/commands/truthmark/preview.toml")).toBe(false);
+    expect(byPath.has("GEMINI.md")).toBe(false);
+    expect(byPath.has(".gemini/skills/truthmark-sync/SKILL.md")).toBe(false);
+    expect(byPath.has(".gemini/commands/truthmark/sync.toml")).toBe(false);
+    expect(byPath.has(".antigravity/rules/truthmark-sync.md")).toBe(true);
+    expect(byPath.has(".cursor/rules/truthmark-sync.mdc")).toBe(true);
     expect(byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml")).toBe(
       false,
     );
@@ -234,8 +228,9 @@ describe("Truthmark Portal generated surfaces", () => {
       byPath.get(".agents/skills/truthmark-portal/support/procedure.md") ?? "";
     const copilotPrompt =
       byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
-    const geminiCommand =
-      byPath.get(".gemini/commands/truthmark/portal.toml") ?? "";
+    const antigravityRule =
+      byPath.get(".antigravity/rules/truthmark-portal.md") ?? "";
+    const cursorRule = byPath.get(".cursor/rules/truthmark-portal.mdc") ?? "";
     const agentsBlock = renderAgentsBlock(config);
 
     for (const text of [portalSkill, portalProcedure]) {
@@ -254,10 +249,13 @@ describe("Truthmark Portal generated surfaces", () => {
       "This prompt is the GitHub Copilot entrypoint for Truthmark Portal.",
     );
     expect(copilotPrompt).toContain(".github/skills/truthmark-portal/SKILL.md");
-    expect(geminiCommand).toContain(
-      "This command is the Gemini CLI entrypoint for Truthmark Portal.",
+    expect(antigravityRule).toContain(
+      "This rule is the Antigravity entrypoint for Truthmark Portal.",
     );
-    expect(geminiCommand).toContain(".gemini/skills/truthmark-portal/SKILL.md");
+    expect(cursorRule).toContain(
+      "This rule is the Cursor entrypoint for Truthmark Portal.",
+    );
+    expect(cursorRule).toContain("alwaysApply: false");
 
     expect(portalProcedure).toContain("replace the entire output directory");
     expect(portalProcedure).toContain("fixed Portal output directory only");

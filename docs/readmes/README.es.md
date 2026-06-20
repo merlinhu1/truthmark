@@ -114,7 +114,7 @@ las personas revisan el resultado
 
 ### Requisitos
 
-- Node.js `>=20`
+- Node.js `>=24`
 - npm
 - un repositorio Git
 
@@ -282,7 +282,7 @@ flowchart LR
   CLI --> Config["Config y rutas"]
   CLI --> Truth["Documentos truth canónicos"]
   CLI --> Surfaces["Workflows nativos del host generados"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
   Hosts --> Worktree["Git worktree activo"]
   Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
@@ -316,7 +316,8 @@ truthmark init
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
 | `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` en IDEs de Copilot compatibles; agentes personalizados `@truth-*` en Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
+| `antigravity` | `.antigravity/rules/truthmark-*.md` | `@truthmark-*` |
+| `cursor` | `.cursor/rules/truthmark-*.mdc` | `@truthmark-*` |
 
 Los nombres de plataforma desconocidos son errores de configuración.
 
@@ -377,7 +378,7 @@ Usa Truth Document cuando la implementación ya existe pero la verdad del reposi
 /truthmark-document documenta el comportamiento implementado de timeout de sesión en src/auth/session.ts, src/auth/middleware.ts y tests/auth/session.test.ts
 ```
 
-Indica el nombre de la funcionalidad, rutas de código, rutas de pruebas o el área deseada de documentos de verdad. En hosts estilo OpenCode, llama al mismo flujo como `/skill truthmark-document ...`; en Gemini CLI, usa `/truthmark:doc ...`.
+Indica el nombre de la funcionalidad, rutas de código, rutas de pruebas o el área deseada de documentos de verdad. En hosts estilo OpenCode, llama al mismo flujo como `/skill truthmark-document ...`; en Antigravity and Cursor, usa `/truthmark:doc ...`.
 
 Para un repositorio grande que aún tiene una ruta placeholder amplia, ejecuta primero Truth Structure y luego invoca Truth Document para una funcionalidad o un área acotada cada vez.
 
@@ -400,19 +401,6 @@ Truth Realize es doc-first.
 Los documentos de verdad lideran. El código sigue.
 
 El agente no debe editar los documentos de verdad que está realizando.
-
-## Preview de rutas de solo lectura
-
-Usa Truth Preview antes de un cambio cuando el agente necesita entender la ruta probable.
-
-```text
-/truthmark-preview previsualiza la ruta de verdad probable para cambios en la API de billing (GitHub Copilot)
-/truthmark:preview previsualiza la ruta de verdad probable para cambios en la API de billing (Gemini CLI)
-```
-
-Truth Preview es read-only.
-
-Es una ayuda de selección y planificación, no una autorización de escritura ni un reemplazo de Truth Check.
 
 ## Auditoría de verdad del repositorio
 
@@ -440,7 +428,7 @@ La mayoría de los mantenedores empieza con tres comandos.
 | `truthmark init` | Instala o refresca interfaces de flujo de trabajo configuradas desde la config revisada. |
 | `truthmark check` | Valida configuración, autoridad, rutas, documentos con decisiones, frontmatter, enlaces internos, alcance de rama, interfaces generadas, vigencia y diagnósticos de cobertura. |
 
-Los ayudantes opcionales de inteligencia del repositorio generan material derivado para revisión sobre el checkout activo, como RepoIndex, RouteMap, ImpactSet y JSON compacto de WorkflowState/action-context. Los paquetes de skills de flujo generados también pueden exponer manifiestos y políticas de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Gemini usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado visible de helper omitido y hacen validación manual.
+Los ayudantes opcionales de inteligencia del repositorio generan material derivado para revisión sobre el checkout activo, como RepoIndex, RouteMap, ImpactSet y JSON compacto de WorkflowState/action-context. Los paquetes de skills de flujo generados también pueden exponer manifiestos y políticas de helpers que llaman a validadores CLI `truthmark validate ... --json` instalados; esos helpers son aceleradores, no scripts locales empaquetados en el repo ni fuentes de verdad. Los prompts independientes de Copilot y los comandos de Antigravity/Cursor usan el mismo contrato de validador CLI cuando el runner instalado está disponible; de lo contrario informan un estado visible de helper omitido y hacen validación manual.
 
 No son fuentes de verdad.
 
@@ -704,13 +692,12 @@ The current release provides:
 - interfaces generadas de flujo Truth Structure
 - interfaces generadas de flujo Truth Document
 - interfaces generadas de flujo Truth Sync
-- interfaces generadas de flujo Truth Preview
 - interfaces generadas de flujo Truth Realize
 - interfaces generadas de flujo Truth Check
 - interfaces generadas opcionales de flujo Truthmark Portal
 - diagnósticos de rutas, autoridad, estructura de decisiones, frontmatter, enlaces, vigencia, interfaces generadas y cobertura
 - artefactos derivados RepoIndex, RouteMap, ImpactSet y WorkflowState
-- interfaces específicas de host para Codex, Claude Code, GitHub Copilot, OpenCode y Gemini CLI
+- interfaces específicas de host para Codex, Claude Code, GitHub Copilot, OpenCode y Antigravity and Cursor
 
 ## Desarrollo
 
@@ -753,7 +740,7 @@ El README es el camino rápido para evaluación y configuración.
 
 El comportamiento actual detallado vive bajo `docs/`:
 
-- [Índice de documentación](README.md)
+- [Índice de documentación](../README.md)
 - [Resumen de arquitectura](truthmark/engineering/architecture/overview.md)
 - [Contratos de API y CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Comportamiento de init y scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)

@@ -114,7 +114,7 @@ Truthmark устанавливает контракт в репозиторий
 
 ### Требования
 
-- Node.js `>=20`
+- Node.js `>=24`
 - npm
 - Git-репозиторий
 
@@ -282,7 +282,7 @@ flowchart LR
   CLI --> Config["Config и routing"]
   CLI --> Truth["Канонические truth docs"]
   CLI --> Surfaces["Сгенерированные host-native workflows"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
   Hosts --> Worktree["Активный Git worktree"]
   Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
@@ -316,7 +316,8 @@ truthmark init
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
 | `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` в поддерживаемых Copilot IDE; custom agents `@truth-*` в Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
+| `antigravity` | `.antigravity/rules/truthmark-*.md` | `@truthmark-*` |
+| `cursor` | `.cursor/rules/truthmark-*.mdc` | `@truthmark-*` |
 
 Неизвестные имена платформ являются ошибками config.
 
@@ -377,7 +378,7 @@ Truth Sync проверяет сопоставленные документы и
 /truthmark-document задокументируй реализованное поведение session timeout в src/auth/session.ts, src/auth/middleware.ts и tests/auth/session.test.ts
 ```
 
-Укажите имя функции, пути к коду, пути к тестам или желаемую область truth-документов. В OpenCode-подобных хостах тот же workflow вызывается как `/skill truthmark-document ...`; в Gemini CLI используйте `/truthmark:doc ...`.
+Укажите имя функции, пути к коду, пути к тестам или желаемую область truth-документов. В OpenCode-подобных хостах тот же workflow вызывается как `/skill truthmark-document ...`; в Antigravity and Cursor используйте `/truthmark:doc ...`.
 
 Для большого репозитория, где все еще есть один широкий placeholder-маршрут, сначала запустите Truth Structure, а затем вызывайте Truth Document для одной ограниченной функции или области за раз.
 
@@ -400,19 +401,6 @@ Truth Realize работает doc-first.
 Документы истины ведут. Код следует.
 
 Агент не должен редактировать документы истины, которые реализует.
-
-## Read-only preview маршрутизации
-
-Используйте Truth Preview перед изменением, когда агенту нужно понять вероятную маршрутизацию.
-
-```text
-/truthmark-preview покажи вероятный truth routing для изменений billing API (GitHub Copilot)
-/truthmark:preview покажи вероятный truth routing для изменений billing API (Gemini CLI)
-```
-
-Truth Preview работает read-only.
-
-Это средство выбора и планирования, а не авторизация записи и не замена Truth Check.
 
 ## Аудит истины репозитория
 
@@ -440,7 +428,7 @@ truthmark check
 | `truthmark init` | Устанавливает или обновляет настроенные интерфейсы workflow из проверенной config. |
 | `truthmark check` | Валидирует config, authority, routing, документы с decisions, frontmatter, внутренние ссылки, branch scope, generated surfaces, freshness и coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 Они не являются источниками истины.
 
@@ -704,13 +692,12 @@ The current release provides:
 - сгенерированные интерфейсы workflow Truth Structure
 - сгенерированные интерфейсы workflow Truth Document
 - сгенерированные интерфейсы workflow Truth Sync
-- сгенерированные интерфейсы workflow Truth Preview
 - сгенерированные интерфейсы workflow Truth Realize
 - сгенерированные интерфейсы workflow Truth Check
 - опциональные сгенерированные интерфейсы workflow Truthmark Portal
 - diagnostics для route, authority, decision-structure, frontmatter, links, freshness, generated-surface и coverage
 - производные артефакты RepoIndex, RouteMap, ImpactSet и WorkflowState
-- host-specific интерфейсы для Codex, Claude Code, GitHub Copilot, OpenCode и Gemini CLI
+- host-specific интерфейсы для Codex, Claude Code, GitHub Copilot, OpenCode и Antigravity and Cursor
 
 ## Разработка
 
@@ -753,7 +740,7 @@ README — быстрый путь для оценки и настройки.
 
 Подробное текущее поведение живет в `docs/`:
 
-- [Индекс документации](README.md)
+- [Индекс документации](../README.md)
 - [Обзор архитектуры](truthmark/engineering/architecture/overview.md)
 - [Контракты API и CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Поведение init и scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)

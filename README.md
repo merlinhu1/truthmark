@@ -2,7 +2,7 @@
 
 **Your agents write code. Truthmark maintains human-facing, Git-reviewable documentation.**
 
-[🇺🇸 English](README.md) | [🇨🇳 简体中文](docs/README.zh.md) | [🇯🇵 日本語](docs/README.ja.md) | [🇰🇷 한국어](docs/README.ko.md) | [🇩🇪 Deutsch](docs/README.de.md) | [🇫🇷 Français](docs/README.fr.md) | [🇪🇸 Español](docs/README.es.md) | [🇧🇷 Português](docs/README.pt-BR.md) | [🇷🇺 Русский](docs/README.ru.md) | [🇸🇦 العربية](docs/README.ar.md) | [🇮🇹 Italiano](docs/README.it.md) | [🇵🇱 Polski](docs/README.pl.md) | [🇹🇷 Türkçe](docs/README.tr.md) | [🇻🇳 Tiếng Việt](docs/README.vi.md) | [🇮🇩 Bahasa Indonesia](docs/README.id.md) | [🇬🇷 Ελληνικά](docs/README.el.md)
+[🇺🇸 English](README.md) | [🇨🇳 简体中文](docs/readmes/README.zh.md) | [🇯🇵 日本語](docs/readmes/README.ja.md) | [🇰🇷 한국어](docs/readmes/README.ko.md) | [🇩🇪 Deutsch](docs/readmes/README.de.md) | [🇫🇷 Français](docs/readmes/README.fr.md) | [🇪🇸 Español](docs/readmes/README.es.md) | [🇧🇷 Português](docs/readmes/README.pt-BR.md) | [🇷🇺 Русский](docs/readmes/README.ru.md) | [🇸🇦 العربية](docs/readmes/README.ar.md) | [🇮🇹 Italiano](docs/readmes/README.it.md) | [🇵🇱 Polski](docs/readmes/README.pl.md) | [🇹🇷 Türkçe](docs/readmes/README.tr.md) | [🇻🇳 Tiếng Việt](docs/readmes/README.vi.md) | [🇮🇩 Bahasa Indonesia](docs/readmes/README.id.md) | [🇬🇷 Ελληνικά](docs/readmes/README.el.md)
 
 ![Truthmark banner](docs/assets/truthmark-banner.png)
 
@@ -21,7 +21,7 @@ Enable the AI host you actually use. Fresh configs are host-neutral, so add a to
 ```yaml
 version: 2
 platforms:
-  - codex        # or: claude-code, github-copilot, opencode, gemini-cli
+  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
 truthmark:
   workspace: docs/truthmark
   generated:
@@ -93,7 +93,7 @@ Used by developers to set up, configure, and validate the repository.
 * `truthmark check` - Validates truth artifacts from the terminal.
 
 ### 2. 🤖 The AI-Facing Workflows (Agents)
-Truthmark installs native skills, prompts, and commands that supported AI hosts (like Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI) understand. These are *not* shell commands; they are workflow entry points for the AI.
+Truthmark installs native skills, prompts, and commands that supported AI hosts (like Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor) understand. These are *not* shell commands; they are workflow entry points for the AI.
 * `/truthmark-sync` - The finish-time workflow agents follow after functional code changes; not a normal user-start command.
 * `/truthmark-document` - Generate docs for undocumented existing code.
 * `/truthmark-structure` - Organize broad repository areas into specific domains.
@@ -187,7 +187,7 @@ For command-by-command usage, surface comparisons, supported platform details, c
 The current release provides:
 
 - local CLI commands for config, init, check, index, impact, and workflow status
-- generated AI workflow surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI
+- generated AI workflow surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
 - route, authority, frontmatter, link, freshness, generated-surface, branch-scope, and coverage diagnostics
 - branch-scoped truth docs and derived repository-intelligence artifacts
 

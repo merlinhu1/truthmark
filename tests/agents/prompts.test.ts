@@ -41,7 +41,7 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain("installed instruction or skill");
     expect(prompt).toContain("/truthmark-realize");
     expect(prompt).toContain("$truthmark-realize");
-    expect(prompt).toContain("/truthmark:realize");
+    expect(prompt).toContain("Cursor @truthmark-realize");
     expect(prompt).toContain("OpenCode");
     expect(prompt).toContain("/skill truthmark-realize");
     expect(prompt).not.toContain("truthmark realize");

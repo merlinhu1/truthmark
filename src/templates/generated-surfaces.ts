@@ -7,7 +7,6 @@ import {
   renderTruthmarkCopilotDocReviewerAgent,
   renderTruthmarkCopilotDocWriterAgent,
   renderTruthmarkCopilotPortalPrompt,
-  renderTruthmarkCopilotPreviewPrompt,
   renderTruthmarkCopilotRealizePrompt,
   renderTruthmarkCopilotRouteAuditorAgent,
   renderTruthmarkCopilotStructurePrompt,
@@ -20,17 +19,18 @@ import {
   renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkDocReviewerAgent,
   renderTruthmarkDocWriterAgent,
-  renderTruthmarkGeminiCheckCommand,
-  renderTruthmarkGeminiClaimVerifierAgent,
-  renderTruthmarkGeminiDocumentCommand,
-  renderTruthmarkGeminiDocReviewerAgent,
-  renderTruthmarkGeminiDocWriterAgent,
-  renderTruthmarkGeminiPortalCommand,
-  renderTruthmarkGeminiPreviewCommand,
-  renderTruthmarkGeminiRealizeCommand,
-  renderTruthmarkGeminiRouteAuditorAgent,
-  renderTruthmarkGeminiStructureCommand,
-  renderTruthmarkGeminiSyncCommand,
+  renderTruthmarkAntigravityCheckRule,
+  renderTruthmarkAntigravityDocumentRule,
+  renderTruthmarkAntigravityPortalRule,
+  renderTruthmarkAntigravityRealizeRule,
+  renderTruthmarkAntigravityStructureRule,
+  renderTruthmarkAntigravitySyncRule,
+  renderTruthmarkCursorCheckRule,
+  renderTruthmarkCursorDocumentRule,
+  renderTruthmarkCursorPortalRule,
+  renderTruthmarkCursorRealizeRule,
+  renderTruthmarkCursorStructureRule,
+  renderTruthmarkCursorSyncRule,
   renderTruthmarkSkillPackage,
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkOpenCodeClaimVerifierAgent,
@@ -49,13 +49,24 @@ import {
   TRUTHMARK_CLAUDE_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_CLAUDE_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_CLAIM_VERIFIER_AGENT_PATH,
+  TRUTHMARK_ANTIGRAVITY_CHECK_RULE_PATH,
+  TRUTHMARK_ANTIGRAVITY_DOCUMENT_RULE_PATH,
+  TRUTHMARK_ANTIGRAVITY_PORTAL_RULE_PATH,
+  TRUTHMARK_ANTIGRAVITY_REALIZE_RULE_PATH,
+  TRUTHMARK_ANTIGRAVITY_STRUCTURE_RULE_PATH,
+  TRUTHMARK_ANTIGRAVITY_SYNC_RULE_PATH,
+  TRUTHMARK_CURSOR_CHECK_RULE_PATH,
+  TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH,
+  TRUTHMARK_CURSOR_PORTAL_RULE_PATH,
+  TRUTHMARK_CURSOR_REALIZE_RULE_PATH,
+  TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH,
+  TRUTHMARK_CURSOR_SYNC_RULE_PATH,
   TRUTHMARK_COPILOT_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH,
   TRUTHMARK_COPILOT_PORTAL_PROMPT_PATH,
-  TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH,
   TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH,
   TRUTHMARK_COPILOT_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH,
@@ -64,17 +75,6 @@ import {
   TRUTHMARK_DOCUMENT_SKILL_PATH,
   TRUTHMARK_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_DOC_WRITER_AGENT_PATH,
-  TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH,
-  TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH,
-  TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH,
-  TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
-  TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
-  TRUTHMARK_GEMINI_PORTAL_COMMAND_PATH,
-  TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
-  TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-  TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH,
-  TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
-  TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
   TRUTHMARK_OPENCODE_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_OPENCODE_DOC_REVIEWER_AGENT_PATH,
   TRUTHMARK_OPENCODE_DOC_WRITER_AGENT_PATH,
@@ -365,10 +365,6 @@ const copilotFiles = (
       content: renderTruthmarkCopilotSyncPrompt(config),
     },
     {
-      path: TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH,
-      content: renderTruthmarkCopilotPreviewPrompt(config),
-    },
-    {
       path: TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
       content: renderTruthmarkCopilotCheckPrompt(config),
     },
@@ -412,97 +408,69 @@ const copilotFiles = (
   return files;
 };
 
-const geminiFiles = (
-  config: TruthmarkConfig,
-  block: string,
-): GeneratedSurface[] => {
+const antigravityFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
-    ...instructionBlockFiles(["GEMINI.md"], block),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-structure/SKILL.md",
-      workflowId: "truthmark-structure",
-      host: "gemini-cli",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-document/SKILL.md",
-      workflowId: "truthmark-document",
-      host: "gemini-cli",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-sync/SKILL.md",
-      workflowId: "truthmark-sync",
-      host: "gemini-cli",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-check/SKILL.md",
-      workflowId: "truthmark-check",
-      host: "gemini-cli",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-realize/SKILL.md",
-      workflowId: "truthmark-realize",
-      host: "gemini-cli",
-      config,
-    }),
     {
-      path: TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH,
-      content: renderTruthmarkGeminiStructureCommand(config),
+      path: TRUTHMARK_ANTIGRAVITY_STRUCTURE_RULE_PATH,
+      content: renderTruthmarkAntigravityStructureRule(config),
     },
     {
-      path: TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH,
-      content: renderTruthmarkGeminiDocumentCommand(config),
+      path: TRUTHMARK_ANTIGRAVITY_DOCUMENT_RULE_PATH,
+      content: renderTruthmarkAntigravityDocumentRule(config),
     },
     {
-      path: TRUTHMARK_GEMINI_SYNC_COMMAND_PATH,
-      content: renderTruthmarkGeminiSyncCommand(config),
+      path: TRUTHMARK_ANTIGRAVITY_SYNC_RULE_PATH,
+      content: renderTruthmarkAntigravitySyncRule(config),
     },
     {
-      path: TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH,
-      content: renderTruthmarkGeminiPreviewCommand(config),
+      path: TRUTHMARK_ANTIGRAVITY_CHECK_RULE_PATH,
+      content: renderTruthmarkAntigravityCheckRule(config),
     },
     {
-      path: TRUTHMARK_GEMINI_CHECK_COMMAND_PATH,
-      content: renderTruthmarkGeminiCheckCommand(config),
-    },
-    {
-      path: TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH,
-      content: renderTruthmarkGeminiRealizeCommand(config),
-    },
-    {
-      path: TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH,
-      content: renderTruthmarkGeminiRouteAuditorAgent(),
-    },
-    {
-      path: TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH,
-      content: renderTruthmarkGeminiClaimVerifierAgent(),
-    },
-    {
-      path: TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH,
-      content: renderTruthmarkGeminiDocReviewerAgent(),
-    },
-    {
-      path: TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH,
-      content: renderTruthmarkGeminiDocWriterAgent(),
+      path: TRUTHMARK_ANTIGRAVITY_REALIZE_RULE_PATH,
+      content: renderTruthmarkAntigravityRealizeRule(config),
     },
   ];
 
   if (config.truthmark.generated.portal.enabled) {
-    files.push(
-      ...renderTruthmarkSkillPackage({
-        skillPath: ".gemini/skills/truthmark-portal/SKILL.md",
-        workflowId: "truthmark-portal",
-        host: "gemini-cli",
-        config,
-      }),
-      {
-        path: TRUTHMARK_GEMINI_PORTAL_COMMAND_PATH,
-        content: renderTruthmarkGeminiPortalCommand(config),
-      },
-    );
+    files.push({
+      path: TRUTHMARK_ANTIGRAVITY_PORTAL_RULE_PATH,
+      content: renderTruthmarkAntigravityPortalRule(config),
+    });
+  }
+
+  return files;
+};
+
+const cursorFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
+  const files: GeneratedSurface[] = [
+    {
+      path: TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH,
+      content: renderTruthmarkCursorStructureRule(config),
+    },
+    {
+      path: TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH,
+      content: renderTruthmarkCursorDocumentRule(config),
+    },
+    {
+      path: TRUTHMARK_CURSOR_SYNC_RULE_PATH,
+      content: renderTruthmarkCursorSyncRule(config),
+    },
+    {
+      path: TRUTHMARK_CURSOR_CHECK_RULE_PATH,
+      content: renderTruthmarkCursorCheckRule(config),
+    },
+    {
+      path: TRUTHMARK_CURSOR_REALIZE_RULE_PATH,
+      content: renderTruthmarkCursorRealizeRule(config),
+    },
+  ];
+
+  if (config.truthmark.generated.portal.enabled) {
+    files.push({
+      path: TRUTHMARK_CURSOR_PORTAL_RULE_PATH,
+      content: renderTruthmarkCursorPortalRule(config),
+    });
   }
 
   return files;
@@ -533,8 +501,10 @@ const filesForPlatform = (
       return claudeFiles(config, block);
     case "github-copilot":
       return copilotFiles(config, block);
-    case "gemini-cli":
-      return geminiFiles(config, block);
+    case "antigravity":
+      return antigravityFiles(config);
+    case "cursor":
+      return cursorFiles(config);
   }
 };
 

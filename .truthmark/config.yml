@@ -4,7 +4,8 @@ platforms:
   - opencode
   - claude-code
   - github-copilot
-  - gemini-cli
+  - antigravity
+  - cursor
 truthmark:
   workspace: docs/truthmark
   generated:

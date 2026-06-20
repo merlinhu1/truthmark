@@ -114,7 +114,7 @@ Truthmark 把契约安装进 repo
 
 ### 要求
 
-- Node.js `>=20`
+- Node.js `>=24`
 - npm
 - Git 仓库
 
@@ -282,7 +282,7 @@ flowchart LR
   CLI --> Config["配置与路由图"]
   CLI --> Truth["规范 truth 文档"]
   CLI --> Surfaces["生成的 host-native 工作流"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
   Hosts --> Worktree["当前 Git worktree"]
   Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
@@ -316,7 +316,8 @@ truthmark init
 | `claude-code` | Project skills、verifier agents 和受管说明 | `/truthmark-*` |
 | `github-copilot` | Agent skills、prompt commands、custom agents 和受管说明 | 支持的 Copilot IDE 中使用 `/truthmark-*`；Copilot CLI 中使用 `@truth-*` custom agents |
 | `opencode` | Skill packages 和 verifier agents | `/skill truthmark-*` |
-| `gemini-cli` | Agent skills、slash commands、subagents 和受管说明 | `/truthmark:*` |
+| `antigravity` | Project rule files for Truthmark workflows | `@truthmark-*` |
+| `cursor` | Project rule files under `.cursor/rules` | `@truthmark-*` |
 
 未知平台名是配置错误。
 
@@ -377,7 +378,7 @@ Truth Sync 检查已映射事实文档
 /truthmark-document 记录 src/auth/session.ts、src/auth/middleware.ts 和 tests/auth/session.test.ts 中已实现的 session timeout 行为
 ```
 
-提供功能名、代码路径、测试路径或目标事实文档区域。在 OpenCode 风格的宿主中，同一个工作流用 `/skill truthmark-document ...` 调用；在 Gemini CLI 中，使用 `/truthmark:doc ...`。
+提供功能名、代码路径、测试路径或目标事实文档区域。在 OpenCode 风格的宿主中，同一个工作流用 `/skill truthmark-document ...` 调用；在 Antigravity and Cursor 中，使用 `/truthmark:doc ...`。
 
 如果大型仓库仍然只有一个宽泛的占位路由，请先运行 Truth Structure，然后每次针对一个有边界的功能或区域调用 Truth Document。
 
@@ -400,19 +401,6 @@ Truth Realize 是 doc-first。
 事实文档在前。代码跟随。
 
 代理不能编辑它正在实现的事实文档。
-
-## 只读路由预览
-
-当代理需要在变更前理解可能的路由时，使用 Truth Preview。
-
-```text
-/truthmark-preview 预览 billing API 变更的可能事实路由 (GitHub Copilot)
-/truthmark:preview 预览 billing API 变更的可能事实路由 (Gemini CLI)
-```
-
-Truth Preview 是 read-only。
-
-它是选择器和规划辅助，不是写入授权，也不是 Truth Check 的替代品。
 
 ## 仓库事实审计
 
@@ -440,7 +428,7 @@ truthmark check
 | `truthmark init` | 从已审查配置安装或刷新已配置的工作流接口。 |
 | `truthmark check` | 验证配置、权限边界、路由、承载决策的文档、frontmatter、内部链接、分支范围、生成接口、freshness 和覆盖率诊断。 |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 它们不是事实来源。
 
@@ -704,13 +692,12 @@ The current release provides:
 - 生成的 Truth Structure 工作流接口
 - 生成的 Truth Document 工作流接口
 - 生成的 Truth Sync 工作流接口
-- 生成的 Truth Preview 工作流接口
 - 生成的 Truth Realize 工作流接口
 - 生成的 Truth Check 工作流接口
 - 可选生成的 Truthmark Portal 工作流接口
 - 路由、权限边界、决策结构、frontmatter、链接、freshness、生成接口和覆盖率诊断
 - 派生的 RepoIndex、RouteMap、ImpactSet 和 WorkflowState 产物
-- 面向 Codex、Claude Code、GitHub Copilot、OpenCode 和 Gemini CLI 的宿主专属接口
+- 面向 Codex、Claude Code、GitHub Copilot、OpenCode 和 Antigravity and Cursor 的宿主专属接口
 
 ## 开发
 
@@ -753,7 +740,7 @@ README 是评估和设置的快速路径。
 
 详细的当前行为位于 `docs/` 下：
 
-- [文档索引](README.md)
+- [文档索引](../README.md)
 - [架构概览](truthmark/engineering/architecture/overview.md)
 - [API 和 CLI 契约](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Init 和脚手架行为](truthmark/engineering/behaviors/init-and-scaffold.md)

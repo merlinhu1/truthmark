@@ -29,7 +29,7 @@ const renderMarkdownExample = (content: string): string => {
 };
 
 export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.";
+  "OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Antigravity @truthmark-document; Cursor @truthmark-document.";
 
 export const renderTruthDocumentReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),

@@ -101,6 +101,27 @@ ignore: []
         "# Legacy Preview Skill\n",
       );
       await repo.writeFile(
+        ".github/prompts/truthmark-preview.prompt.md",
+        "# Legacy Preview Prompt\n",
+      );
+      await repo.writeFile(
+        ".gemini/commands/truthmark/preview.toml",
+        "description = \"Legacy Preview Command\"\n",
+      );
+      await repo.writeFile("GEMINI.md", "# Legacy Gemini instructions\n");
+      await repo.writeFile(
+        ".gemini/skills/truthmark-sync/SKILL.md",
+        "# Legacy Gemini Sync Skill\n",
+      );
+      await repo.writeFile(
+        ".gemini/agents/truth-doc-writer.md",
+        "# Legacy Gemini writer\n",
+      );
+      await repo.writeFile(
+        ".gemini/commands/truthmark/sync.toml",
+        "description = \"Legacy Sync Command\"\n",
+      );
+      await repo.writeFile(
         ".agents/skills/truthmark-sync/helper-manifest.yml",
         "id: truthmark-sync\n",
       );
@@ -113,6 +134,22 @@ ignore: []
 
       await expect(
         fs.stat(`${repo.rootDir}/.agents/skills/truthmark-preview/SKILL.md`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.github/prompts/truthmark-preview.prompt.md`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/preview.toml`),
+      ).rejects.toThrow();
+      await expect(fs.stat(`${repo.rootDir}/GEMINI.md`)).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/skills/truthmark-sync/SKILL.md`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/agents/truth-doc-writer.md`),
+      ).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/sync.toml`),
       ).rejects.toThrow();
       await expect(
         fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`),

@@ -19,7 +19,7 @@ Truthmark runs locally against the active Git worktree.
 
 The human-facing CLI reads and writes repository files, then exits.
 
-The AI-facing workflow surfaces are committed files that agent hosts can load later. That means agents can follow the installed workflow from repository state instead of depending on a background Truthmark process.
+The agent-run workflow surfaces are committed files that agent hosts can load later. That means agents can follow the installed workflow from repository state instead of depending on a background Truthmark process.
 
 The layers fit together like this:
 
@@ -29,7 +29,7 @@ flowchart LR
   CLI --> Config["Config and route map"]
   CLI --> Truth["Canonical truth docs"]
   CLI --> Surfaces["Generated host-native workflows"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
   Hosts --> Worktree["Active Git worktree"]
   Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
@@ -61,26 +61,27 @@ truthmark init
 | `claude-code` | Project skills, verifier agents, and managed instructions | `/truthmark-*` |
 | `github-copilot` | Agent skills, prompt commands, custom agents, and managed instructions | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
 | `opencode` | Skill packages and verifier agents | `/skill truthmark-*` |
-| `gemini-cli` | Agent skills, slash commands, subagents, and managed instructions | `/truthmark:*` |
+| `antigravity` | Project rule files for Truthmark workflows | `@truthmark-*` |
+| `cursor` | Project rule files under `.cursor/rules` | `@truthmark-*` |
 
 Unknown platform names are config errors.
 
 Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
 
-## AI-facing workflows
+## Workflow commands
 
-These workflows are installed into supported AI coding hosts.
+These workflows are installed into supported AI coding hosts. They are not top-level shell commands.
 
-They are used by agents or agent hosts during repository work. They are not top-level shell commands.
+Human-only means user-invoked, not agent-automatic. Sync is the normal automatic finish-time workflow after functional code changes. Structure may also run inside Document or Sync when routing blocks the requested work.
 
-| Workflow | Direction | Use it when | Write boundary |
+| Workflow | Starts when | Use it when | Writes |
 | --- | --- | --- | --- |
-| Truth Structure | topology-first | The default route is too broad, ownership spans multiple areas, or route files still point at placeholders. | Creates or repairs routing and starter truth docs. |
-| Truth Document | implementation-first | Behavior already exists in code, but canonical truth docs are missing or weak. | Writes truth docs and routing only. Functional code must not change. |
-| Truth Sync | code-first | Functional code changed and mapped truth docs may need to be updated before handoff. | Updates truth docs. Functional code must not be rewritten by Truth Sync. |
-| Truth Realize | doc-first | Product or architecture truth docs lead and code should be updated to match. | Updates code only. The agent must not edit the truth docs it is realizing. |
-| Truth Check | audit-first | A reviewer or agent needs to audit repository truth health. | Audits and reports. |
-| Truthmark Portal | presentation-only | A human explicitly asks for a browsable static HTML Portal over repository truth docs. | Writes generated non-canonical static files only under the fixed Portal output directory. |
+| Truth Document | User asks | Existing behavior needs truth docs. | Truth docs and routing only. |
+| Truth Realize | User asks | Docs should be realized into code. | Functional code only. |
+| Truth Check | User or reviewer asks | Truth health needs review. | Reports only. |
+| Truthmark Portal | User asks | A browsable static Portal is needed. | Generated Portal files only. |
+| Truth Sync | Agent finish-time, or user asks explicitly | Functional code changed. | Truth docs and routing only. |
+| Truth Structure | User asks, or Document/Sync needs routing repair | Routing or ownership needs repair. | Routing and starter truth docs. |
 
 ## Surface comparison
 
@@ -89,7 +90,7 @@ Do not confuse these two surfaces:
 | Surface | Used by | Example | Meaning |
 | --- | --- | --- | --- |
 | Human CLI | humans, scripts, CI-like checks | `truthmark check` | Validate repository truth artifacts from the terminal. |
-| AI-facing workflow | coding agents and agent hosts | `/truthmark-check` | Ask an agent to run the installed audit workflow. |
+| Workflow command | humans using an agent host | `/truthmark-check` | Ask the agent to run the installed audit workflow. |
 
 The names are intentionally related, but the surfaces are different.
 
@@ -119,7 +120,7 @@ Use Truth Document when the implementation already exists but the repository tru
 /truthmark-document document the implemented session timeout behavior across src/auth/session.ts, src/auth/middleware.ts, and tests/auth/session.test.ts
 ```
 
-Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Gemini CLI, use `/truthmark:document ...`.
+Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Antigravity or Cursor, use `@truthmark-document ...`.
 
 Start with Truth Document for one bounded feature or area at a time.
 
@@ -142,19 +143,6 @@ Truth Realize is doc-first.
 The truth docs lead. The code follows.
 
 The agent must not edit the truth docs it is realizing.
-
-## Read-only routing preview
-
-Use Truth Preview before a change when the agent needs to understand likely routing.
-
-```text
-/truthmark-preview preview the likely truth routing for changes to the billing API (GitHub Copilot)
-/truthmark:preview preview the likely truth routing for changes to the billing API (Gemini CLI)
-```
-
-Truth Preview is read-only.
-
-It is a selector and planning aid, not write authorization and not a replacement for Truth Check.
 
 ## Repository truth audit
 
@@ -182,7 +170,7 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 They are not sources of truth.
 
@@ -444,13 +432,12 @@ The current release provides:
 - generated Truth Structure workflow surfaces
 - generated Truth Document workflow surfaces
 - generated Truth Sync workflow surfaces
-- generated Truth Preview workflow surfaces
 - generated Truth Realize workflow surfaces
 - generated Truth Check workflow surfaces
 - optional generated Truthmark Portal workflow surfaces
 - route, authority, decision-structure, frontmatter, link, freshness, generated-surface, and coverage diagnostics
 - derived RepoIndex, RouteMap, ImpactSet, and WorkflowState artifacts
-- host-specific surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI
+- host-specific surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
 
 ## Development
 

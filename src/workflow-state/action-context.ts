@@ -60,10 +60,7 @@ export const buildWorkflowActionContext = (
   manifestEntry: TruthmarkWorkflowManifestEntry,
   data: WorkflowActionContextData = {},
 ): WorkflowActionContext => {
-  if (
-    manifestEntry.id === "truthmark-preview" ||
-    manifestEntry.id === "truthmark-check"
-  ) {
+  if (manifestEntry.id === "truthmark-check") {
     return baseContext(manifestEntry, "read-only", [], [], [], [], [], false);
   }
 

@@ -3,7 +3,7 @@
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
 
 Use this skill to design or repair Truthmark area structure.
-Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.
+Invocations: OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Antigravity @truthmark-structure; Cursor @truthmark-structure.
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - Evidence authority:

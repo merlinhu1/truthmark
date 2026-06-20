@@ -166,6 +166,67 @@ describe("loadConfig", () => {
     }
   });
 
+
+  it("accepts active platform support values", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace(
+          "platforms:\n  - codex\n",
+          [
+            "platforms:",
+            "  - codex",
+            "  - opencode",
+            "  - claude-code",
+            "  - github-copilot",
+            "  - antigravity",
+            "  - cursor",
+            "",
+          ].join("\n"),
+        ),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.config?.platforms).toEqual([
+        "codex",
+        "opencode",
+        "claude-code",
+        "github-copilot",
+        "antigravity",
+        "cursor",
+      ]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rejects retired Gemini CLI platform support", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace("  - codex", "  - gemini-cli"),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("invalid");
+      expect(result.config).toBeNull();
+      expect(result.diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining("must be equal to one of the allowed values"),
+        }),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("does not assume a host platform when platforms are omitted", async () => {
     const repo = await createTempRepo();
 

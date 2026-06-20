@@ -3,7 +3,7 @@
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
-Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
+Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Antigravity @truthmark-sync; Cursor @truthmark-sync.
 Explicit invocation runs immediately. Later functional-code changes need a fresh finish-time review, and an earlier explicit run satisfies the finish-time review only if no later functional-code changes occur.
 Skip when changes are documentation-only, formatting-only, clearly behavior-preserving renames with no truth impact, when no Truthmark config exists yet, or when there are no functional code changes.
 Parent workflow:

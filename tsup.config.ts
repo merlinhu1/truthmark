@@ -5,7 +5,7 @@ export default defineConfig({
   format: ["esm"],
   platform: "node",
   skipNodeModulesBundle: true,
-  target: "node20",
+  target: "node24",
   clean: true,
   sourcemap: true,
   banner: {

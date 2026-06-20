@@ -114,7 +114,7 @@ Menschen prüfen das Ergebnis
 
 ### Voraussetzungen
 
-- Node.js `>=20`
+- Node.js `>=24`
 - npm
 - ein Git-Repository
 
@@ -282,7 +282,7 @@ flowchart LR
   CLI --> Config["Config und Routing"]
   CLI --> Truth["Kanonische Truth-Dokumente"]
   CLI --> Surfaces["Generierte host-native Workflows"]
-  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Gemini"]
+  Surfaces --> Hosts["Codex / Claude Code / Copilot / OpenCode / Antigravity / Cursor"]
   Hosts --> Worktree["Aktiver Git-Worktree"]
   Hosts -->|"helper checks / validate / index"| CLI
   Worktree --> Truth
@@ -316,7 +316,8 @@ truthmark init
 | `claude-code` | `.claude/skills/truthmark-*/`, `.claude/agents/`, `CLAUDE.md` | `/truthmark-*` |
 | `github-copilot` | `.github/skills/truthmark-*/`, `.github/prompts/`, `.github/agents/`, `.github/copilot-instructions.md` | `/truthmark-*` in unterstützten Copilot-IDEs; `@truth-*` Custom Agents in Copilot CLI |
 | `opencode` | `.opencode/skills/truthmark-*/`, `.opencode/agents/` | `/skill truthmark-*` |
-| `gemini-cli` | `.gemini/skills/truthmark-*/`, `.gemini/commands/truthmark/`, `.gemini/agents/`, `GEMINI.md` | `/truthmark:*` |
+| `antigravity` | `.antigravity/rules/truthmark-*.md` | `@truthmark-*` |
+| `cursor` | `.cursor/rules/truthmark-*.mdc` | `@truthmark-*` |
 
 Unbekannte Plattformnamen sind Config-Fehler.
 
@@ -377,7 +378,7 @@ Nutze Truth Document, wenn die Implementierung bereits existiert, aber die Repos
 /truthmark-document dokumentiere das implementierte session-timeout-verhalten über src/auth/session.ts, src/auth/middleware.ts und tests/auth/session.test.ts
 ```
 
-Gib den Feature-Namen, Codepfade, Testpfade oder den gewünschten Truth-Doc-Bereich an. In OpenCode-ähnlichen Hosts rufst du denselben Workflow als `/skill truthmark-document ...` auf; in Gemini CLI nutzt du `/truthmark:doc ...`.
+Gib den Feature-Namen, Codepfade, Testpfade oder den gewünschten Truth-Doc-Bereich an. In OpenCode-ähnlichen Hosts rufst du denselben Workflow als `/skill truthmark-document ...` auf; in Antigravity and Cursor nutzt du `/truthmark:doc ...`.
 
 Bei einem großen Repo, das noch eine breite Platzhalterroute hat, führe zuerst Truth Structure aus und rufe danach Truth Document für jeweils ein abgegrenztes Feature oder einen Bereich auf.
 
@@ -400,19 +401,6 @@ Truth Realize ist doc-first.
 Die Truth-Dokumente führen. Der Code folgt.
 
 Der Agent darf die Truth-Dokumente, die er realisiert, nicht bearbeiten.
-
-## Read-only-Routing-Preview
-
-Nutze Truth Preview vor einer Änderung, wenn der Agent wahrscheinliches Routing verstehen muss.
-
-```text
-/truthmark-preview das wahrscheinliche Truth-Routing für Änderungen an der Billing-API prüfen (GitHub Copilot)
-/truthmark:preview das wahrscheinliche Truth-Routing für Änderungen an der Billing-API prüfen (Gemini CLI)
-```
-
-Truth Preview ist read-only.
-
-Es ist Auswahl- und Planungshilfe, keine Schreibautorisierung und kein Ersatz für Truth Check.
 
 ## Repository-Truth-Audit
 
@@ -440,7 +428,7 @@ Die meisten Maintainer beginnen mit drei Befehlen.
 | `truthmark init` | Installiert oder aktualisiert konfigurierte Workflow-Schnittstellen aus der geprüften Config. |
 | `truthmark check` | Validiert Config, Autorität, Routing, entscheidungstragende Dokumente, Frontmatter, interne Links, Branch-Scope, generierte Oberflächen, Freshness und Coverage-Diagnostik. |
 
-Optionale Repository-Intelligence-Helfer erzeugen abgeleitetes Review-Material für den aktiven Checkout, etwa RepoIndex-, RouteMap-, ImpactSet- und kompaktes WorkflowState/action-context-JSON. Generierte Workflow-Skill-Pakete können außerdem Helper-Manifeste und Helper-Policies bereitstellen, die installierte `truthmark validate ... --json` CLI-Validatoren aufrufen; diese Helpers sind Beschleuniger, keine im Repository gebündelten lokalen Skripte und keine Quellen der Wahrheit. Eigenständige Copilot-Prompts und Gemini-Commands verwenden denselben CLI-Validator-Vertrag, wenn der installierte Runner verfügbar ist; andernfalls melden sie einen sichtbaren übersprungenen Helper-Status und führen eine manuelle Validierung durch.
+Optionale Repository-Intelligence-Helfer erzeugen abgeleitetes Review-Material für den aktiven Checkout, etwa RepoIndex-, RouteMap-, ImpactSet- und kompaktes WorkflowState/action-context-JSON. Generierte Workflow-Skill-Pakete können außerdem Helper-Manifeste und Helper-Policies bereitstellen, die installierte `truthmark validate ... --json` CLI-Validatoren aufrufen; diese Helpers sind Beschleuniger, keine im Repository gebündelten lokalen Skripte und keine Quellen der Wahrheit. Eigenständige Copilot-Prompts und Antigravity/Cursor-Commands verwenden denselben CLI-Validator-Vertrag, wenn der installierte Runner verfügbar ist; andernfalls melden sie einen sichtbaren übersprungenen Helper-Status und führen eine manuelle Validierung durch.
 
 Sie sind keine Quellen der Wahrheit.
 
@@ -710,7 +698,7 @@ The current release provides:
 - optionale generierte Truthmark-Portal-Workflow-Schnittstellen
 - Diagnostik für Route, Autorität, Entscheidungsstruktur, Frontmatter, Links, Freshness, generierte Schnittstellen und Coverage
 - abgeleitete RepoIndex-, RouteMap-, ImpactSet- und WorkflowState-Artefakte
-- host-spezifische Schnittstellen für Codex, Claude Code, GitHub Copilot, OpenCode und Gemini CLI
+- host-spezifische Schnittstellen für Codex, Claude Code, GitHub Copilot, OpenCode und Antigravity and Cursor
 
 ## Entwicklung
 
@@ -753,7 +741,7 @@ Die README ist der schnelle Pfad für Evaluation und Setup.
 
 Aktuelles Verhalten im Detail lebt unter `docs/`:
 
-- [Dokumentationsindex](README.md)
+- [Dokumentationsindex](../README.md)
 - [Architekturüberblick](truthmark/engineering/architecture/overview.md)
 - [API- und CLI-Verträge](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Init- und Scaffold-Verhalten](truthmark/engineering/behaviors/init-and-scaffold.md)

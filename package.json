@@ -26,25 +26,25 @@
   "files": [
     "dist",
     "README.md",
-    "docs/README.ar.md",
-    "docs/README.de.md",
-    "docs/README.el.md",
-    "docs/README.es.md",
-    "docs/README.fr.md",
-    "docs/README.id.md",
-    "docs/README.it.md",
-    "docs/README.ja.md",
-    "docs/README.ko.md",
+    "docs/readmes/README.ar.md",
+    "docs/readmes/README.de.md",
+    "docs/readmes/README.el.md",
+    "docs/readmes/README.es.md",
+    "docs/readmes/README.fr.md",
+    "docs/readmes/README.id.md",
+    "docs/readmes/README.it.md",
+    "docs/readmes/README.ja.md",
+    "docs/readmes/README.ko.md",
     "docs/README.md",
-    "docs/README.pl.md",
-    "docs/README.pt-BR.md",
-    "docs/README.ru.md",
-    "docs/README.tr.md",
-    "docs/README.vi.md",
-    "docs/README.zh.md"
+    "docs/readmes/README.pl.md",
+    "docs/readmes/README.pt-BR.md",
+    "docs/readmes/README.ru.md",
+    "docs/readmes/README.tr.md",
+    "docs/readmes/README.vi.md",
+    "docs/readmes/README.zh.md"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "build": "tsup",

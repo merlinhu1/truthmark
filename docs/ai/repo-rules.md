@@ -31,7 +31,7 @@ Code is the implementation. On code/doc conflict, inspect code, decide whether c
 
 The canonical product boundary is [docs/architecture/product-boundary.md](../architecture/product-boundary.md). This is repo-local policy for developing Truthmark itself; do not treat it as a downstream scaffold, generated surface, or required artifact for repositories that install Truthmark. Read it before generating any new design, implementation plan, generated-workflow redesign, architecture proposal, runtime/dependency change, or command-surface change. New designs and plans must include a product-boundary check that explains how the proposal preserves Truthmark's North Star, in-scope surfaces, explicit non-goals, optional-helper rule, and fail-closed write boundaries.
 
-Truthmark public CLI commands are `config`, `init`, `check`, `index`, `impact`, `context`, `workflow`, and `validate`. The `workflow` subcommands expose read-only agent-facing status/instructions contracts; they do not run installed workflows. The `validate` subcommands are optional CLI-owned workflow helper validators; they validate reports or write leases but do not run Truth Structure, Truth Document, Truth Sync, Truth Preview, Truth Realize, or Truth Check. Those named workflows are installed workflow surfaces, not top-level CLI commands.
+Truthmark public CLI commands are `config`, `init`, `check`, `index`, `impact`, `context`, `workflow`, and `validate`. The `workflow` subcommands expose read-only agent-facing status/instructions contracts; they do not run installed workflows. The `validate` subcommands are optional CLI-owned workflow helper validators; they validate reports or write leases but do not run Truth Structure, Truth Document, Truth Sync, Truth Realize, or Truth Check. Those named workflows are installed workflow surfaces, not top-level CLI commands. Truth Preview is not an installed workflow surface; preview-like routing selection is internal advisory behavior.
 
 Agents inspect the active checkout directly. There is no daemon, database, remote service, hidden memory layer, or product-centered MCP server.
 
@@ -55,7 +55,7 @@ Agents inspect the active checkout directly. There is no daemon, database, remot
 
 ## Instruction Surface Boundary
 
-In `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and `.github/copilot-instructions.md`, only text between `<!-- truthmark:start -->` and `<!-- truthmark:end -->` is the generated Truthmark workflow surface. Repo-local preamble outside those markers should delegate to this file and conditional routing docs, not duplicate completion policy. Do not put this repository's internal policy, completion gates, or maintainer-only standards inside marker-delimited blocks, package templates, installed workflow skills, prompts, or downstream scaffold output.
+In `AGENTS.md`, `CLAUDE.md`, and `.github/copilot-instructions.md`, only text between `<!-- truthmark:start -->` and `<!-- truthmark:end -->` is the generated Truthmark workflow surface. Repo-local preamble outside those markers should delegate to this file and conditional routing docs, not duplicate completion policy. Do not put this repository's internal policy, completion gates, or maintainer-only standards inside marker-delimited blocks, package templates, installed workflow skills, prompts, or downstream scaffold output.
 
 ## Completion Gate
 

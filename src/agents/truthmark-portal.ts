@@ -3,7 +3,7 @@ import { defaultAgentConfig, renderHierarchySummary } from "./shared.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 export const TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Gemini CLI /truthmark:portal.";
+  "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Antigravity @truthmark-portal; Cursor @truthmark-portal.";
 
 export const renderTruthmarkPortalProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
