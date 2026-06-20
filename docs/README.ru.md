@@ -2,9 +2,9 @@
 
 **Ваши агенты пишут код. Truthmark поддерживает документацию для людей, версионируемую и проверяемую в Git.**
 
-[🇺🇸 English](README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Баннер Truthmark](docs/assets/truthmark-banner.png)
+![Баннер Truthmark](assets/truthmark-banner.png)
 
 ИИ-агенты разработки могут менять репозиторий быстрее, чем люди успевают поддерживать его документацию в актуальном состоянии.
 
@@ -154,7 +154,7 @@ truthmark init
 - управляемые блоки инструкций
 - интерфейсы рабочих процессов для ИИ для настроенных платформ
 
-Обоснование стандартных шаблонов документов истины находится в [Template Standards](docs/standards/template-standards.md). В документе показано, как они соотносятся с признанными источниками по инженерии ПО, включая ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE и Diátaxis.
+Обоснование стандартных шаблонов документов истины находится в [Template Standards](standards/template-standards.md). В документе показано, как они соотносятся с признанными источниками по инженерии ПО, включая ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE и Diátaxis.
 
 ### Проверить настройку
 
@@ -207,15 +207,15 @@ Truth Document — самый частый первый workflow для суще
 
 ## Визуальный обзор
 
-![Возможности Truthmark](docs/assets/truthmark-features.png)
+![Возможности Truthmark](assets/truthmark-features.png)
 
 **Возможности:** что устанавливает Truthmark и как устроен интерфейс workflow.
 
-![Позиционирование Truthmark](docs/assets/truthmark-position.png)
+![Позиционирование Truthmark](assets/truthmark-position.png)
 
 **Позиция:** где Truthmark находится относительно prompts, memory и spec workflows.
 
-![Поток sync Truthmark](docs/assets/truthmark-syncflow.png)
+![Поток sync Truthmark](assets/truthmark-syncflow.png)
 
 **Поток sync:** как Truth Sync закрывает обычные изменения кода перед передачей.
 
@@ -440,14 +440,14 @@ truthmark check
 | `truthmark init` | Устанавливает или обновляет настроенные интерфейсы workflow из проверенной config. |
 | `truthmark check` | Валидирует config, authority, routing, документы с decisions, frontmatter, внутренние ссылки, branch scope, generated surfaces, freshness и coverage diagnostics. |
 
-Необязательные helpers repository-intelligence создают производные материалы для ревью активного checkout, например RepoIndex, RouteMap, ImpactSet и компактный WorkflowState/action-context JSON. Сгенерированные workflow skill packages также могут предоставлять helper manifests и helper policies, которые вызывают установленные CLI validators `truthmark validate ... --json`; эти helpers являются ускорителями, а не локальными скриптами, упакованными в репозиторий, и не источниками истины. Отдельные Copilot prompts и Gemini commands используют тот же CLI validator contract, когда установленный runner доступен; иначе они должны сообщать видимый skipped helper status и выполнять manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 Они не являются источниками истины.
 
 | Команда | Назначение |
 | --- | --- |
 | `truthmark index` | Строит JSON RepoIndex и RouteMap для активного checkout. |
-| `truthmark impact --base <ref>` | Сопоставляет измененные файлы с routed truth docs, owning routes, nearby tests и public symbols. |
+| `truthmark impact --base <ref>` | Сопоставляет измененные файлы с routed truth docs, owning routes и nearby tests. |
 | `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Возвращает применимость workflow, границы записи, целевые truth docs, checks, helper commands и компактные hints по affected tests. |
 
 Структурированный вывод доступен с `--json` там, где поддерживается.
@@ -691,7 +691,7 @@ truthmark init
 
 ## Статус проекта
 
-Truthmark V1 сейчас предоставляет:
+The current release provides:
 
 - `truthmark config`
 - `truthmark init`
@@ -745,7 +745,7 @@ npm run check
 | `npm run check` | Запускает lint, typecheck, tests и build. |
 | `npm run release:check` | Запускает release-oriented validation. |
 
-Когда меняете сам Truthmark, смотрите [CONTRIBUTING.md](CONTRIBUTING.md).
+Когда меняете сам Truthmark, смотрите [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Документация
 
@@ -753,13 +753,13 @@ README — быстрый путь для оценки и настройки.
 
 Подробное текущее поведение живет в `docs/`:
 
-- [Индекс документации](docs/README.md)
-- [Обзор архитектуры](docs/truthmark/engineering/architecture/overview.md)
-- [Контракты API и CLI](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Поведение init и scaffold](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Диагностика check](docs/truthmark/engineering/behaviors/check-diagnostics.md)
-- [Установленные workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Руководство по поддержанию истины репозитория](docs/standards/maintaining-repository-truth.md)
+- [Индекс документации](README.md)
+- [Обзор архитектуры](truthmark/engineering/architecture/overview.md)
+- [Контракты API и CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Поведение init и scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Диагностика check](truthmark/engineering/behaviors/check-diagnostics.md)
+- [Установленные workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
+- [Руководство по поддержанию истины репозитория](standards/maintaining-repository-truth.md)
 
 ## Границы дизайна
 
@@ -820,4 +820,4 @@ Git review
 
 ## Лицензия
 
-MIT. См. [LICENSE](LICENSE).
+MIT. См. [LICENSE](../LICENSE).

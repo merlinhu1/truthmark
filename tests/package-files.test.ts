@@ -9,13 +9,29 @@ const repoRoot = path.resolve(
   "..",
 );
 
+const localizedReadmeFiles = [
+  "docs/README.ar.md",
+  "docs/README.de.md",
+  "docs/README.el.md",
+  "docs/README.es.md",
+  "docs/README.fr.md",
+  "docs/README.id.md",
+  "docs/README.it.md",
+  "docs/README.ja.md",
+  "docs/README.ko.md",
+  "docs/README.md",
+  "docs/README.pl.md",
+  "docs/README.pt-BR.md",
+  "docs/README.ru.md",
+  "docs/README.tr.md",
+  "docs/README.vi.md",
+  "docs/README.zh.md",
+];
+
 const expectedPackageFiles = [
   "LICENSE",
-  "README.de.md",
-  "README.es.md",
+  ...localizedReadmeFiles,
   "README.md",
-  "README.ru.md",
-  "README.zh.md",
   "dist/main.js",
   "dist/main.js.map",
   "package.json",
@@ -72,12 +88,7 @@ describe("package and release integrity", () => {
     const tarballPaths = (await readPackFiles()).map((file) => file.path);
 
     expect(tarballPaths).toEqual(
-      expect.arrayContaining([
-        "README.de.md",
-        "README.es.md",
-        "README.ru.md",
-        "README.zh.md",
-      ]),
+      expect.arrayContaining(localizedReadmeFiles),
     );
   });
 

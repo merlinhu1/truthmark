@@ -2,9 +2,9 @@
 
 **Tus agentes escriben código. Truthmark mantiene documentación para personas, versionada y revisable en Git.**
 
-[🇺🇸 English](README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Banner de Truthmark](docs/assets/truthmark-banner.png)
+![Banner de Truthmark](assets/truthmark-banner.png)
 
 Los agentes de desarrollo con IA pueden cambiar un repositorio más rápido de lo que las personas pueden mantener alineada su documentación.
 
@@ -154,7 +154,7 @@ Esto instala o refresca:
 - bloques de instrucciones administrados
 - interfaces de flujo de trabajo para IA en las plataformas configuradas
 
-Las plantillas predeterminadas de documentos de verdad se justifican en [Template Standards](docs/standards/template-standards.md), que las mapea a referencias reconocidas de ingeniería de software como ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE y Diátaxis.
+Las plantillas predeterminadas de documentos de verdad se justifican en [Template Standards](standards/template-standards.md), que las mapea a referencias reconocidas de ingeniería de software como ISO/IEC/IEEE 42010, ISO/IEC/IEEE 29148, ISO/IEC/IEEE 12207, ISO/IEC 25010, C4, arc42, OpenAPI, SemVer, Google SRE y Diátaxis.
 
 ### Validar la configuración
 
@@ -207,15 +207,15 @@ Cuando el agente cambia código funcional, Truth Sync actúa como guarda de cier
 
 ## Resumen visual
 
-![Características de Truthmark](docs/assets/truthmark-features.png)
+![Características de Truthmark](assets/truthmark-features.png)
 
 **Características:** qué instala Truthmark y cómo se divide la interfaz de flujo de trabajo.
 
-![Posición de Truthmark](docs/assets/truthmark-position.png)
+![Posición de Truthmark](assets/truthmark-position.png)
 
 **Posición:** dónde encaja Truthmark frente a prompts, memoria y flujos de especificación.
 
-![Flujo de sync de Truthmark](docs/assets/truthmark-syncflow.png)
+![Flujo de sync de Truthmark](assets/truthmark-syncflow.png)
 
 **Flujo de sync:** cómo Truth Sync cierra cambios normales de código antes de la entrega.
 
@@ -691,7 +691,7 @@ Luego pide explícitamente al host de agente que ejecute el flujo Portal instala
 
 ## Estado del proyecto
 
-Truthmark V1 actualmente proporciona:
+The current release provides:
 
 - `truthmark config`
 - `truthmark init`
@@ -745,7 +745,7 @@ Scripts útiles:
 | `npm run check` | Ejecuta lint, typecheck, pruebas y build. |
 | `npm run release:check` | Ejecuta validación orientada a release. |
 
-Cuando cambies Truthmark en sí, consulta [CONTRIBUTING.md](CONTRIBUTING.md).
+Cuando cambies Truthmark en sí, consulta [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Documentación
 
@@ -753,13 +753,13 @@ El README es el camino rápido para evaluación y configuración.
 
 El comportamiento actual detallado vive bajo `docs/`:
 
-- [Índice de documentación](docs/README.md)
-- [Resumen de arquitectura](docs/truthmark/engineering/architecture/overview.md)
-- [Contratos de API y CLI](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Comportamiento de init y scaffold](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Diagnósticos de check](docs/truthmark/engineering/behaviors/check-diagnostics.md)
-- [Flujos instalados](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Guía para mantener la verdad del repositorio](docs/standards/maintaining-repository-truth.md)
+- [Índice de documentación](README.md)
+- [Resumen de arquitectura](truthmark/engineering/architecture/overview.md)
+- [Contratos de API y CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Comportamiento de init y scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Diagnósticos de check](truthmark/engineering/behaviors/check-diagnostics.md)
+- [Flujos instalados](truthmark/engineering/workflows/installed-workflow-runtime.md)
+- [Guía para mantener la verdad del repositorio](standards/maintaining-repository-truth.md)
 
 ## Límites de diseño
 
@@ -820,4 +820,4 @@ documentación acotada a la rama
 
 ## Licencia
 
-MIT. Consulta [LICENSE](LICENSE).
+MIT. Consulta [LICENSE](../LICENSE).

@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: index
-last_reviewed: 2026-05-15
+last_reviewed: 2026-06-20
 source_of_truth:
   - docs/ai/repo-rules.md
   - ../.truthmark/config.yml
@@ -13,7 +13,7 @@ source_of_truth:
 
 `docs/` is Truthmark's canonical repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, and current lane-separated truth docs separate from onboarding copy and historical planning notes.
 
-`AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. `.truthmark/config.yml` defines the committed hierarchy contract.
+`AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. [docs/user-guide.md](user-guide.md) owns detailed human-facing command, workflow, and configuration guidance. `.truthmark/config.yml` defines the committed hierarchy contract.
 
 ## Scope
 
@@ -41,6 +41,7 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 ### Human-centric docs
 
 - [README.md](../README.md) for onboarding and positioning
+- [docs/user-guide.md](user-guide.md) for detailed usage, command, workflow, configuration, routing, Portal, and example guidance
 
 ## Directory Map
 
@@ -53,6 +54,7 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 | `docs/truthmark/engineering/` | engineering truth | agent | Current implementation behavior for init, check, contracts, workflows, and operations |
 | `docs/architecture/` | architecture | agent | Repository-specific architecture guardrails |
 | `docs/truthmark/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
+| `docs/user-guide.md` | guide | human | Detailed usage guide kept out of the root README so onboarding stays concise |
 
 ## Frontmatter Policy
 
@@ -85,10 +87,11 @@ New repositories should run `truthmark config` before `truthmark init` so teams 
 ### For humans
 
 1. [README.md](../README.md)
-2. [.truthmark/config.yml](../.truthmark/config.yml)
-3. [docs/ai/repo-rules.md](ai/repo-rules.md)
-4. [docs/truthmark/engineering/architecture/overview.md](truthmark/engineering/architecture/overview.md)
-5. the relevant product, engineering, or standard doc for the area being changed
+2. [docs/user-guide.md](user-guide.md), when command or workflow detail is needed
+3. [.truthmark/config.yml](../.truthmark/config.yml)
+4. [docs/ai/repo-rules.md](ai/repo-rules.md)
+5. [docs/truthmark/engineering/architecture/overview.md](truthmark/engineering/architecture/overview.md)
+6. the relevant product, engineering, or standard doc for the area being changed
 
 ### For agents
 
@@ -107,7 +110,10 @@ The canonical tree should stay small, explicit, and current. Historical notes ar
 ## Product Decisions
 
 - Decision (2026-05-15): The docs index owns navigation and document-class guidance for the canonical tree, while [docs/ai/repo-rules.md](ai/repo-rules.md) owns repository-wide authority order and completion policy.
+- Decision (2026-06-20): The root README is the concise human storefront. Detailed human-facing command, workflow, configuration, routing, Portal, and example material belongs in [docs/user-guide.md](user-guide.md).
 
 ## Rationale
 
 Keeping the docs index focused on navigation avoids loading duplicated authority prose while still giving agents and maintainers one stable place to resolve where current truth should live before they edit deeper canonical docs.
+
+Keeping the root README concise reduces evaluator friction while preserving detailed operational guidance in a linked guide.

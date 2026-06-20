@@ -1,10 +1,10 @@
 # Truthmark
 
-**あなたのエージェントはコードを書きます。Truthmark は人が読むことのできるGit監査可能なドキュメントを維持します。**
+**Các tác tử của bạn viết mã. Truthmark duy trì tài liệu dễ đọc cho con người và có thể xem xét qua Git.**
 
-[🇺🇸 English](README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
+[🇺🇸 English](../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark banner](docs/assets/truthmark-banner.png)
+![Truthmark banner](assets/truthmark-banner.png)
 
 ## 💡 The Problem: The AI Documentation Gap
 
@@ -78,7 +78,7 @@ truthmark init
 truthmark check
 ```
 
-Review `.truthmark/config.yml` after `truthmark config`, then review the generated files before committing. Truthmark's templates map to recognized engineering standards (ISO/IEC/IEEE, C4, arc42, SemVer, etc.).
+Review `.truthmark/config.yml` after `truthmark config`, then review the generated files before committing. Truthmark's templates are aligned with recognized engineering documentation practices; they do not certify standards compliance.
 
 ### 📖 Common AI Workflows
 
@@ -116,15 +116,15 @@ When product decisions start in documentation, have the AI build the code to mat
 
 ## Visual overview
 
-![Truthmark features](docs/assets/truthmark-features.png)
+![Truthmark features](assets/truthmark-features.png)
 
 **Features:** what Truthmark installs and how the workflow surface is split.
 
-![Truthmark position](docs/assets/truthmark-position.png)
+![Truthmark position](assets/truthmark-position.png)
 
 **Position:** where Truthmark fits relative to prompts, memory, and spec workflows.
 
-![Truthmark sync flow](docs/assets/truthmark-syncflow.png)
+![Truthmark sync flow](assets/truthmark-syncflow.png)
 
 **Sync flow:** how Truth Sync closes out normal code changes before handoff.
 
@@ -201,7 +201,7 @@ Agents do not talk to a Truthmark daemon, but they can run the installed Truthma
 
 Truthmark owns the generated workflow surfaces it creates, but the important contract is architectural: repo-local config and routing point agents at canonical truth docs, while host-native workflows give each supported agent a way to run the same Truthmark procedures.
 
-Generated workflow surfaces include Truthmark version markers. After upgrading Truthmark, rerun:
+Generated workflow surfaces use non-versioned refresh guidance. After upgrading Truthmark or changing workflow configuration, rerun:
 
 ```bash
 truthmark init
@@ -211,9 +211,7 @@ Then review the generated diffs.
 
 ## Supported agent platforms
 
-The default config includes every supported platform.
-
-Remove platforms you do not use from `.truthmark/config.yml`, then rerun:
+Fresh configs omit host platforms by default. Add the platforms you use to `.truthmark/config.yml`, then rerun:
 
 ```bash
 truthmark init
@@ -229,7 +227,7 @@ truthmark init
 
 Unknown platform names are config errors.
 
-Removing a platform stops future refreshes for that platform. It does not delete previously generated files.
+Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
 
 ## AI-facing workflows
 
@@ -259,24 +257,21 @@ The names are intentionally related, but the surfaces are different.
 
 ## Normal AI-assisted code change
 
-Most users should not need to invoke Truth Sync manually every time.
+Users should not treat Truth Sync as the normal command they call to start work.
 
-Truth Sync is the installed finish-time guard for functional code changes.
+Truth Sync is the installed finish-time review that the agent follows after functional code changes.
 
 ```text
+user asks agent for a code change
 agent changes functional code
 agent runs or asks for relevant tests
-installed workflow detects that functional code changed
+installed repository instructions require Sync review before handoff
 Truth Sync checks mapped truth docs
 agent updates truth docs if needed
 human reviews code diff + truth diff
 ```
 
-Direct invocation is still useful for troubleshooting, forcing an early sync, or making the handoff explicit:
-
-```text
-/truthmark-sync sync the repository truth now before handoff
-```
+Manual Sync invocation is mainly for troubleshooting or explicit maintainer review, not the standard onboarding or day-to-day start path.
 
 ## Existing behavior without docs
 
@@ -288,7 +283,7 @@ Use Truth Document when the implementation already exists but the repository tru
 
 Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Gemini CLI, use `/truthmark:document ...`.
 
-For a large repo that still has one broad placeholder route, run Truth Structure first, then invoke Truth Document for one bounded feature or area at a time.
+Start with Truth Document for one bounded feature or area at a time.
 
 Truth Document inspects implementation, tests, route files, and existing docs as evidence.
 
@@ -349,14 +344,14 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Generated workflow skill packages may also expose helper manifests and helper policies that call installed `truthmark validate ... --json` CLI validators; those helpers are accelerators, not bundled repo-local scripts or sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 They are not sources of truth.
 
 | Command | Purpose |
 | --- | --- |
 | `truthmark index` | Build RepoIndex and RouteMap JSON for the active checkout. |
-| `truthmark impact --base <ref>` | Map changed files to routed truth docs, owning routes, nearby tests, and public symbols. |
+| `truthmark impact --base <ref>` | Map changed files to routed truth docs, owning routes, and nearby tests. |
 | `truthmark workflow status --workflow <workflow> [--base <ref>] --json` | Return workflow applicability, write boundaries, target truth docs, checks, helper commands, and compact affected-test guidance. |
 
 Structured output is available with `--json` where supported.
@@ -553,11 +548,9 @@ truthmark check
 /truthmark-document document the implemented password reset flow under docs/truthmark/engineering/behaviors/authentication
 ```
 
-### Sync after code changes
+### Normal code-change handoff
 
-```text
-/truthmark-sync sync the repository truth now before handoff
-```
+Do not start normal work by calling Truth Sync yourself. Ask the agent for the code change; the installed repository instructions tell it to run relevant tests and perform Sync review before handoff.
 
 ### Realize a doc-first decision
 
@@ -600,7 +593,7 @@ Then explicitly ask the agent host to run the installed Portal workflow when you
 
 ## Project status
 
-Truthmark V1 currently provides:
+The current release provides:
 
 - `truthmark config`
 - `truthmark init`
@@ -654,7 +647,7 @@ Useful scripts:
 | `npm run check` | Run lint, typecheck, tests, and build. |
 | `npm run release:check` | Run release-oriented validation. |
 
-When changing Truthmark itself, see [CONTRIBUTING.md](CONTRIBUTING.md).
+When changing Truthmark itself, see [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Documentation
 
@@ -662,13 +655,13 @@ The README is the fast path for evaluation and setup.
 
 Detailed current behavior lives under `docs/`:
 
-- [Docs index](docs/README.md)
-- [Architecture overview](docs/truthmark/engineering/architecture/overview.md)
-- [API and CLI contracts](docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Init and scaffold behavior](docs/truthmark/engineering/behaviors/init-and-scaffold.md)
-- [Check diagnostics](docs/truthmark/engineering/behaviors/check-diagnostics.md)
-- [Installed workflows](docs/truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Repository truth maintenance guide](docs/standards/maintaining-repository-truth.md)
+- [Docs index](README.md)
+- [Architecture overview](truthmark/engineering/architecture/overview.md)
+- [API and CLI contracts](truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Init and scaffold behavior](truthmark/engineering/behaviors/init-and-scaffold.md)
+- [Check diagnostics](truthmark/engineering/behaviors/check-diagnostics.md)
+- [Installed workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
+- [Repository truth maintenance guide](standards/maintaining-repository-truth.md)
 
 ## Design boundaries
 
@@ -729,4 +722,4 @@ branch-scoped documentation
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](../LICENSE).

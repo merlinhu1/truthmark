@@ -24,7 +24,24 @@
     "truthmark": "dist/main.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "docs/README.ar.md",
+    "docs/README.de.md",
+    "docs/README.el.md",
+    "docs/README.es.md",
+    "docs/README.fr.md",
+    "docs/README.id.md",
+    "docs/README.it.md",
+    "docs/README.ja.md",
+    "docs/README.ko.md",
+    "docs/README.md",
+    "docs/README.pl.md",
+    "docs/README.pt-BR.md",
+    "docs/README.ru.md",
+    "docs/README.tr.md",
+    "docs/README.vi.md",
+    "docs/README.zh.md"
   ],
   "engines": {
     "node": ">=20"
