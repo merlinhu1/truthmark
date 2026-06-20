@@ -741,7 +741,11 @@ Die README ist der schnelle Pfad für Evaluation und Setup.
 
 Aktuelles Verhalten im Detail lebt unter `docs/`:
 
+<<<<<<<< HEAD:docs/readmes/README.de.md
 - [Dokumentationsindex](../README.md)
+========
+- [Dokumentationsindex](README.md)
+>>>>>>>> origin/main:docs/README.de.md
 - [Architekturüberblick](truthmark/engineering/architecture/overview.md)
 - [API- und CLI-Verträge](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Init- und Scaffold-Verhalten](truthmark/engineering/behaviors/init-and-scaffold.md)

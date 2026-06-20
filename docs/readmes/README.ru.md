@@ -428,7 +428,11 @@ truthmark check
 | `truthmark init` | Устанавливает или обновляет настроенные интерфейсы workflow из проверенной config. |
 | `truthmark check` | Валидирует config, authority, routing, документы с decisions, frontmatter, внутренние ссылки, branch scope, generated surfaces, freshness и coverage diagnostics. |
 
+<<<<<<<< HEAD:docs/readmes/README.ru.md
 Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+========
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Gemini commands use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+>>>>>>>> origin/main:docs/README.ru.md
 
 Они не являются источниками истины.
 
@@ -740,7 +744,11 @@ README — быстрый путь для оценки и настройки.
 
 Подробное текущее поведение живет в `docs/`:
 
+<<<<<<<< HEAD:docs/readmes/README.ru.md
 - [Индекс документации](../README.md)
+========
+- [Индекс документации](README.md)
+>>>>>>>> origin/main:docs/README.ru.md
 - [Обзор архитектуры](truthmark/engineering/architecture/overview.md)
 - [Контракты API и CLI](truthmark/engineering/contracts/config-route-and-check-contracts.md)
 - [Поведение init и scaffold](truthmark/engineering/behaviors/init-and-scaffold.md)
