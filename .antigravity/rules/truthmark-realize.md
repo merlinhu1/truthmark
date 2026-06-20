@@ -1,0 +1,71 @@
+# Truthmark Realize
+
+Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
+
+This rule is the Antigravity entrypoint for Truthmark Realize.
+
+Do not invoke another Truthmark command from here.
+
+Manual invocation: @truthmark-realize
+
+If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
+
+Description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
+
+## Procedure
+
+# Truthmark Realize
+
+Use this skill only when the user explicitly asks to realize truth docs into code.
+
+Truth Realize is doc-first:
+
+- truth docs lead
+- code follows
+- Truth Realize never edits the truth docs it is realizing
+
+Workflow:
+
+1. Read the updated truth docs named by the user, or infer the relevant docs from configured route files when present.
+2. Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then read tests and the relevant functional code.
+3. Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.
+Implementation code and canonical truth docs are inspected evidence for current behavior; they do not silently override workflow write boundaries.
+Truth-doc ownership review:
+- before editing or relying on source truth docs before writing code, verify each target/source truth doc is a bounded owner for the behavior
+- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
+- if a source truth doc is broad, mixed-owner, index-like, unrouteable, stale, or conflicts with implementation evidence, stop before writing code and recommend Truth Structure or Truth Document
+- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason as applicable
+4. Update functional code only so implementation matches bounded, current truth claims from the source docs.
+5. Do not edit truth docs or truth routing while realizing those docs.
+6. Run relevant tests for the changed code.
+7. Report changed code files and verification steps.
+Truthmark hierarchy hints:
+- Config, when present: .truthmark/config.yml
+- Root route index, when present: docs/truthmark/routes/areas.md
+- Area route files, when present: docs/truthmark/routes/areas/**/*.md
+- Product truth docs, when present: docs/truthmark/product/**/*.md
+- Engineering truth docs, when present: docs/truthmark/engineering/**/*.md
+
+Read and write boundaries:
+
+- may read truth docs, routing docs, and relevant functional code
+- may write functional code only
+- must not edit truth docs or truth routing while realizing those docs
+
+## Report Template
+
+Report completion in this shape:
+
+```md
+Truth Realize: completed
+
+Truth docs used:
+- docs/truthmark/product/capabilities/authentication-session.md
+- docs/truthmark/engineering/behaviors/authentication-session.md
+
+Code updated:
+- src/auth/session.ts
+
+Verification:
+- npm test -- auth
+```

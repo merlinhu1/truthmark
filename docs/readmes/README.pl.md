@@ -69,7 +69,7 @@ Truthmark nie jest tylko kolejnym narzędziem do dokumentacji. Jest głęboko zi
 
 * **🚫 Zero zależności od dostawcy:** brak usług hostowanych, ukrytych baz danych i dodatkowych serwerów do utrzymywania.
 * **🌳 100% natywny dla Git:** wszystko mieszka w Twoim repozytorium. Truth porusza się razem z gałęzią.
-* **🤝 Architektura dwóch powierzchni:** wyraźnie oddziela narzędzia używane przez ludzi do zarządzania repozytorium od workflow, których agenci AI używają do pisania kodu.
+* **🤝 Kontrakt należący do ludzi i wykonywany przez agentów:** Opiekunowie posiadają kontrakt repozytorium; agenci podczas kodowania podążają za zainstalowanymi instrukcjami.
 * **✅ Zaufanie przez weryfikację:** pracy AI łatwiej zaufać, ponieważ zmiany wpływające na zachowanie zawierają decyzję lub diff truth-doc możliwy do przeglądu przez człowieka.
 
 ## 🔄 Jak to działa
@@ -78,27 +78,40 @@ Gdy agent AI modyfikuje Twój kod, praca nie jest skończona. Truthmark instaluj
 
 1. 💻 **Kod:** agent modyfikuje kod funkcjonalny.
 2. 🧪 **Test:** wykonywane są odpowiednie testy.
-3. 🔍 **Sprawdzenie:** `Truth Sync` sprawdza zmapowaną dokumentację, gdy działa zainstalowany workflow.
+3. 🔍 **Sprawdzenie:** Truthmark sprawdza zmapowaną dokumentację jako część zainstalowanego końcowego przeglądu.
 4. 📝 **Dokumentacja:** agent aktualizuje dokumenty, gdy truth repozytorium się zmieniła.
 5. 👀 **Przegląd:** człowiek przegląda *diff kodu* + *diff truth*.
 
-## 🛠 Dwie powierzchnie, jeden system truth
+## 🛠 Jak używasz Truthmark
 
-Truthmark jest celowo podzielony na dwie odrębne powierzchnie, aby służyć zarówno ludzkim opiekunom, jak i agentom AI.
+Truthmark ma jeden lokalny kontrakt repozytorium i dwa sposoby korzystania z niego.
 
-### 1. 🧑‍💻 CLI dla ludzi (opiekunowie i CI)
-Używane przez programistów do przygotowania, konfiguracji i walidacji repozytorium.
-* `truthmark config` - Tworzy początkową konfigurację.
-* `truthmark init` - Instaluje potrzebny routing, szkielety i instrukcje.
-* `truthmark check` - Waliduje artefakty truth z terminala.
+### Ludzie instalują i walidują kontrakt
 
-### 2. 🤖 Workflow dla AI (agenci)
-Truthmark instaluje natywne umiejętności, prompty i komendy rozumiane przez obsługiwane hosty AI, takie jak Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity i Cursor. To *nie* są polecenia shell; to punkty wejścia workflow dla AI.
-* `/truthmark-sync` - Workflow końcowy, którego agenci przestrzegają po zmianach kodu funkcjonalnego; nie jest zwykłą komendą startową dla użytkownika.
-* `/truthmark-document` - Generuje dokumenty dla istniejącego kodu bez dokumentacji.
-* `/truthmark-structure` - Organizuje szerokie obszary repozytorium w konkretne domeny.
-* `/truthmark-realize` - **Rozwój doc-first:** czyta dokumenty architektury i generuje kod zgodny z nimi.
-* `/truthmark-check` - Audyt truth repozytorium prowadzony przez agenta.
+Opiekunowie i CI używają CLI:
+
+* `truthmark config` - tworzy początkową konfigurację.
+* `truthmark init` - instaluje lub odświeża routing, szkielety truth-doc i instrukcje dla hostów AI.
+* `truthmark check` - waliduje truth repozytorium z terminala.
+
+### Agenci podążają za kontraktem podczas kodowania
+
+Truthmark instaluje lokalne instrukcje repozytorium dla obsługiwanych hostów kodowania AI, takich jak Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity i Cursor.
+
+Normalna pętla jest prosta:
+
+1. Poproś agenta o zmianę kodu albo o udokumentowanie istniejącego zachowania.
+2. Zainstalowane instrukcje mówią agentowi, kiedy testować, kiedy aktualizować truth docs i kiedy zatrzymać się do ludzkiego przeglądu.
+3. Przeglądasz zwykłe diffy Git: kod plus ewentualne zmiany w truth-doc.
+
+Żądania agenta uruchamiane przez użytkownika są celowo nieliczne:
+
+* `/truthmark-document` - dokumentuje istniejące zaimplementowane zachowanie z kodu i testów.
+* `/truthmark-realize` - implementuje kod z istniejących truth docs.
+* `/truthmark-check` - audytuje truth repozytorium.
+
+Truth Sync nie jest zwykłym sposobem rozpoczynania pracy; to końcowy przegląd po funkcjonalnych zmianach kodu.
+Truth Structure nie jest codzienną komendą; naprawia routing lub własność tylko wtedy, gdy blokuje to pracę.
 
 ## Co otrzymujesz
 
@@ -107,7 +120,7 @@ Truthmark instaluje natywne umiejętności, prompty i komendy rozumiane przez ob
 | Truth natywny dla Git | Utrzymuje truth repozytorium w zatwierdzonych plikach Markdown i konfiguracji. |
 | Dokumentacja w zakresie gałęzi | Truth porusza się z gałęzią zamiast mieszkać w prywatnej sesji. |
 | CLI dla ludzi | Daje opiekunom komendy konfiguracji, odświeżania, walidacji i inspekcji. |
-| Workflow dla AI | Daje agentom host-native workflow do synchronizacji, dokumentacji, strukturyzacji, realizacji i audytu. |
+| Zainstalowana instrukcja agenta | Mówi agentom kodującym, kiedy dokumentować, testować, synchronizować truth, audytować lub zatrzymać się do przeglądu. |
 | Jawny routing | Mapuje obszary kodu na kanoniczne dokumenty truth. |
 | Przekazania możliwe do przeglądu | Tworzy zwykłe diffy Git zarówno dla kodu, jak i dokumentów truth. |
 | Działanie local-first | Nie wymaga hostowanej usługi, demona, bazy danych ani serwera MCP. |
@@ -150,7 +163,7 @@ Jest przydatny, gdy potrzebujesz:
 - jawnej własności między dokumentami a kodem
 - bezpieczniejszych granic zapisu dla agentów
 - dokumentacji możliwej do przeglądu zamiast ukrytej pamięci
-- workflow AI, które nadal działają z zatwierdzonych plików repozytorium
+- instrukcje agenta, które nadal działają z commitowanych plików repozytorium
 
 ## Gdzie pasuje Truthmark
 
@@ -172,7 +185,7 @@ Zakres Truthmark jest celowo wąski:
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+zainstalować wokół niej instrukcje agenta
 keep the result reviewable in Git
 ```
 
@@ -187,7 +200,7 @@ Aby poznać użycie komenda po komendzie, porównanie powierzchni, szczegóły o
 Obecne wydanie zapewnia:
 
 - lokalne komendy CLI dla config, init, check, index, impact i workflow status
-- wygenerowane powierzchnie workflow AI dla Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity i Cursor
+- wygenerowane lokalne instrukcje agenta dla Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity i Cursor
 - diagnostykę route, authority, frontmatter, link, freshness, generated-surface, branch-scope i coverage
 - dokumenty truth w zakresie gałęzi oraz pochodne artefakty inteligencji repozytorium
 

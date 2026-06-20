@@ -69,7 +69,7 @@ Truthmark non è semplicemente un altro strumento di documentazione. È profonda
 
 * **🚫 Nessun lock-in del fornitore:** nessun servizio ospitato, nessun database nascosto, nessun server aggiuntivo da gestire.
 * **🌳 100% nativo di Git:** tutto vive nel tuo repository. La verità si muove con il tuo branch.
-* **🤝 Architettura a due superfici:** separa nettamente gli strumenti che le persone usano per gestire il repository dai workflow che gli agenti IA usano per scrivere codice.
+* **🤝 Contratto posseduto dagli umani e seguito dagli agenti:** I maintainer possiedono il contratto del repository; gli agenti seguono le istruzioni installate mentre scrivono codice.
 * **✅ Fiducia tramite verifica:** il lavoro dell’IA diventa più facile da fidare perché il lavoro che cambia comportamento include una decisione o un diff di documento di verità revisionabile da una persona.
 
 ## 🔄 Come funziona
@@ -78,27 +78,40 @@ Quando un agente IA modifica il tuo codice, il lavoro non è finito. Truthmark i
 
 1. 💻 **Codice:** l’agente modifica codice funzionale.
 2. 🧪 **Test:** vengono eseguiti i test pertinenti.
-3. 🔍 **Controllo:** `Truth Sync` controlla la documentazione mappata quando viene eseguito il workflow installato.
+3. 🔍 **Controllo:** Truthmark controlla la documentazione mappata come parte della revisione finale installata.
 4. 📝 **Documentazione:** i docs vengono aggiornati dall’agente quando la verità del repository è cambiata.
 5. 👀 **Revisione:** una persona revisiona il *diff di codice* + il *diff di verità*.
 
-## 🛠 Due superfici, un unico sistema di verità
+## 🛠 Come interagisci con Truthmark
 
-Truthmark è intenzionalmente diviso in due superfici distinte per servire sia i maintainer umani sia gli agenti IA.
+Truthmark ha un contratto locale al repository e due modi per usarlo.
 
-### 1. 🧑‍💻 La CLI umana (maintainer e CI)
-Usata dagli sviluppatori per impostare, configurare e validare il repository.
-* `truthmark config` - crea la tua configurazione iniziale.
-* `truthmark init` - installa il routing, gli scaffold e le istruzioni necessari.
-* `truthmark check` - valida gli artefatti di verità dal terminale.
+### Gli esseri umani installano e validano il contratto
 
-### 2. 🤖 I workflow rivolti all’IA (agenti)
-Truthmark installa skills, prompt e comandi nativi che gli host IA supportati (come Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity e Cursor) comprendono. Questi *non* sono comandi shell; sono punti di ingresso di workflow per l’IA.
-* `/truthmark-sync` - il workflow di chiusura che gli agenti seguono dopo modifiche di codice funzionale; non è un normale comando avviato dall’utente.
-* `/truthmark-document` - genera docs per codice esistente non documentato.
-* `/truthmark-structure` - organizza ampie aree del repository in domini specifici.
-* `/truthmark-realize` - **Sviluppo doc-first:** legge documenti di architettura e genera codice coerente.
-* `/truthmark-check` - audit della verità del repository guidato dall’agente.
+Maintainer e CI usano la CLI:
+
+* `truthmark config` - crea la configurazione iniziale.
+* `truthmark init` - installa o aggiorna routing, scaffold dei documenti di verità e istruzioni per host IA.
+* `truthmark check` - valida la verità del repository dal terminale.
+
+### Gli agenti seguono il contratto mentre scrivono codice
+
+Truthmark installa istruzioni locali al repository per host di coding IA supportati come Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity e Cursor.
+
+Il ciclo normale è semplice:
+
+1. Chiedi al tuo agente una modifica al codice o di documentare un comportamento esistente.
+2. Le istruzioni installate dicono all’agente quando testare, quando aggiornare i documenti di verità e quando fermarsi per la revisione umana.
+3. Tu revisioni normali diff Git: codice più eventuali modifiche ai documenti di verità.
+
+Le richieste agente avviate dall’utente sono intenzionalmente poche:
+
+* `/truthmark-document` - documenta comportamento implementato esistente da codice e test.
+* `/truthmark-realize` - implementa codice da documenti di verità esistenti.
+* `/truthmark-check` - audita la verità del repository.
+
+Truth Sync non è il modo abituale per iniziare il lavoro; è la revisione finale dopo modifiche funzionali al codice.
+Truth Structure non è un comando quotidiano; ripara routing o ownership solo quando ciò blocca il lavoro.
 
 ## Cosa ottieni
 
@@ -107,7 +120,7 @@ Truthmark installa skills, prompt e comandi nativi che gli host IA supportati (c
 | Verità nativa di Git | Mantiene la verità del repository in Markdown e configurazione committati. |
 | Documentazione con ambito di branch | La verità si muove con il branch invece di vivere in una sessione privata. |
 | CLI umana | Offre ai maintainer comandi di setup, aggiornamento, validazione e ispezione. |
-| Workflow rivolti all’IA | Offre agli agenti workflow nativi dell’host per sincronizzazione, documentazione, struttura, realizzazione e audit. |
+| Guida agente installata | Dice agli agenti di coding quando documentare, testare, sincronizzare la verità, auditare o fermarsi per revisione. |
 | Routing esplicito | Mappa aree di codice a documenti di verità canonici. |
 | Consegne revisionabili | Produce normali diff Git sia per il codice sia per i documenti di verità. |
 | Operatività local-first | Non richiede servizi ospitati, daemon, database o server MCP. |
@@ -150,7 +163,7 @@ Truthmark aiuta i team a rispondere con file committati, routing esplicito e dif
 - ownership esplicita tra docs e codice
 - confini di scrittura degli agenti più sicuri
 - documentazione revisionabile invece di memoria nascosta
-- workflow IA che continuano a funzionare da file committati del repository
+- guida agente che funziona ancora da file committati nel repository
 
 ## Dove si colloca Truthmark
 
@@ -172,7 +185,7 @@ La corsia di Truthmark è stretta per progettazione:
 ```text
 make repository truth explicit
 route it to code
-install agent workflows around it
+installare guida agente intorno a essa
 keep the result reviewable in Git
 ```
 
@@ -187,7 +200,7 @@ Per l’uso comando per comando, confronti tra superfici, dettagli sulle piattaf
 La release attuale fornisce:
 
 - comandi CLI locali per config, init, check, index, impact e stato dei workflow
-- superfici di workflow IA generate per Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity e Cursor
+- istruzioni agente locali al repository generate per Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity e Cursor
 - diagnostica su routing, autorità, frontmatter, link, freschezza, superfici generate, ambito di branch e copertura
 - documenti di verità con ambito di branch e artefatti derivati di intelligence del repository
 
