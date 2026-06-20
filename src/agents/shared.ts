@@ -106,6 +106,9 @@ export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
   "Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.",
 ].join("\n");
 
+export const TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS =
+  "Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.";
+
 export const renderTruthDocOwnershipGateSection = (
   subject: string,
   outcome: string,

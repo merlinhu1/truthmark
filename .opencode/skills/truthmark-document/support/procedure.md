@@ -61,6 +61,7 @@ Treat the HTML comments under each template section as normative authoring guida
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
 If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
 Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
+Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.
 Truth-doc shape repair review:
 - Truth Document may restructure only truth docs for the implemented behavior being documented.
 - repair shape in place only after the ownership review confirms the doc is the right bounded owner
@@ -79,12 +80,7 @@ Truthmark hierarchy hints:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.
-Helper status reporting:
-- Validate the report body before adding this validator's own success status; the body may omit `validate-document-report` while validation is pending.
-- After `truthmark validate document-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-document-report: ran, passed` in the final report.
-- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-document-report: skipped, <reason>` and manually validate the report shape.
-- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
-- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
+Optional validation: when local tooling is available, you may validate the final report with `truthmark validate document-report <report-file> --json`; direct checkout inspection and evidence review remain authoritative.
 Parent post-document verification:
 - verify only truth docs and leased truth routing files changed during document work
 - stop on functional code, generated host surfaces, or unrelated diffs caused by document work

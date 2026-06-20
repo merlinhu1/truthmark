@@ -91,7 +91,6 @@ Ejemplos:
 /truthmark-document
 /truthmark-structure
 /truthmark-realize
-/truthmark-preview
 /truthmark-check
 ```
 
@@ -334,7 +333,6 @@ Los usan agentes o hosts de agentes durante el trabajo en el repositorio. No son
 | Truth Structure | topology-first | La ruta predeterminada es demasiado amplia, la propiedad abarca varias áreas o los archivos de rutas siguen apuntando a placeholders. | Crea o repara rutas y documentos de verdad iniciales. |
 | Truth Document | implementation-first | El comportamiento ya existe en código, pero faltan o son débiles los documentos de verdad canónicos. | Escribe solo documentos de verdad y rutas. No debe cambiar código funcional. |
 | Truth Sync | code-first | Cambió código funcional y puede que los documentos de verdad asignados deban actualizarse antes de la entrega. | Actualiza documentos de verdad. Truth Sync no debe reescribir código funcional. |
-| Truth Preview | read-only | El agente necesita previsualizar rutas probables antes de editar. | Solo lee. No autoriza escrituras. |
 | Truth Realize | doc-first | Documentos de verdad de producto o arquitectura lideran y el código debe actualizarse para coincidir. | Actualiza solo código. El agente no debe editar los documentos de verdad que está realizando. |
 | Truth Check | audit-first | Un revisor o agente necesita auditar la salud de la verdad del repositorio. | Audita e informa. |
 | Truthmark Portal | presentation-only | Una persona pide explícitamente un Portal HTML estático navegable sobre los documentos de verdad del repositorio. | Escribe solo archivos estáticos generados no canónicos bajo el directorio de salida Portal configurado. |
@@ -408,7 +406,8 @@ El agente no debe editar los documentos de verdad que está realizando.
 Usa Truth Preview antes de un cambio cuando el agente necesita entender la ruta probable.
 
 ```text
-/truthmark-preview previsualiza la ruta de verdad probable para cambios en la API de billing
+/truthmark-preview previsualiza la ruta de verdad probable para cambios en la API de billing (GitHub Copilot)
+/truthmark:preview previsualiza la ruta de verdad probable para cambios en la API de billing (Gemini CLI)
 ```
 
 Truth Preview es read-only.

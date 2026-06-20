@@ -19,20 +19,15 @@ Truth Structure is agent-native:
 - inspect the configured root route index at docs/truthmark/routes/areas.md and relevant child route files under docs/truthmark/routes/areas/ when they exist
 - define areas by product or behavior ownership, not by mechanical directory mirroring
 - create or repair docs/truthmark/routes/areas.md
-- create starter truth docs when useful and when they belong in the canonical current-truth surface
+- create skeletal starter truth docs only when missing ownership would otherwise block future workflows
 - Starter truth docs must use closed YAML frontmatter bounded by opening and closing --- lines; include status, truth_kind, and last_reviewed inside that frontmatter. Put source references in the final ## Source References section, not in frontmatter.
-- Starter truth docs must use lane-specific templates and keep product and engineering truth in separate files.
+- Starter truth docs are ownership anchors, not behavior writeups: include only the title, bounded area/scope, and Source References needed to make routing explicit.
+- Starter truth docs must keep product and engineering truth in separate files; leave substantive behavior, contract, architecture, workflow, operations, or test prose to Truth Document.
 
-When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
-Supported kinds: product-capability, engineering-behavior, engineering-contract, engineering-architecture, engineering-workflow, engineering-operations, and engineering-test-behavior.
-Treat the HTML comments under each template section as normative authoring guidance for that section.
-Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
-If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
-Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
 - use docs/truthmark/product/** for product truth destinations
 - use docs/truthmark/engineering/** for engineering truth destinations
 - use only canonical current-truth destinations for starter truth docs
-- keep active Product Decisions in product truth and Engineering Decisions in engineering truth
+- keep Product Decisions in product truth and Engineering Decisions in engineering truth when selecting destinations; report any relocation need instead of rewriting decision prose during topology review
 - preserve unrelated authored content
 ## New area setup
 Use when a user asks to onboard a new code area into Truthmark, a new package, controller, domain, or product area lacks bounded truth ownership, or a new product area needs routing and starter truth docs.
@@ -52,18 +47,12 @@ Do not:
 ## Topology Governance
 Truth Structure owns documentation topology, lane splits, decision relocation, and relationship repair. Do not depend on humans to manually organize docs/truthmark/product or docs/truthmark/engineering. Treat both configured lane roots as managed semantic roots.
 Inspect controllers, routes, handlers, services, packages, tests, existing truth docs, and route files; infer product and domain ownership from behavior boundaries, not from mechanical directory mirroring.
-When topology pressure exists, repair structure before creating or extending truth docs.
+When topology pressure exists, repair route structure before creating or extending truth ownership anchors.
 Truth-doc ownership review:
 - before editing or relying on candidate route owners and current truth docs, verify each target/source truth doc is a bounded owner for the behavior
 - if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
-- if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split and reroute into bounded truth docs when safe; otherwise stop with manual-review files
+- if a truth doc mixes independent owners, route ownership is broad, or a split is required for bounded ownership, split or reroute only the ownership topology when safe; otherwise stop with manual-review files
 - report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason as applicable
-Decision/Rationale preservation review:
-- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections in every source or touched truth doc
-- preserve each current decision and rationale in the correct product or engineering lane owner; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
-- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
-- if ownership of a decision or rationale is unclear, stop with manual-review files instead of deleting it or guessing
-- after the edit, verify every touched truth doc keeps lane-appropriate decision/rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
 Topology pressure signals:
 - one area maps broad code such as src/**, app/**, server/**, services/**, or packages/**
 - one area maps multiple unrelated controllers, route groups, services, or bounded contexts
@@ -79,10 +68,10 @@ Use these review thresholds as guidance:
 - more than 5 controllers mapped through one catch-all area
 Repair rules:
 - split broad, overloaded, or catch-all areas into behavior-owned child route files
-- split mixed-owner truth docs into bounded owner docs before adding new behavior claims
+- split or flag mixed-owner truth docs for bounded owners before any workflow adds new behavior claims
 - create route files under docs/truthmark/routes/areas/ when a product/domain boundary is clear
-- create engineering behavior truth docs under docs/truthmark/engineering only when behavior lacks a current doc
-- create product truth docs under docs/truthmark/product only when product promise, boundary, rationale, or user-visible capability truth is in scope
+- create skeletal engineering ownership anchors under docs/truthmark/engineering only when behavior lacks a current owner
+- create skeletal product ownership anchors under docs/truthmark/product only when product promise, boundary, rationale, or user-visible capability ownership is in scope
 - README.md files are indexes, not Truth Sync targets
 - prefer bounded product docs under product/capabilities or product/decisions and engineering docs under engineering/<kind>/<surface>.md
 - keep behavior truth docs behavior-oriented, not endpoint-oriented
@@ -90,21 +79,12 @@ Repair rules:
 - update routing so future Truth Sync can target small docs
 - preserve existing authored docs; move or rewrite only when needed to remove ambiguity
 - report Truth docs split when one broad or mixed-owner truth doc becomes multiple bounded docs
-Truth-doc shape repair review:
-- Truth Structure may restructure broader routed docs when topology, ownership, or doc-shape repair is already in scope.
-- repair shape in place only after the ownership review confirms the doc is the right bounded owner
-- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
-- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
-- preserve supported claims; remove, narrow, or record unsupported or stale claims for manual handoff
-- report docs restructured and why a narrow edit was not sufficient
 Evidence checklist:
 - apply the evidence checklist before finishing when Truth Structure writes routed docs, ownership claims, lane-specific decisions, or rationale
 - support ownership/behavior claims with topology or primary checkout evidence from layout, implementation boundaries, docs, config, route files, tests, templates, schemas, or contracts
 - tests/examples/canonical docs corroborate; remove, narrow, or record unsupported claims for manual handoff
-Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
-Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
 - Do not finish topology repair with mixed product/engineering authority in a single canonical truth doc.
-- If an existing canonical doc has wrong-lane sections, split or move them into the correct product or engineering lane.
+- If an existing canonical doc has wrong-lane sections, report the lane repair needed and only move content when the topology split explicitly requires it.
 Portable fallback:
 - If this skill surface is unavailable, perform the same workflow directly from committed repository files.
 - Do not require the truthmark CLI.

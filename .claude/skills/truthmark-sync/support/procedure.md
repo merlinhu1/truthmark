@@ -32,78 +32,33 @@ Parent workflow:
    - User-provided decisions/rationale: decisions, rationale, constraints, tradeoffs, rejection reasons, or scope boundaries from the current task conversation, or "none provided"
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
-11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, stop and recommend Truth Structure instead of guessing.
-Topology review:
+11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, repair topology first when the repair is safe and in scope, otherwise stop and recommend Truth Structure instead of guessing.
+Topology review and repair:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
-- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, do not create another generic truth doc
-- run Truth Structure before syncing when topology repair is safe and in scope
-- stop and recommend Truth Structure when topology repair is unsafe, ambiguous, or outside the current task boundary
-- report the route files and changed code paths that require structure repair
+- if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when topology repair is safe and in scope
+- safe in-scope topology repair may update truth routing files and create or update bounded leaf truth docs needed to map the changed functional code; keep the repair limited to the affected route owner
+- stop and recommend Truth Structure only when topology repair is unsafe, ambiguous, or outside the current task boundary
+- report the route files and changed code paths that required structure repair
+- do not create another generic truth doc
 - README.md files are indexes, not Truth Sync targets
 - must not append behavior details to a README.md index
-- create or update a bounded leaf truth doc when behavior changes do not fit an existing leaf doc
 - write engineering truth under docs/truthmark/engineering; product truth updates under docs/truthmark/product are allowed only for explicit current product behavior changes
-Truth-doc ownership review:
-- before editing or relying on changed functional files and impacted truth docs, verify each target/source truth doc is a bounded owner for the behavior
-- if a target/source doc mixes independent owners, spans unrelated behaviors, acts as an index, or needs cross-owner edits, do not patch or in-place repair it
-- if an impacted doc is broad, mixed-owner, index-like, or the update spans independent behavior owners, run Truth Structure before syncing when safe and in scope; otherwise stop and recommend Truth Structure
-- report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason as applicable
-Decision/Rationale preservation review:
-- before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections in every source or touched truth doc
-- preserve each current decision and rationale in the correct product or engineering lane owner; when splitting, move it to the new owner doc rather than deleting it or leaving it in an index
-- remove or narrow a decision or rationale only when checkout evidence shows it is stale or unsupported, and report the exact claim, evidence, and result
-- if ownership of a decision or rationale is unclear, stop with manual-review files instead of deleting it or guessing
-- after the edit, verify every touched truth doc keeps lane-appropriate decision/rationale sections and every pre-existing entry is preserved, moved, narrowed, removed with evidence, or blocked
-When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
-Supported kinds: product-capability, engineering-behavior, engineering-contract, engineering-architecture, engineering-workflow, engineering-operations, and engineering-test-behavior.
-Treat the HTML comments under each template section as normative authoring guidance for that section.
-Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
-If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
-Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
-Truth-doc shape repair review:
-- Truth Sync may restructure leased canonical truth docs when the current sync evidence shows repository truth is stale, even when the doc is outside the initially affected route focus.
-- repair shape in place only after the ownership review confirms the doc is the right bounded owner
-- use Truth Structure for ownership splits; do not treat broad or mixed-owner docs as in-place repair work
-- repair shape when a narrow edit would make truth worse: missing template sections, stale evidence conflicts, cross-section updates within one owner, or wrong frontmatter/source/headings
-- preserve supported claims; remove, narrow, or record unsupported or stale claims for manual handoff
-- report docs restructured and why a narrow edit was not sufficient
-Maintain architecture docs only for structure-level changes: system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, or generated-surface ownership.
-Keep ordinary behavior, endpoints, UI copy, validation rules, and bug fixes in behavior or contract docs unless they change those boundaries.
-Evidence checklist:
-- route-first: map changed functional files to bounded route owners and primary canonical docs
-- review new or changed behavior-bearing claims only in touched docs, route ownership, lane-specific decisions, and rationale
-- support claims with primary checkout evidence: implementation, config, routing, generated templates, schemas, or contract definitions
-- tests/examples/canonical docs corroborate; they are not sole proof when implementation conflicts
-- remove, narrow, or record unsupported claims for manual handoff
-- if no impacted doc changed, report why truth was already current or why sync was skipped
-Repository intelligence artifacts are optional derived context: RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context may guide routing, write boundaries, and verification planning when available.
-They do not override checkout evidence, canonical truth docs, route files, or workflow write boundaries.
-If unavailable, inspect any present Truthmark config, route files, source files, truth docs, and tests directly, then report that repository-intelligence artifacts were not generated.
 Optional validation tooling:
 - you may run truthmark check when local tooling is available
+- you may validate the final report with `truthmark validate sync-report <report-file> --json` when available
 - do not require the truthmark binary; direct checkout inspection is the canonical path
 - optional validation must not replace agent judgment about docs and routing
 - update Product Decisions only in product truth and Engineering Decisions only in engineering truth when evidence supports the lane-specific decision change
-Helper status reporting:
-- Validate the report body before adding this validator's own success status; the body may omit `validate-sync-report` while validation is pending.
-- After `truthmark validate sync-report <report-file> --json` returns `data.validation.ok: true`, append or update `validate-sync-report: ran, passed` in the final report.
-- If the installed Truthmark CLI is unavailable or the helper is skipped, record `validate-sync-report: skipped, <reason>` and manually validate the report shape.
-- Record `validate-write-lease: ran, passed` only after validating a concrete write lease; otherwise use a truthful skipped status such as `skipped, no write lease used`.
-- Helper output is derived evidence and never replaces direct checkout inspection, evidence review, or parent acceptance.
 Truthmark hierarchy hints:
 - Config, when present: .truthmark/config.yml
 - Root route index, when present: docs/truthmark/routes/areas.md
 - Area route files, when present: docs/truthmark/routes/areas/**/*.md
 - Product truth docs, when present: docs/truthmark/product/**/*.md
 - Engineering truth docs, when present: docs/truthmark/engineering/**/*.md
-Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
-Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
-Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.
 Parent post-sync verification:
 - verify only truth docs and leased truth routing files changed during sync
 - stop on any unrelated diff caused by the sync step
 - stop if functional code changed during sync
-- for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and expected report fields before accepting it
 - validate the final report against the structured Truth Sync report contract, including Claim, indented Evidence, and Result values supported, narrowed, removed, or blocked under Evidence checked
 - verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction made within the sync write lease
 - verify the final report records ownership review, structure requirement, split, restructure, or manual handoff reason when the ownership review applies

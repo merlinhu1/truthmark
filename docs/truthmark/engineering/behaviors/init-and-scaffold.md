@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-20
 ---
 
 # Init And Scaffold
@@ -16,9 +16,82 @@ It covers config defaults, lane root creation, template files, and starter route
 
 ## Current Implementation Behavior
 
-Defaults derive all scaffold paths from `truthmark.workspace`. Routes are fixed at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`; the default scaffolded route area is `repository`; max route delegation depth is `1`; product truth is fixed at `<workspace>/product`; engineering truth is fixed at `<workspace>/engineering`; editable truth templates are fixed at `<workspace>/templates`. Template filenames match `truth_kind` values directly: `product-capability.md`, `engineering-behavior.md`, `engineering-contract.md`, `engineering-architecture.md`, `engineering-workflow.md`, `engineering-operations.md`, and `engineering-test-behavior.md`. Generated truth-doc frontmatter includes `truth_kind` and does not include `doc_type` or `truth_lane`.
+Scaffold paths derive from `truthmark.workspace`:
 
-Init seeds the broad default `repository` route as provisional bootstrap routing, not as normal behavior ownership. The route still maps `src/**` so a fresh repository is routeable, but it points at `engineering/repository/bootstrap-routing.md` as an `engineering-workflow` handoff that tells agents to run Truth Structure before normal Truth Sync when real code touches only the broad default route. Init does not create `engineering/repository/overview.md` from `engineering-behavior.md`; behavior truth should be created in bounded areas after ownership is known. Downstream product truth uses the `product-capability` template only. Capability docs own a single user-visible capability promise, users/value, scope including boundary constraints and adjacent systems, current product behavior, acceptance criteria, decisions, realization links, and non-goals.
+- Routes live at `<workspace>/routes/areas.md` and `<workspace>/routes/areas/`.
+- Product truth lives at `<workspace>/product`.
+- Engineering truth lives at `<workspace>/engineering`.
+- Editable truth templates live at `<workspace>/templates`.
+- The default scaffolded route area is `repository`.
+- Max route delegation depth is `1`.
+
+Fresh configs do not assume a host platform:
+
+- `platforms` is omitted by default.
+- Host-specific workflow surfaces are generated only after maintainers explicitly list Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI.
+
+Editable truth template filenames match `truth_kind` values directly:
+
+- `product-capability.md`
+- `engineering-behavior.md`
+- `engineering-contract.md`
+- `engineering-architecture.md`
+- `engineering-workflow.md`
+- `engineering-operations.md`
+- `engineering-test-behavior.md`
+
+Generated truth-doc frontmatter includes `truth_kind`.
+
+Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
+
+`truthmark init` also removes retired generated-surface artifacts under host skill roots (for example `truthmark-preview` package files and legacy `helper-manifest.yml`/`support/helper-policy.md`) when those paths are no longer part of current generated output.
+
+Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
+
+Global diff-friendly authoring style lives in the Truth Document workflow procedure rather than in every template preamble:
+
+- Prefer one durable claim per bullet or line.
+- Keep paragraphs to one or two short sentences.
+- Use bullets or tables for rules, criteria, fields, files, and lists.
+
+Init seeds the broad default `repository` route as provisional bootstrap routing, not as normal behavior ownership:
+
+- The route still maps `src/**` so a fresh repository is routeable.
+- The route points at `engineering/repository/bootstrap-routing.md` as an `engineering-workflow` handoff.
+- The handoff tells agents to run Truth Structure before normal Truth Sync when real code touches only the broad default route.
+- Init does not create `engineering/repository/overview.md` from `engineering-behavior.md`.
+- Behavior truth should be created in bounded areas after ownership is known.
+
+Downstream product truth uses the `product-capability` template only.
+
+Capability docs own:
+
+- a single user-visible capability promise
+- users and value
+- scope including boundary constraints and adjacent systems
+- current product behavior
+- acceptance criteria
+- decisions
+- realization links
+- non-goals
+
+## Core Rules
+
+- Scaffolded paths derive from `truthmark.workspace`.
+- Template filenames match `truth_kind` values.
+- Fresh configs do not assume any AI host platform.
+- Global prose style guidance belongs in writer-facing workflow procedures, not every truth-doc template preamble.
+
+## Flows And States
+
+- `truthmark init` creates or refreshes workspace scaffold files.
+- It renders current templates and generated host surfaces from source renderers.
+- It removes retired generated-surface artifacts that are no longer part of current generated output.
+
+## Contracts
+
+- Config normalization and route metadata contracts are owned by `docs/truthmark/engineering/contracts/config-route-and-check-contracts.md`.
+- Generated host-surface contracts are owned by `docs/truthmark/engineering/contracts/generated-host-surfaces.md`.
 
 ## Product Truth Links
 
@@ -30,6 +103,19 @@ Init seeds the broad default `repository` route as provisional bootstrap routing
 - Decision (2026-06-14): Editable template filenames match `truth_kind` values directly so generated docs do not point agents at legacy `*-doc.md` names.
 - Decision (2026-06-14): Init scaffolds routes, templates, product truth, and engineering truth at fixed workspace-derived paths rather than accepting route or template roots from config.
 - Decision (2026-06-17): The default broad `repository` route is provisional bootstrap state; init creates a compact `bootstrap-routing.md` workflow handoff instead of a catch-all behavior overview so agents run Truth Structure before normal Sync on real touched code.
+- Decision (2026-06-18): Fresh configs omit `platforms` by default. Truthmark does not infer Codex, OpenCode, or any other host from a fresh checkout; host-native workflow surfaces require explicit platform configuration.
+
+## Rationale
+
+Fixed workspace-derived scaffold paths keep Truthmark predictable while route files provide the semantic ownership layer.
+
+Keeping templates kind-specific and moving global prose style into workflow guidance reduces generated-template bloat.
+
+## Non-Goals
+
+- Init does not infer a preferred agent host.
+- Init does not create behavior truth for unknown code ownership beyond the provisional bootstrap routing handoff.
+- Init does not maintain a legacy `docs/truthmark/truth` tree.
 
 ## Maintenance Notes
 
@@ -41,5 +127,3 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
 - ../../../../tests/init/init-instructions.test.ts
-- ../../../../tests/templates/init-files.test.ts
-- ../../../../tests/integration/init-check-workflow.test.ts

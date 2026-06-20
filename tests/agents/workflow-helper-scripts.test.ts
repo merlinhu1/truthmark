@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { parse } from "yaml";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { renderTruthmarkSkillPackage } from "../../src/templates/workflow-surfaces.js";
@@ -207,7 +206,7 @@ afterEach(async () => {
 });
 
 describe("workflow helper scripts", () => {
-  it("renders parseable helper manifests for every generated workflow host", () => {
+  it("does not inject helper manifests into generated workflow hosts", () => {
     const packageTargets = [
       { host: "codex", skillRoot: ".codex" },
       { host: "opencode", skillRoot: ".opencode" },
@@ -225,52 +224,26 @@ describe("workflow helper scripts", () => {
         const manifest = files.find((file) =>
           file.path.endsWith("/helper-manifest.yml"),
         );
+        const helperPolicy = files.find((file) =>
+          file.path.endsWith("/support/helper-policy.md"),
+        );
         const entrypoint = files.find((file) => file.path.endsWith("/SKILL.md"));
 
-        expect(manifest).toBeDefined();
-        expect(entrypoint?.content).toContain("- helper-manifest.yml");
-
-        const parsed = parse(manifest?.content ?? "") as {
-          helpers?: Record<string, { fallback?: unknown }>;
-        };
-        const expectedReportHelper =
-          workflowId === "truthmark-sync"
-            ? "validate-sync-report"
-            : "validate-document-report";
-
-        expect(parsed.helpers).toBeDefined();
-        expect(parsed.helpers?.[expectedReportHelper]?.fallback).toEqual(
-          expect.any(String),
-        );
-
-        if (workflowId === "truthmark-sync") {
-          expect(parsed.helpers?.[expectedReportHelper]?.fallback).toContain(
-            "Result: supported",
-          );
-        }
+        expect(manifest).toBeUndefined();
+        expect(helperPolicy).toBeUndefined();
+        expect(entrypoint?.content).not.toContain("helper-manifest.yml");
+        expect(entrypoint?.content).not.toContain("support/helper-policy.md");
       }
     }
   });
 
-  it("runs generated helper manifest argv through the Truthmark CLI", async () => {
+  it("keeps report validators available without generated helper manifests", async () => {
     const repo = await materializeSkillPackage("truthmark-sync");
     const skillDirectory = path.join(repo.rootDir, ".agents/skills/truthmark-sync");
-    const manifest = await fs.readFile(
-      path.join(skillDirectory, "helper-manifest.yml"),
-      "utf8",
-    );
-    const parsed = parse(manifest) as {
-      helpers?: Record<string, { command?: { argv?: string[] } }>;
-    };
-    const argv = parsed.helpers?.["validate-sync-report"]?.command?.argv;
 
-    expect(argv).toEqual([
-      "truthmark",
-      "validate",
-      "sync-report",
-      "<report-file>",
-      "--json",
-    ]);
+    await expect(
+      fs.access(path.join(skillDirectory, "helper-manifest.yml")),
+    ).rejects.toThrow();
     await expect(
       fs.access(path.join(skillDirectory, "scripts/validate-sync-report.mjs")),
     ).rejects.toThrow();
@@ -368,7 +341,7 @@ Notes:
     expect(result.json.ok).toBe(true);
   });
 
-  it("rejects a completed Truth Sync report missing helper script statuses", async () => {
+  it("accepts a completed Truth Sync report without helper script statuses", async () => {
     const result = await runCliHelper({
       files: {
         "report.md": `Truth Sync: completed
@@ -397,9 +370,8 @@ Notes:
       args: ["validate", "sync-report", "report.md", "--json"],
     });
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("Helper scripts");
+    expect(result.exitCode).toBe(0);
+    expect(result.json.ok).toBe(true);
   });
 
   it.each([

@@ -11,11 +11,28 @@ describe("installed workflow contract", () => {
       const configResult = await runCli(["config", "--json"], {
         cwd: repo.rootDir,
       });
+      expect(configResult.exitCode).toBe(0);
+      const configFile = await repo.readFile(".truthmark/config.yml");
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        configFile.replace(
+          "version: 2\n",
+          [
+            "version: 2",
+            "platforms:",
+            "  - codex",
+            "  - opencode",
+            "  - claude-code",
+            "  - github-copilot",
+            "  - gemini-cli",
+            "",
+          ].join("\n"),
+        ),
+      );
       const initResult = await runCli(["init", "--json"], {
         cwd: repo.rootDir,
       });
 
-      expect(configResult.exitCode).toBe(0);
       expect(initResult.exitCode).toBe(0);
 
       const agents = await repo.readFile("AGENTS.md");
@@ -43,9 +60,6 @@ describe("installed workflow contract", () => {
       const realizeOpenCodeSkill = await repo.readFile(
         ".opencode/skills/truthmark-realize/SKILL.md",
       );
-      const previewSkill = await repo.readFile(
-        ".agents/skills/truthmark-preview/SKILL.md",
-      );
       const checkSkill = await repo.readFile(
         ".agents/skills/truthmark-check/SKILL.md",
       );
@@ -71,7 +85,7 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("/skill truthmark-structure");
       expect(agents).not.toContain("/skill truthmark-check");
       expect(agents).toContain(
-        "Explicit workflows: Truth Structure, Truth Document, Truth Preview, Truth Realize, Truth Check",
+        "Explicit workflows: Truth Structure, Truth Document, Truth Realize, Truth Check",
       );
       expect(agents).not.toContain(
         "truthmark check --json --workflow truth-sync",
@@ -126,9 +140,12 @@ describe("installed workflow contract", () => {
       );
       expect(realizeOpenCodeSkill).toContain("name: truthmark-realize");
       expect(realizeOpenCodeSkill).toContain("support/report-template.md");
-      expect(previewSkill).toContain("name: truthmark-preview");
-      expect(previewSkill).toContain("Truth Preview is read-only");
-      expect(previewSkill).toContain("intended, not authorized");
+      await expect(
+        repo.readFile(".agents/skills/truthmark-preview/SKILL.md"),
+      ).rejects.toThrow();
+      await expect(
+        repo.readFile(".agents/skills/truthmark-preview/agents/openai.yaml"),
+      ).rejects.toThrow();
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/report-template.md");
       expect(checkSkill).toContain("support/subagents-and-leases.md");

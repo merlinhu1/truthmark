@@ -25,5 +25,3 @@ Progressive disclosure:
 - support/procedure.md — read before edits or detailed auditing; contains core review questions
 - support/report-template.md — read before the final report
 - support/subagents-and-leases.md — read only when using subagents, leases, or accepting worker output
-- helper-manifest.yml — read only when invoking helper validators or validating helper registration
-- support/helper-policy.md — read only when invoking helper validators or reporting helper status

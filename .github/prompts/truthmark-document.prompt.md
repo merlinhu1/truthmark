@@ -12,7 +12,5 @@ Read these host-local files in order only as needed:
 - .github/skills/truthmark-document/support/procedure.md
 - .github/skills/truthmark-document/support/report-template.md
 - .github/skills/truthmark-document/support/subagents-and-leases.md
-- .github/skills/truthmark-document/helper-manifest.yml
-- .github/skills/truthmark-document/support/helper-policy.md
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.

@@ -91,7 +91,6 @@ Beispiele:
 /truthmark-document
 /truthmark-structure
 /truthmark-realize
-/truthmark-preview
 /truthmark-check
 ```
 
@@ -334,7 +333,6 @@ Sie werden von Agenten oder Agenten-Hosts während der Repository-Arbeit genutzt
 | Truth Structure | topology-first | Die Standardroute zu breit ist, Ownership mehrere Bereiche umfasst oder Routendateien noch auf Platzhalter zeigen. | Erstellt oder repariert Routing und Starter-Truth-Dokumente. |
 | Truth Document | implementation-first | Verhalten bereits im Code existiert, aber kanonische Truth-Dokumente fehlen oder schwach sind. | Schreibt nur Truth-Dokumente und Routing. Funktionaler Code darf nicht geändert werden. |
 | Truth Sync | code-first | Funktionaler Code geändert wurde und zugeordnete Truth-Dokumente vor der Übergabe aktualisiert werden müssen könnten. | Aktualisiert Truth-Dokumente. Funktionaler Code darf von Truth Sync nicht umgeschrieben werden. |
-| Truth Preview | read-only | Der Agent vor Änderungen wahrscheinliches Routing einschätzen muss. | Liest nur. Autorisiert keine Schreibzugriffe. |
 | Truth Realize | doc-first | Produkt- oder Architektur-Truth-Dokumente führen und Code daran angepasst werden soll. | Aktualisiert nur Code. Der Agent darf die Truth-Dokumente, die er realisiert, nicht bearbeiten. |
 | Truth Check | audit-first | Ein Reviewer oder Agent die Gesundheit der Repository-Truth auditieren muss. | Auditiert und berichtet. |
 | Truthmark Portal | presentation-only | Ein Mensch ausdrücklich eine durchsuchbare statische HTML-Portalansicht über Repository-Truth-Dokumente anfordert. | Schreibt generierte nicht-kanonische statische Dateien nur unter dem konfigurierten Portal-Ausgabeverzeichnis. |
@@ -408,7 +406,8 @@ Der Agent darf die Truth-Dokumente, die er realisiert, nicht bearbeiten.
 Nutze Truth Preview vor einer Änderung, wenn der Agent wahrscheinliches Routing verstehen muss.
 
 ```text
-/truthmark-preview das wahrscheinliche Truth-Routing für Änderungen an der Billing-API prüfen
+/truthmark-preview das wahrscheinliche Truth-Routing für Änderungen an der Billing-API prüfen (GitHub Copilot)
+/truthmark:preview das wahrscheinliche Truth-Routing für Änderungen an der Billing-API prüfen (Gemini CLI)
 ```
 
 Truth Preview ist read-only.

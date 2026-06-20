@@ -38,7 +38,6 @@ import {
   renderTruthmarkOpenCodeDocWriterAgent,
   renderTruthmarkOpenCodeRouteAuditorAgent,
   renderTruthmarkPortalSkillMetadata,
-  renderTruthmarkPreviewSkillMetadata,
   renderTruthmarkRealizeSkillMetadata,
   renderTruthmarkRouteAuditorAgent,
   renderTruthmarkStructureSkillMetadata,
@@ -82,8 +81,6 @@ import {
   TRUTHMARK_OPENCODE_ROUTE_AUDITOR_AGENT_PATH,
   TRUTHMARK_PORTAL_SKILL_METADATA_PATH,
   TRUTHMARK_PORTAL_SKILL_PATH,
-  TRUTHMARK_PREVIEW_SKILL_METADATA_PATH,
-  TRUTHMARK_PREVIEW_SKILL_PATH,
   TRUTHMARK_REALIZE_SKILL_METADATA_PATH,
   TRUTHMARK_REALIZE_SKILL_PATH,
   TRUTHMARK_ROUTE_AUDITOR_AGENT_PATH,
@@ -130,16 +127,6 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
     {
       path: TRUTHMARK_SYNC_SKILL_METADATA_PATH,
       content: renderTruthmarkSyncSkillMetadata(),
-    },
-    ...renderTruthmarkSkillPackage({
-      skillPath: TRUTHMARK_PREVIEW_SKILL_PATH,
-      workflowId: "truthmark-preview",
-      host: "codex",
-      config,
-    }),
-    {
-      path: TRUTHMARK_PREVIEW_SKILL_METADATA_PATH,
-      content: renderTruthmarkPreviewSkillMetadata(),
     },
     ...renderTruthmarkSkillPackage({
       skillPath: TRUTHMARK_CHECK_SKILL_PATH,
@@ -218,12 +205,6 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
       config,
     }),
     ...renderTruthmarkSkillPackage({
-      skillPath: ".opencode/skills/truthmark-preview/SKILL.md",
-      workflowId: "truthmark-preview",
-      host: "opencode",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
       skillPath: ".opencode/skills/truthmark-check/SKILL.md",
       workflowId: "truthmark-check",
       host: "opencode",
@@ -292,12 +273,6 @@ const claudeFiles = (
       config,
     }),
     ...renderTruthmarkSkillPackage({
-      skillPath: ".claude/skills/truthmark-preview/SKILL.md",
-      workflowId: "truthmark-preview",
-      host: "claude-code",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
       skillPath: ".claude/skills/truthmark-check/SKILL.md",
       workflowId: "truthmark-check",
       host: "claude-code",
@@ -362,12 +337,6 @@ const copilotFiles = (
     ...renderTruthmarkSkillPackage({
       skillPath: ".github/skills/truthmark-sync/SKILL.md",
       workflowId: "truthmark-sync",
-      host: "github-copilot",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".github/skills/truthmark-preview/SKILL.md",
-      workflowId: "truthmark-preview",
       host: "github-copilot",
       config,
     }),
@@ -464,12 +433,6 @@ const geminiFiles = (
     ...renderTruthmarkSkillPackage({
       skillPath: ".gemini/skills/truthmark-sync/SKILL.md",
       workflowId: "truthmark-sync",
-      host: "gemini-cli",
-      config,
-    }),
-    ...renderTruthmarkSkillPackage({
-      skillPath: ".gemini/skills/truthmark-preview/SKILL.md",
-      workflowId: "truthmark-preview",
       host: "gemini-cli",
       config,
     }),

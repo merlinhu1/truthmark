@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-05-30
+last_reviewed: 2026-06-20
 ---
 
 # Repository Overview
@@ -78,15 +78,6 @@ Explain decisions that shape behavior, boundaries, rejected alternatives, or mig
 -->
 
 - Decision (2026-06-14): Truth README files are indexes; behavior truth belongs in bounded leaf docs.
-
-## Engineering Decisions
-
-<!--
-Keep active decisions only, dated inline when added or changed.
-Explain decisions that shape behavior, boundaries, rejected alternatives, or migration constraints; replace stale decisions instead of appending historical logs.
--->
-
-{{decision}}
 
 ## Rationale
 

@@ -7,6 +7,14 @@ import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
 
+const allPlatforms = [
+  "codex",
+  "opencode",
+  "claude-code",
+  "github-copilot",
+  "gemini-cli",
+] as const;
+
 const portalPaths = [
   ".agents/skills/truthmark-portal/SKILL.md",
   ".agents/skills/truthmark-portal/agents/openai.yaml",
@@ -20,15 +28,10 @@ const portalPaths = [
 
 const readOnlyProcedurePaths = [
   ".agents/skills/truthmark-check/support/procedure.md",
-  ".agents/skills/truthmark-preview/support/procedure.md",
   ".opencode/skills/truthmark-check/support/procedure.md",
-  ".opencode/skills/truthmark-preview/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
-  ".claude/skills/truthmark-preview/support/procedure.md",
   ".gemini/skills/truthmark-check/support/procedure.md",
-  ".gemini/skills/truthmark-preview/support/procedure.md",
   ".github/skills/truthmark-check/support/procedure.md",
-  ".github/skills/truthmark-preview/support/procedure.md",
 ];
 
 const syncProcedurePaths = [
@@ -84,6 +87,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("omits generic optional CLI validation from generated user-facing workflow surfaces", () => {
     const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
     const generatedSurfaces = renderGeneratedSurfaces(config);
     const publicWorkflowSurfaces = generatedSurfaces.filter(
       (surface) =>
@@ -115,6 +119,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("keeps compact workflow-specific validation and procedure guidance", () => {
     const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
     const byPath = new Map(
       renderGeneratedSurfaces(config).map((surface) => [
         surface.path,
@@ -126,12 +131,10 @@ describe("Truthmark Portal generated surfaces", () => {
       byPath.get(".agents/skills/truthmark-sync/SKILL.md") ?? "";
     const syncProcedure =
       byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
-    const syncHelperManifest =
-      byPath.get(".agents/skills/truthmark-sync/helper-manifest.yml") ?? "";
-    const syncHelperPolicy =
-      byPath.get(".agents/skills/truthmark-sync/support/helper-policy.md") ?? "";
-    const previewSkill =
-      byPath.get(".agents/skills/truthmark-preview/SKILL.md") ?? "";
+    const previewPrompt =
+      byPath.get(".github/prompts/truthmark-preview.prompt.md") ?? "";
+    const previewCommand =
+      byPath.get(".gemini/commands/truthmark/preview.toml") ?? "";
 
     expect(syncSkill).toContain("Use this skill automatically before finishing");
     expect(syncSkill).not.toContain("Parent workflow:");
@@ -142,20 +145,28 @@ describe("Truthmark Portal generated surfaces", () => {
     );
     expect(syncProcedure).toContain("Code verification is parent-owned");
     expect(syncProcedure).toContain(
-      "Validate the report body before adding this validator's own success status",
+      "truthmark validate sync-report <report-file> --json",
     );
-    expect(syncHelperManifest).toContain("validate-sync-report");
-    expect(syncHelperManifest).toContain("validate-write-lease");
-    expect(syncHelperPolicy).toContain(
-      "Optional helper CLI commands may collect deterministic checkout facts",
+    expect(byPath.has(".agents/skills/truthmark-sync/helper-manifest.yml")).toBe(false);
+    expect(byPath.has(".agents/skills/truthmark-sync/support/helper-policy.md")).toBe(false);
+    expect(byPath.has(".agents/skills/truthmark-preview/SKILL.md")).toBe(false);
+    expect(previewPrompt).toContain("Truth Preview is read-only");
+    expect(previewCommand).toContain("Truth Preview is read-only");
+    expect(previewPrompt).not.toContain("OpenCode /skill truthmark-preview");
+    expect(previewPrompt).not.toContain("Codex /truthmark-preview");
+    expect(previewPrompt).not.toContain("Claude Code /truthmark-preview");
+    expect(previewCommand).not.toContain("OpenCode /skill truthmark-preview");
+    expect(previewCommand).not.toContain("Codex /truthmark:preview");
+    expect(previewCommand).not.toContain("Claude Code /truthmark:preview");
+    expect(previewCommand).not.toContain("GitHub Copilot /truthmark-preview");
+    expect(byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml")).toBe(
+      false,
     );
-    expect(syncHelperPolicy).toContain("truthmark validate ... --json");
-    expect(previewSkill).toContain("Truth Preview is read-only");
-    expect(previewSkill).not.toContain("CLI is unavailable");
   });
 
   it("does not render unused repo-local agent package copies", () => {
     const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
     const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
 
     expect(paths.some((path) => path.startsWith(".truthmark/agent/"))).toBe(false);
@@ -166,6 +177,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("renders host skill packages with colocated native resources", () => {
     const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
     const byPath = new Map(
       renderGeneratedSurfaces(config).map((surface) => [
         surface.path,
@@ -202,6 +214,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
   it("renders Portal surfaces for all configured platforms when enabled", () => {
     const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
     config.truthmark.generated.portal = {
       enabled: true,
     };

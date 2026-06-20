@@ -25,7 +25,6 @@ export const DEFAULT_INSTRUCTION_TARGETS = ["AGENTS.md"] as const;
 
 export const createDefaultRawConfig = () => ({
   version: 2 as const,
-  platforms: [...DEFAULT_PLATFORMS],
   truthmark: {
     workspace: DEFAULT_TRUTHMARK_WORKSPACE.workspace,
     generated: {
