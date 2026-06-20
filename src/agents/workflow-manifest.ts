@@ -2,7 +2,6 @@ export type TruthmarkWorkflowId =
   | "truthmark-sync"
   | "truthmark-structure"
   | "truthmark-document"
-  | "truthmark-preview"
   | "truthmark-realize"
   | "truthmark-check"
   | "truthmark-portal";
@@ -267,49 +266,6 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     reviewQuestions: ["lane classification", "truth-doc ownership"],
     allowedWrites: ["functional code"],
     reportSections: ["Truth docs used", "Code updated", "Verification"],
-  },
-  "truthmark-preview": {
-    id: "truthmark-preview",
-    displayName: "Truthmark Preview",
-    description:
-      "Use when the user explicitly asks to preview likely workflow routing, target files, writes, or subagent use before edits. Not for validation, automatic gates, final correctness, or replacing Truth Check.",
-    shortDescription:
-      "Preview likely workflow routing before edits; read-only and explicit",
-    defaultPrompt:
-      "Use Truthmark Preview to estimate likely workflow routing before edits.",
-    allowImplicitInvocation: false,
-    positiveTriggers: [
-      "explicit request to preview Truthmark workflow routing before edits",
-      "explicit request for likely route owner, target docs, expected writes, or subagent plan",
-    ],
-    negativeTriggers: [
-      "normal validation or final correctness audit",
-      "automatic preflight or finish-time review",
-      "request to mutate truth docs, routing, or code",
-    ],
-    forbiddenAdjacency: [
-      "must not replace Truth Check",
-      "must not run Truth Sync automatically",
-      "must not authorize later edits or issue write leases",
-    ],
-    reviewQuestions: [
-      "read-only boundary",
-      "intended-not-authorized handoff",
-      "manual handoff questions",
-    ],
-    allowedWrites: ["none by default"],
-    reportSections: [
-      "Requested outcome",
-      "Likely workflow",
-      "Why this workflow",
-      "Likely route owner",
-      "Expected write classes",
-      "Expected target files",
-      "Suggested subagent use",
-      "Manual handoff questions",
-      "Handoff",
-    ],
-    subagents: ["truth_route_auditor"],
   },
   "truthmark-check": {
     id: "truthmark-check",

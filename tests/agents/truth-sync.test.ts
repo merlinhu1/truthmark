@@ -13,7 +13,7 @@ import {
 } from "../../src/agents/truth-sync.js";
 import {
   renderTruthmarkCopilotSyncPrompt,
-  renderTruthmarkGeminiSyncCommand,
+  renderTruthmarkCursorSyncRule,
   renderTruthmarkSyncClaudeSkill,
   renderTruthmarkSyncLocalSkill,
   renderTruthmarkSkillPackage,
@@ -25,7 +25,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
   it("renders the prepared-context worker contract and result shape", () => {
     const prompt = renderTruthSyncWorkerPrompt();
 
-    expect(TRUTH_SYNC_EXPLICIT_INVOCATIONS).toContain("/truthmark:sync");
+    expect(TRUTH_SYNC_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-sync");
     expect(prompt).toContain("parent provides the task focus");
     expect(prompt).toContain("explicit write lease");
     expect(prompt).toContain(
@@ -146,7 +146,8 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction",
     );
-    expect(skillBody).toContain("/truthmark:sync");
+    expect(skillBody).not.toContain("OpenCode /skill truthmark-sync");
+    expect(skillBody).not.toContain("Cursor @truthmark-sync");
   });
 
   it("uses the provided hierarchy config in embedded report examples", () => {
@@ -205,7 +206,6 @@ describe("Truth Sync generated metadata", () => {
       "truthmark-structure",
       "truthmark-document",
       "truthmark-sync",
-      "truthmark-preview",
       "truthmark-realize",
       "truthmark-check",
       "truthmark-portal",
@@ -280,20 +280,20 @@ describe("Truth Sync generated metadata", () => {
       'short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"',
     );
     expect(metadata).toContain("allow_implicit_invocation: true");
-    expect(renderTruthmarkGeminiSyncCommand()).toContain(
-      'description = "Use automatically at finish-time after functional code changes',
+    expect(renderTruthmarkCursorSyncRule()).toContain(
+      'description: Use automatically at finish-time after functional code changes',
     );
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
     );
-    expect(renderTruthmarkGeminiSyncCommand()).toContain(
-      "This command is the Gemini CLI entrypoint for Truthmark Sync.",
+    expect(renderTruthmarkCursorSyncRule()).toContain(
+      "This rule is the Cursor entrypoint for Truthmark Sync.",
     );
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
     );
     for (const surface of [
-      renderTruthmarkGeminiSyncCommand(),
+      renderTruthmarkCursorSyncRule(),
       renderTruthmarkCopilotSyncPrompt(),
     ]) {
       expect(surface).toContain(
@@ -302,12 +302,20 @@ describe("Truth Sync generated metadata", () => {
       expect(surface).toContain(
         "Do not invoke another Truthmark command from here.",
       );
-      expect(surface).toContain("support/procedure.md");
-      expect(surface).toContain("support/report-template.md");
       expect(surface).not.toContain("helper-manifest.yml");
       expect(surface).not.toContain("support/helper-policy.md");
       expect(surface).not.toContain("helper package unavailable");
     }
+
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain("support/procedure.md");
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorSyncRule()).not.toContain("support/procedure.md");
+    expect(renderTruthmarkCursorSyncRule()).not.toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorSyncRule()).not.toContain("Quick procedure:");
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {
@@ -348,7 +356,7 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkSyncLocalSkill()).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkGeminiSyncCommand()).not.toContain(
+    expect(renderTruthmarkCursorSyncRule()).not.toContain(
       "Codex subagent mode:",
     );
     expect(renderTruthmarkCopilotSyncPrompt()).not.toContain(

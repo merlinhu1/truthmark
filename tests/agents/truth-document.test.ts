@@ -13,7 +13,7 @@ import {
   renderTruthmarkDocumentLocalSkill,
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
-  renderTruthmarkGeminiDocumentCommand,
+  renderTruthmarkCursorDocumentRule,
 } from "../../src/templates/workflow-surfaces.js";
 
 describe("renderTruthDocumentSkillBody", () => {
@@ -37,7 +37,7 @@ describe("renderTruthDocumentSkillBody", () => {
   it("renders the manual existing-implementation documentation workflow", () => {
     const skill = renderTruthDocumentSkillBody();
 
-    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("/truthmark:document");
+    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-document");
     expect(skill).toContain("name: truthmark-document");
     expect(skill).toContain("manual and implementation-first");
     expect(skill).toContain("existing implemented behavior");
@@ -170,16 +170,14 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentClaudeSkill()).toContain(
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).toContain(
-      "/skill truthmark-document",
-    );
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
       "Codex subagent mode:",
     );
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).toContain("/truthmark:document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("OpenCode /skill truthmark-document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("Cursor @truthmark-document");
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'display_name: "Truthmark Document"',
     );
@@ -189,23 +187,35 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'refresh_command: "truthmark init"',
     );
-    expect(renderTruthmarkGeminiDocumentCommand()).toContain(
-      "This command is the Gemini CLI entrypoint for Truthmark Document.",
+    expect(renderTruthmarkCursorDocumentRule()).toContain(
+      "This rule is the Cursor entrypoint for Truthmark Document.",
     );
     expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
       "This prompt is the GitHub Copilot entrypoint for Truthmark Document.",
     );
     for (const surface of [
-      renderTruthmarkGeminiDocumentCommand(),
+      renderTruthmarkCursorDocumentRule(),
       renderTruthmarkCopilotDocumentPrompt(),
     ]) {
-      expect(surface).toContain("support/procedure.md");
-      expect(surface).toContain("support/report-template.md");
       expect(surface).toContain("Do not invoke another Truthmark command from here.");
       expect(surface).toContain(
         "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
       );
       expect(surface).not.toContain("render the full workflow");
     }
+
+    expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
+      "support/procedure.md",
+    );
+    expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
+      "support/procedure.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
+      "support/report-template.md",
+    );
+    expect(renderTruthmarkCursorDocumentRule()).not.toContain("Quick procedure:");
   });
 });

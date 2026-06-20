@@ -5,7 +5,6 @@ Truthmark-managed generated file. Refresh with truthmark init when truthmark che
 # Truthmark Document
 
 Use this skill to document existing implemented behavior when no functional-code changes are required for the task.
-Invocations: OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Gemini CLI /truthmark:document.
 
 Truth Document is manual and implementation-first:
 

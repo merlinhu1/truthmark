@@ -166,18 +166,15 @@ export const classifyPath = (
     normalizedPath.startsWith(".agents/skills/truthmark-") ||
     normalizedPath.startsWith(".claude/") ||
     normalizedPath.startsWith(".codex/") ||
-    normalizedPath.startsWith(".gemini/agents/truth-") ||
-    normalizedPath.startsWith(".gemini/commands/") ||
-    normalizedPath.startsWith(".gemini/skills/truthmark-") ||
     normalizedPath.startsWith(".opencode/") ||
+    normalizedPath.startsWith(".antigravity/rules/truthmark-") ||
+    normalizedPath.startsWith(".cursor/rules/truthmark-") ||
     normalizedPath === ".github/copilot-instructions.md" ||
     normalizedPath.startsWith(".github/agents/truth-") ||
     normalizedPath.startsWith(".github/prompts/truthmark-") ||
     normalizedPath.startsWith(".github/skills/truthmark-") ||
     normalizedPath === "AGENTS.md" ||
-    normalizedPath === "CLAUDE.md" ||
-    normalizedPath === "GEMINI.md" ||
-    normalizedPath.startsWith(".gemini/commands/truthmark/")
+    normalizedPath === "CLAUDE.md"
   ) {
     return "derived";
   }

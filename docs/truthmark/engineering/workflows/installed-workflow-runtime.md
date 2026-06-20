@@ -22,7 +22,7 @@ The source manifest and renderers are the package-generation authority.
 
 Fresh configs do not assume a host platform:
 
-- Host-specific surfaces are generated only when `.truthmark/config.yml` explicitly lists platforms such as Codex, OpenCode, Claude Code, GitHub Copilot, or Gemini CLI.
+- Host-specific surfaces are generated only when `.truthmark/config.yml` explicitly lists platforms such as Codex, OpenCode, Claude Code, GitHub Copilot, Antigravity, or Cursor.
 
 Generated host skill directories are native skill packages for write-capable and audit workflows:
 
@@ -35,20 +35,26 @@ Generated helper manifests and helper policy support files are not emitted:
 - Optional validation commands stay in workflow metadata.
 - Report validation accepts manual fallback evidence.
 
-Truth Preview is read-only and explicit:
+Truthmark no longer emits Truth Preview as a generated host surface:
 
-- Copilot and Gemini receive prompt-command bodies instead of standalone skill packages.
-- Preview prompt-command bodies include a compact field checklist rather than embedding the full markdown report example.
+- No configured host receives a Preview skill package, prompt, or command.
+- Preview-like route/workflow selection remains internal advisory behavior that agents can perform with direct checkout inspection or optional workflow-status/impact helpers.
 
 Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
 
 - Host surfaces are the runtime surfaces agents actually load.
 - Duplicating workflow packages under `.truthmark/agent/` would add repository docs with no active host consumer.
 
-GitHub Copilot prompts, Gemini commands, and top-level managed instruction blocks stay thin:
+GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 
 - They point to host-native workflow entrypoints when a host skill package exists.
 - They do not embed full workflow bodies or cross-host invocation lists.
+
+Antigravity and Cursor rule files are flat host rule surfaces:
+
+- They inline the workflow procedure and report template because those hosts do not consume the package-local `support/` directory model.
+- They omit the duplicate quick-procedure block and do not reference nonexistent `support/` files.
+- They keep only host-local invocation framing and do not embed cross-host invocation lists.
 
 Generated-surface checks report missing or stale configured host-native skill package files.
 
@@ -56,7 +62,7 @@ Workflow manifest entries use review-oriented questions that surface as a Workfl
 
 Evidence-oriented entries surface as `evidencePrompts`.
 
-Generated GitHub Copilot prompts and Gemini commands act as compact host entrypoint adapters:
+Generated GitHub Copilot prompt files act as compact host entrypoint adapters:
 
 - They direct the current invocation to host-local skill package files.
 - They avoid dispatching another Truthmark command.
@@ -94,7 +100,7 @@ Truth Structure stays topology-first:
 
 Other write-capable truth workflows preserve lane-specific classification before canonical truth writes.
 
-Read-only Preview and Check surfaces classify lane ownership for reporting without write-authorizing phrasing.
+Read-only Check surfaces classify lane ownership for reporting without write-authorizing phrasing.
 
 The manual Truth Realize prompt path uses Realize-specific lane guidance:
 
@@ -102,11 +108,11 @@ The manual Truth Realize prompt path uses Realize-specific lane guidance:
 - Read engineering truth as implementation context.
 - Do not write truth docs or truth routing while realizing docs into code.
 
-Truth Preview keeps route selection thin:
+Preview-like route selection stays internal and thin when agents need it before choosing a workflow:
 
 - Read the root route index first.
 - Read only child route files relevant to the selected scope or changed paths.
-- Report unresolved manual handoff questions rather than final correctness.
+- Report unresolved manual handoff questions instead of treating selection as final correctness or write authorization.
 
 Truth Check and read-only route auditors use route-first bounded inspection for lane and cross-lane relationship checks:
 
@@ -188,7 +194,7 @@ Committed workflow files are the runtime contract. The CLI installs and validate
 - Decision (2026-06-17): Source manifest/renderers are the workflow-generation authority; configured host skill directories are native generated packages with colocated resources. Truthmark does not emit a separate `.truthmark/agent/` workflow copy when no host surface consumes it.
 - Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are generated only for explicit `platforms` entries.
 - Decision (2026-06-18): Generated helper manifest and helper policy files are retired. Validation helpers remain as optional workflow metadata and explicit `truthmark validate ...` commands, not package support files.
-- Decision (2026-06-18): Truth Preview is read-only and explicit, so it remains a compact Copilot/Gemini prompt-command body instead of a standalone native skill package.
+- Decision (2026-06-20): Truth Preview generated host surfaces are retired. The repository no longer emits Preview skill packages, Copilot prompts, Antigravity rules, or Cursor rules; route/workflow preview remains an internal read-only selection behavior rather than an installed workflow surface.
 - Decision (2026-06-18): Truth Sync retains bounded topology repair. Missing, stale, broad, overloaded, or catch-all route ownership is repaired inside Sync when safe and scoped to the changed functional code; only unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure.
 
 ## Rationale

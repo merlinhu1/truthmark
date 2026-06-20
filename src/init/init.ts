@@ -163,14 +163,14 @@ const diagnosticCategoryForPath = (
     filePath.startsWith(".claude/skills/truthmark-realize/") ||
     filePath.startsWith(".opencode/skills/truthmark-realize/") ||
     filePath.startsWith(".agents/skills/truthmark-realize/") ||
-    filePath.startsWith(".gemini/skills/truthmark-realize/")
+    filePath.startsWith(".antigravity/rules/truthmark-realize") ||
+    filePath.startsWith(".cursor/rules/truthmark-realize")
   ) {
     return "realization";
   }
 
   if (
     filePath === "CLAUDE.md" ||
-    filePath === "GEMINI.md" ||
     filePath === ".github/copilot-instructions.md" ||
     filePath.startsWith(".github/prompts/truthmark-") ||
     filePath.startsWith(".github/agents/truth-") ||
@@ -180,8 +180,8 @@ const diagnosticCategoryForPath = (
     filePath.startsWith(".opencode/skills/truthmark-") ||
     filePath.startsWith(".opencode/agents/") ||
     filePath.startsWith(".codex/agents/") ||
-    filePath.startsWith(".gemini/agents/truth-") ||
-    filePath.startsWith(".gemini/skills/truthmark-")
+    filePath.startsWith(".antigravity/rules/truthmark-") ||
+    filePath.startsWith(".cursor/rules/truthmark-")
   ) {
     return "truth-sync";
   }
@@ -190,13 +190,6 @@ const diagnosticCategoryForPath = (
     return "truth-sync";
   }
 
-  if (filePath.startsWith(".gemini/commands/truthmark/realize")) {
-    return "realization";
-  }
-
-  if (filePath.startsWith(".gemini/commands/truthmark/")) {
-    return "truth-sync";
-  }
 
   if (filePath === config.truthmark.paths.routesIndex) {
     return "area-index";

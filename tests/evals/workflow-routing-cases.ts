@@ -128,20 +128,6 @@ export const WORKFLOW_ROUTING_EVAL_CASES: WorkflowRoutingEvalCase[] = [
     source: "manifest-positive",
   },
   {
-    id: "preview-routing-before-edits",
-    userPrompt:
-      "Before we edit anything, preview which Truthmark workflow and route owner would apply to src/auth/session.ts.",
-    changedFiles: ["src/auth/session.ts"],
-    expectedWorkflow: "truthmark-preview",
-    expectedReason: "preview likely workflow routing before edits",
-    expectedManifestSignals: [
-      "preview likely workflow routing",
-      "Not for validation",
-    ],
-    forbiddenWorkflows: ["truthmark-sync", "truthmark-check"],
-    source: "manifest-positive",
-  },
-  {
     id: "portal-explicit-refresh",
     userPrompt:
       "Refresh the committed Truthmark Portal static HTML docs site under docs/truthmark/generated/portal.",

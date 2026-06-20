@@ -32,7 +32,7 @@ describe("renderTruthCheckSkillBody", () => {
   it("renders the agent-led truth audit workflow", () => {
     const skill = renderTruthCheckSkillBody();
 
-    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("/truthmark:check");
+    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-check");
     expect(skill).toContain("name: truthmark-check");
     expect(skill).toContain(
       "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
@@ -84,7 +84,7 @@ describe("renderTruthCheckSkillBody", () => {
 
 describe("Truth Check generated surfaces", () => {
   const readOnlyContextBoundary =
-    "Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
+    "Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/rules, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
 
   it("renders Codex metadata and OpenCode skill content", () => {
     expect(renderTruthmarkCheckSkill()).toContain("name: truthmark-check");
@@ -97,9 +97,6 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckSkill()).toContain("truth_doc_reviewer");
     expect(renderTruthmarkCheckSkill()).toContain(
       "Parent agent owns the final Truth Check report",
-    );
-    expect(renderTruthmarkCheckLocalSkill()).toContain(
-      "/skill truthmark-check",
     );
     expect(renderTruthmarkCheckLocalSkill()).not.toContain("Codex subagent mode:");
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
@@ -114,7 +111,8 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
       "truth-doc-reviewer subagent",
     );
-    expect(renderTruthmarkCheckLocalSkill()).toContain("/truthmark:check");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain("OpenCode /skill truthmark-check");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain("Cursor @truthmark-check");
     expect(renderTruthmarkCheckSkillMetadata()).toContain(
       'display_name: "Truthmark Check"',
     );

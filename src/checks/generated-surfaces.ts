@@ -51,7 +51,6 @@ const GENERATED_HOST_SKILL_ROOTS = [
   ".opencode/skills",
   ".claude/skills",
   ".github/skills",
-  ".gemini/skills",
 ] as const;
 
 const RETIRED_SKILL_HELPER_PATHS = [
@@ -60,6 +59,13 @@ const RETIRED_SKILL_HELPER_PATHS = [
 ] as const;
 
 const RETIRED_PACKAGE_DIRECTORIES = ["truthmark-preview"] as const;
+
+const RETIRED_GENERATED_SURFACE_PATHS = [
+  "GEMINI.md",
+  ".github/prompts/truthmark-preview.prompt.md",
+] as const;
+
+const RETIRED_GENERATED_SURFACE_ROOTS = [".gemini"] as const;
 
 const pathExists = async (absolutePath: string): Promise<boolean> => {
   try {
@@ -112,6 +118,33 @@ const collectRetiredGeneratedSurfaces = async (
   expectedSurfacePaths: Set<string>,
 ): Promise<string[]> => {
   const legacyCandidates = new Set<string>();
+
+  for (const retiredPath of RETIRED_GENERATED_SURFACE_PATHS) {
+    const absoluteRetiredPath = resolveRepoPath(rootDir, retiredPath);
+
+    if (
+      (await pathExists(absoluteRetiredPath)) &&
+      !expectedSurfacePaths.has(retiredPath)
+    ) {
+      legacyCandidates.add(retiredPath);
+    }
+  }
+
+  for (const retiredRoot of RETIRED_GENERATED_SURFACE_ROOTS) {
+    const absoluteRetiredRoot = resolveRepoPath(rootDir, retiredRoot);
+
+    if (!(await pathExists(absoluteRetiredRoot))) {
+      continue;
+    }
+
+    const retiredFiles = await listDirectoryFiles(rootDir, retiredRoot);
+
+    for (const filePath of retiredFiles) {
+      if (!expectedSurfacePaths.has(filePath)) {
+        legacyCandidates.add(filePath);
+      }
+    }
+  }
 
   for (const skillRoot of GENERATED_HOST_SKILL_ROOTS) {
     const absoluteSkillRoot = resolveRepoPath(rootDir, skillRoot);

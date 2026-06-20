@@ -9,17 +9,12 @@ user-invocable: true
 
 Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
 
-Invocations: OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Gemini CLI /truthmark:sync.
-
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
 - Skip docs-only, formatting-only, behavior-preserving renames with no truth impact, missing config, and no-code changes.
 - Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect relevant canonical docs directly.
 - direct checkout inspection is the canonical path; do not require the truthmark binary.
 - May write canonical truth docs and truth routing files only; must not rewrite functional code.
-- Read support/procedure.md before editing truth docs.
-- Read support/subagents-and-leases.md only when dispatching or accepting worker output.
-- Read support/report-template.md before the final report.
 
 Progressive disclosure:
 - support/procedure.md — read before edits or detailed auditing; contains core review questions

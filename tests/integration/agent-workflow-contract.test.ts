@@ -24,7 +24,8 @@ describe("installed workflow contract", () => {
             "  - opencode",
             "  - claude-code",
             "  - github-copilot",
-            "  - gemini-cli",
+            "  - antigravity",
+            "  - cursor",
             "",
           ].join("\n"),
         ),
@@ -71,6 +72,12 @@ describe("installed workflow contract", () => {
       );
       const claudeRouteAuditorAgent = await repo.readFile(
         ".claude/agents/truth-route-auditor.md",
+      );
+      const antigravitySyncRule = await repo.readFile(
+        ".antigravity/rules/truthmark-sync.md",
+      );
+      const cursorSyncRule = await repo.readFile(
+        ".cursor/rules/truthmark-sync.mdc",
       );
 
       expect(agents.split("\n").length).toBeLessThanOrEqual(20);
@@ -146,6 +153,17 @@ describe("installed workflow contract", () => {
       await expect(
         repo.readFile(".agents/skills/truthmark-preview/agents/openai.yaml"),
       ).rejects.toThrow();
+      await expect(
+        repo.readFile(".github/prompts/truthmark-preview.prompt.md"),
+      ).rejects.toThrow();
+      await expect(
+        repo.readFile(".gemini/commands/truthmark/preview.toml"),
+      ).rejects.toThrow();
+      await expect(repo.readFile("GEMINI.md")).rejects.toThrow();
+      await expect(repo.readFile(".gemini/skills/truthmark-sync/SKILL.md")).rejects.toThrow();
+      await expect(repo.readFile(".gemini/commands/truthmark/sync.toml")).rejects.toThrow();
+      expect(antigravitySyncRule).toContain("This rule is the Antigravity entrypoint");
+      expect(cursorSyncRule).toContain("This rule is the Cursor entrypoint");
       expect(checkSkill).toContain("name: truthmark-check");
       expect(checkSkill).toContain("support/report-template.md");
       expect(checkSkill).toContain("support/subagents-and-leases.md");

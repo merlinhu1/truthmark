@@ -20,7 +20,7 @@ const renderMarkdownExample = (content: string): string => {
 };
 
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Gemini CLI /truthmark:check.";
+  "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Antigravity @truthmark-check; Cursor @truthmark-check.";
 
 export const renderTruthCheckReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -90,8 +90,6 @@ export const renderTruthCheckProcedureBody = (
   return `# Truthmark Check
 
 Use this skill to audit repository truth health.
-
-Invocations: ${TRUTH_CHECK_EXPLICIT_INVOCATIONS}
 
 Truth Check is agent-led:
 

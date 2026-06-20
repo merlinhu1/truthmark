@@ -5,7 +5,6 @@ import {
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
   renderCopilotCustomAgentModeSection,
-  renderGeminiSubagentModeSection,
   renderHierarchySummary,
   renderOpenCodeSubagentModeSection,
   renderTruthDocOwnershipGateSection,
@@ -13,36 +12,25 @@ import {
   resolveProductTruthRoot,
 } from "../agents/shared.js";
 import {
-  TRUTH_CHECK_EXPLICIT_INVOCATIONS,
   renderTruthCheckProcedureBody,
   renderTruthCheckReportExample,
   renderTruthCheckSkillBody,
 } from "../agents/truth-check.js";
 import {
-  TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
   renderTruthDocumentProcedureBody,
   renderTruthDocumentReportExample,
   renderTruthDocumentSkillBody,
 } from "../agents/truth-document.js";
 import {
-  TRUTH_PREVIEW_EXPLICIT_INVOCATIONS,
-  renderTruthPreviewAdapterReportFields,
-  renderTruthPreviewProcedureBody,
-  renderTruthPreviewReportExample,
-} from "../agents/truth-preview.js";
-import {
-  TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
   renderTruthmarkPortalProcedureBody,
   renderTruthmarkPortalSkillBody,
 } from "../agents/truthmark-portal.js";
 import {
-  TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
   renderTruthStructureProcedureBody,
   renderTruthStructureReportExample,
   renderTruthStructureSkillBody,
 } from "../agents/truth-structure.js";
 import {
-  TRUTH_SYNC_EXPLICIT_INVOCATIONS,
   renderTruthSyncProcedureBody,
   renderTruthSyncSkillBody,
 } from "../agents/truth-sync.js";
@@ -127,37 +115,41 @@ export const TRUTHMARK_CLAUDE_DOC_REVIEWER_AGENT_PATH =
 export const TRUTHMARK_CLAUDE_DOC_WRITER_AGENT_PATH =
   ".claude/agents/truth-doc-writer.md";
 
-export const TRUTHMARK_GEMINI_STRUCTURE_COMMAND_PATH =
-  ".gemini/commands/truthmark/structure.toml";
+export const TRUTHMARK_ANTIGRAVITY_STRUCTURE_RULE_PATH =
+  ".antigravity/rules/truthmark-structure.md";
 
-export const TRUTHMARK_GEMINI_DOCUMENT_COMMAND_PATH =
-  ".gemini/commands/truthmark/document.toml";
+export const TRUTHMARK_ANTIGRAVITY_DOCUMENT_RULE_PATH =
+  ".antigravity/rules/truthmark-document.md";
 
-export const TRUTHMARK_GEMINI_SYNC_COMMAND_PATH =
-  ".gemini/commands/truthmark/sync.toml";
+export const TRUTHMARK_ANTIGRAVITY_SYNC_RULE_PATH =
+  ".antigravity/rules/truthmark-sync.md";
 
-export const TRUTHMARK_GEMINI_REALIZE_COMMAND_PATH =
-  ".gemini/commands/truthmark/realize.toml";
+export const TRUTHMARK_ANTIGRAVITY_REALIZE_RULE_PATH =
+  ".antigravity/rules/truthmark-realize.md";
 
-export const TRUTHMARK_GEMINI_CHECK_COMMAND_PATH =
-  ".gemini/commands/truthmark/check.toml";
+export const TRUTHMARK_ANTIGRAVITY_CHECK_RULE_PATH =
+  ".antigravity/rules/truthmark-check.md";
 
-export const TRUTHMARK_GEMINI_PREVIEW_COMMAND_PATH =
-  ".gemini/commands/truthmark/preview.toml";
+export const TRUTHMARK_ANTIGRAVITY_PORTAL_RULE_PATH =
+  ".antigravity/rules/truthmark-portal.md";
 
-export const TRUTHMARK_GEMINI_PORTAL_COMMAND_PATH =
-  ".gemini/commands/truthmark/portal.toml";
+export const TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH =
+  ".cursor/rules/truthmark-structure.mdc";
 
-export const TRUTHMARK_GEMINI_ROUTE_AUDITOR_AGENT_PATH =
-  ".gemini/agents/truth-route-auditor.md";
+export const TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH =
+  ".cursor/rules/truthmark-document.mdc";
 
-export const TRUTHMARK_GEMINI_CLAIM_VERIFIER_AGENT_PATH =
-  ".gemini/agents/truth-claim-verifier.md";
+export const TRUTHMARK_CURSOR_SYNC_RULE_PATH =
+  ".cursor/rules/truthmark-sync.mdc";
 
-export const TRUTHMARK_GEMINI_DOC_REVIEWER_AGENT_PATH =
-  ".gemini/agents/truth-doc-reviewer.md";
-export const TRUTHMARK_GEMINI_DOC_WRITER_AGENT_PATH =
-  ".gemini/agents/truth-doc-writer.md";
+export const TRUTHMARK_CURSOR_REALIZE_RULE_PATH =
+  ".cursor/rules/truthmark-realize.mdc";
+
+export const TRUTHMARK_CURSOR_CHECK_RULE_PATH =
+  ".cursor/rules/truthmark-check.mdc";
+
+export const TRUTHMARK_CURSOR_PORTAL_RULE_PATH =
+  ".cursor/rules/truthmark-portal.mdc";
 
 export const TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH =
   ".github/prompts/truthmark-structure.prompt.md";
@@ -174,9 +166,6 @@ export const TRUTHMARK_COPILOT_REALIZE_PROMPT_PATH =
 export const TRUTHMARK_COPILOT_CHECK_PROMPT_PATH =
   ".github/prompts/truthmark-check.prompt.md";
 
-export const TRUTHMARK_COPILOT_PREVIEW_PROMPT_PATH =
-  ".github/prompts/truthmark-preview.prompt.md";
-
 export const TRUTHMARK_COPILOT_PORTAL_PROMPT_PATH =
   ".github/prompts/truthmark-portal.prompt.md";
 
@@ -190,16 +179,6 @@ export const TRUTHMARK_COPILOT_DOC_REVIEWER_AGENT_PATH =
   ".github/agents/truth-doc-reviewer.md";
 export const TRUTHMARK_COPILOT_DOC_WRITER_AGENT_PATH =
   ".github/agents/truth-doc-writer.md";
-
-const renderGeminiCommand = (description: string, prompt: string): string => {
-  const promptWithArgs = `${prompt.trimEnd()}\nUser focus or arguments: {{args}}`;
-
-  return `description = "${description}"
-prompt = '''
-${promptWithArgs}
-'''
-`;
-};
 
 const renderCopilotPromptFile = (
   description: string,
@@ -262,8 +241,7 @@ type TruthmarkSkillPackageHost =
   | "codex"
   | "opencode"
   | "claude-code"
-  | "github-copilot"
-  | "gemini-cli";
+  | "github-copilot";
 
 type TruthmarkSkillPackageFile = {
   path: string;
@@ -273,14 +251,10 @@ type TruthmarkSkillPackageFile = {
 type WorkflowPackageDefinition = {
   title: string;
   argumentHint: string;
-  invocations: string;
   use: (config: TruthmarkConfig) => string;
   quickRules: (config: TruthmarkConfig) => string[];
   parentRule?: string;
 };
-
-const TRUTH_REALIZE_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.";
 
 const routeFilesHint = (config: TruthmarkConfig): string =>
   `${config.truthmark.paths.routesIndex}; ${config.truthmark.paths.routeAreasRoot}/`;
@@ -292,15 +266,12 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   "truthmark-structure": {
     title: "Truthmark Structure",
     argumentHint: "Optional area, directory, or routing concern",
-    invocations: TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS,
     use: () => "Use this skill to design or repair Truthmark area structure.",
     quickRules: (config) => [
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect current docs and relevant code directly.`,
       "Define areas by product or behavior ownership, not by mechanical directory mirroring.",
       "Do not edit functional code.",
-      "Read support/procedure.md before writing route or starter truth-doc changes.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns all Truth Structure writes and final topology decisions",
@@ -309,7 +280,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     title: "Truthmark Document",
     argumentHint:
       "Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document",
-    invocations: TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill to document existing implemented behavior when no functional-code changes are required for the task.",
     quickRules: (config) => [
@@ -317,9 +287,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect existing canonical docs, implementation code, and tests directly.`,
       "Document current implemented behavior; do not invent future behavior.",
       "May write canonical truth docs and truth routing files only; must not write functional code.",
-      "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
@@ -327,7 +294,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
   "truthmark-sync": {
     title: "Truthmark Sync",
     argumentHint: "Optional changed-code area, truth-doc area, or sync focus",
-    invocations: TRUTH_SYNC_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.",
     quickRules: (config) => [
@@ -336,35 +302,14 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect relevant canonical docs directly.`,
       "direct checkout inspection is the canonical path; do not require the truthmark binary.",
       "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
-      "Read support/procedure.md before editing truth docs.",
-      "Read support/subagents-and-leases.md only when dispatching or accepting worker output.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule:
       "Parent agent owns Truth Sync acceptance, lease validation, and final report",
-  },
-  "truthmark-preview": {
-    title: "Truthmark Preview",
-    argumentHint:
-      "Optional requested outcome, code area, doc path, or routing question",
-    invocations: TRUTH_PREVIEW_EXPLICIT_INVOCATIONS.copilot,
-    use: () =>
-      "Use this skill only when the user explicitly asks to preview Truthmark routing or workflow choice before edits.",
-    quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
-      `Inspect .truthmark/config.yml and the root route index (${config.truthmark.paths.routesIndex}) first when present; then inspect only child route files under ${config.truthmark.paths.routeAreasRoot}/ that are relevant to the selected scope or changed paths, plus the truth docs or implementation files needed to preview ownership.`,
-      "Truth Preview is read-only; this report is intended, not authorized.",
-      "must not edit files and must not issue write leases; do not run Truth Sync automatically, replace Truth Check, claim final correctness, or mutate code.",
-      "Use optional read-only route-auditor evidence only when it reduces context or clarifies ownership.",
-      "Hand off to the selected workflow after user approval.",
-    ],
-    parentRule: "Parent agent owns the final Truth Preview report",
   },
   "truthmark-realize": {
     title: "Truthmark Realize",
     argumentHint:
       "Optional truth doc path, area, or desired code behavior to realize",
-    invocations: TRUTH_REALIZE_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to realize truth docs into code.",
     quickRules: (config) => [
@@ -372,29 +317,22 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Read the source truth docs, inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist, then inspect tests and relevant functional code directly.`,
       "Truth docs lead; code follows.",
       "may write functional code only; must not edit truth docs or truth routing while realizing those docs.",
-      "Read support/procedure.md before changing code.",
-      "Read support/report-template.md before the final report.",
     ],
   },
   "truthmark-check": {
     title: "Truthmark Check",
     argumentHint: "Optional area, doc path, or audit focus",
-    invocations: TRUTH_CHECK_EXPLICIT_INVOCATIONS,
     use: () => "Use this skill to audit repository truth health.",
     quickRules: (config) => [
       "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect canonical docs and relevant implementation directly.`,
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
-      "Read support/procedure.md before auditing details.",
-      "Read support/subagents-and-leases.md only when dispatching verifier subagents.",
-      "Read support/report-template.md before the final report.",
     ],
     parentRule: "Parent agent owns the final Truth Check report",
   },
   "truthmark-portal": {
     title: "Truthmark Portal",
     argumentHint: "Optional portal generation focus",
-    invocations: TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS,
     use: () =>
       "Use this skill only when the user explicitly asks to generate or refresh the committed static HTML Truthmark Portal.",
     quickRules: (config) => [
@@ -406,8 +344,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
       `Write only under fixed Portal output ${config.truthmark.paths.portalOutput}.`,
       `Use determined Portal template ${config.truthmark.paths.portalTemplate} when present; no .truthmark/index.json dependency.`,
       "Use no remote dependencies by default and include source provenance on every page.",
-      "Read support/procedure.md before generating Portal output.",
-      "Read support/report-template.md before the final report.",
     ],
   },
 };
@@ -479,10 +415,6 @@ const renderWorkflowReportTemplate = (
           manualReviewFiles: [config.truthmark.paths.routesIndex],
           nextAction: "update routing metadata and rerun Truth Sync",
         }),
-      )}`;
-    case "truthmark-preview":
-      return `Report completion in this shape:\n${renderMarkdownExample(
-        renderTruthPreviewReportExample(config),
       )}`;
     case "truthmark-realize":
       return `Report completion in this shape:\n\n${renderMarkdownExample(`Truth Realize: completed
@@ -556,8 +488,6 @@ const renderWorkflowProcedure = (
       return renderTruthDocumentProcedureBody(config);
     case "truthmark-sync":
       return renderTruthSyncProcedureBody(config);
-    case "truthmark-preview":
-      return renderTruthPreviewProcedureBody(config);
     case "truthmark-realize":
       return renderTruthmarkRealizeProcedureBody(config);
     case "truthmark-check":
@@ -596,9 +526,7 @@ const renderWorkflowEntrypoint = (
   const hostUsage =
     host === "github-copilot"
       ? "Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs."
-      : host === "gemini-cli"
-        ? "Use as a Gemini CLI Agent Skill; commands remain available under `/truthmark:*` for command-first invocation."
-        : undefined;
+      : undefined;
 
   return `---
 name: ${workflowId}
@@ -610,8 +538,6 @@ user-invocable: true
 # ${definition.title}
 
 ${definition.use(config)}${hostUsage === undefined ? "" : `\n\n${hostUsage}`}
-
-Invocations: ${definition.invocations}
 
 Quick procedure:
 ${definition
@@ -662,12 +588,6 @@ const renderWorkflowSubagentSupport = (
       );
     case "github-copilot":
       return renderCopilotCustomAgentModeSection(
-        readAgents,
-        definition.parentRule,
-        writeAgents,
-      );
-    case "gemini-cli":
-      return renderGeminiSubagentModeSection(
         readAgents,
         definition.parentRule,
         writeAgents,
@@ -777,7 +697,7 @@ type TruthmarkSubagentProfile = {
 };
 
 const READ_ONLY_SUBAGENT_CONTEXT_BOUNDARY = `Context boundary:
-Do not preload AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/rules, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
 Use only the parent-assigned shard plus required checkout evidence files.
 Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.`;
 
@@ -942,47 +862,6 @@ ${instructions}
 `;
 };
 
-const renderGeminiReadOnlyAgent = ({
-  copilotName,
-  description,
-  instructions,
-}: TruthmarkSubagentProfile): string => {
-  const agentInstructions = renderReadOnlySubagentInstructions(instructions);
-
-  return `---
-name: ${copilotName}
-description: ${description}
-kind: local
-tools: [read_file, grep_search]
----
-
-# Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-Manual invocation: @${copilotName}
-
-${agentInstructions}
-`;
-};
-const renderGeminiWriteAgent = ({
-  copilotName,
-  description,
-  instructions,
-}: TruthmarkWriteSubagentProfile): string => {
-  return `---
-name: ${copilotName}
-description: ${description}
-kind: local
-tools: [read_file, grep_search, write_file]
----
-
-# Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-Manual invocation: @${copilotName} with an explicit parent write lease.
-
-${instructions}
-`;
-};
-
 const renderClaudeReadOnlyAgent = ({
   copilotName,
   description,
@@ -1090,29 +969,6 @@ export const renderTruthmarkCopilotDocReviewerAgent = (): string => {
 };
 export const renderTruthmarkCopilotDocWriterAgent = (): string => {
   return renderCopilotWriteAgent(
-    TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
-  );
-};
-
-export const renderTruthmarkGeminiRouteAuditorAgent = (): string => {
-  return renderGeminiReadOnlyAgent(
-    TRUTHMARK_SUBAGENT_PROFILES.truth_route_auditor,
-  );
-};
-
-export const renderTruthmarkGeminiClaimVerifierAgent = (): string => {
-  return renderGeminiReadOnlyAgent(
-    TRUTHMARK_SUBAGENT_PROFILES.truth_claim_verifier,
-  );
-};
-
-export const renderTruthmarkGeminiDocReviewerAgent = (): string => {
-  return renderGeminiReadOnlyAgent(
-    TRUTHMARK_SUBAGENT_PROFILES.truth_doc_reviewer,
-  );
-};
-export const renderTruthmarkGeminiDocWriterAgent = (): string => {
-  return renderGeminiWriteAgent(
     TRUTHMARK_WRITE_SUBAGENT_PROFILES.truth_doc_writer,
   );
 };
@@ -1375,8 +1231,6 @@ const renderTruthmarkRealizeProcedureBody = (
 
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
-
 Truth Realize is doc-first:
 
 - truth docs lead
@@ -1516,21 +1370,58 @@ truthmark:
 `;
 };
 
-const renderGeminiWorkflowCommand = (
-  workflowId: TruthmarkWorkflowId,
-  root: string,
-): string => {
+const renderWorkflowRuleFile = ({
+  workflowId,
+  hostName,
+  ruleName,
+  includeCursorFrontmatter = false,
+  config = defaultAgentConfig(),
+}: {
+  workflowId: TruthmarkWorkflowId;
+  hostName: string;
+  ruleName: string;
+  includeCursorFrontmatter?: boolean;
+  config?: TruthmarkConfig;
+}): string => {
   const workflow = getTruthmarkWorkflow(workflowId);
-
-  return renderGeminiCommand(
-    workflow.description,
-    renderWorkflowCommandAdapterInstructions(
-      workflowId,
-      root,
-      "Gemini CLI",
-      "command",
-    ),
+  const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
+  const { procedure, reportTemplate } = renderWorkflowSupportParts(
+    workflowId,
+    config,
   );
+  const body = `# ${definition.title}
+
+Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
+
+This rule is the ${hostName} entrypoint for ${definition.title}.
+
+Do not invoke another Truthmark command from here.
+
+Manual invocation: @${ruleName}
+
+If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
+
+Description: ${workflow.description}
+
+## Procedure
+
+${procedure}
+
+## Report Template
+
+${reportTemplate}
+`;
+
+  if (!includeCursorFrontmatter) {
+    return body;
+  }
+
+  return `---
+description: ${workflow.description}
+alwaysApply: false
+---
+
+${body}`;
 };
 
 const renderCopilotWorkflowPrompt = (
@@ -1550,81 +1441,131 @@ const renderCopilotWorkflowPrompt = (
   );
 };
 
-export const renderTruthmarkGeminiStructureCommand = (
+export const renderTruthmarkAntigravityStructureRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-structure",
-    ".gemini/skills/truthmark-structure",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-structure",
+    hostName: "Antigravity",
+    ruleName: "truthmark-structure",
+    config,
+  });
 
-export const renderTruthmarkGeminiDocumentCommand = (
+export const renderTruthmarkAntigravityDocumentRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-document",
-    ".gemini/skills/truthmark-document",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-document",
+    hostName: "Antigravity",
+    ruleName: "truthmark-document",
+    config,
+  });
 
-export const renderTruthmarkGeminiSyncCommand = (
+export const renderTruthmarkAntigravitySyncRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-sync",
-    ".gemini/skills/truthmark-sync",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-sync",
+    hostName: "Antigravity",
+    ruleName: "truthmark-sync",
+    config,
+  });
 
-export const renderTruthmarkGeminiRealizeCommand = (
+export const renderTruthmarkAntigravityRealizeRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-realize",
-    ".gemini/skills/truthmark-realize",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-realize",
+    hostName: "Antigravity",
+    ruleName: "truthmark-realize",
+    config,
+  });
 
-export const renderTruthmarkGeminiCheckCommand = (
+export const renderTruthmarkAntigravityCheckRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-check",
-    ".gemini/skills/truthmark-check",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-check",
+    hostName: "Antigravity",
+    ruleName: "truthmark-check",
+    config,
+  });
 
-export const renderTruthmarkGeminiPreviewCommand = (
+export const renderTruthmarkAntigravityPortalRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-portal",
+    hostName: "Antigravity",
+    ruleName: "truthmark-portal",
+    config,
+  });
 
-  return renderGeminiCommand(
-    workflow.description,
-    `This command is the Gemini CLI entrypoint for Truthmark Preview.
-
-Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
-
-${renderTruthPreviewProcedureBody(config, "gemini")}
-${renderTruthPreviewAdapterReportFields()}`,
-  );
-};
-
-export const renderTruthmarkGeminiPortalCommand = (
+export const renderTruthmarkCursorStructureRule = (
   config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  void config;
-  return renderGeminiWorkflowCommand(
-    "truthmark-portal",
-    ".gemini/skills/truthmark-portal",
-  );
-};
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-structure",
+    hostName: "Cursor",
+    ruleName: "truthmark-structure",
+    includeCursorFrontmatter: true,
+    config,
+  });
+
+export const renderTruthmarkCursorDocumentRule = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-document",
+    hostName: "Cursor",
+    ruleName: "truthmark-document",
+    includeCursorFrontmatter: true,
+    config,
+  });
+
+export const renderTruthmarkCursorSyncRule = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-sync",
+    hostName: "Cursor",
+    ruleName: "truthmark-sync",
+    includeCursorFrontmatter: true,
+    config,
+  });
+
+export const renderTruthmarkCursorRealizeRule = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-realize",
+    hostName: "Cursor",
+    ruleName: "truthmark-realize",
+    includeCursorFrontmatter: true,
+    config,
+  });
+
+export const renderTruthmarkCursorCheckRule = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-check",
+    hostName: "Cursor",
+    ruleName: "truthmark-check",
+    includeCursorFrontmatter: true,
+    config,
+  });
+
+export const renderTruthmarkCursorPortalRule = (
+  config: TruthmarkConfig = defaultAgentConfig(),
+): string =>
+  renderWorkflowRuleFile({
+    workflowId: "truthmark-portal",
+    hostName: "Cursor",
+    ruleName: "truthmark-portal",
+    includeCursorFrontmatter: true,
+    config,
+  });
 
 export const renderTruthmarkCopilotStructurePrompt = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -1673,22 +1614,6 @@ export const renderTruthmarkCopilotCheckPrompt = (
   return renderCopilotWorkflowPrompt(
     "truthmark-check",
     ".github/skills/truthmark-check",
-  );
-};
-
-export const renderTruthmarkCopilotPreviewPrompt = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-preview");
-
-  return renderCopilotPromptFile(
-    workflow.description,
-    `This prompt is the GitHub Copilot entrypoint for Truthmark Preview.
-
-Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
-
-${renderTruthPreviewProcedureBody(config, "copilot")}
-${renderTruthPreviewAdapterReportFields()}`,
   );
 };
 

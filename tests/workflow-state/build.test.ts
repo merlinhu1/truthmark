@@ -128,13 +128,13 @@ describe("workflow state contract", () => {
 
 describe("action context", () => {
   it("maps read-only workflows to no allowed writes", () => {
-    for (const workflow of ["truthmark-preview", "truthmark-check"] as const) {
-      const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST[workflow]);
+    const context = buildWorkflowActionContext(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-check"],
+    );
 
-      expect(context.mode).toBe("read-only");
-      expect(context.allowedWritePaths).toEqual([]);
-      expect(context.writeLeaseRequired).toBe(false);
-    }
+    expect(context.mode).toBe("read-only");
+    expect(context.allowedWritePaths).toEqual([]);
+    expect(context.writeLeaseRequired).toBe(false);
   });
 
   it("restricts sync and document to routed truth and route writes", () => {

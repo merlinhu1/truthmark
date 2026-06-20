@@ -24,7 +24,8 @@ const initializeRepo = async (rootDir: string): Promise<void> => {
         "  - opencode",
         "  - claude-code",
         "  - github-copilot",
-        "  - gemini-cli",
+        "  - antigravity",
+        "  - cursor",
         "",
       ].join("\n"),
     ),
@@ -197,6 +198,19 @@ Local stale edit.
         ".agents/skills/truthmark-preview/SKILL.md",
         "# Legacy preview entrypoint\n",
       );
+      await repo.writeFile("GEMINI.md", "# Legacy Gemini instructions\n");
+      await repo.writeFile(
+        ".gemini/skills/truthmark-sync/SKILL.md",
+        "# Legacy Gemini sync skill\n",
+      );
+      await repo.writeFile(
+        ".gemini/agents/truth-doc-writer.md",
+        "# Legacy Gemini doc writer\n",
+      );
+      await repo.writeFile(
+        ".gemini/commands/truthmark/sync.toml",
+        "description = \"Legacy Gemini sync command\"\n",
+      );
       await repo.writeFile(
         ".agents/skills/truthmark-sync/helper-manifest.yml",
         "id: truthmark-sync\n",
@@ -216,6 +230,22 @@ Local stale edit.
             diagnostic.message.includes("obsolete"),
         ),
       ).toHaveLength(1);
+      for (const retiredPath of [
+        "GEMINI.md",
+        ".gemini/skills/truthmark-sync/SKILL.md",
+        ".gemini/agents/truth-doc-writer.md",
+        ".gemini/commands/truthmark/sync.toml",
+      ]) {
+        expect(
+          result.diagnostics.filter(
+            (diagnostic) =>
+              diagnostic.category === "generated-surface" &&
+              diagnostic.file === retiredPath &&
+              diagnostic.message.includes("obsolete"),
+          ),
+          retiredPath,
+        ).toHaveLength(1);
+      }
       expect(
         result.diagnostics.filter(
           (diagnostic) =>
@@ -928,7 +958,7 @@ Update truth when:
     }
   });
 
-  it("reports stale generated Gemini command surfaces when configured", async () => {
+  it("reports stale generated Cursor rule surfaces when configured", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -936,7 +966,7 @@ Update truth when:
         ".truthmark/config.yml",
         `version: 2
 platforms:
-  - gemini-cli
+  - cursor
 truthmark:
   workspace: docs/truthmark
   generated:
@@ -956,8 +986,8 @@ ignore: []
       );
       await runInit(repo.rootDir);
       await repo.writeFile(
-        ".gemini/commands/truthmark/sync.toml",
-        `${await repo.readFile(".gemini/commands/truthmark/sync.toml")}\n# stale\n`,
+        ".cursor/rules/truthmark-sync.mdc",
+        `${await repo.readFile(".cursor/rules/truthmark-sync.mdc")}\n# stale\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -967,7 +997,7 @@ ignore: []
           expect.objectContaining({
             category: "generated-surface",
             severity: "review",
-            file: ".gemini/commands/truthmark/sync.toml",
+            file: ".cursor/rules/truthmark-sync.mdc",
             message: expect.stringContaining("stale"),
           }),
         ]),

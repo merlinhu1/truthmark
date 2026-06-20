@@ -3,7 +3,7 @@ import { defaultAgentConfig, renderHierarchySummary } from "./shared.js";
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 export const TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Gemini CLI /truthmark:portal.";
+  "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Antigravity @truthmark-portal; Cursor @truthmark-portal.";
 
 export const renderTruthmarkPortalProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -14,8 +14,6 @@ export const renderTruthmarkPortalProcedureBody = (
   return `# Truthmark Portal
 
 Truthmark Portal is a manual-only presentation workflow. It is never an automatic completion workflow, never Truth Sync, and runs only when the user explicitly asks to generate, refresh, or update the committed static HTML Portal.
-
-Invocations: ${TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS}
 
 Core rules:
 

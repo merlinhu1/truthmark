@@ -23,7 +23,7 @@ const renderMarkdownExample = (content: string): string => {
 };
 
 export const TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Gemini CLI /truthmark:structure.";
+  "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Antigravity @truthmark-structure; Cursor @truthmark-structure.";
 
 export const renderTruthStructureReportExample = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -93,7 +93,7 @@ export const renderTruthStructureProcedureBody = (
   const subagentMode = `${claudeSubagentMode}${copilotCustomAgentMode}`;
 
   return `Use this skill to design or repair Truthmark area structure.
-Invocations: ${TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS}
+
 Truth Structure is agent-native:
 - inspect repository layout, current docs, Truthmark config and route files when present, and relevant code directly
 - Evidence authority:

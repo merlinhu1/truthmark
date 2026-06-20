@@ -11,15 +11,11 @@ Use this skill only when the user explicitly asks to realize truth docs into cod
 
 Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs.
 
-Invocations: OpenCode /skill truthmark-realize; Codex /truthmark-realize or $truthmark-realize; Claude Code /truthmark-realize; GitHub Copilot /truthmark-realize; Gemini CLI /truthmark:realize.
-
 Quick procedure:
 - Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
 - Read the source truth docs, inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist, then inspect tests and relevant functional code directly.
 - Truth docs lead; code follows.
 - may write functional code only; must not edit truth docs or truth routing while realizing those docs.
-- Read support/procedure.md before changing code.
-- Read support/report-template.md before the final report.
 
 Progressive disclosure:
 - support/procedure.md — read before edits or detailed auditing; contains core review questions

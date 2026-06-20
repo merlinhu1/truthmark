@@ -39,7 +39,7 @@ const uniqueSorted = (values: string[]): string[] =>
   [...new Set(values.filter((value) => value.length > 0))].sort();
 
 const isWriteCapable = (workflow: TruthmarkWorkflowId): boolean =>
-  !["truthmark-preview", "truthmark-check"].includes(workflow);
+  workflow !== "truthmark-check";
 
 const DEFAULT_BASE_CANDIDATES = [
   "@{upstream}",
