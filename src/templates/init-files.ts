@@ -390,11 +390,6 @@ type ParsedTemplateSection = {
   block: string;
 };
 
-const TRUTH_DOC_AUTHORING_STYLE_COMMENT = [
-  "Prefer diff-friendly Markdown: one durable claim per bullet or line.",
-  "Keep paragraphs to one or two short sentences, and use bullets or tables for rules, criteria, fields, files, and lists.",
-];
-
 const renderTemplateSection = (section: TemplateSectionSpec): string[] => {
   return [
     section.heading,
@@ -593,10 +588,6 @@ export const renderBehaviorDocTemplateFile = (): string => {
     "",
     "# {{title}}",
     "",
-    "<!--",
-    ...TRUTH_DOC_AUTHORING_STYLE_COMMENT,
-    "-->",
-    "",
     "## Purpose",
     "",
     "<!--",
@@ -787,10 +778,6 @@ const renderTypedTruthDocTemplate = (
     "",
     `# ${title}`,
     "",
-    "<!--",
-    ...TRUTH_DOC_AUTHORING_STYLE_COMMENT,
-    "-->",
-    "",
     ...renderTemplateSection(PURPOSE_SECTION),
     ...renderTemplateSection(SCOPE_SECTION),
     ...sections.flatMap(renderTemplateSection),
@@ -823,7 +810,6 @@ const renderProductTruthDocTemplate = (
     "<!--",
     CORE_LANE_INVARIANT,
     "Product docs may cite code directly when code proves current product behavior, but keep implementation flow, renderer internals, CLI envelopes, and generated file inventories in engineering truth.",
-    ...TRUTH_DOC_AUTHORING_STYLE_COMMENT,
     "-->",
     "",
     ...sections.flatMap(renderTemplateSection),

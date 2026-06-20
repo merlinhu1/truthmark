@@ -26,6 +26,7 @@ import {
 } from "../agents/truth-document.js";
 import {
   TRUTH_PREVIEW_EXPLICIT_INVOCATIONS,
+  renderTruthPreviewAdapterReportFields,
   renderTruthPreviewProcedureBody,
   renderTruthPreviewReportExample,
 } from "../agents/truth-preview.js";
@@ -1611,7 +1612,7 @@ export const renderTruthmarkGeminiPreviewCommand = (
 Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
 
 ${renderTruthPreviewProcedureBody(config, "gemini")}
-${renderWorkflowReportTemplate("truthmark-preview", config)}`,
+${renderTruthPreviewAdapterReportFields()}`,
   );
 };
 
@@ -1687,7 +1688,7 @@ export const renderTruthmarkCopilotPreviewPrompt = (
 Truth Preview is read-only and explicit. Do not invoke another Truthmark command from here.
 
 ${renderTruthPreviewProcedureBody(config, "copilot")}
-${renderWorkflowReportTemplate("truthmark-preview", config)}`,
+${renderTruthPreviewAdapterReportFields()}`,
   );
 };
 

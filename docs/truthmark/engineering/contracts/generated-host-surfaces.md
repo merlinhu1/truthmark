@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-19
+last_reviewed: 2026-06-20
 ---
 
 # Generated Host Surfaces
@@ -25,6 +25,8 @@ When `platforms` is omitted, fresh config does not assume a host platform; `trut
 Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents; generated helper manifest and helper policy files are intentionally not emitted.
 GitHub Copilot prompt files and Gemini command files are lightweight workflow adapters: most point to the current host entrypoint and tell the agent not to invoke another Truthmark command from inside that entrypoint.
 Truth Preview remains a read-only prompt/command body for Copilot and Gemini instead of a standalone host skill package.
+
+Preview prompt/command bodies stay compact by listing the report fields instead of embedding the full markdown report example.
 
 ## Contract Surface
 
@@ -55,6 +57,7 @@ Truth Preview remains a read-only prompt/command body for Copilot and Gemini ins
 - Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are opt-in through explicit `platforms` entries.
 - Decision (2026-06-18): Generated helper manifest and helper policy files are removed; optional validation commands remain in workflow metadata and report validation accepts manual fallback evidence.
 - Decision (2026-06-18): Truth Preview stays a read-only Copilot/Gemini prompt-command surface instead of a standalone generated skill package.
+- Decision (2026-06-20): Preview adapters list concise report fields rather than embedding the full markdown report example, keeping Preview thin while preserving report shape.
 - Decision (2026-06-18): Truth Sync keeps bounded topology repair in the finish-time path; Sync runs or applies Truth Structure-style repair when safe and scoped, and hands off only unsafe or ambiguous topology work.
 
 ## Maintenance Notes

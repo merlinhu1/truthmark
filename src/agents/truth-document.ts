@@ -5,6 +5,7 @@ import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
   FEATURE_DOC_TEMPLATE_INSTRUCTIONS,
   REPOSITORY_INTELLIGENCE_INSTRUCTIONS,
+  TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS,
   TRUTH_DOC_DECISION_RATIONALE_PRESERVATION_INSTRUCTIONS,
   defaultAgentConfig,
   renderBulletBlock,
@@ -146,6 +147,7 @@ ${renderRouteFirstEvidenceGateSection(
   )}
 ${subagentMode}${REPOSITORY_INTELLIGENCE_INSTRUCTIONS}
 ${FEATURE_DOC_TEMPLATE_INSTRUCTIONS}
+${TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS}
 ${renderTruthDocRestructureGateSection(
     "Truth Document may restructure only truth docs for the implemented behavior being documented.",
   )}

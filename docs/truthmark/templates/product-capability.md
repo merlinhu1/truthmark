@@ -7,11 +7,6 @@ last_reviewed: 2026-06-14
 # {{title}}
 
 <!--
-Prefer diff-friendly Markdown: one durable claim per bullet or line.
-Keep paragraphs to one or two short sentences, and use bullets or tables for rules, criteria, fields, files, and lists.
--->
-
-<!--
 Do not make product docs a summary of engineering docs. Do not make engineering docs a detailed version of product docs. Product truth says what must be true and why. Engineering truth says how the repository currently realizes it.
 Product docs may cite code directly when code proves current product behavior, but keep implementation flow, renderer internals, CLI envelopes, and generated file inventories in engineering truth.
 -->

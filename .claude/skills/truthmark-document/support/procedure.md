@@ -58,10 +58,10 @@ If unavailable, inspect any present Truthmark config, route files, source files,
 When creating or updating a truth doc, inspect the routed truth kind and use the matching template under the configured Truthmark templates root.
 Supported kinds: product-capability, engineering-behavior, engineering-contract, engineering-architecture, engineering-workflow, engineering-operations, and engineering-test-behavior.
 Treat the HTML comments under each template section as normative authoring guidance for that section.
-Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
 If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
 Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
+Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.
 Truth-doc shape repair review:
 - Truth Document may restructure only truth docs for the implemented behavior being documented.
 - repair shape in place only after the ownership review confirms the doc is the right bounded owner

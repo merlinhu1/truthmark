@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-19
+last_reviewed: 2026-06-20
 ---
 
 # Init And Scaffold
@@ -46,7 +46,9 @@ Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
 `truthmark init` also removes retired generated-surface artifacts under host skill roots (for example `truthmark-preview` package files and legacy `helper-manifest.yml`/`support/helper-policy.md`) when those paths are no longer part of current generated output.
 
-Generated truth-doc templates include diff-friendly authoring guidance:
+Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
+
+Global diff-friendly authoring style lives in the Truth Document workflow procedure rather than in every template preamble:
 
 - Prefer one durable claim per bullet or line.
 - Keep paragraphs to one or two short sentences.
@@ -95,4 +97,3 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
 - ../../../../tests/init/init-instructions.test.ts
-- ../../../../tests/templates/init-files.test.ts

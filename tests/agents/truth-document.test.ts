@@ -45,6 +45,7 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("must not write functional code");
     expect(skill).toContain("configured Truthmark templates root");
     expect(skill).toContain("When creating or updating a truth doc");
+    expect(skill).toContain("Prefer diff-friendly Markdown: one durable claim per bullet or line");
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
     expect(skill).toContain("Truth-doc ownership review");

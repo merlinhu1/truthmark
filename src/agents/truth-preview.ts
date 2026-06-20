@@ -60,6 +60,19 @@ Handoff:
 - Run the selected Truthmark workflow after user approval.`;
 };
 
+export const renderTruthPreviewAdapterReportFields = (): string => {
+  return `Return a concise Truth Preview report with these fields:
+- requested outcome
+- likely workflow
+- why this workflow
+- likely route owner and lane impact
+- expected write classes
+- expected target files
+- suggested subagent use
+- manual handoff questions
+- handoff recommendation`;
+};
+
 export const renderTruthPreviewProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
   host?: TruthPreviewHost,

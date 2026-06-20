@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-18
+last_reviewed: 2026-06-20
 ---
 
 # Installed Workflow Runtime
@@ -38,6 +38,7 @@ Generated helper manifests and helper policy support files are not emitted:
 Truth Preview is read-only and explicit:
 
 - Copilot and Gemini receive prompt-command bodies instead of standalone skill packages.
+- Preview prompt-command bodies include a compact field checklist rather than embedding the full markdown report example.
 
 Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
 
@@ -79,11 +80,17 @@ Truth Sync performs decision context capture from the current task conversation:
 - Supported context is placed in the correct product or engineering truth lane.
 - The report records whether context was placed, skipped because none was provided, or handed off for manual review.
 
-Truth Document and Truth Structure procedures tell agents to write diff-friendly truth docs:
+Truth Document procedures tell agents to write diff-friendly truth docs:
 
 - Prefer one durable claim per bullet or line.
 - Keep paragraphs to one or two short sentences.
 - Use bullets or tables for rules, criteria, fields, files, and lists.
+
+Truth Structure stays topology-first:
+
+- It creates skeletal starter truth docs only when missing ownership would block future workflows.
+- Starter docs are ownership anchors, not substantive behavior writeups.
+- Template-section authoring, doc-shape repair, and architecture-doc prose guidance stay out of the Structure procedure.
 
 Other write-capable truth workflows preserve lane-specific classification before canonical truth writes.
 
