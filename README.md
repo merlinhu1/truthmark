@@ -2,7 +2,7 @@
 
 **Your agents write code. Truthmark maintains human-facing, Git-reviewable documentation.**
 
-🇺🇸 English | 🇨🇳 简体中文 | 🇯🇵 日本語 | 🇰🇷 한국어 | 🇩🇪 Deutsch | 🇫🇷 Français | 🇪🇸 Español | 🇧🇷 Português | 🇷🇺 Русский | 🇸🇦 العربية | 🇮🇹 Italiano | 🇵🇱 Polski | 🇹🇷 Türkçe | 🇻🇳 Tiếng Việt | 🇮🇩 Bahasa Indonesia | 🇬🇷 Ελληνικά |
+[🇺🇸 English](README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt-BR.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
 ![Truthmark banner](docs/assets/truthmark-banner.png)
 
@@ -18,9 +18,9 @@ AI coding agents are incredible at writing code fast. But this speed creates a d
 
 ## 🎯 The Solution: Truthmark
 
-**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: keeping the documentation perfectly aligned with the code.
+**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: helping the documentation stay aligned with the code.
 
-Instead of hoping humans and AI agents remember to update docs, Truthmark makes documentation a systematic, enforceable habit right inside your repo.
+Instead of hoping humans and AI agents remember to update docs, Truthmark makes documentation a systematic, reviewable habit right inside your repo.
 
 ### ✨ Why Truthmark is Unique
 
@@ -29,16 +29,16 @@ Truthmark isn't just another documentation tool. It is deeply integrated into th
 * **🚫 Zero Vendor Lock-in:** No hosted services, no hidden databases, no extra servers to operate.
 * **🌳 100% Git-Native:** Everything lives in your repository. The truth moves with your branch.
 * **🤝 Dual-Surface Architecture:** It cleanly separates the tools humans use to manage the repo from the workflows AI agents use to write code.
-* **✅ Trust Through Verification:** AI work becomes vastly easier to trust because every functional change is accompanied by a human-reviewable documentation diff.
+* **✅ Trust Through Verification:** AI work becomes easier to trust because behavior-changing work includes a human-reviewable truth-doc decision or diff.
 
 ## 🔄 How It Works
 
-When an AI agent modifies your code, the job isn't finished. Truthmark enforces a complete development cycle:
+When an AI agent modifies your code, the job isn't finished. Truthmark installs a finish-time workflow guard that agents follow before handoff:
 
 1. 💻 **Code:** Agent modifies functional code.
 2. 🧪 **Test:** Relevant tests are executed.
-3. 🔍 **Check:** `Truth Sync` automatically checks mapped documentation.
-4. 📝 **Document:** Docs are updated by the agent if the behavior changed.
+3. 🔍 **Check:** `Truth Sync` checks mapped documentation when the installed workflow runs.
+4. 📝 **Document:** Docs are updated by the agent when repository truth has changed.
 5. 👀 **Review:** A human reviews the *code diff* + the *truth diff*.
 
 ## 🛠 Two Surfaces, One Truth System
@@ -46,13 +46,13 @@ When an AI agent modifies your code, the job isn't finished. Truthmark enforces 
 Truthmark is intentionally split into two distinct surfaces to serve both human maintainers and AI agents.
 
 ### 1. 🧑‍💻 The Human CLI (Maintainers & CI)
-Used by developers to setup, configure, and validate the repository.
+Used by developers to set up, configure, and validate the repository.
 * `truthmark config` - Creates your initial configuration.
 * `truthmark init` - Installs the necessary routing, scaffolds, and instructions.
 * `truthmark check` - Validates truth artifacts from the terminal.
 
 ### 2. 🤖 The AI-Facing Workflows (Agents)
-Truthmark installs native skills, prompts, and commands that your AI agents (like Copilot, Cursor, or Gemini) understand. These are *not* shell commands; they are workflow entry points for the AI.
+Truthmark installs native skills, prompts, and commands that supported AI hosts (like Codex, Claude Code, GitHub Copilot, OpenCode, and Gemini CLI) understand. These are *not* shell commands; they are workflow entry points for the AI.
 * `/truthmark-sync` - Keep docs aligned with recent code changes.
 * `/truthmark-document` - Generate docs for undocumented existing code.
 * `/truthmark-structure` - Organize broad repository areas into specific domains.
@@ -67,7 +67,18 @@ Truthmark installs native skills, prompts, and commands that your AI agents (lik
 * A Git repository
 
 ### Installation
-Note: Once initialized, review the generated files before committing. Truthmark's templates map to recognized engineering standards (ISO/IEC/IEEE, C4, arc42, SemVer, etc.).
+
+Run this inside the Git repository you want to initialize:
+
+```bash
+cd /path/to/your-repo
+npm install -g truthmark
+truthmark config
+truthmark init
+truthmark check
+```
+
+Review `.truthmark/config.yml` after `truthmark config`, then review the generated files before committing. Truthmark's templates map to recognized engineering standards (ISO/IEC/IEEE, C4, arc42, SemVer, etc.).
 
 ### 📖 Common AI Workflows
 
