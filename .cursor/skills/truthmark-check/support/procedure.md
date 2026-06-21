@@ -1,23 +1,6 @@
----
-description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
-alwaysApply: false
----
-
-# Truthmark Check
+# Truthmark Check Procedure
 
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-This rule is the Cursor entrypoint for Truthmark Check.
-
-Do not invoke another Truthmark command from here.
-
-Manual invocation: @truthmark-check
-
-If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
-
-Description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.
-
-## Procedure
 
 # Truthmark Check
 
@@ -69,29 +52,3 @@ Truthmark hierarchy hints:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.
-
-## Report Template
-
-Report completion in this shape:
-
-```md
-Truth Check: completed
-
-Files reviewed:
-- docs/truthmark/routes/areas.md
-
-Issues found:
-- none
-
-Fixes suggested:
-- none
-
-Evidence checked:
-- Finding: The root route index is present and maps repository truth owners.
-  Evidence: docs/truthmark/routes/areas.md:1
-  Suggested fix: none
-  Confidence: high
-
-Validation:
-- truthmark check
-```

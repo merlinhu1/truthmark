@@ -958,7 +958,7 @@ Update truth when:
     }
   });
 
-  it("reports stale generated Cursor rule surfaces when configured", async () => {
+  it("reports stale generated Cursor skill surfaces when configured", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -986,8 +986,8 @@ ignore: []
       );
       await runInit(repo.rootDir);
       await repo.writeFile(
-        ".cursor/rules/truthmark-sync.mdc",
-        `${await repo.readFile(".cursor/rules/truthmark-sync.mdc")}\n# stale\n`,
+        ".cursor/skills/truthmark-sync/SKILL.md",
+        `${await repo.readFile(".cursor/skills/truthmark-sync/SKILL.md")}\n# stale\n`,
       );
 
       const result = await runCheck(repo.rootDir);
@@ -997,7 +997,7 @@ ignore: []
           expect.objectContaining({
             category: "generated-surface",
             severity: "review",
-            file: ".cursor/rules/truthmark-sync.mdc",
+            file: ".cursor/skills/truthmark-sync/SKILL.md",
             message: expect.stringContaining("stale"),
           }),
         ]),

@@ -1,0 +1,23 @@
+---
+name: truthmark-sync
+description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
+argument-hint: Optional changed-code area, truth-doc area, or sync focus
+user-invocable: true
+---
+
+# Truthmark Sync
+
+Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.
+
+Use as a Cursor Agent Skill. Cursor discovers project skills under `.cursor/skills/`, selects them from the description when relevant, and supports manual `/` invocation.
+
+Quick procedure:
+- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
+- Skip docs-only, formatting-only, behavior-preserving renames with no truth impact, missing config, and no-code changes.
+- Inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist; then inspect relevant canonical docs directly.
+- direct checkout inspection is the canonical path; do not require the truthmark binary.
+- May write canonical truth docs and truth routing files only; must not rewrite functional code.
+
+Progressive disclosure:
+- support/procedure.md — read before edits or detailed auditing; contains core review questions
+- support/report-template.md — read before the final report

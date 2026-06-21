@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-20
+last_reviewed: 2026-06-21
 ---
 
 # Init And Scaffold
@@ -44,7 +44,20 @@ Generated truth-doc frontmatter includes `truth_kind`.
 
 Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
-`truthmark init` also removes retired generated-surface artifacts (for example `truthmark-preview` package files, retired Preview prompt/command adapters, and legacy `helper-manifest.yml`/`support/helper-policy.md`) when those paths are no longer part of current generated output.
+`truthmark init` removes auto-removable retired generated-surface artifacts when those paths are no longer part of current generated output.
+
+Auto-removable retired artifacts include:
+
+- `truthmark-preview` package files
+- retired non-Gemini Preview adapters
+- legacy `helper-manifest.yml` and `support/helper-policy.md` files
+
+Init leaves retired Gemini surfaces in place for manual cleanup:
+
+- `GEMINI.md`
+- `.gemini/**`
+
+Those files may contain user-owned instructions alongside old Truthmark injections.
 
 Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
 
@@ -86,7 +99,8 @@ Capability docs own:
 
 - `truthmark init` creates or refreshes workspace scaffold files.
 - It renders current templates and generated host surfaces from source renderers.
-- It removes retired generated-surface artifacts that are no longer part of current generated output.
+- It removes retired non-Gemini generated-surface artifacts that are no longer part of current generated output.
+- It leaves retired Gemini surfaces for manual cleanup.
 
 ## Contracts
 
@@ -102,8 +116,11 @@ Capability docs own:
 - Decision (2026-06-14): New scaffold targets do not create `docs/truthmark/truth` as the canonical target root.
 - Decision (2026-06-14): Editable template filenames match `truth_kind` values directly so generated docs do not point agents at legacy `*-doc.md` names.
 - Decision (2026-06-14): Init scaffolds routes, templates, product truth, and engineering truth at fixed workspace-derived paths rather than accepting route or template roots from config.
-- Decision (2026-06-17): The default broad `repository` route is provisional bootstrap state; init creates a compact `bootstrap-routing.md` workflow handoff instead of a catch-all behavior overview so agents run Truth Structure before normal Sync on real touched code.
-- Decision (2026-06-18): Fresh configs omit `platforms` by default. Truthmark does not infer Codex, OpenCode, or any other host from a fresh checkout; host-native workflow surfaces require explicit platform configuration.
+- Decision (2026-06-17): The default broad `repository` route is provisional bootstrap state.
+  - Init creates a compact `bootstrap-routing.md` workflow handoff instead of a catch-all behavior overview so agents run Truth Structure before normal Sync on real touched code.
+- Decision (2026-06-18): Fresh configs omit `platforms` by default.
+  - Truthmark does not infer Codex, OpenCode, or any other host from a fresh checkout; host-native workflow surfaces require explicit platform configuration.
+- Decision (2026-06-21): Init does not delete retired Gemini surfaces automatically; users remove stale injected Gemini guidance manually after reviewing `GEMINI.md` and `.gemini/**`.
 
 ## Rationale
 
@@ -116,6 +133,7 @@ Keeping templates kind-specific and moving global prose style into workflow guid
 - Init does not infer a preferred agent host.
 - Init does not create behavior truth for unknown code ownership beyond the provisional bootstrap routing handoff.
 - Init does not maintain a legacy `docs/truthmark/truth` tree.
+- Init does not delete retired Gemini instruction files automatically.
 
 ## Maintenance Notes
 

@@ -195,6 +195,17 @@ export const validateTruthSyncReportText = (text: string): WorkflowHelperValidat
         );
       }
 
+      const completedTargets = [
+        ...report.truthDocsUpdated,
+        ...(report.syncIntent?.targetTruthDocs ?? []),
+      ];
+      const bootstrapTargets = completedTargets.filter(isBootstrapRoutingDocPath);
+      if (bootstrapTargets.length > 0) {
+        errors.push(
+          `bootstrap-routing.md is a provisional topology handoff, not a completed behavior-update target: ${bootstrapTargets.join(", ")}`,
+        );
+      }
+
       if (report.syncIntent !== undefined) {
         checks.push("Sync Intent");
       }
@@ -265,6 +276,8 @@ export const validateTruthDocumentReportText = (text: string): WorkflowHelperVal
 
 const cleanPathValue = (value: string): string => value.trim().replace(/^["']|["']$/gu, "");
 const normalizePath = (value: string): string => cleanPathValue(value).replace(/^\.\//u, "");
+const isBootstrapRoutingDocPath = (value: string): boolean =>
+  normalizePath(value).endsWith("/bootstrap-routing.md");
 const windowsDriveAbsolutePattern = /^[A-Za-z]:[\\/]/u;
 const uncPathPattern = /^[/\\]{2}[^/\\]+[/\\]+[^/\\]+/u;
 

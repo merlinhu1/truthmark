@@ -169,6 +169,7 @@ export const classifyPath = (
     normalizedPath.startsWith(".opencode/") ||
     normalizedPath.startsWith(".antigravity/rules/truthmark-") ||
     normalizedPath.startsWith(".cursor/rules/truthmark-") ||
+    normalizedPath.startsWith(".cursor/skills/truthmark-") ||
     normalizedPath === ".github/copilot-instructions.md" ||
     normalizedPath.startsWith(".github/agents/truth-") ||
     normalizedPath.startsWith(".github/prompts/truthmark-") ||

@@ -1,4 +1,5 @@
 import { execa } from "execa";
+import micromatch from "micromatch";
 
 import {
   TRUTHMARK_WORKFLOW_MANIFEST,
@@ -78,11 +79,89 @@ const routeFilesFor = (repoIndex: RepoIndex): string[] =>
   uniqueSorted(repoIndex.routeMap.routes.map((route) => route.sourcePath));
 
 const candidateStaleTruthDocsFor = (
-  indexedTruthDocs: string[],
+  repoIndex: RepoIndex,
   primaryTruthDocs: string[],
+  impactSet: ImpactSet | null,
+  diagnostics: Diagnostic[],
 ): string[] => {
+  const indexedTruthDocs = new Set(
+    repoIndex.routeMap.routes.flatMap((route) => route.truthDocs),
+  );
   const primary = new Set(primaryTruthDocs);
-  return indexedTruthDocs.filter((truthDoc) => !primary.has(truthDoc));
+  const candidates = new Set<string>();
+  const changedPaths = new Set(
+    (impactSet?.changedFiles ?? []).flatMap((file) => [
+      file.path,
+      ...(file.previousPath ? [file.previousPath] : []),
+    ]),
+  );
+  const docEntries = new Map(
+    repoIndex.routeMap.routes
+      .flatMap((route) => route.truthDocumentEntries)
+      .map((entry) => [entry.path, entry]),
+  );
+
+  const addCandidate = (truthDoc: string): void => {
+    if (indexedTruthDocs.has(truthDoc) && !primary.has(truthDoc)) {
+      candidates.add(truthDoc);
+    }
+  };
+
+  const linkedTruthDocs = (truthDoc: string): string[] => {
+    const entry = docEntries.get(truthDoc);
+    return uniqueSorted([
+      ...(entry?.realizedBy ?? []),
+      ...(entry?.realizes ?? []),
+      ...(entry?.dependsOn ?? []),
+      ...[...docEntries.values()]
+        .filter(
+          (candidate) =>
+            candidate.realizedBy.includes(truthDoc) ||
+            candidate.realizes.includes(truthDoc) ||
+            candidate.dependsOn.includes(truthDoc),
+        )
+        .map((candidate) => candidate.path),
+    ]);
+  };
+
+  for (const truthDoc of [...primary, ...changedPaths].filter((path) =>
+    indexedTruthDocs.has(path),
+  )) {
+    for (const linkedTruthDoc of linkedTruthDocs(truthDoc)) {
+      addCandidate(linkedTruthDoc);
+    }
+  }
+
+  for (const diagnostic of diagnostics) {
+    if (diagnostic.category === "freshness" && diagnostic.file) {
+      addCandidate(diagnostic.file);
+    }
+  }
+
+  for (const route of repoIndex.routeMap.routes) {
+    if (changedPaths.has(route.sourcePath)) {
+      route.truthDocs.forEach(addCandidate);
+    }
+  }
+
+  for (const doc of repoIndex.docs) {
+    if (!indexedTruthDocs.has(doc.path) || primary.has(doc.path)) {
+      continue;
+    }
+
+    if (
+      doc.sourceOfTruth.some((reference) =>
+        [...changedPaths].some(
+          (changedPath) =>
+            reference === changedPath || micromatch.isMatch(changedPath, reference),
+        ),
+      )
+    ) {
+      candidates.add(doc.path);
+    }
+  }
+
+  return uniqueSorted([...candidates]);
 };
 
 const hasUnmappedFunctionalChange = (impactSet: ImpactSet | null): boolean =>
@@ -186,6 +265,7 @@ const contextDataFor = (
   repoIndex: RepoIndex,
   config: Awaited<ReturnType<typeof loadConfig>>["config"],
   impactSet: ImpactSet | null,
+  diagnostics: Diagnostic[],
 ): WorkflowActionContextData => {
   if (!config) {
     return {};
@@ -198,7 +278,12 @@ const contextDataFor = (
   const primaryTruthDocs = uniqueSorted(impactSet?.affectedTruthDocs ?? []);
   const candidateStaleTruthDocs =
     workflow === "truthmark-sync"
-      ? candidateStaleTruthDocsFor(indexedTruthDocs, primaryTruthDocs)
+      ? candidateStaleTruthDocsFor(
+          repoIndex,
+          primaryTruthDocs,
+          impactSet,
+          diagnostics,
+        )
       : [];
   const truthDocs =
     workflow === "truthmark-sync"
@@ -297,6 +382,7 @@ export const buildWorkflowState = async (
           repoIndex,
           loadResult.config,
           impactSet,
+          diagnostics,
         );
 
   return {

@@ -19,7 +19,8 @@ It does not own implementation behavior under that code surface.
 
 ## Current Implementation Behavior
 
-The scaffold creates this provisional bootstrap handoff only when a default broad route needs a canonical owner. Agents use it as a signal to run Truth Structure and create bounded routes before normal Truth Sync, not as a place to accumulate implementation claims.
+- The scaffold creates this provisional bootstrap handoff only when a default broad route needs a canonical owner.
+- Agents use it as a signal to run Truth Structure and create bounded routes before normal Truth Sync, not as a place to accumulate implementation claims.
 
 ## Product Truth Links
 
@@ -39,7 +40,8 @@ The scaffold creates this provisional bootstrap handoff only when a default broa
 
 ## Execution Model
 
-Run Truth Structure before normal Truth Sync when real code changes touch only this broad route. Truth Structure should create or repair bounded areas first; Truth Sync should then update the bounded owner docs.
+- Run Truth Structure before normal Truth Sync when real code changes touch only this broad route.
+- Truth Structure should create or repair bounded areas first; Truth Sync should then update the bounded owner docs.
 
 ## Steps
 
@@ -64,7 +66,8 @@ If ownership cannot be inferred safely, stop and report manual-review files inst
 
 ## Rationale
 
-Scoped ownership keeps agent context close to affected files and prevents broad default docs from absorbing unrelated behavior. This preserves agent-native truth maintenance without adding a token-heavy discovery layer.
+- Scoped ownership keeps agent context close to affected files and prevents broad default docs from absorbing unrelated behavior.
+- This preserves agent-native truth maintenance without adding a token-heavy discovery layer.
 
 ## Non-Goals
 

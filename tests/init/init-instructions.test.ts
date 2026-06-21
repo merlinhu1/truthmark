@@ -90,7 +90,7 @@ ignore: []
     }
   });
 
-  it("removes retired generated surfaces from older versions", async () => {
+  it("removes auto-removable retired generated surfaces but preserves stale Gemini surfaces", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -140,17 +140,17 @@ ignore: []
       ).rejects.toThrow();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/preview.toml`),
-      ).rejects.toThrow();
-      await expect(fs.stat(`${repo.rootDir}/GEMINI.md`)).rejects.toThrow();
+      ).resolves.toBeDefined();
+      await expect(fs.stat(`${repo.rootDir}/GEMINI.md`)).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/skills/truthmark-sync/SKILL.md`),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/agents/truth-doc-writer.md`),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/sync.toml`),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`),
       ).rejects.toThrow();

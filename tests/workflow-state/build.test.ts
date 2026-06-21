@@ -278,7 +278,7 @@ describe("buildWorkflowState", () => {
     expect(JSON.stringify(state)).not.toContain('"content":');
   });
 
-  it("authorizes sync to correct any indexed truth docs and routing files", async () => {
+  it("authorizes sync to correct signal-linked truth docs and routing files", async () => {
     const repo = await setupConfiguredRepo({ includeUnrelatedRoute: true });
     repos.push(repo);
 
@@ -292,14 +292,14 @@ describe("buildWorkflowState", () => {
     ]);
     expect(state.targetTruthDocs).toEqual(["docs/truthmark/engineering/repository/bootstrap-routing.md"]);
     expect(state.actionContext.allowedWritePaths).toEqual(
-      expect.arrayContaining([
+      [
         "docs/truthmark/engineering/repository/bootstrap-routing.md",
-        "docs/truthmark/engineering/unrelated.md",
         "docs/truthmark/routes/areas.md",
         "docs/truthmark/routes/areas/repository.md",
         "docs/truthmark/routes/areas/unrelated.md",
-      ]),
+      ],
     );
+    expect(state.actionContext.candidateStaleTruthDocs).toEqual([]);
   });
 
   it("does not expose a legacy ContextPack opt-in path", async () => {

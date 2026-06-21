@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
+import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
 
@@ -24,7 +25,7 @@ const portalPaths = [
   ".github/skills/truthmark-portal/SKILL.md",
   ".github/prompts/truthmark-portal.prompt.md",
   ".antigravity/rules/truthmark-portal.md",
-  ".cursor/rules/truthmark-portal.mdc",
+  ".cursor/skills/truthmark-portal/SKILL.md",
 ];
 
 const readOnlyProcedurePaths = [
@@ -92,8 +93,7 @@ describe("Truthmark Portal generated surfaces", () => {
       (surface) =>
         surface.path.endsWith("/SKILL.md") ||
         surface.path.startsWith(".github/prompts/") ||
-        surface.path.startsWith(".antigravity/rules/") ||
-        surface.path.startsWith(".cursor/rules/"),
+        surface.path.startsWith(".antigravity/rules/"),
     );
     const forbiddenText = [
       "## Optional local CLI validation",
@@ -209,7 +209,9 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(byPath.has(".gemini/skills/truthmark-sync/SKILL.md")).toBe(false);
     expect(byPath.has(".gemini/commands/truthmark/sync.toml")).toBe(false);
     expect(byPath.has(".antigravity/rules/truthmark-sync.md")).toBe(true);
-    expect(byPath.has(".cursor/rules/truthmark-sync.mdc")).toBe(true);
+    expect(byPath.has(".cursor/skills/truthmark-sync/SKILL.md")).toBe(true);
+    expect(byPath.has(".cursor/skills/truthmark-sync/support/procedure.md")).toBe(true);
+    expect(byPath.has(".cursor/skills/truthmark-sync/support/report-template.md")).toBe(true);
     expect(byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml")).toBe(
       false,
     );
@@ -250,6 +252,62 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(claudeProcedure).not.toContain("truthmark:adapter-mode=expanded-adapter");
   });
 
+  it("does not teach Sync to update bootstrap routing as behavior truth", () => {
+    const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
+    const renderedSurfaces = renderGeneratedSurfaces(config);
+    const generatedSyncReportSurfaces = renderedSurfaces.filter(
+      (surface) =>
+        surface.path.endsWith("truthmark-sync/support/report-template.md") ||
+        surface.path === ".antigravity/rules/truthmark-sync.md" ||
+        surface.path === ".cursor/skills/truthmark-sync/support/report-template.md",
+    );
+    const checkedInSyncReportPaths = [
+      ".agents/skills/truthmark-sync/support/report-template.md",
+      ".opencode/skills/truthmark-sync/support/report-template.md",
+      ".claude/skills/truthmark-sync/support/report-template.md",
+      ".github/skills/truthmark-sync/support/report-template.md",
+      ".antigravity/rules/truthmark-sync.md",
+      ".cursor/skills/truthmark-sync/support/report-template.md",
+    ];
+    const surfacesToCheck = [
+      { path: "renderTruthSyncSkillBody", content: renderTruthSyncSkillBody(config) },
+      ...generatedSyncReportSurfaces,
+      ...checkedInSyncReportPaths.map((path) => ({
+        path,
+        content: readFileSync(join(process.cwd(), path), "utf8"),
+      })),
+    ];
+
+    expect(generatedSyncReportSurfaces.length).toBeGreaterThan(0);
+    for (const surface of surfacesToCheck) {
+      expect(surface.content, surface.path).toContain(
+        "docs/truthmark/routes/areas/authentication.md",
+      );
+      expect(surface.content, surface.path).toContain(
+        "docs/truthmark/engineering/behaviors/session-timeout.md",
+      );
+      expect(surface.content, surface.path).toContain(
+        "Changed code maps only to the provisional bootstrap route.",
+      );
+      expect(surface.content, surface.path).toContain(
+        "Run Truth Structure for src/auth/** before updating behavior truth.",
+      );
+      expect(surface.content, surface.path).not.toContain(
+        "- Target truth docs: docs/truthmark/engineering/repository/bootstrap-routing.md",
+      );
+      expect(surface.content, surface.path).not.toContain(
+        [
+          "Truth docs updated:",
+          "- docs/truthmark/engineering/repository/bootstrap-routing.md",
+        ].join("\n"),
+      );
+      expect(surface.content, surface.path).not.toContain(
+        "Session timeout behavior is documented in the mapped repository truth doc.",
+      );
+    }
+  });
+
   it("omits Portal surfaces and AGENTS wording when disabled", () => {
     const config = createDefaultConfig();
     const paths = renderGeneratedSurfaces(config).map(
@@ -287,7 +345,9 @@ describe("Truthmark Portal generated surfaces", () => {
       byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
     const antigravityRule =
       byPath.get(".antigravity/rules/truthmark-portal.md") ?? "";
-    const cursorRule = byPath.get(".cursor/rules/truthmark-portal.mdc") ?? "";
+    const cursorSkill = byPath.get(".cursor/skills/truthmark-portal/SKILL.md") ?? "";
+    const cursorProcedure =
+      byPath.get(".cursor/skills/truthmark-portal/support/procedure.md") ?? "";
     const agentsBlock = renderAgentsBlock(config);
 
     for (const text of [portalSkill, portalProcedure]) {
@@ -309,10 +369,10 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(antigravityRule).toContain(
       "This rule is the Antigravity entrypoint for Truthmark Portal.",
     );
-    expect(cursorRule).toContain(
-      "This rule is the Cursor entrypoint for Truthmark Portal.",
-    );
-    expect(cursorRule).toContain("alwaysApply: false");
+    expect(cursorSkill).toContain("Use as a Cursor Agent Skill.");
+    expect(cursorSkill).toContain(".cursor/skills/");
+    expect(cursorSkill).toContain("Progressive disclosure:");
+    expect(cursorProcedure).toContain("manual-only");
 
     expect(portalProcedure).toContain("replace the entire output directory");
     expect(portalProcedure).toContain("fixed Portal output directory only");

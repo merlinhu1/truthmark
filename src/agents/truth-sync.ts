@@ -17,7 +17,7 @@ import {
 import { getTruthmarkWorkflow } from "./workflow-manifest.js";
 
 export const TRUTH_SYNC_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Antigravity @truthmark-sync; Cursor @truthmark-sync.";
+  "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Antigravity @truthmark-sync; Cursor /truthmark-sync.";
 
 const renderMarkdownExample = (content: string): string => {
   return ["```md", content, "```"].join("\n");
@@ -191,14 +191,14 @@ ${renderMarkdownExample(
     changedCode: ["src/auth/session.ts"],
     syncIntent: {
       changedCodeReviewed: ["src/auth/session.ts"],
-      affectedRouteOrTruthOwner: [config.truthmark.paths.routesIndex],
-      targetTruthDocs: [
-        `${engineeringTruthRoot}/repository/bootstrap-routing.md`,
+      affectedRouteOrTruthOwner: [
+        `${config.truthmark.paths.routeAreasRoot}/authentication.md`,
       ],
+      targetTruthDocs: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
       intendedUpdate: ["Update session timeout behavior."],
       evidenceToVerify: [
         "src/auth/session.ts:12",
-        `${config.truthmark.paths.routesIndex}:11`,
+        `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
       ],
       userProvidedDecisionRationale: [
         "User rationale: session timeout behavior changed for internal implementation consistency",
@@ -206,23 +206,21 @@ ${renderMarkdownExample(
       noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
       blockers: ["none"],
     },
-    ownershipReviewed: [config.truthmark.paths.routesIndex],
-    truthDocsUpdated: [
-      `${engineeringTruthRoot}/repository/bootstrap-routing.md`,
-    ],
+    ownershipReviewed: [`${config.truthmark.paths.routeAreasRoot}/authentication.md`],
+    truthDocsUpdated: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
     evidenceChecked: [
       {
         claim:
-          "Session timeout behavior is documented in the mapped repository truth doc.",
+          "Session timeout behavior is documented in the bounded authentication behavior truth doc.",
         evidence: [
           "src/auth/session.ts:12",
-          `${config.truthmark.paths.routesIndex}:11`,
+          `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
         ],
         result: "supported",
       },
     ],
     decisionRationaleCaptured: [
-      "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
+      "Placed user rationale in the bounded authentication behavior truth doc under Engineering Decisions/Rationale.",
     ],
     notes: ["Updated session timeout behavior."],
   }),
@@ -230,9 +228,12 @@ ${renderMarkdownExample(
 Blocked report example:
 ${renderMarkdownExample(
   renderTruthSyncBlockedReport({
-    reason: "routing repair is unsafe or ambiguous",
-    manualReviewFiles: [config.truthmark.paths.routesIndex],
-    nextAction: "run Truth Structure with the listed files before rerunning Truth Sync",
+    reason: "Changed code maps only to the provisional bootstrap route.",
+    manualReviewFiles: [
+      "src/auth/**",
+      `${config.truthmark.paths.routeAreasRoot}/${config.truthmark.routes.defaultArea}.md`,
+    ],
+    nextAction: "Run Truth Structure for src/auth/** before updating behavior truth.",
   }),
 )}`;
 };

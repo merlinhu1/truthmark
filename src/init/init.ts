@@ -6,7 +6,7 @@ import type { CommandResult, DiagnosticCategory } from "../output/diagnostic.js"
 import { getGitRepository } from "../git/repository.js";
 import { resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
 import { scaffoldHierarchy } from "./hierarchy.js";
-import { findRetiredGeneratedSurfaces } from "../checks/generated-surfaces.js";
+import { findAutoRemovableRetiredGeneratedSurfaces } from "../checks/generated-surfaces.js";
 import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
 import { renderGeneratedSurfaces, type GeneratedSurface } from "../templates/generated-surfaces.js";
 
@@ -164,7 +164,8 @@ const diagnosticCategoryForPath = (
     filePath.startsWith(".opencode/skills/truthmark-realize/") ||
     filePath.startsWith(".agents/skills/truthmark-realize/") ||
     filePath.startsWith(".antigravity/rules/truthmark-realize") ||
-    filePath.startsWith(".cursor/rules/truthmark-realize")
+    filePath.startsWith(".cursor/rules/truthmark-realize") ||
+    filePath.startsWith(".cursor/skills/truthmark-realize/")
   ) {
     return "realization";
   }
@@ -181,7 +182,8 @@ const diagnosticCategoryForPath = (
     filePath.startsWith(".opencode/agents/") ||
     filePath.startsWith(".codex/agents/") ||
     filePath.startsWith(".antigravity/rules/truthmark-") ||
-    filePath.startsWith(".cursor/rules/truthmark-")
+    filePath.startsWith(".cursor/rules/truthmark-") ||
+    filePath.startsWith(".cursor/skills/truthmark-")
   ) {
     return "truth-sync";
   }
@@ -265,7 +267,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
     results.push(await writePlatformFile(rootDir, file));
   }
 
-  const obsoleteSurfacePaths = await findRetiredGeneratedSurfaces(
+  const obsoleteSurfacePaths = await findAutoRemovableRetiredGeneratedSurfaces(
     rootDir,
     expectedSurfacePaths,
   );

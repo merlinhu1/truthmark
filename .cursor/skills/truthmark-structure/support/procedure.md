@@ -1,23 +1,6 @@
----
-description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
-alwaysApply: false
----
-
-# Truthmark Structure
+# Truthmark Structure Procedure
 
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-This rule is the Cursor entrypoint for Truthmark Structure.
-
-Do not invoke another Truthmark command from here.
-
-Manual invocation: @truthmark-structure
-
-If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
-
-Description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
-
-## Procedure
 
 Use this skill to design or repair Truthmark area structure.
 
@@ -116,40 +99,3 @@ Truthmark hierarchy hints:
 Decision truth lives in the canonical doc it governs; date active decisions inline when added or changed.
 Do not create separate active-decision ADR/planning logs; replace the active decision and let Git history carry the audit trail.
 Product decisions belong in product truth; engineering, architecture, contract, workflow, and operational decisions belong in engineering truth.
-
-## Report Template
-
-Report completion in this shape:
-```md
-Truth Structure: completed
-Topology reviewed:
-- controllers: src/auth/**
-- product docs root: docs/truthmark/product
-- engineering docs root: docs/truthmark/engineering
-- route files: docs/truthmark/routes/areas.md
-Areas reviewed:
-- src/auth/**
-Routing updated:
-- docs/truthmark/routes/areas.md
-Initial truth boundary:
-- Area: Authentication
-- Code: src/auth/**
-- Product owner: docs/truthmark/product/capabilities/authentication-session.md
-- Engineering owner: docs/truthmark/engineering/behaviors/authentication-session.md
-- Scope: session behavior only
-Truth docs created:
-- docs/truthmark/product/capabilities/authentication-session.md
-- docs/truthmark/engineering/behaviors/authentication-session.md
-Truth docs split:
-- docs/truthmark/truth/authentication/README.md -> docs/truthmark/product/capabilities/authentication-session.md and docs/truthmark/engineering/behaviors/authentication-session.md
-Truth docs restructured:
-- docs/truthmark/truth/authentication/README.md
-Evidence checked:
-- Claim: Session behavior belongs to a dedicated Authentication truth owner.
-  Evidence: src/auth/** / docs/truthmark/routes/areas.md:7
-  Result: supported
-Topology decisions:
-- Added an Authentication area because session behavior has a distinct code surface and truth owner.
-Notes:
-- Added an Authentication area for session behavior.
-```
