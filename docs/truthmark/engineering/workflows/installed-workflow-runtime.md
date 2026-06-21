@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-20
+last_reviewed: 2026-06-21
 ---
 
 # Installed Workflow Runtime
@@ -50,11 +50,17 @@ GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 - They point to host-native workflow entrypoints when a host skill package exists.
 - They do not embed full workflow bodies or cross-host invocation lists.
 
-Antigravity and Cursor rule files are flat host rule surfaces:
+Antigravity rule files remain flat host rule surfaces:
 
-- They inline the workflow procedure and report template because those hosts do not consume the package-local `support/` directory model.
+- They inline the workflow procedure and report template because that host does not consume the package-local `support/` directory model.
 - They omit the duplicate quick-procedure block and do not reference nonexistent `support/` files.
 - They keep only host-local invocation framing and do not embed cross-host invocation lists.
+
+Cursor Agent Skills are generated as project skill packages under `.cursor/skills/truthmark-*`:
+
+- They use Cursor's current Agent Skills model rather than `.cursor/rules` dynamic rule files.
+- `SKILL.md` carries the description that lets Cursor select the workflow automatically when relevant and supports manual `/` invocation.
+- Package-local `support/procedure.md`, `support/report-template.md`, and any lease guidance stay colocated with the Cursor skill.
 
 Generated-surface checks report missing or stale configured host-native skill package files.
 
@@ -131,6 +137,12 @@ Truth Sync generated procedures and report templates include a transient Sync In
 - no-update-needed rationale
 - blockers
 
+Truth Sync successful report examples target bounded behavior ownership rather than the provisional bootstrap handoff:
+
+- The successful session-timeout example uses a bounded authentication route and `engineering/behaviors/session-timeout.md`.
+- The provisional `bootstrap-routing.md` document is represented only as a blocked topology case that tells agents to run Truth Structure before updating behavior truth.
+- `truthmark validate sync-report` rejects completed reports that list `bootstrap-routing.md` as an updated or target truth doc.
+
 Optional CLI repository-intelligence helpers are compact advisory cards:
 
 - `workflow status` reports affected files, likely route owners, suggested truth docs, open questions, skipped helper status, and compact write-boundary suggestions.
@@ -185,17 +197,30 @@ Committed workflow files are the runtime contract. The CLI installs and validate
 ## Engineering Decisions
 
 - Decision (2026-06-14): Product and engineering truth remain separate generated-workflow lanes for truth creation, structure, audit, and cross-lane ownership checks.
-- Decision (2026-06-17): Routine code-first Truth Sync uses a product-truth decision instead of a full lane-classification gate; product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
+- Decision (2026-06-17): Routine code-first Truth Sync uses a product-truth decision instead of a full lane-classification gate.
+  - Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
 - Decision (2026-06-15): Optional workflow handoff helpers use `workflow status --json` and `impact --json`; generated surfaces must not direct agents to a standalone ContextPack command.
-- Decision (2026-06-16): `truthmark workflow instructions` is intentionally absent; committed host-native workflow files and direct checkout inspection are the runtime contract, while `workflow status` remains an optional compact helper.
-- Decision (2026-06-17): Workflow status presents optional helper output as advisory workflow cards with review checklists, evidence prompts, open questions, and skipped-helper status; generated workflows still run from committed host-native files and direct checkout inspection when helpers are unavailable.
+- Decision (2026-06-16): `truthmark workflow instructions` is intentionally absent.
+  - Committed host-native workflow files and direct checkout inspection are the runtime contract, while `workflow status` remains an optional compact helper.
+- Decision (2026-06-17): Workflow status presents optional helper output as advisory workflow cards with review checklists, evidence prompts, open questions, and skipped-helper status.
+  - Generated workflows still run from committed host-native files and direct checkout inspection when helpers are unavailable.
 - Decision (2026-06-16): Truth Sync uses a transient Sync Intent checklist in generated procedures and report templates before truth writes; it is not a persistent plan object or lifecycle artifact.
-- Decision (2026-06-18): Truth Sync treats user-provided decision rationale from the current task conversation as first-class sync input. The workflow records that context in Sync Intent, routes it to the correct product or engineering truth section when supported, and reports where it was placed, skipped because none was provided, or handed off for manual review.
-- Decision (2026-06-17): Source manifest/renderers are the workflow-generation authority; configured host skill directories are native generated packages with colocated resources. Truthmark does not emit a separate `.truthmark/agent/` workflow copy when no host surface consumes it.
+- Decision (2026-06-18): Truth Sync treats user-provided decision rationale from the current task conversation as first-class sync input.
+  - The workflow records that context in Sync Intent, routes it to the correct product or engineering truth section when supported, and reports where it was placed, skipped because none was provided, or handed off for manual review.
+- Decision (2026-06-17): Source manifest/renderers are the workflow-generation authority; configured host skill directories are native generated packages with colocated resources.
+  - Truthmark does not emit a separate `.truthmark/agent/` workflow copy when no host surface consumes it.
 - Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are generated only for explicit `platforms` entries.
 - Decision (2026-06-18): Generated helper manifest and helper policy files are retired. Validation helpers remain as optional workflow metadata and explicit `truthmark validate ...` commands, not package support files.
-- Decision (2026-06-20): Truth Preview generated host surfaces are retired. The repository no longer emits Preview skill packages, Copilot prompts, Antigravity rules, or Cursor rules; route/workflow preview remains an internal read-only selection behavior rather than an installed workflow surface.
-- Decision (2026-06-18): Truth Sync retains bounded topology repair. Missing, stale, broad, overloaded, or catch-all route ownership is repaired inside Sync when safe and scoped to the changed functional code; only unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure.
+- Decision (2026-06-20): Truth Preview generated host surfaces are retired.
+  - The repository no longer emits Preview skill packages, Copilot prompts, Antigravity rules, or Cursor rules.
+  - Route/workflow preview remains an internal read-only selection behavior rather than an installed workflow surface.
+- Decision (2026-06-18): Truth Sync retains bounded topology repair.
+  - Missing, stale, broad, overloaded, or catch-all route ownership is repaired inside Sync when safe and scoped to the changed functional code.
+  - Only unsafe, ambiguous, or out-of-scope topology repair is handed off manually to Truth Structure.
+- Decision (2026-06-21): Truth Sync report examples and validation must not accept `bootstrap-routing.md` as a completed behavior-update target.
+  - Bootstrap-only mappings are blocked topology handoffs until Truth Structure assigns a bounded owner.
+- Decision (2026-06-21): Cursor workflow generation uses Agent Skill project packages under `.cursor/skills/truthmark-*`, not dynamic `.cursor/rules` files.
+  - Agent Skills are the single current native Cursor workflow representation because they provide description-based selection plus package-local resources.
 
 ## Rationale
 
@@ -216,6 +241,7 @@ Update this doc when workflow manifest fields, generated surface paths, optional
 - ../../../../src/agents/instructions.ts
 - ../../../../src/agents/prompts.ts
 - ../../../../src/agents/workflow-manifest.ts
+- ../../../../src/agents/workflow-helper-validation.ts
 - ../../../../src/agents/truth-sync.ts
 - ../../../../src/sync/report.ts
 - ../../../../src/agents/shared.ts

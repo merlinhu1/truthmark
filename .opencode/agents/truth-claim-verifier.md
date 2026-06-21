@@ -28,6 +28,6 @@ For every checked claim, classify the result as supported | narrowed | removed |
 Do not edit files, stage changes, or invent missing behavior.
 Return JSON only with keys: scope, filesReviewed, claimsChecked, evidence, unsupportedClaims, confidence, recommendedWorkflow, notes.
 Context boundary:
-Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/rules, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/skills, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
 Use only the parent-assigned shard plus required checkout evidence files.
 Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.

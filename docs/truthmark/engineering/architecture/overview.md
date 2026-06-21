@@ -22,7 +22,8 @@ It turns checkout evidence, route metadata, and source renderers into committed 
 
 ## Current Implementation Behavior
 
-Truthmark is a local CLI and generated-surface renderer. It reads checkout files, normalizes configuration, parses route files, emits diagnostics, and writes configured workflow surfaces during init.
+- Truthmark is a local CLI and generated-surface renderer.
+- It reads checkout files, normalizes configuration, parses route files, emits diagnostics, and writes configured workflow surfaces during init.
 
 ## Boundaries
 

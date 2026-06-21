@@ -16,11 +16,27 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 
 ## Current Implementation Behavior
 
-`truthmark check` combines config, area routing, frontmatter, link, lane-shape, lane-drift, traceability, generated-surface, source-traceability, and freshness diagnostics. Missing product links for engineering behavior, workflow, and contract docs are review diagnostics only when the same routed area includes product truth evidence. Cross-lane route metadata is route-local: product `realized_by` links and engineering `realizes` links must target existing opposite-lane truth docs, but they do not have to be reciprocated by the target entry. Repeated route entries for the same truth document, kind, and lane merge their `realized_by`, `realizes`, and `depends_on` metadata before traceability validation; conflicting duplicate kinds or lanes are area-index errors.
+- `truthmark check` combines config, area routing, frontmatter, link, lane-shape, lane-drift, traceability, generated-surface, source-traceability, and freshness diagnostics.
+- Missing product links for engineering behavior, workflow, and contract docs are review diagnostics only when the same routed area includes product truth evidence.
+- Cross-lane route metadata is route-local.
+  - Product `realized_by` links and engineering `realizes` links must target existing opposite-lane truth docs.
+  - Relationship links do not have to be reciprocated by the target entry.
+- Repeated route entries for the same truth document, kind, and lane merge their `realized_by`, `realizes`, and `depends_on` metadata before traceability validation.
+- Conflicting duplicate kinds or lanes are area-index errors.
 
-Frontmatter diagnostics reject relationship metadata fields `realized_by`, `realizes`, and `depends_on` when they appear in truth document frontmatter. Relationship authority stays in fenced route YAML entries.
+- Frontmatter diagnostics reject relationship metadata fields `realized_by`, `realizes`, and `depends_on` when they appear in truth document frontmatter.
+- Relationship authority stays in fenced route YAML entries.
 
-Product truth doc structure validation enforces the `product-capability` shape. Product capability docs require capability sections for the capability promise, users and value, capability scope including boundary constraints and adjacent systems, current product behavior, acceptance criteria, product decisions, engineering realization links, and non-goals.
+- Product truth doc structure validation enforces the `product-capability` shape.
+- Product capability docs require capability sections for:
+  - capability promise
+  - users and value
+  - capability scope, including boundary constraints and adjacent systems
+  - current product behavior
+  - acceptance criteria
+  - product decisions
+  - engineering realization links
+  - non-goals
 
 ## Core Rules
 
@@ -50,10 +66,14 @@ Product truth doc structure validation enforces the `product-capability` shape. 
 
 ## Engineering Decisions
 
-- Decision (2026-06-14): Wrong-lane content is a lane-drift diagnostic; missing product links for engineering behavior, workflow, and contract docs are review diagnostics only when routed area evidence indicates product truth context.
-- Decision (2026-06-14): Downstream injected/default product truth supports `product-capability` only; boundary material belongs inside capability scope, acceptance criteria, and non-goals.
-- Decision (2026-06-15): Duplicate route entries with the same path, kind, and lane are an additive relationship model; divergent relationship arrays merge instead of erroring so area-local route entries do not have to repeat the full relationship closure.
-- Decision (2026-06-15): `realized_by` and `realizes` route metadata is route-local navigation metadata, not a canonical global graph, so check validates target existence and lane compatibility without requiring reciprocal edges.
+- Decision (2026-06-14): Wrong-lane content is a lane-drift diagnostic.
+  - Missing product links for engineering behavior, workflow, and contract docs are review diagnostics only when routed area evidence indicates product truth context.
+- Decision (2026-06-14): Downstream injected/default product truth supports `product-capability` only.
+  - Boundary material belongs inside capability scope, acceptance criteria, and non-goals.
+- Decision (2026-06-15): Duplicate route entries with the same path, kind, and lane are an additive relationship model.
+  - Divergent relationship arrays merge instead of erroring so area-local route entries do not have to repeat the full relationship closure.
+- Decision (2026-06-15): `realized_by` and `realizes` route metadata is route-local navigation metadata, not a canonical global graph.
+  - Check validates target existence and lane compatibility without requiring reciprocal edges.
 
 ## Rationale
 

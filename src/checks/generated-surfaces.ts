@@ -51,6 +51,7 @@ const GENERATED_HOST_SKILL_ROOTS = [
   ".opencode/skills",
   ".claude/skills",
   ".github/skills",
+  ".cursor/skills",
 ] as const;
 
 const RETIRED_SKILL_HELPER_PATHS = [
@@ -63,9 +64,30 @@ const RETIRED_PACKAGE_DIRECTORIES = ["truthmark-preview"] as const;
 const RETIRED_GENERATED_SURFACE_PATHS = [
   "GEMINI.md",
   ".github/prompts/truthmark-preview.prompt.md",
+  ".cursor/rules/truthmark-structure.mdc",
+  ".cursor/rules/truthmark-document.mdc",
+  ".cursor/rules/truthmark-sync.mdc",
+  ".cursor/rules/truthmark-realize.mdc",
+  ".cursor/rules/truthmark-check.mdc",
+  ".cursor/rules/truthmark-portal.mdc",
 ] as const;
 
 const RETIRED_GENERATED_SURFACE_ROOTS = [".gemini"] as const;
+
+const isRetiredGeminiSurfacePath = (filePath: string): boolean =>
+  filePath === "GEMINI.md" || filePath.startsWith(".gemini/");
+
+const obsoleteGeneratedSurfaceMessage = (surfacePath: string): string => {
+  if (isRetiredGeminiSurfacePath(surfacePath)) {
+    return `Generated surface ${surfacePath} is obsolete; remove stale Gemini instructions manually if they are no longer wanted.`;
+  }
+
+  return `Generated surface ${surfacePath} is obsolete; rerun truthmark init.`;
+};
+
+type RetiredSurfaceCollectionOptions = {
+  includeGeminiSurfaces?: boolean;
+};
 
 const pathExists = async (absolutePath: string): Promise<boolean> => {
   try {
@@ -116,10 +138,16 @@ const listDirectoryFiles = async (
 const collectRetiredGeneratedSurfaces = async (
   rootDir: string,
   expectedSurfacePaths: Set<string>,
+  options: RetiredSurfaceCollectionOptions = {},
 ): Promise<string[]> => {
   const legacyCandidates = new Set<string>();
+  const includeGeminiSurfaces = options.includeGeminiSurfaces ?? true;
 
   for (const retiredPath of RETIRED_GENERATED_SURFACE_PATHS) {
+    if (!includeGeminiSurfaces && isRetiredGeminiSurfacePath(retiredPath)) {
+      continue;
+    }
+
     const absoluteRetiredPath = resolveRepoPath(rootDir, retiredPath);
 
     if (
@@ -131,6 +159,10 @@ const collectRetiredGeneratedSurfaces = async (
   }
 
   for (const retiredRoot of RETIRED_GENERATED_SURFACE_ROOTS) {
+    if (!includeGeminiSurfaces && isRetiredGeminiSurfacePath(`${retiredRoot}/`)) {
+      continue;
+    }
+
     const absoluteRetiredRoot = resolveRepoPath(rootDir, retiredRoot);
 
     if (!(await pathExists(absoluteRetiredRoot))) {
@@ -245,7 +277,7 @@ export const checkGeneratedSurfaces = async (
     diagnostics.push({
       category: "generated-surface",
       severity: "review",
-      message: `Generated surface ${surfacePath} is obsolete; rerun truthmark init.`,
+      message: obsoleteGeneratedSurfaceMessage(surfacePath),
       file: surfacePath,
     });
   }
@@ -258,4 +290,13 @@ export const findRetiredGeneratedSurfaces = async (
   expectedSurfacePaths: Set<string>,
 ): Promise<string[]> => {
   return collectRetiredGeneratedSurfaces(rootDir, expectedSurfacePaths);
+};
+
+export const findAutoRemovableRetiredGeneratedSurfaces = async (
+  rootDir: string,
+  expectedSurfacePaths: Set<string>,
+): Promise<string[]> => {
+  return collectRetiredGeneratedSurfaces(rootDir, expectedSurfacePaths, {
+    includeGeminiSurfaces: false,
+  });
 };

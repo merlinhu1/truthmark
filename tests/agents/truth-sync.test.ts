@@ -13,7 +13,6 @@ import {
 } from "../../src/agents/truth-sync.js";
 import {
   renderTruthmarkCopilotSyncPrompt,
-  renderTruthmarkCursorSyncRule,
   renderTruthmarkSyncClaudeSkill,
   renderTruthmarkSyncLocalSkill,
   renderTruthmarkSkillPackage,
@@ -25,7 +24,7 @@ describe("renderTruthSyncWorkerPrompt", () => {
   it("renders the prepared-context worker contract and result shape", () => {
     const prompt = renderTruthSyncWorkerPrompt();
 
-    expect(TRUTH_SYNC_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-sync");
+    expect(TRUTH_SYNC_EXPLICIT_INVOCATIONS).toContain("Cursor /truthmark-sync");
     expect(prompt).toContain("parent provides the task focus");
     expect(prompt).toContain("explicit write lease");
     expect(prompt).toContain(
@@ -158,9 +157,9 @@ describe("renderTruthSyncSkillBody", () => {
     const skillBody = renderTruthSyncSkillBody(config);
 
     expect(skillBody).toContain(
-      "docs/truthmark/engineering/repository/bootstrap-routing.md",
+      "docs/truthmark/engineering/behaviors/session-timeout.md",
     );
-    expect(skillBody).toContain("docs/routes/index.md:11");
+    expect(skillBody).toContain("docs/routes/areas/authentication.md:11");
     expect(skillBody).toContain(
       "verify only truth docs and leased truth routing files changed",
     );
@@ -280,22 +279,30 @@ describe("Truth Sync generated metadata", () => {
       'short_description: "Sync truth docs from functional code changes; skip docs-only/no-code changes"',
     );
     expect(metadata).toContain("allow_implicit_invocation: true");
-    expect(renderTruthmarkCursorSyncRule()).toContain(
+    const cursorSyncPackage = renderTruthmarkSkillPackage({
+      skillPath: ".cursor/skills/truthmark-sync/SKILL.md",
+      workflowId: "truthmark-sync",
+      host: "cursor",
+    });
+    const cursorSyncSkill =
+      cursorSyncPackage.find((file) => file.path.endsWith("/SKILL.md"))?.content ?? "";
+    const cursorSyncProcedure =
+      cursorSyncPackage.find((file) => file.path.endsWith("/support/procedure.md"))
+        ?.content ?? "";
+
+    expect(cursorSyncSkill).toContain(
       'description: Use automatically at finish-time after functional code changes',
     );
+    expect(cursorSyncSkill).toContain("Use as a Cursor Agent Skill.");
+    expect(cursorSyncSkill).toContain("support/procedure.md");
+    expect(cursorSyncSkill).toContain("support/report-template.md");
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "description: 'Use automatically at finish-time after functional code changes",
-    );
-    expect(renderTruthmarkCursorSyncRule()).toContain(
-      "This rule is the Cursor entrypoint for Truthmark Sync.",
     );
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "This prompt is the GitHub Copilot entrypoint for Truthmark Sync.",
     );
-    for (const surface of [
-      renderTruthmarkCursorSyncRule(),
-      renderTruthmarkCopilotSyncPrompt(),
-    ]) {
+    for (const surface of [renderTruthmarkCopilotSyncPrompt()]) {
       expect(surface).toContain(
         "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
       );
@@ -311,11 +318,8 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "support/report-template.md",
     );
-    expect(renderTruthmarkCursorSyncRule()).not.toContain("support/procedure.md");
-    expect(renderTruthmarkCursorSyncRule()).not.toContain(
-      "support/report-template.md",
-    );
-    expect(renderTruthmarkCursorSyncRule()).not.toContain("Quick procedure:");
+    expect(cursorSyncProcedure).toContain("Truthmark Sync Procedure");
+    expect(cursorSyncProcedure).not.toContain("Report completion in this shape:");
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {
@@ -356,7 +360,14 @@ describe("Truth Sync generated metadata", () => {
     expect(renderTruthmarkSyncLocalSkill()).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkCursorSyncRule()).not.toContain(
+    const cursorSyncProcedure =
+      renderTruthmarkSkillPackage({
+        skillPath: ".cursor/skills/truthmark-sync/SKILL.md",
+        workflowId: "truthmark-sync",
+        host: "cursor",
+      }).find((file) => file.path.endsWith("/support/procedure.md"))?.content ?? "";
+
+    expect(cursorSyncProcedure).not.toContain(
       "Codex subagent mode:",
     );
     expect(renderTruthmarkCopilotSyncPrompt()).not.toContain(

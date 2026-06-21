@@ -13,7 +13,7 @@ import {
   renderTruthmarkDocumentLocalSkill,
   renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
-  renderTruthmarkCursorDocumentRule,
+  renderTruthmarkSkillPackage,
 } from "../../src/templates/workflow-surfaces.js";
 
 describe("renderTruthDocumentSkillBody", () => {
@@ -37,7 +37,7 @@ describe("renderTruthDocumentSkillBody", () => {
   it("renders the manual existing-implementation documentation workflow", () => {
     const skill = renderTruthDocumentSkillBody();
 
-    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-document");
+    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("Cursor /truthmark-document");
     expect(skill).toContain("name: truthmark-document");
     expect(skill).toContain("manual and implementation-first");
     expect(skill).toContain("existing implemented behavior");
@@ -177,7 +177,7 @@ describe("Truth Document generated surfaces", () => {
       "Claude Code subagent mode:",
     );
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain("OpenCode /skill truthmark-document");
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("Cursor @truthmark-document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("Cursor /truthmark-document");
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'display_name: "Truthmark Document"',
     );
@@ -187,16 +187,29 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'refresh_command: "truthmark init"',
     );
-    expect(renderTruthmarkCursorDocumentRule()).toContain(
-      "This rule is the Cursor entrypoint for Truthmark Document.",
-    );
+    const cursorDocumentPackage = renderTruthmarkSkillPackage({
+      skillPath: ".cursor/skills/truthmark-document/SKILL.md",
+      workflowId: "truthmark-document",
+      host: "cursor",
+    });
+    const cursorDocumentSkill =
+      cursorDocumentPackage.find((file) => file.path.endsWith("/SKILL.md"))?.content ?? "";
+    const cursorDocumentProcedure =
+      cursorDocumentPackage.find((file) => file.path.endsWith("/support/procedure.md"))
+        ?.content ?? "";
+    const cursorDocumentReportTemplate =
+      cursorDocumentPackage.find((file) => file.path.endsWith("/support/report-template.md"))
+        ?.content ?? "";
+
+    expect(cursorDocumentSkill).toContain("Use as a Cursor Agent Skill.");
+    expect(cursorDocumentSkill).toContain(".cursor/skills/");
+    expect(cursorDocumentSkill).toContain("Progressive disclosure:");
+    expect(cursorDocumentSkill).toContain("support/procedure.md");
+    expect(cursorDocumentSkill).toContain("support/report-template.md");
     expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
       "This prompt is the GitHub Copilot entrypoint for Truthmark Document.",
     );
-    for (const surface of [
-      renderTruthmarkCursorDocumentRule(),
-      renderTruthmarkCopilotDocumentPrompt(),
-    ]) {
+    for (const surface of [renderTruthmarkCopilotDocumentPrompt()]) {
       expect(surface).toContain("Do not invoke another Truthmark command from here.");
       expect(surface).toContain(
         "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
@@ -210,12 +223,8 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkCopilotDocumentPrompt()).toContain(
       "support/report-template.md",
     );
-    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
-      "support/procedure.md",
-    );
-    expect(renderTruthmarkCursorDocumentRule()).not.toContain(
-      "support/report-template.md",
-    );
-    expect(renderTruthmarkCursorDocumentRule()).not.toContain("Quick procedure:");
+    expect(cursorDocumentProcedure).toContain("Truthmark Document Procedure");
+    expect(cursorDocumentProcedure).not.toContain("Report completion in this shape:");
+    expect(cursorDocumentReportTemplate).toContain("Report completion in this shape:");
   });
 });

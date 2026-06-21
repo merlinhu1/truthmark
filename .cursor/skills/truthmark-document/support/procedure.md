@@ -1,23 +1,6 @@
----
-description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
-alwaysApply: false
----
-
-# Truthmark Document
+# Truthmark Document Procedure
 
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-This rule is the Cursor entrypoint for Truthmark Document.
-
-Do not invoke another Truthmark command from here.
-
-Manual invocation: @truthmark-document
-
-If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
-
-Description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
-
-## Procedure
 
 # Truthmark Document
 
@@ -102,36 +85,3 @@ Parent post-document verification:
 - stop on functional code, generated host surfaces, or unrelated diffs caused by document work
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and expected report fields before accepting it
 - verify the final report records ownership review, structure requirement, restructure, routing update, or manual handoff reason when applicable
-
-## Report Template
-
-Report completion in this shape:
-```md
-Truth Document: completed
-
-Implementation reviewed:
-- src/routing/area-resolver.ts
-
-Ownership reviewed:
-- docs/truthmark/routes/areas.md
-
-Truth docs created:
-- docs/truthmark/engineering/contracts/routing.md
-
-Truth docs updated:
-- docs/truthmark/engineering/behaviors/check-diagnostics.md
-
-Truth docs restructured:
-- docs/truthmark/engineering/behaviors/check-diagnostics.md
-
-Routing updated:
-- docs/truthmark/routes/areas.md
-
-Evidence checked:
-- Claim: Route resolution behavior is documented in the contracts truth doc.
-  Evidence: src/routing/area-resolver.ts:14 / docs/truthmark/routes/areas.md:9
-  Result: supported
-
-Notes:
-- Documented routing and behavior from route handlers and tests.
-```

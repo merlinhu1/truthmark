@@ -126,6 +126,39 @@ describe("truthmark validate CLI helpers", () => {
     }
   });
 
+  it("rejects bootstrap-routing as a completed behavior-update target", async () => {
+    const repo = await createTempRepo();
+    try {
+      await repo.writeFile(
+        "report.md",
+        validSyncReportWithIntent
+          .replace(
+            "docs/truthmark/truth/init-and-scaffold.md",
+            "docs/truthmark/engineering/repository/bootstrap-routing.md",
+          )
+          .replace(
+            "docs/truthmark/truth/init-and-scaffold.md",
+            "docs/truthmark/engineering/repository/bootstrap-routing.md",
+          ),
+      );
+
+      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
+        cwd: repo.rootDir,
+      });
+      const output = JSON.parse(result.stdout) as {
+        data?: { validation?: { ok: boolean; errors?: string[] } };
+      };
+
+      expect(result.exitCode).toBe(1);
+      expect(output.data?.validation?.ok).toBe(false);
+      expect(output.data?.validation?.errors?.join("\n")).toContain(
+        "bootstrap-routing.md is a provisional topology handoff",
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("validates document reports through the Truthmark CLI", async () => {
     const repo = await createTempRepo();
     try {

@@ -87,9 +87,7 @@ describe("package and release integrity", () => {
   it("includes localized README files linked from the published README", async () => {
     const tarballPaths = (await readPackFiles()).map((file) => file.path);
 
-    expect(tarballPaths).toEqual(
-      expect.arrayContaining(localizedReadmeFiles),
-    );
+    expect(tarballPaths).toEqual(expect.arrayContaining(localizedReadmeFiles));
   });
 
   it("publishes only expected files with intentional executable modes", async () => {

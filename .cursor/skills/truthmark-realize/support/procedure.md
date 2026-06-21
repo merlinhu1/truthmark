@@ -1,23 +1,6 @@
----
-description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
-alwaysApply: false
----
-
-# Truthmark Realize
+# Truthmark Realize Procedure
 
 Truthmark-managed generated file. Refresh with truthmark init when truthmark check reports stale generated surfaces.
-
-This rule is the Cursor entrypoint for Truthmark Realize.
-
-Do not invoke another Truthmark command from here.
-
-Manual invocation: @truthmark-realize
-
-If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
-
-Description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
-
-## Procedure
 
 # Truthmark Realize
 
@@ -56,21 +39,3 @@ Read and write boundaries:
 - may read truth docs, routing docs, and relevant functional code
 - may write functional code only
 - must not edit truth docs or truth routing while realizing those docs
-
-## Report Template
-
-Report completion in this shape:
-
-```md
-Truth Realize: completed
-
-Truth docs used:
-- docs/truthmark/product/capabilities/authentication-session.md
-- docs/truthmark/engineering/behaviors/authentication-session.md
-
-Code updated:
-- src/auth/session.ts
-
-Verification:
-- npm test -- auth
-```

@@ -32,7 +32,7 @@ describe("renderTruthCheckSkillBody", () => {
   it("renders the agent-led truth audit workflow", () => {
     const skill = renderTruthCheckSkillBody();
 
-    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("Cursor @truthmark-check");
+    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("Cursor /truthmark-check");
     expect(skill).toContain("name: truthmark-check");
     expect(skill).toContain(
       "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
@@ -84,7 +84,7 @@ describe("renderTruthCheckSkillBody", () => {
 
 describe("Truth Check generated surfaces", () => {
   const readOnlyContextBoundary =
-    "Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/rules, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
+    "Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/skills, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
 
   it("renders Codex metadata and OpenCode skill content", () => {
     expect(renderTruthmarkCheckSkill()).toContain("name: truthmark-check");

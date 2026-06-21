@@ -62,7 +62,7 @@ truthmark init
 | `github-copilot` | Agent skills, prompt commands, custom agents, and managed instructions | `/truthmark-*` in supported Copilot IDEs; `@truth-*` custom agents in Copilot CLI |
 | `opencode` | Skill packages and verifier agents | `/skill truthmark-*` |
 | `antigravity` | Project rule files for Truthmark workflows | `@truthmark-*` |
-| `cursor` | Project rule files under `.cursor/rules` | `@truthmark-*` |
+| `cursor` | Agent Skill project packages under `.cursor/skills` | selected by description or invoked with `/` in Cursor Agent chat |
 
 Unknown platform names are config errors.
 
@@ -120,7 +120,7 @@ Use Truth Document when the implementation already exists but the repository tru
 /truthmark-document document the implemented session timeout behavior across src/auth/session.ts, src/auth/middleware.ts, and tests/auth/session.test.ts
 ```
 
-Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Antigravity or Cursor, use `@truthmark-document ...`.
+Give it the feature name, code paths, test paths, or desired truth-doc area. On OpenCode-style hosts, call the same workflow as `/skill truthmark-document ...`; on Antigravity, use `@truthmark-document ...`; in Cursor, use `/truthmark-document ...` or let the Agent Skill be selected by description.
 
 Start with Truth Document for one bounded feature or area at a time.
 
@@ -170,7 +170,7 @@ Most maintainers start with three commands.
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
-Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts and Antigravity/Cursor rules use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
+Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts, Antigravity rules, and Cursor Agent Skills use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
 
 They are not sources of truth.
 

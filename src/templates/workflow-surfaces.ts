@@ -133,23 +133,23 @@ export const TRUTHMARK_ANTIGRAVITY_CHECK_RULE_PATH =
 export const TRUTHMARK_ANTIGRAVITY_PORTAL_RULE_PATH =
   ".antigravity/rules/truthmark-portal.md";
 
-export const TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH =
-  ".cursor/rules/truthmark-structure.mdc";
+export const TRUTHMARK_CURSOR_STRUCTURE_SKILL_PATH =
+  ".cursor/skills/truthmark-structure/SKILL.md";
 
-export const TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH =
-  ".cursor/rules/truthmark-document.mdc";
+export const TRUTHMARK_CURSOR_DOCUMENT_SKILL_PATH =
+  ".cursor/skills/truthmark-document/SKILL.md";
 
-export const TRUTHMARK_CURSOR_SYNC_RULE_PATH =
-  ".cursor/rules/truthmark-sync.mdc";
+export const TRUTHMARK_CURSOR_SYNC_SKILL_PATH =
+  ".cursor/skills/truthmark-sync/SKILL.md";
 
-export const TRUTHMARK_CURSOR_REALIZE_RULE_PATH =
-  ".cursor/rules/truthmark-realize.mdc";
+export const TRUTHMARK_CURSOR_REALIZE_SKILL_PATH =
+  ".cursor/skills/truthmark-realize/SKILL.md";
 
-export const TRUTHMARK_CURSOR_CHECK_RULE_PATH =
-  ".cursor/rules/truthmark-check.mdc";
+export const TRUTHMARK_CURSOR_CHECK_SKILL_PATH =
+  ".cursor/skills/truthmark-check/SKILL.md";
 
-export const TRUTHMARK_CURSOR_PORTAL_RULE_PATH =
-  ".cursor/rules/truthmark-portal.mdc";
+export const TRUTHMARK_CURSOR_PORTAL_SKILL_PATH =
+  ".cursor/skills/truthmark-portal/SKILL.md";
 
 export const TRUTHMARK_COPILOT_STRUCTURE_PROMPT_PATH =
   ".github/prompts/truthmark-structure.prompt.md";
@@ -241,7 +241,8 @@ type TruthmarkSkillPackageHost =
   | "codex"
   | "opencode"
   | "claude-code"
-  | "github-copilot";
+  | "github-copilot"
+  | "cursor";
 
 type TruthmarkSkillPackageFile = {
   path: string;
@@ -374,14 +375,14 @@ const renderWorkflowReportTemplate = (
           changedCode: ["src/auth/session.ts"],
           syncIntent: {
             changedCodeReviewed: ["src/auth/session.ts"],
-            affectedRouteOrTruthOwner: [config.truthmark.paths.routesIndex],
-            targetTruthDocs: [
-              `${engineeringTruthRoot}/repository/bootstrap-routing.md`,
+            affectedRouteOrTruthOwner: [
+              `${config.truthmark.paths.routeAreasRoot}/authentication.md`,
             ],
+            targetTruthDocs: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
             intendedUpdate: ["Update session timeout behavior."],
             evidenceToVerify: [
               "src/auth/session.ts:12",
-              `${config.truthmark.paths.routesIndex}:11`,
+              `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
             ],
             userProvidedDecisionRationale: [
               "User rationale: session timeout behavior changed for internal implementation consistency",
@@ -389,31 +390,34 @@ const renderWorkflowReportTemplate = (
             noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
             blockers: ["none"],
           },
-          ownershipReviewed: [config.truthmark.paths.routesIndex],
-          truthDocsUpdated: [
-            `${engineeringTruthRoot}/repository/bootstrap-routing.md`,
+          ownershipReviewed: [
+            `${config.truthmark.paths.routeAreasRoot}/authentication.md`,
           ],
+          truthDocsUpdated: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
           evidenceChecked: [
             {
               claim:
-                "Session timeout behavior is documented in the mapped repository truth doc.",
+                "Session timeout behavior is documented in the bounded authentication behavior truth doc.",
               evidence: [
                 "src/auth/session.ts:12",
-                `${config.truthmark.paths.routesIndex}:11`,
+                `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
               ],
               result: "supported",
             },
           ],
           decisionRationaleCaptured: [
-            "Placed user rationale in the mapped engineering truth doc under Engineering Decisions/Rationale.",
+            "Placed user rationale in the bounded authentication behavior truth doc under Engineering Decisions/Rationale.",
           ],
           notes: ["Updated session timeout behavior."],
         }),
       )}\nBlocked report example:\n${renderMarkdownExample(
         renderTruthSyncBlockedReport({
-          reason: "routing repair is not allowed",
-          manualReviewFiles: [config.truthmark.paths.routesIndex],
-          nextAction: "update routing metadata and rerun Truth Sync",
+          reason: "Changed code maps only to the provisional bootstrap route.",
+          manualReviewFiles: [
+            "src/auth/**",
+            `${config.truthmark.paths.routeAreasRoot}/${config.truthmark.routes.defaultArea}.md`,
+          ],
+          nextAction: "Run Truth Structure for src/auth/** before updating behavior truth.",
         }),
       )}`;
     case "truthmark-realize":
@@ -526,7 +530,9 @@ const renderWorkflowEntrypoint = (
   const hostUsage =
     host === "github-copilot"
       ? "Use as a Copilot agent skill. Prompt files remain available under `.github/prompts/` for command-style invocation in supported Copilot IDEs."
-      : undefined;
+      : host === "cursor"
+        ? "Use as a Cursor Agent Skill. Cursor discovers project skills under `.cursor/skills/`, selects them from the description when relevant, and supports manual `/` invocation."
+        : undefined;
 
   return `---
 name: ${workflowId}
@@ -592,6 +598,8 @@ const renderWorkflowSubagentSupport = (
         definition.parentRule,
         writeAgents,
       );
+    case "cursor":
+      return undefined;
   }
 };
 
@@ -613,7 +621,11 @@ export const renderTruthmarkSkillPackage = ({
     config,
   );
   const subagents = renderWorkflowSubagentSupport(workflowId, host);
-  const supportFiles = workflowSupportFiles(workflowId);
+  const supportFiles = [
+    "support/procedure.md",
+    "support/report-template.md",
+    ...(subagents !== undefined ? ["support/subagents-and-leases.md"] : []),
+  ];
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const files: TruthmarkSkillPackageFile[] = [
     {
@@ -697,7 +709,7 @@ type TruthmarkSubagentProfile = {
 };
 
 const READ_ONLY_SUBAGENT_CONTEXT_BOUNDARY = `Context boundary:
-Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/rules, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
+Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/skills, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.
 Use only the parent-assigned shard plus required checkout evidence files.
 Return findings only; the parent workflow owns repository-policy interpretation, final decisions, and all writes.`;
 
@@ -1374,13 +1386,11 @@ const renderWorkflowRuleFile = ({
   workflowId,
   hostName,
   ruleName,
-  includeCursorFrontmatter = false,
   config = defaultAgentConfig(),
 }: {
   workflowId: TruthmarkWorkflowId;
   hostName: string;
   ruleName: string;
-  includeCursorFrontmatter?: boolean;
   config?: TruthmarkConfig;
 }): string => {
   const workflow = getTruthmarkWorkflow(workflowId);
@@ -1412,16 +1422,7 @@ ${procedure}
 ${reportTemplate}
 `;
 
-  if (!includeCursorFrontmatter) {
-    return body;
-  }
-
-  return `---
-description: ${workflow.description}
-alwaysApply: false
----
-
-${body}`;
+  return body;
 };
 
 const renderCopilotWorkflowPrompt = (
@@ -1498,72 +1499,6 @@ export const renderTruthmarkAntigravityPortalRule = (
     workflowId: "truthmark-portal",
     hostName: "Antigravity",
     ruleName: "truthmark-portal",
-    config,
-  });
-
-export const renderTruthmarkCursorStructureRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-structure",
-    hostName: "Cursor",
-    ruleName: "truthmark-structure",
-    includeCursorFrontmatter: true,
-    config,
-  });
-
-export const renderTruthmarkCursorDocumentRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-document",
-    hostName: "Cursor",
-    ruleName: "truthmark-document",
-    includeCursorFrontmatter: true,
-    config,
-  });
-
-export const renderTruthmarkCursorSyncRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-sync",
-    hostName: "Cursor",
-    ruleName: "truthmark-sync",
-    includeCursorFrontmatter: true,
-    config,
-  });
-
-export const renderTruthmarkCursorRealizeRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-realize",
-    hostName: "Cursor",
-    ruleName: "truthmark-realize",
-    includeCursorFrontmatter: true,
-    config,
-  });
-
-export const renderTruthmarkCursorCheckRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-check",
-    hostName: "Cursor",
-    ruleName: "truthmark-check",
-    includeCursorFrontmatter: true,
-    config,
-  });
-
-export const renderTruthmarkCursorPortalRule = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string =>
-  renderWorkflowRuleFile({
-    workflowId: "truthmark-portal",
-    hostName: "Cursor",
-    ruleName: "truthmark-portal",
-    includeCursorFrontmatter: true,
     config,
   });
 

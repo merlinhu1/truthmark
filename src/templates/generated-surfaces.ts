@@ -25,12 +25,6 @@ import {
   renderTruthmarkAntigravityRealizeRule,
   renderTruthmarkAntigravityStructureRule,
   renderTruthmarkAntigravitySyncRule,
-  renderTruthmarkCursorCheckRule,
-  renderTruthmarkCursorDocumentRule,
-  renderTruthmarkCursorPortalRule,
-  renderTruthmarkCursorRealizeRule,
-  renderTruthmarkCursorStructureRule,
-  renderTruthmarkCursorSyncRule,
   renderTruthmarkSkillPackage,
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkOpenCodeClaimVerifierAgent,
@@ -55,12 +49,12 @@ import {
   TRUTHMARK_ANTIGRAVITY_REALIZE_RULE_PATH,
   TRUTHMARK_ANTIGRAVITY_STRUCTURE_RULE_PATH,
   TRUTHMARK_ANTIGRAVITY_SYNC_RULE_PATH,
-  TRUTHMARK_CURSOR_CHECK_RULE_PATH,
-  TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH,
-  TRUTHMARK_CURSOR_PORTAL_RULE_PATH,
-  TRUTHMARK_CURSOR_REALIZE_RULE_PATH,
-  TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH,
-  TRUTHMARK_CURSOR_SYNC_RULE_PATH,
+  TRUTHMARK_CURSOR_CHECK_SKILL_PATH,
+  TRUTHMARK_CURSOR_DOCUMENT_SKILL_PATH,
+  TRUTHMARK_CURSOR_PORTAL_SKILL_PATH,
+  TRUTHMARK_CURSOR_REALIZE_SKILL_PATH,
+  TRUTHMARK_CURSOR_STRUCTURE_SKILL_PATH,
+  TRUTHMARK_CURSOR_SYNC_SKILL_PATH,
   TRUTHMARK_COPILOT_CLAIM_VERIFIER_AGENT_PATH,
   TRUTHMARK_COPILOT_CHECK_PROMPT_PATH,
   TRUTHMARK_COPILOT_DOCUMENT_PROMPT_PATH,
@@ -444,33 +438,47 @@ const antigravityFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
 
 const cursorFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
-    {
-      path: TRUTHMARK_CURSOR_STRUCTURE_RULE_PATH,
-      content: renderTruthmarkCursorStructureRule(config),
-    },
-    {
-      path: TRUTHMARK_CURSOR_DOCUMENT_RULE_PATH,
-      content: renderTruthmarkCursorDocumentRule(config),
-    },
-    {
-      path: TRUTHMARK_CURSOR_SYNC_RULE_PATH,
-      content: renderTruthmarkCursorSyncRule(config),
-    },
-    {
-      path: TRUTHMARK_CURSOR_CHECK_RULE_PATH,
-      content: renderTruthmarkCursorCheckRule(config),
-    },
-    {
-      path: TRUTHMARK_CURSOR_REALIZE_RULE_PATH,
-      content: renderTruthmarkCursorRealizeRule(config),
-    },
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CURSOR_STRUCTURE_SKILL_PATH,
+      workflowId: "truthmark-structure",
+      host: "cursor",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CURSOR_DOCUMENT_SKILL_PATH,
+      workflowId: "truthmark-document",
+      host: "cursor",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CURSOR_SYNC_SKILL_PATH,
+      workflowId: "truthmark-sync",
+      host: "cursor",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CURSOR_CHECK_SKILL_PATH,
+      workflowId: "truthmark-check",
+      host: "cursor",
+      config,
+    }),
+    ...renderTruthmarkSkillPackage({
+      skillPath: TRUTHMARK_CURSOR_REALIZE_SKILL_PATH,
+      workflowId: "truthmark-realize",
+      host: "cursor",
+      config,
+    }),
   ];
 
   if (config.truthmark.generated.portal.enabled) {
-    files.push({
-      path: TRUTHMARK_CURSOR_PORTAL_RULE_PATH,
-      content: renderTruthmarkCursorPortalRule(config),
-    });
+    files.push(
+      ...renderTruthmarkSkillPackage({
+        skillPath: TRUTHMARK_CURSOR_PORTAL_SKILL_PATH,
+        workflowId: "truthmark-portal",
+        host: "cursor",
+        config,
+      }),
+    );
   }
 
   return files;
