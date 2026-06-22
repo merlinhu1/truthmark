@@ -18,6 +18,8 @@ It covers GitHub workflow triggers, verification steps, and generated GitHub Act
 
 Release and CI behavior is implemented through checked-in GitHub workflow files and the GitHub Action template renderer.
 
+The npm publish workflow runs from `release/**` tag push events, with manual `workflow_dispatch` as an operator fallback. Tag-triggered publishing keeps the GitHub Actions OIDC signing certificate tied to a concrete `refs/tags/...` source ref for npm provenance verification.
+
 ## Operational Surface
 
 - GitHub Actions workflows under `.github/workflows/**`
