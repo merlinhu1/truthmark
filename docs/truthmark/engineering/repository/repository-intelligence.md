@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-21
+last_reviewed: 2026-06-26
 ---
 
 # Repository Intelligence
@@ -69,6 +69,29 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
 - WorkflowState and ImpactSet expose paths, metadata, diagnostics, and checklists without embedding source-file or truth-doc bodies.
 - Route relationships remain route-local metadata.
 
+## Behavior Scenarios
+
+#### Scenario: Impact maps branch changes to review focus
+
+- **GIVEN** a branch changes source, test, route, or truth-document paths
+- **WHEN** Truthmark builds an ImpactSet for the branch
+- **THEN** it reports affected routes, affected truth docs, affected tests, and unmapped functional-code diagnostics
+- **AND** it does not infer TypeScript public-symbol changes through language import parsing
+
+#### Scenario: Workflow status keeps stale candidates signal-based
+
+- **GIVEN** a changed file maps to primary truth docs and no concrete stale-truth signal names another doc
+- **WHEN** Sync action context is built
+- **THEN** `candidateStaleTruthDocs` remains empty
+- **AND** agents may still inspect another document only when direct checkout evidence reveals a stale claim
+
+#### Scenario: Evidence validation stays repository-contained
+
+- **GIVEN** truth evidence names a repository path, glob, line span, or `sha256:` hash
+- **WHEN** Truthmark validates evidence
+- **THEN** it checks repository containment and referenced file or glob existence
+- **AND** it treats optional `symbol` metadata as non-normative metadata rather than TypeScript-specific proof
+
 ## Flows And States
 
 - RepoIndex and RouteMap are built from committed repository files.
@@ -119,21 +142,17 @@ Update when index, route-map, impact, evidence, freshness, or workflow-state out
 
 ## Source References
 
-- ../../../../src/repo-index/build.ts
-- ../../../../src/repo-index/file-tree.ts
-- ../../../../src/repo-index/route-map.ts
-- ../../../../src/repo-index/types.ts
-- ../../../../src/impact/build.ts
-- ../../../../src/impact/types.ts
-- ../../../../src/evidence/validate.ts
-- ../../../../src/workflow-state/action-context.ts
-- ../../../../src/workflow-state/build.ts
-- ../../../../src/workflow-state/types.ts
-- ../../../../src/checks/generated-surfaces.ts
-- ../../../../tests/workflow-state/build.test.ts
-- `src/repo-index/build.ts`
-- `src/repo-index/file-tree.ts`
-- `src/repo-index/route-map.ts`
-- `src/repo-index/types.ts`
-- `src/impact/build.ts`
-- `src/workflow-state/build.ts`
+- src/repo-index/build.ts
+- src/repo-index/file-tree.ts
+- src/repo-index/route-map.ts
+- src/repo-index/types.ts
+- src/impact/build.ts
+- src/impact/types.ts
+- src/evidence/validate.ts
+- src/workflow-state/action-context.ts
+- src/workflow-state/build.ts
+- src/workflow-state/types.ts
+- src/checks/generated-surfaces.ts
+- tests/impact/build.test.ts
+- tests/evidence/validate.test.ts
+- tests/workflow-state/build.test.ts

@@ -48,6 +48,16 @@ Separate rules from incidental implementation details; cite current implementati
 
 {{core_rules}}
 
+## Behavior Scenarios
+
+<!--
+Use compact scenario blocks only where they clarify normal, fallback, or compatibility-critical behavior.
+Write scenarios as current truth, not desired requirements: `#### Scenario: <implemented case>` followed by `- **GIVEN** ...`, `- **WHEN** ...`, `- **THEN** ...`, and optional `- **AND** ...` bullets.
+Keep each bullet evidence-backed and observable; do not force a scenario for every rule.
+-->
+
+{{behavior_scenarios}}
+
 ## Flows And States
 
 <!--

@@ -132,6 +132,15 @@ describe("renderTruthSyncSkillBody", () => {
       "Only edit allowed truth docs/routes after Sync Intent is clear",
     );
     expect(skillBody).toContain("Evidence checked");
+    expect(skillBody).toContain("Truth-doc prose style:");
+    expect(skillBody).toContain("Use professional, plain technical prose");
+    expect(skillBody).toContain("Avoid common AI-writing tells");
+    expect(skillBody).toContain(
+      "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
+    );
+    expect(skillBody).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
+    expect(skillBody).not.toContain("PERSONALITY AND SOUL");
+    expect(skillBody).not.toContain("What makes the below so obviously AI generated?");
     expect(skillBody).toContain("Claim:");
     expect(skillBody).toContain("Result: supported");
     expect(skillBody).toContain("structured Truth Sync report contract");

@@ -45,7 +45,17 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("must not write functional code");
     expect(skill).toContain("configured Truthmark templates root");
     expect(skill).toContain("When creating or updating a truth doc");
-    expect(skill).toContain("Prefer diff-friendly Markdown: one durable claim per bullet or line");
+    expect(skill).toContain("Truth-doc prose style:");
+    expect(skill).toContain("Use professional, plain technical prose");
+    expect(skill).toContain("Prefer specific current-state claims over promotional, symbolic, or generic significance language");
+    expect(skill).toContain("Avoid common AI-writing tells");
+    expect(skill).toContain(
+      "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
+    );
+    expect(skill).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
+    expect(skill).toContain("without removing scope, evidence, decisions, or source references");
+    expect(skill).not.toContain("PERSONALITY AND SOUL");
+    expect(skill).not.toContain("What makes the below so obviously AI generated?");
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
     expect(skill).toContain("Truth-doc ownership review");

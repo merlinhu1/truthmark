@@ -59,9 +59,11 @@ AI coding agents are incredible at writing code fast. But this speed creates a d
 
 ## 🎯 The Solution: Truthmark
 
-**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: helping the documentation stay aligned with the code.
+**Truthmark** installs a Git-native workflow layer into your repository. It fixes the part of AI development that usually breaks: keeping documentation aligned with code after the first draft.
 
 Instead of hoping humans and AI agents remember to update docs, Truthmark makes documentation a systematic, reviewable habit right inside your repo.
+
+Truthmark is not a one-shot docs generator. It is an ongoing truth-doc curation loop that keeps human-facing docs small, owned, evidence-backed, and reviewable as agents keep changing code.
 
 ### ✨ Why Truthmark is Unique
 
@@ -70,6 +72,7 @@ Truthmark isn't just another documentation tool. It is deeply integrated into th
 * **🚫 Zero Vendor Lock-in:** No hosted services, no hidden databases, no extra servers to operate.
 * **🌳 100% Git-Native:** Everything lives in your repository. The truth moves with your branch.
 * **🤝 Human-owned, agent-followed contract:** Maintainers own the repo contract; agents follow the installed instructions while coding.
+* **🧭 Ongoing truth curation:** Broad or messy docs are routed toward Structure instead of becoming giant catch-all files.
 * **✅ Trust Through Verification:** AI work becomes easier to trust because behavior-changing work includes a human-reviewable truth-doc decision or diff.
 
 ## 🔄 How It Works
@@ -122,6 +125,7 @@ Truth Structure is not a day-to-day command; it repairs routing or ownership onl
 | Human CLI | Gives maintainers setup, refresh, validation, and inspection commands. |
 | Installed agent guidance | Tells coding agents when to document, test, sync truth, audit, or stop for review. |
 | Explicit routing | Maps code areas to canonical truth docs. |
+| Durable truth curation | Keeps docs bounded, evidence-backed, and reviewable instead of letting them grow into catch-all files. |
 | Reviewable handoffs | Produces ordinary Git diffs for both code and truth docs. |
 | Local-first operation | Requires no hosted service, daemon, database, or MCP server. |
 | Safer write boundaries | Separates code-first, doc-first, read-only, and doc-only workflows. |
@@ -153,6 +157,8 @@ Not governance as ceremony. Governance as a simple question:
 > After this AI-assisted change, does the repository still tell the truth?
 
 Truthmark helps teams answer that with committed files, explicit routing, and reviewable diffs.
+
+Most AI tools can draft documentation. Truthmark keeps repository truth curated after the draft, after the next code change, and after the doc starts getting too broad.
 
 It is useful when you need:
 

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-21
+last_reviewed: 2026-06-26
 ---
 
 # Installed Workflow Runtime
@@ -92,11 +92,13 @@ Truth Sync performs decision context capture from the current task conversation:
 - Supported context is placed in the correct product or engineering truth lane.
 - The report records whether context was placed, skipped because none was provided, or handed off for manual review.
 
-Truth Document procedures tell agents to write diff-friendly truth docs:
+Truth Document and Truth Sync procedures tell agents to write professional, readable truth docs without importing a full external writing prompt:
 
-- Prefer one durable claim per bullet or line.
-- Keep paragraphs to one or two short sentences.
-- Use bullets or tables for rules, criteria, fields, files, and lists.
+- Prefer specific current-state claims over promotional, symbolic, or generic significance language.
+- Avoid common AI-writing tells such as vague expert attribution, generic upbeat conclusions, and stock words like "pivotal", "crucial", "underscores", "serves as", "stands as", "showcases", and "landscape".
+- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences.
+- Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.
+- Rewrite dense or formulaic prose only when readability improves without removing scope, evidence, decisions, or source references.
 
 Truth Structure stays topology-first:
 
@@ -221,6 +223,8 @@ Committed workflow files are the runtime contract. The CLI installs and validate
   - Bootstrap-only mappings are blocked topology handoffs until Truth Structure assigns a bounded owner.
 - Decision (2026-06-21): Cursor workflow generation uses Agent Skill project packages under `.cursor/skills/truthmark-*`, not dynamic `.cursor/rules` files.
   - Agent Skills are the single current native Cursor workflow representation because they provide description-based selection plus package-local resources.
+- Decision (2026-06-26): Truth-doc prose guidance uses a compact professional checklist instead of vendoring a full humanizer prompt into generated workflows.
+  - Truthmark keeps the benefit of avoiding AI-style padding while controlling token cost and preserving evidence-backed documentation tone.
 
 ## Rationale
 

@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: architecture
-last_reviewed: 2026-06-12
+last_reviewed: 2026-06-26
 source_of_truth:
   - ../../README.md
   - ../truthmark/product/capabilities/agent-native-workflow-injection.md
@@ -32,6 +32,10 @@ Read it before proposing changes to product shape, runtime model, persistence, d
 Truthmark keeps repository documentation aligned with agent-made code changes so humans can review the resulting documentation changes in Git.
 
 Canonical truth documents are human-facing Git-review artifacts. Human maintainers are the primary reviewers; agents write and maintain truth docs, but agents are not the only consumers.
+
+Truthmark's product value is ongoing truth-doc curation, not one-shot documentation generation.
+
+Truthmark keeps truth docs bounded, evidence-backed, and reviewable as agents continue changing code.
 
 Truth-doc structure, wording, and style must be friendly for humans to read and understand.
 
@@ -86,6 +90,7 @@ Optional integrations are acceptable only when they preserve host-native agent w
 6. **Human review stays central.** Truthmark produces reviewable documentation changes, not silent approval or merge authority.
 7. **Local-first simplicity wins.** Add dependencies, services, or runtime layers only when they preserve the no-blockade repository-file workflow.
 8. **Truth docs stay human-friendly.** Truth docs must be structured and written for maintainers to review, scan, and understand before they are optimized for agent or machine consumption.
+9. **Curation beats generation.** Truthmark should route overgrown or mixed-owner docs toward Structure instead of rewarding more appended prose.
 
 ## Required Product Boundary Check
 
@@ -107,6 +112,8 @@ A plan that cannot answer these questions is not ready for implementation.
 - Decision (2026-06-12): Repository rules cite this document so agents must check product boundaries before generating new designs or plans.
 - Decision (2026-06-12): Truthmark workflows must stay 100% operational from repository files and host-native agent surfaces; missing packages, CLIs, daemons, services, or plugins must not block normal workflow execution.
 - Decision (2026-06-12): Human-facing readability is part of the Truthmark product boundary for canonical truth documents.
+- Decision (2026-06-26): Ongoing truth-doc curation is a primary product value.
+  - Marketing should emphasize bounded ownership, evidence-backed updates, Git-reviewable docs, and Structure handoff for overgrown docs instead of generic documentation generation.
 
 ## Maintenance Notes
 

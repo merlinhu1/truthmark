@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-20
+last_reviewed: 2026-06-26
 ---
 
 # Check Diagnostics
@@ -49,6 +49,29 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 - Duplicate route entries for the same path, kind, and lane merge `realized_by`, `realizes`, and `depends_on` by unique sorted set.
 - Check reports structure and evidence only; it does not judge product strategy.
 
+## Behavior Scenarios
+
+#### Scenario: Generated surface drift is review-only
+
+- **GIVEN** a committed generated workflow surface differs from the current renderer output
+- **WHEN** `truthmark check` compares rendered surfaces with checked-in files
+- **THEN** it reports a `generated-surface` review diagnostic for the stale path
+- **AND** it does not mutate files during the check
+
+#### Scenario: Route relationship metadata stays in route YAML
+
+- **GIVEN** a truth document frontmatter block declares `realized_by`, `realizes`, or `depends_on`
+- **WHEN** `truthmark check` validates frontmatter
+- **THEN** it reports the relationship metadata as invalid frontmatter
+- **AND** keeps relationship authority in fenced route YAML entries
+
+#### Scenario: Duplicate route entries merge compatible relationships
+
+- **GIVEN** route files contain duplicate entries for the same truth document path, kind, and lane
+- **WHEN** Check validates route traceability
+- **THEN** it merges `realized_by`, `realizes`, and `depends_on` metadata by unique sorted set
+- **AND** conflicting duplicate kinds or lanes remain area-index errors.
+
 ## Flows And States
 
 - Check loads config and routed truth docs from the active checkout.
@@ -91,13 +114,12 @@ Update when check categories, severity rules, lane audit behavior, or product ki
 
 ## Source References
 
-- ../../../../src/checks/check.ts
-- ../../../../src/checks/areas.ts
-- ../../../../src/checks/decisions.ts
-- ../../../../src/checks/frontmatter.ts
-- ../../../../tests/checks/frontmatter.test.ts
-- `src/checks/areas.ts`
-- `src/checks/decisions.ts`
-- `src/checks/frontmatter.ts`
-- `tests/checks/frontmatter.test.ts`
-- `src/output/diagnostic.ts`
+- src/checks/check.ts
+- src/checks/areas.ts
+- src/checks/decisions.ts
+- src/checks/frontmatter.ts
+- src/checks/generated-surfaces.ts
+- src/output/diagnostic.ts
+- tests/checks/check.test.ts
+- tests/checks/frontmatter.test.ts
+- tests/templates/generated-surfaces.test.ts

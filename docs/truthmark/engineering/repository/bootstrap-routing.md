@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-17
+last_reviewed: 2026-06-26
 ---
 
 # Repository Bootstrap Routing
@@ -81,5 +81,6 @@ Keep this doc short. When a repository has real bounded routes, prefer updating 
 
 ## Source References
 
-- ../../routes/areas/repository.md
-- ../../../../.truthmark/config.yml
+- docs/truthmark/engineering/behaviors/init-and-scaffold.md
+- src/templates/init-files.ts
+- .truthmark/config.yml
