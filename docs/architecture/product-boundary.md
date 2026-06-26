@@ -60,6 +60,7 @@ Truthmark owns:
 - host-native agent workflow surfaces such as skills, prompts, commands, managed instruction blocks, and subagents
 - branch-local documentation checks, workflow indexes, impact summaries, context packs, and workflow state derived from the active checkout
 - write boundaries for read-only, documentation-write, route-write, code-write, and presentation-write workflows
+- the static GitHub Pages introduction site as marketing/onboarding presentation, not repository truth
 - optional CLI/package helpers that improve validation or setup without becoming required for normal agent workflow execution
 
 Truthmark workflows must remain operational from repository files alone. A design that blocks the agent workflow because a package, CLI, daemon, server, IDE plugin, or external service is missing is outside the product boundary.
@@ -91,6 +92,7 @@ Optional integrations are acceptable only when they preserve host-native agent w
 7. **Local-first simplicity wins.** Add dependencies, services, or runtime layers only when they preserve the no-blockade repository-file workflow.
 8. **Truth docs stay human-friendly.** Truth docs must be structured and written for maintainers to review, scan, and understand before they are optimized for agent or machine consumption.
 9. **Curation beats generation.** Truthmark should route overgrown or mixed-owner docs toward Structure instead of rewarding more appended prose.
+10. **Presentation is not authority.** The static introduction website may present the product, but canonical behavior remains in README, routed truth docs, source, tests, and config.
 
 ## Required Product Boundary Check
 
@@ -114,6 +116,7 @@ A plan that cannot answer these questions is not ready for implementation.
 - Decision (2026-06-12): Human-facing readability is part of the Truthmark product boundary for canonical truth documents.
 - Decision (2026-06-26): Ongoing truth-doc curation is a primary product value.
   - Marketing should emphasize bounded ownership, evidence-backed updates, Git-reviewable docs, and Structure handoff for overgrown docs instead of generic documentation generation.
+- Decision (2026-06-26): The GitHub Pages site is a static marketing/onboarding surface, not a documentation hosting platform or source of repository truth.
 
 ## Maintenance Notes
 
