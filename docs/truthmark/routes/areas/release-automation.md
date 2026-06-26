@@ -20,12 +20,14 @@ truth_documents:
 Code surface:
 
 - .github/workflows/\*\*
+- site/\*\*
 - src/templates/github-action.ts
 
 Update truth when:
 
 - CI verification steps or triggers change
 - release publishing prerequisites or publish steps change
+- GitHub Pages deployment or static introduction site behavior changes
 - GitHub Action examples or action template rendering changes
 
 ## Source References

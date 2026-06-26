@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Truthmark — keep repository truth curated</title>
+  <meta name="description" content="Truthmark is a Git-native workflow layer that helps AI coding agents keep human-facing, reviewable repository documentation aligned with code.">
+  <meta property="og:title" content="Truthmark — keep repository truth curated">
+  <meta property="og:description" content="Agents write code. Truthmark keeps the human-readable truth from rotting.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#101827">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0f1f;
+      --bg-soft: #101827;
+      --panel: rgba(255, 255, 255, 0.07);
+      --panel-strong: rgba(255, 255, 255, 0.11);
+      --text: #f7f8fb;
+      --muted: #aab4cc;
+      --line: rgba(255, 255, 255, 0.15);
+      --brand: #7cf5d0;
+      --brand-2: #7aa7ff;
+      --warn: #ffd36a;
+      --shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(124, 245, 208, 0.18), transparent 32rem),
+        radial-gradient(circle at top right, rgba(122, 167, 255, 0.22), transparent 36rem),
+        linear-gradient(180deg, #0a0f1f 0%, #0e1528 52%, #080b14 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+
+    .page-shell {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(124, 245, 208, 0.22), rgba(122, 167, 255, 0.24));
+      box-shadow: 0 12px 36px rgba(124, 245, 208, 0.14);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    .button.primary {
+      border: 0;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #07111d;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 48px;
+      align-items: center;
+      padding: 68px 0 80px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--brand);
+      font-weight: 750;
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      margin: 24px 0 18px;
+      font-size: clamp(3rem, 8vw, 6.7rem);
+      line-height: 0.9;
+      letter-spacing: -0.08em;
+      max-width: 980px;
+    }
+
+    .lead {
+      margin: 0;
+      color: #dce4f7;
+      font-size: clamp(1.15rem, 2vw, 1.45rem);
+      line-height: 1.55;
+      max-width: 700px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .proof-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .chip {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .terminal-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.055));
+      box-shadow: var(--shadow);
+    }
+
+    .terminal-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .dot { width: 11px; height: 11px; border-radius: 999px; background: #ff6b6b; }
+    .dot:nth-child(2) { background: #ffd36a; }
+    .dot:nth-child(3) { background: #7cf5d0; }
+
+    .terminal-body {
+      padding: 26px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(0.82rem, 1.8vw, 0.98rem);
+      line-height: 1.75;
+      color: #dce4f7;
+    }
+
+    .terminal-body .prompt { color: var(--brand); }
+    .terminal-body .comment { color: #8c98b4; }
+    .terminal-body .changed { color: var(--warn); }
+
+    .section {
+      padding: 78px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section-header {
+      max-width: 780px;
+      margin-bottom: 34px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1;
+      letter-spacing: -0.055em;
+    }
+
+    .section-header p, .card p, .step p {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card, .step, .quote-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+      padding: 24px;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.18);
+    }
+
+    .card h3, .step h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+      letter-spacing: -0.02em;
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, rgba(124, 245, 208, 0.24), rgba(122, 167, 255, 0.22));
+      border: 1px solid var(--line);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .step {
+      min-height: 190px;
+    }
+
+    .step-number {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      background: rgba(124, 245, 208, 0.14);
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .quote-card {
+      background: linear-gradient(135deg, rgba(124, 245, 208, 0.12), rgba(122, 167, 255, 0.12));
+    }
+
+    .quote-card strong {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--brand);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .quote-card p {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(1.25rem, 2.3vw, 2rem);
+      line-height: 1.25;
+      letter-spacing: -0.04em;
+    }
+
+    .install {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      color: #dce4f7;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 40px 0 60px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer a { color: var(--text); text-decoration: none; }
+
+    @media (max-width: 900px) {
+      .hero, .install, .comparison { grid-template-columns: 1fr; }
+      .grid, .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav { align-items: flex-start; gap: 18px; }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .page-shell { width: min(100% - 26px, 1160px); }
+      .hero { padding-top: 36px; }
+      .grid, .flow { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-shell nav" aria-label="Top navigation">
+    <a class="brand" href="#top" aria-label="Truthmark home">
+      <span class="mark">✓</span>
+      <span>Truthmark</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#why">Why</a>
+      <a href="#flow">Flow</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/merlinhu1/truthmark">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="page-shell hero">
+      <div>
+        <div class="eyebrow">Git-native truth maintenance for AI coding agents</div>
+        <h1>Keep repository truth from rotting.</h1>
+        <p class="lead">Your agents write code. Truthmark keeps human-facing, Git-reviewable documentation aligned with what the repository actually does.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/merlinhu1/truthmark">View on GitHub</a>
+          <a class="button" href="https://github.com/merlinhu1/truthmark#-quick-start-running-locally-in-five-minutes">Quick start</a>
+        </div>
+        <div class="proof-row" aria-label="Key product traits">
+          <span class="chip">No daemon</span>
+          <span class="chip">No hidden database</span>
+          <span class="chip">Branch-scoped</span>
+          <span class="chip">Reviewable diffs</span>
+        </div>
+      </div>
+
+      <aside class="terminal-card" aria-label="Truthmark workflow example">
+        <div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> truthmark config</div>
+          <div><span class="prompt">$</span> truthmark init</div>
+          <div><span class="prompt">$</span> truthmark check</div>
+          <br>
+          <div class="comment"># agent changes code</div>
+          <div class="changed">Truth Sync reviews mapped docs before handoff</div>
+          <div class="changed">Truth Structure handles broad or mixed-owner docs</div>
+          <br>
+          <div class="comment"># human reviews ordinary Git diffs</div>
+          <div>code diff + truth-doc diff</div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="why" class="page-shell section">
+      <div class="section-header">
+        <h2>Not another docs generator.</h2>
+        <p>Most tools can draft documentation once. Truthmark focuses on the harder loop: keeping repository truth curated after the next agent change.</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="icon">↔</div>
+          <h3>Code and docs move together</h3>
+          <p>Truth Sync makes functional changes end with a review of the mapped truth docs, so handoff includes the code diff and the truth diff.</p>
+        </article>
+        <article class="card">
+          <div class="icon">⌁</div>
+          <h3>Docs stay bounded</h3>
+          <p>When a truth doc becomes broad or mixed-owner, Truth Structure repairs ownership instead of rewarding more appended prose.</p>
+        </article>
+        <article class="card">
+          <div class="icon">⌘</div>
+          <h3>Agents follow committed rules</h3>
+          <p>Truthmark installs host-native workflow surfaces for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="flow" class="page-shell section">
+      <div class="section-header">
+        <h2>The finish-time guardrail for AI work.</h2>
+        <p>Truthmark keeps the normal coding loop familiar while adding a repository-truth review before handoff.</p>
+      </div>
+      <div class="flow">
+        <article class="step"><span class="step-number">1</span><h3>Code</h3><p>Your AI agent changes the implementation.</p></article>
+        <article class="step"><span class="step-number">2</span><h3>Test</h3><p>Relevant checks validate the behavior.</p></article>
+        <article class="step"><span class="step-number">3</span><h3>Map</h3><p>Routes identify the bounded truth owners.</p></article>
+        <article class="step"><span class="step-number">4</span><h3>Curate</h3><p>Truth docs are updated, split, or left unchanged with evidence.</p></article>
+        <article class="step"><span class="step-number">5</span><h3>Review</h3><p>Humans review code and truth in Git.</p></article>
+      </div>
+    </section>
+
+    <section class="page-shell section">
+      <div class="comparison">
+        <article class="quote-card">
+          <strong>The old problem</strong>
+          <p>AI sessions move fast. The repository story drifts, decisions disappear, and every new agent has to rediscover context.</p>
+        </article>
+        <article class="quote-card">
+          <strong>The Truthmark loop</strong>
+          <p>Repository truth stays branch-scoped, evidence-backed, and reviewable as code keeps changing.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="install" class="page-shell section install">
+      <div class="section-header">
+        <h2>Install in minutes.</h2>
+        <p>Truthmark is local-first and Git-native. It writes repo-local routing, truth docs, and AI-host instructions that travel with your branch.</p>
+      </div>
+      <div class="terminal-card">
+        <div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="terminal-body">
+          <pre><span class="prompt">$</span> cd /path/to/your-repo
+<span class="prompt">$</span> npm install -g truthmark
+<span class="prompt">$</span> truthmark config
+<span class="prompt">$</span> truthmark init
+<span class="prompt">$</span> truthmark check</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-shell footer">
+    <div>Truthmark is intentionally small: local, committed, branch-scoped, and reviewable.</div>
+    <div><a href="https://github.com/merlinhu1/truthmark">GitHub</a> · <a href="https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md">User guide</a></div>
+  </footer>
+</body>
+</html>

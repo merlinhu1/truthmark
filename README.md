@@ -2,6 +2,8 @@
 
 **Your agents write code. Truthmark maintains human-facing, Git-reviewable documentation.**
 
+[Website](https://merlinhu1.github.io/truthmark/) | [GitHub](https://github.com/merlinhu1/truthmark) | [User Guide](docs/user-guide.md)
+
 [🇺🇸 English](README.md) | [🇨🇳 简体中文](docs/readmes/README.zh.md) | [🇯🇵 日本語](docs/readmes/README.ja.md) | [🇰🇷 한국어](docs/readmes/README.ko.md) | [🇩🇪 Deutsch](docs/readmes/README.de.md) | [🇫🇷 Français](docs/readmes/README.fr.md) | [🇪🇸 Español](docs/readmes/README.es.md) | [🇧🇷 Português](docs/readmes/README.pt.md) | [🇷🇺 Русский](docs/readmes/README.ru.md) | [🇸🇦 العربية](docs/readmes/README.ar.md) | [🇮🇹 Italiano](docs/readmes/README.it.md) | [🇵🇱 Polski](docs/readmes/README.pl.md) | [🇹🇷 Türkçe](docs/readmes/README.tr.md) | [🇻🇳 Tiếng Việt](docs/readmes/README.vi.md) | [🇮🇩 Bahasa Indonesia](docs/readmes/README.id.md) | [🇬🇷 Ελληνικά](docs/readmes/README.el.md)
 
 ![Truthmark banner](docs/assets/truthmark-banner.png)
@@ -198,6 +200,8 @@ keep the result reviewable in Git
 ## Go deeper
 
 The README is the storefront: fast context, quick start, and the core mental model.
+
+The [static website](https://merlinhu1.github.io/truthmark/) is the concise public introduction for GitHub Pages.
 
 For command-by-command usage, surface comparisons, supported platform details, configuration, routing, Portal, and examples, read the [Truthmark User Guide](docs/user-guide.md).
 
