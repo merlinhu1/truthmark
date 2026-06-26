@@ -60,7 +60,12 @@ Treat the HTML comments under each template section as normative authoring guida
 Align existing docs to that template and write or repair section content so it satisfies the comment guidance while preserving accurate authored content.
 If the template is missing, use lane-specific sections: product truth says what must be true and why; engineering truth says how the repository currently realizes it.
 Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.
-Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.
+Truth-doc prose style:
+- Use professional, plain technical prose. Prefer specific current-state claims over promotional, symbolic, or generic significance language.
+- Avoid common AI-writing tells: pivotal, crucial, underscores, serves as, stands as, showcases, landscape, vague expert attributions, and generic upbeat conclusions.
+- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or short paragraph.
+- Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.
+- Rewrite dense or formulaic prose only when it improves readability without removing scope, evidence, decisions, or source references.
 Truth-doc shape repair review:
 - Truth Document may restructure only truth docs for the implemented behavior being documented.
 - repair shape in place only after the ownership review confirms the doc is the right bounded owner

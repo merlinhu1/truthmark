@@ -1,6 +1,7 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import {
   EVIDENCE_AUTHORITY_INSTRUCTIONS,
+  TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS,
   defaultAgentConfig,
   renderClaudeSubagentModeSection,
   renderCodexSubagentModeSection,
@@ -139,6 +140,7 @@ ${renderTruthSyncProductDecisionRuleBlock(config)}
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
 11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, repair topology first when the repair is safe and in scope, otherwise stop and recommend Truth Structure instead of guessing.
+${TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS}
 ${subagentMode}Topology review and repair:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when topology repair is safe and in scope

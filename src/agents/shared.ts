@@ -106,8 +106,14 @@ export const FEATURE_DOC_TEMPLATE_INSTRUCTIONS = [
   "Teams may edit template files under the configured Truthmark templates root to define their local truth-doc standards.",
 ].join("\n");
 
-export const TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS =
-  "Prefer diff-friendly Markdown: one durable claim per bullet or line, paragraphs no longer than one or two short sentences, and bullets or tables for rules, criteria, fields, files, and lists.";
+export const TRUTH_DOC_AUTHORING_STYLE_INSTRUCTIONS = [
+  "Truth-doc prose style:",
+  "- Use professional, plain technical prose. Prefer specific current-state claims over promotional, symbolic, or generic significance language.",
+  "- Avoid common AI-writing tells: pivotal, crucial, underscores, serves as, stands as, showcases, landscape, vague expert attributions, and generic upbeat conclusions.",
+  "- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or short paragraph.",
+  "- Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.",
+  "- Rewrite dense or formulaic prose only when it improves readability without removing scope, evidence, decisions, or source references.",
+].join("\n");
 
 export const renderTruthDocOwnershipGateSection = (
   subject: string,

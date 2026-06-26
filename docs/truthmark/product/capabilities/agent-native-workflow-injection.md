@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: product-capability
-last_reviewed: 2026-06-20
+last_reviewed: 2026-06-26
 ---
 
 # Agent-Native Workflow Injection
@@ -70,6 +70,7 @@ This capability covers:
 - Truth Sync routes supported context to the correct truth lane.
 - Truth Sync reports placement, skip, or manual handoff.
 - Workflows that create, structure, or audit truth docs still preserve product and engineering truth as separate lanes.
+- Truth Document and Truth Sync carry compact professional prose guidance for truth-doc edits without embedding a full external humanizer prompt in generated workflow surfaces.
 
 ## Product Decisions
 
@@ -96,6 +97,8 @@ This capability covers:
   - Safe repairs happen inside Sync before normal truth syncing; manual Truth Structure handoff is only for unsafe, ambiguous, or out-of-scope topology changes.
 - Decision (2026-06-21): Cursor uses Agent Skill project packages under `.cursor/skills/truthmark-*`, not dynamic `.cursor/rules` files.
   - Cursor Agent Skills are the single current native Cursor workflow representation for Truthmark because they support description-based selection plus package-local support resources.
+- Decision (2026-06-26): Humanizer-style cleanup is adapted only as a compact professional prose checklist.
+  - The workflow must avoid token-heavy prompt imports and must not push truth docs toward personal, rhetorical, or marketing tone.
 
 ## Engineering Realization Links
 

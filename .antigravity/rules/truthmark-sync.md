@@ -44,6 +44,12 @@ Parent workflow:
    - No-update-needed rationale: why mapped truth is already current when no truth doc should change
    - Blockers: missing routing, ambiguous ownership, failed verification, unavailable evidence, or off-boundary write needs
 11. Only edit allowed truth docs/routes after Sync Intent is clear; if ownership is ambiguous, repair topology first when the repair is safe and in scope, otherwise stop and recommend Truth Structure instead of guessing.
+Truth-doc prose style:
+- Use professional, plain technical prose. Prefer specific current-state claims over promotional, symbolic, or generic significance language.
+- Avoid common AI-writing tells: pivotal, crucial, underscores, serves as, stands as, showcases, landscape, vague expert attributions, and generic upbeat conclusions.
+- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or short paragraph.
+- Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.
+- Rewrite dense or formulaic prose only when it improves readability without removing scope, evidence, decisions, or source references.
 Topology review and repair:
 - before updating truth docs, verify the changed code resolves to a specific behavior-owned area and bounded truth owner
 - if routing is missing, stale, broad, overloaded, catch-all route only, or cannot map changed code to a bounded truth owner, run Truth Structure before syncing when topology repair is safe and in scope
