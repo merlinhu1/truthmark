@@ -665,18 +665,211 @@
     }
 
     @media (max-width: 680px) {
+      body {
+        background:
+          radial-gradient(circle at 28% 0%, rgba(142, 230, 107, 0.15), transparent 19rem),
+          linear-gradient(180deg, #020812 0%, var(--ink) 42%, #050b12 100%);
+      }
+
+      body::before { background-size: 34px 34px; }
+
       .shell { width: min(100% - 28px, 1240px); }
-      .hero { padding-top: 52px; }
+
+      .nav-inner { min-height: 62px; }
+      .brand { gap: 10px; font-size: 0.98rem; }
+      .glyph { width: 32px; height: 32px; border-radius: 11px; }
+      .glyph::before { left: 8px; top: 15px; }
+      .glyph::after { left: 12px; top: 14px; }
+
+      .hero {
+        min-height: auto;
+        padding: 38px 0 54px;
+        gap: 28px;
+      }
+
+      .eyebrow {
+        max-width: 100%;
+        white-space: normal;
+        align-items: flex-start;
+        border-radius: 18px;
+        font-size: 0.82rem;
+        line-height: 1.35;
+      }
+
+      h1 {
+        margin: 18px 0 16px;
+        font-size: clamp(2.65rem, 14vw, 3.65rem);
+        line-height: 0.98;
+        letter-spacing: -0.058em;
+      }
+
+      .lead {
+        font-size: 1.04rem;
+        line-height: 1.52;
+      }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .button { width: 100%; min-height: 48px; }
+
       .signals,
-      .map-grid { grid-template-columns: 1fr; }
-      .stage { min-height: 720px; }
-      .node { width: 145px; }
-      .node.a { top: 30px; left: 20px; }
-      .node.b { top: 54px; right: 20px; }
-      .node.c { left: 20px; bottom: 58px; }
-      .node.d { right: 20px; bottom: 40px; }
+      .map-grid,
+      .split-view { grid-template-columns: 1fr; }
+
+      .signals { margin-top: 24px; gap: 10px; }
+      .signal { padding: 13px; border-radius: 14px; }
+
+      .stage {
+        display: grid;
+        gap: 12px;
+        min-height: auto;
+        padding: 14px;
+        border-radius: 24px;
+      }
+
+      .stage::before,
       .rail { display: none; }
-      .footer { flex-direction: column; }
+
+      .orbit {
+        position: relative;
+        inset: auto;
+        transform: none;
+        width: 100%;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+      }
+
+      .orbit.core {
+        left: auto;
+        top: auto;
+        order: -1;
+        width: 100%;
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .core h2 { font-size: 1.55rem; }
+      .core p { font-size: 0.96rem; }
+
+      .node {
+        width: 100%;
+        padding: 13px;
+        border-radius: 16px;
+      }
+
+      .node.a,
+      .node.b,
+      .node.c,
+      .node.d {
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+      }
+
+      .route-line {
+        grid-template-columns: 12px minmax(0, 1fr);
+        gap: 8px;
+        padding: 10px;
+        font-size: 0.76rem;
+      }
+
+      .route-line span,
+      .route-line em {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .route-line em { grid-column: 2; }
+
+      .section { padding: 54px 0; }
+      .section-header { margin-bottom: 22px; }
+
+      h2.section-title,
+      .section-header h2 {
+        font-size: clamp(2.05rem, 11vw, 3rem);
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+      }
+
+      .section-header p {
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .surface-card {
+        min-height: auto;
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .surface-card::after {
+        right: 14px;
+        bottom: 8px;
+        font-size: 3.2rem;
+      }
+
+      .timeline { gap: 12px; }
+      .tabs { gap: 9px; }
+      .tab { padding: 14px; border-radius: 15px; }
+
+      .panel {
+        min-height: auto;
+        border-radius: 20px;
+      }
+
+      .panel-head {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+      }
+
+      .panel-grid { min-height: auto; }
+
+      .evidence,
+      .truth-sheet { padding: 16px; }
+
+      .file-row,
+      .claim-row {
+        font-size: 0.78rem;
+        overflow-wrap: anywhere;
+      }
+
+      .truth-sheet h3 { font-size: 1.3rem; }
+      .truth-sheet p,
+      .truth-sheet li { line-height: 1.5; }
+
+      .lane { padding: 18px; border-radius: 18px; }
+      .lane h3 { font-size: 1.42rem; }
+
+      .diagram { padding: 16px; border-radius: 20px; }
+      .diagram-cell { min-height: auto; padding: 13px; }
+
+      .install { gap: 14px; }
+      .terminal { border-radius: 18px; }
+      .terminal-top { padding: 13px 15px; }
+      pre { padding: 16px; font-size: 0.8rem; line-height: 1.62; }
+
+      .footer {
+        flex-direction: column;
+        padding: 34px 0 46px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .shell { width: min(100% - 22px, 1240px); }
+      h1 { font-size: clamp(2.4rem, 13.6vw, 3.25rem); }
+      .stage { padding: 10px; }
+      .orbit.core,
+      .node,
+      .surface-card,
+      .lane,
+      .diagram { border-radius: 16px; }
+      .route-line { font-size: 0.72rem; }
     }
   </style>
 </head>
