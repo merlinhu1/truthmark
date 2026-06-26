@@ -26,10 +26,6 @@ CodeQL is handled by GitHub's default setup for this repository.
 
 Checked-in advanced CodeQL workflow configuration is intentionally absent while default setup is enabled.
 
-OpenSSF Scorecard runs as a repository-readiness check on mainline, pull request, scheduled, manual, and branch-protection-rule events.
-
-The Scorecard workflow does not upload SARIF and does not request `security-events: write`; it publishes Scorecard results through OIDC on non-pull-request events.
-
 Dependency-update monitoring is managed by existing GitHub repository configuration outside this PR's checked-in workflow changes.
 
 ## Operational Surface
@@ -44,7 +40,7 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 
 ## Configuration
 
-- GitHub workflow YAML files define CI, release, Pages deployment, and Scorecard triggers.
+- GitHub workflow YAML files define CI, release, and Pages deployment triggers.
 - Checked-in workflow actions are pinned to full commit SHAs, with inline comments preserving the upstream action version tag used to choose each SHA.
 - GitHub repository settings own CodeQL default setup and existing dependency-update monitoring.
 - `src/templates/github-action.ts` owns generated GitHub Action template behavior.
@@ -54,8 +50,6 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 Permissions are owned by the checked-in GitHub workflow and action template definitions.
 
 This doc does not add permissions beyond those source files.
-
-The Scorecard workflow keeps workflow-level token permissions read-only and grants `id-token: write` only to the Scorecard job.
 
 ## Deployment And Rollback
 
@@ -77,9 +71,8 @@ The Scorecard workflow keeps workflow-level token permissions read-only and gran
 - Decision (2026-06-14): Release automation truth is engineering/operational truth because it describes current repository mechanics.
 - Decision (2026-06-26): GitHub Pages deploys only the committed static introduction site under `site/**`.
   - The site is a presentation artifact; Markdown truth docs remain canonical.
-- Decision (2026-06-26): Project-readiness checks use standard GitHub-native scanners before custom readiness badges or claims.
+- Decision (2026-06-26): Repository-readiness checks stay on existing GitHub-native configuration unless a checked-in workflow is explicitly needed.
   - CodeQL default setup covers code scanning without a checked-in advanced workflow.
-  - OpenSSF Scorecard covers external repository-health/security heuristics.
   - Existing GitHub repository configuration covers dependency-update monitoring.
 
 ## Rationale
@@ -100,7 +93,6 @@ Update when CI triggers, release prerequisites, publish steps, Pages deployment 
 - ../../../../.github/workflows/ci.yml
 - ../../../../.github/workflows/pages.yml
 - ../../../../src/templates/github-action.ts
-- ../../../../.github/workflows/scorecard.yml
 - ../../../../site/index.html
 - `.github/workflows/**`
 - `site/**`
