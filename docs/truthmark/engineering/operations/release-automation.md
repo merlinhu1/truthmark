@@ -45,6 +45,7 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 ## Configuration
 
 - GitHub workflow YAML files define CI, release, Pages deployment, and Scorecard triggers.
+- Checked-in workflow actions are pinned to full commit SHAs, with inline comments preserving the upstream action version tag used to choose each SHA.
 - GitHub repository settings own CodeQL default setup and existing dependency-update monitoring.
 - `src/templates/github-action.ts` owns generated GitHub Action template behavior.
 
