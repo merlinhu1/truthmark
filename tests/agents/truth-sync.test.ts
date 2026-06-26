@@ -135,6 +135,9 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("Truth-doc prose style:");
     expect(skillBody).toContain("Use professional, plain technical prose");
     expect(skillBody).toContain("Avoid common AI-writing tells");
+    expect(skillBody).toContain(
+      "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
+    );
     expect(skillBody).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
     expect(skillBody).not.toContain("PERSONALITY AND SOUL");
     expect(skillBody).not.toContain("What makes the below so obviously AI generated?");

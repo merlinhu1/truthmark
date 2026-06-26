@@ -49,6 +49,9 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("Use professional, plain technical prose");
     expect(skill).toContain("Prefer specific current-state claims over promotional, symbolic, or generic significance language");
     expect(skill).toContain("Avoid common AI-writing tells");
+    expect(skill).toContain(
+      "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
+    );
     expect(skill).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
     expect(skill).toContain("without removing scope, evidence, decisions, or source references");
     expect(skill).not.toContain("PERSONALITY AND SOUL");

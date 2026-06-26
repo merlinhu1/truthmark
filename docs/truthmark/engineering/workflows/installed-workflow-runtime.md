@@ -96,7 +96,7 @@ Truth Document and Truth Sync procedures tell agents to write professional, read
 
 - Prefer specific current-state claims over promotional, symbolic, or generic significance language.
 - Avoid common AI-writing tells such as vague expert attribution, generic upbeat conclusions, and stock words like "pivotal", "crucial", "underscores", "serves as", "stands as", "showcases", and "landscape".
-- Keep claims evidence-backed and diff-friendly, with one durable claim per bullet or short paragraph.
+- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences.
 - Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.
 - Rewrite dense or formulaic prose only when readability improves without removing scope, evidence, decisions, or source references.
 

@@ -47,7 +47,7 @@ Parent workflow:
 Truth-doc prose style:
 - Use professional, plain technical prose. Prefer specific current-state claims over promotional, symbolic, or generic significance language.
 - Avoid common AI-writing tells: pivotal, crucial, underscores, serves as, stands as, showcases, landscape, vague expert attributions, and generic upbeat conclusions.
-- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or short paragraph.
+- Keep claims evidence-backed and diff-friendly: one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences.
 - Do not add personality, rhetorical flourish, first-person commentary, or marketing tone.
 - Rewrite dense or formulaic prose only when it improves readability without removing scope, evidence, decisions, or source references.
 Topology review and repair:
