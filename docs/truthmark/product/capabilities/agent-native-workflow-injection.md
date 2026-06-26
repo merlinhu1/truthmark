@@ -16,6 +16,10 @@ last_reviewed: 2026-06-26
 
 Repository maintainers and agents can follow the checked-in workflow contract without relying on a live Truthmark daemon, hidden runtime state, or off-repo packet.
 
+Truthmark turns AI documentation from one-shot generation into ongoing truth-doc curation.
+
+Maintainers get bounded, evidence-backed, Git-reviewable truth docs that stay connected to code changes.
+
 ## Capability Scope
 
 This capability covers:
@@ -55,6 +59,7 @@ This capability covers:
 - Truth Sync status separates impacted `primaryTruthDocs`, `candidateStaleTruthDocs`, and `routeFiles`.
 - Agents start with affected route owners.
 - Evidence-backed stale repository-truth correction remains available beyond the initially affected route set.
+- Broad, catch-all, mixed-owner, or overgrown truth docs are treated as curation problems that require Structure instead of more appended prose.
 
 ## Acceptance Criteria
 
@@ -71,6 +76,7 @@ This capability covers:
 - Truth Sync reports placement, skip, or manual handoff.
 - Workflows that create, structure, or audit truth docs still preserve product and engineering truth as separate lanes.
 - Truth Document and Truth Sync carry compact professional prose guidance for truth-doc edits without embedding a full external humanizer prompt in generated workflow surfaces.
+- Truthmark positions ongoing truth-doc curation as a core product value rather than presenting itself as a one-shot documentation generator.
 
 ## Product Decisions
 
@@ -99,6 +105,8 @@ This capability covers:
   - Cursor Agent Skills are the single current native Cursor workflow representation for Truthmark because they support description-based selection plus package-local support resources.
 - Decision (2026-06-26): Humanizer-style cleanup is adapted only as a compact professional prose checklist.
   - The workflow must avoid token-heavy prompt imports and must not push truth docs toward personal, rhetorical, or marketing tone.
+- Decision (2026-06-26): Ongoing truth-doc curation is a primary product value.
+  - Marketing should emphasize bounded ownership, evidence-backed updates, Git-reviewable docs, and Structure handoff for overgrown docs rather than claiming generic documentation generation.
 
 ## Engineering Realization Links
 
