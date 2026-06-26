@@ -3,31 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Truthmark — branch-scoped truth for AI coding agents</title>
-  <meta name="description" content="Truthmark keeps repository truth aligned with code inside the branch, using agent-native workflows your team can review in Git.">
-  <meta property="og:title" content="Truthmark — branch-scoped truth for AI coding agents">
-  <meta property="og:description" content="Repository truth that ships with the branch.">
+  <title>Truthmark — the branch explains itself</title>
+  <meta name="description" content="Truthmark helps AI-assisted branches carry accurate, reviewable repository truth alongside code changes.">
+  <meta property="og:title" content="Truthmark — the branch explains itself">
+  <meta property="og:description" content="A repository-native review layer for code, decisions, and current truth.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/truthmark-banner.png">
-  <meta name="theme-color" content="#07111d">
+  <meta name="theme-color" content="#07131f">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #06101d;
-      --bg-2: #091827;
+      --ink: #07131f;
+      --ink-2: #0a1a2a;
+      --ink-3: #102236;
+      --paper: #f5f7ef;
+      --paper-2: #e8f2dd;
+      --text: #f8fbf2;
+      --muted: #b9c7d6;
+      --dim: #7f90a3;
+      --green: #8ee66b;
+      --green-2: #58bf43;
+      --lime-glow: rgba(142, 230, 107, 0.2);
+      --cyan: #77d9ff;
+      --amber: #f1c765;
+      --rose: #ff8d9a;
+      --line: rgba(220, 236, 255, 0.16);
+      --line-strong: rgba(220, 236, 255, 0.28);
       --panel: rgba(255, 255, 255, 0.045);
       --panel-2: rgba(255, 255, 255, 0.075);
-      --line: rgba(200, 218, 244, 0.16);
-      --line-strong: rgba(200, 218, 244, 0.26);
-      --text: #f7f9fc;
-      --muted: #b7c1d1;
-      --soft: #7f8ca1;
-      --green: #78d65b;
-      --green-2: #54be40;
-      --green-soft: rgba(120, 214, 91, 0.13);
-      --blue: #71a7ff;
-      --amber: #f4c96b;
-      --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.36);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -39,37 +42,39 @@
       min-height: 100vh;
       color: var(--text);
       background:
-        radial-gradient(circle at 12% 0%, rgba(120, 214, 91, 0.16), transparent 32rem),
-        radial-gradient(circle at 86% 10%, rgba(113, 167, 255, 0.15), transparent 34rem),
-        linear-gradient(180deg, #020712 0%, var(--bg) 36%, #040a13 100%);
+        radial-gradient(circle at 18% 6%, rgba(142, 230, 107, 0.18), transparent 28rem),
+        radial-gradient(circle at 82% 10%, rgba(119, 217, 255, 0.13), transparent 32rem),
+        radial-gradient(circle at 50% 56%, rgba(241, 199, 101, 0.06), transparent 38rem),
+        linear-gradient(180deg, #020812 0%, var(--ink) 36%, #050b12 100%);
+      overflow-x: hidden;
     }
 
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      pointer-events: none;
+      z-index: -1;
       background-image:
         linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(180deg, transparent, rgba(0,0,0,0.72) 18%, transparent 78%);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.75), transparent 72%);
     }
 
     a { color: inherit; }
 
     .shell {
-      width: min(1220px, calc(100% - 48px));
+      width: min(1240px, calc(100% - 48px));
       margin: 0 auto;
     }
 
     .nav {
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 50;
+      border-bottom: 1px solid rgba(220,236,255,0.08);
+      background: rgba(3, 10, 18, 0.78);
       backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(200, 218, 244, 0.08);
-      background: rgba(3, 9, 18, 0.72);
     }
 
     .nav-inner {
@@ -83,22 +88,36 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      color: var(--text);
-      font-weight: 760;
       text-decoration: none;
+      font-weight: 780;
       letter-spacing: -0.03em;
     }
 
-    .shield {
+    .glyph {
+      position: relative;
       width: 38px;
       height: 38px;
-      filter: drop-shadow(0 10px 24px rgba(120, 214, 91, 0.22));
+      border: 1px solid rgba(142,230,107,0.55);
+      border-radius: 13px;
+      background: linear-gradient(145deg, rgba(142,230,107,0.2), rgba(119,217,255,0.1));
+      box-shadow: 0 0 30px rgba(142,230,107,0.18);
     }
+
+    .glyph::before,
+    .glyph::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .glyph::before { width: 16px; height: 3px; left: 10px; top: 18px; transform: rotate(42deg); }
+    .glyph::after { width: 23px; height: 3px; left: 15px; top: 16px; transform: rotate(-48deg); }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 21px;
       color: var(--muted);
       font-size: 0.94rem;
       font-weight: 620;
@@ -118,317 +137,296 @@
       min-height: 44px;
       padding: 0 17px;
       border: 1px solid var(--line-strong);
-      border-radius: 12px;
+      border-radius: 999px;
       background: rgba(255,255,255,0.045);
       color: var(--text);
       font-weight: 720;
       text-decoration: none;
-      box-shadow: 0 12px 34px rgba(0,0,0,0.23);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.22);
     }
 
     .button.primary {
       color: #06110a;
-      border-color: rgba(120,214,91,0.8);
-      background: linear-gradient(180deg, #8ae870, #55bd42);
+      border-color: rgba(142,230,107,0.92);
+      background: linear-gradient(180deg, #a4f483, #62c94b);
     }
 
     .hero {
       display: grid;
-      grid-template-columns: 0.92fr 1.08fr;
-      gap: 44px;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 52px;
       align-items: center;
-      padding: 84px 0 76px;
+      min-height: calc(100vh - 74px);
+      padding: 76px 0 88px;
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      color: var(--green);
-      font-size: 0.98rem;
+      padding: 7px 12px;
+      border: 1px solid rgba(142,230,107,0.28);
+      border-radius: 999px;
+      background: rgba(142,230,107,0.09);
+      color: #d9ffd0;
+      font-size: 0.9rem;
       font-weight: 760;
       letter-spacing: -0.01em;
     }
 
-    .eyebrow::before {
-      content: "";
-      width: 46px;
-      height: 3px;
+    .pulse {
+      width: 8px;
+      height: 8px;
       border-radius: 999px;
       background: var(--green);
-      box-shadow: 0 0 18px rgba(120,214,91,0.45);
+      box-shadow: 0 0 16px rgba(142,230,107,0.8);
     }
 
     h1 {
-      margin: 22px 0 18px;
-      font-size: clamp(3.2rem, 6vw, 5.8rem);
-      line-height: 0.96;
-      letter-spacing: -0.075em;
+      margin: 22px 0 20px;
+      font-size: clamp(3.35rem, 6.7vw, 6.6rem);
+      line-height: 0.91;
+      letter-spacing: -0.078em;
       text-wrap: balance;
     }
 
     .lead {
-      max-width: 720px;
+      max-width: 740px;
       margin: 0;
       color: var(--muted);
-      font-size: clamp(1.17rem, 1.55vw, 1.46rem);
+      font-size: clamp(1.18rem, 1.55vw, 1.48rem);
       line-height: 1.58;
       letter-spacing: -0.02em;
     }
 
-    .actions {
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
-      margin-top: 30px;
+      margin-top: 32px;
     }
 
-    .proof-strip {
+    .signals {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-top: 34px;
+      max-width: 690px;
     }
 
-    .proof {
-      padding: 16px;
+    .signal {
+      padding: 15px;
       border: 1px solid var(--line);
       border-radius: 16px;
       background: var(--panel);
     }
 
-    .proof strong {
-      display: block;
-      color: var(--text);
-      margin-bottom: 6px;
-      letter-spacing: -0.025em;
-    }
+    .signal strong { display: block; margin-bottom: 6px; letter-spacing: -0.025em; }
+    .signal span { color: var(--dim); font-size: 0.92rem; line-height: 1.42; }
 
-    .proof span {
-      color: var(--soft);
-      font-size: 0.92rem;
-      line-height: 1.42;
-    }
-
-    .hero-product {
+    .stage {
       position: relative;
-      padding: 18px;
+      min-height: 680px;
       border: 1px solid var(--line-strong);
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035));
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 70% 16%, rgba(142,230,107,0.17), transparent 18rem),
+        radial-gradient(circle at 22% 80%, rgba(119,217,255,0.1), transparent 20rem),
+        rgba(255,255,255,0.045);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
-    .hero-product::before {
+    .stage::before {
       content: "";
       position: absolute;
-      inset: -40% -20% auto auto;
-      width: 360px;
-      height: 360px;
+      inset: 42px;
+      border: 1px dashed rgba(220,236,255,0.13);
       border-radius: 999px;
-      background: rgba(120,214,91,0.14);
-      filter: blur(30px);
+      transform: rotate(-14deg);
     }
 
-    .product-top {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 12px 14px 18px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      font-weight: 650;
-    }
-
-    .window-dots { display: flex; gap: 8px; }
-    .dot { width: 10px; height: 10px; border-radius: 999px; background: #596476; }
-    .dot:nth-child(2) { background: #8793a6; }
-    .dot:nth-child(3) { background: var(--green); }
-
-    .mock-grid {
-      position: relative;
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 14px;
-    }
-
-    .pane {
+    .orbit {
+      position: absolute;
       border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(3, 8, 16, 0.62);
-      overflow: hidden;
+      background: rgba(4, 12, 22, 0.78);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.28);
     }
 
-    .pane-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 44px;
-      padding: 0 14px;
-      border-bottom: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.82rem;
-      font-weight: 700;
+    .orbit.core {
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: min(390px, 72%);
+      border-radius: 28px;
+      padding: 26px;
+      z-index: 4;
     }
 
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 8px;
-      border: 1px solid rgba(120,214,91,0.42);
-      border-radius: 999px;
-      color: var(--green);
-      background: var(--green-soft);
-      font-size: 0.72rem;
-      font-weight: 760;
+    .core h2 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+      line-height: 1.04;
+      letter-spacing: -0.055em;
     }
 
-    .flow-list,
-    .doc-card {
-      padding: 16px;
-    }
+    .core p { margin: 0; color: var(--muted); line-height: 1.55; }
 
-    .flow-item {
+    .route-line {
       display: grid;
-      grid-template-columns: 34px 1fr;
-      gap: 12px;
-      padding: 13px 0;
-      border-bottom: 1px solid rgba(200,218,244,0.08);
-    }
-
-    .flow-item:last-child { border-bottom: 0; }
-
-    .num {
-      display: grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      color: var(--green);
-      background: var(--green-soft);
-      border: 1px solid rgba(120,214,91,0.28);
-      font-weight: 800;
-    }
-
-    .flow-item strong { display: block; margin-bottom: 4px; }
-    .flow-item span { color: var(--soft); font-size: 0.9rem; line-height: 1.42; }
-
-    .doc-card h3 {
-      margin: 0 0 10px;
-      font-size: 1.45rem;
-      letter-spacing: -0.045em;
-    }
-
-    .doc-lines { display: grid; gap: 8px; margin-top: 16px; }
-    .doc-line {
-      min-height: 34px;
-      padding: 9px 11px;
-      border: 1px solid rgba(200,218,244,0.1);
-      border-radius: 10px;
-      background: rgba(255,255,255,0.035);
-      color: #dce5f2;
+      grid-template-columns: 18px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid rgba(220,236,255,0.12);
+      border-radius: 14px;
+      color: #dfe9f6;
       font: 0.86rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: rgba(255,255,255,0.035);
     }
+
+    .route-line i {
+      display: block;
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 14px rgba(142,230,107,0.6);
+    }
+
+    .route-line em { color: var(--dim); font-style: normal; }
+
+    .node {
+      position: absolute;
+      width: 172px;
+      padding: 16px;
+      border-radius: 20px;
+    }
+
+    .node strong { display: block; margin-bottom: 7px; letter-spacing: -0.02em; }
+    .node span { display: block; color: var(--dim); font-size: 0.86rem; line-height: 1.38; }
+    .node.a { top: 44px; left: 54px; }
+    .node.b { top: 88px; right: 42px; }
+    .node.c { left: 42px; bottom: 76px; }
+    .node.d { right: 58px; bottom: 52px; }
+
+    .rail {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(142,230,107,0.62), transparent);
+      transform-origin: left center;
+      opacity: 0.7;
+    }
+
+    .rail.r1 { width: 260px; top: 206px; left: 180px; transform: rotate(24deg); }
+    .rail.r2 { width: 230px; top: 224px; right: 170px; transform: rotate(145deg); }
+    .rail.r3 { width: 260px; bottom: 214px; left: 180px; transform: rotate(-22deg); }
+    .rail.r4 { width: 230px; bottom: 202px; right: 184px; transform: rotate(205deg); }
 
     .section {
-      padding: 88px 0;
-      border-top: 1px solid rgba(200,218,244,0.08);
+      padding: 92px 0;
+      border-top: 1px solid rgba(220,236,255,0.08);
     }
 
     .section-header {
-      max-width: 840px;
-      margin-bottom: 30px;
+      max-width: 860px;
+      margin-bottom: 34px;
     }
 
-    h2 {
+    h2.section-title,
+    .section-header h2 {
       margin: 0 0 14px;
-      font-size: clamp(2.3rem, 4vw, 4.3rem);
-      line-height: 0.99;
-      letter-spacing: -0.065em;
+      font-size: clamp(2.35rem, 4.5vw, 4.6rem);
+      line-height: 0.96;
+      letter-spacing: -0.068em;
       text-wrap: balance;
     }
 
     .section-header p {
       margin: 0;
       color: var(--muted);
-      font-size: 1.14rem;
+      font-size: 1.16rem;
       line-height: 1.62;
       letter-spacing: -0.015em;
     }
 
-    .value-grid {
+    .map-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
     }
 
-    .value-card {
-      min-height: 330px;
-      padding: 26px;
+    .surface-card {
+      position: relative;
+      min-height: 250px;
+      padding: 22px;
       border: 1px solid var(--line);
       border-radius: 22px;
       background: var(--panel);
+      overflow: hidden;
     }
 
-    .value-card.featured {
-      background: linear-gradient(180deg, rgba(120,214,91,0.12), rgba(255,255,255,0.045));
-      border-color: rgba(120,214,91,0.34);
-    }
-
-    .value-icon {
-      display: grid;
-      place-items: center;
-      width: 52px;
-      height: 52px;
-      margin-bottom: 22px;
-      border: 1px solid rgba(120,214,91,0.38);
-      border-radius: 16px;
-      color: var(--green);
-      background: var(--green-soft);
-      font-size: 1.35rem;
+    .surface-card::after {
+      content: attr(data-index);
+      position: absolute;
+      right: 18px;
+      bottom: 12px;
+      color: rgba(248,251,242,0.08);
+      font-size: 4.8rem;
       font-weight: 800;
+      letter-spacing: -0.08em;
     }
 
-    .value-card h3 {
-      margin: 0 0 12px;
-      font-size: 1.45rem;
-      line-height: 1.12;
-      letter-spacing: -0.045em;
+    .surface-card:hover { border-color: rgba(142,230,107,0.38); background: var(--panel-2); }
+
+    .surface-card h3 {
+      position: relative;
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      z-index: 1;
     }
 
-    .value-card p,
-    .value-card li {
+    .surface-card p {
+      position: relative;
+      margin: 0;
       color: var(--muted);
-      line-height: 1.58;
+      line-height: 1.55;
+      z-index: 1;
     }
 
-    .value-card ul {
-      display: grid;
-      gap: 9px;
-      padding-left: 18px;
-      margin: 18px 0 0;
+    .mini-kicker {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 9px;
+      border: 1px solid rgba(142,230,107,0.32);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(142,230,107,0.08);
+      font-size: 0.72rem;
+      font-weight: 820;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    .demo-shell {
+    .timeline {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 310px 1fr;
       gap: 18px;
       align-items: stretch;
     }
 
-    .tab-list {
+    .tabs {
       display: grid;
       gap: 12px;
     }
 
-    .tab-button {
+    .tab {
       width: 100%;
       padding: 18px;
       border: 1px solid var(--line);
-      border-radius: 17px;
+      border-radius: 18px;
       background: var(--panel);
       color: var(--muted);
       text-align: left;
@@ -436,242 +434,248 @@
       font: inherit;
     }
 
-    .tab-button strong {
+    .tab strong {
       display: block;
-      color: var(--text);
       margin-bottom: 7px;
-      font-size: 1.02rem;
-      letter-spacing: -0.025em;
+      color: var(--text);
+      font-size: 1.04rem;
+      letter-spacing: -0.03em;
     }
 
-    .tab-button[aria-selected="true"] {
-      border-color: rgba(120,214,91,0.55);
-      background: var(--green-soft);
-      color: #dcead6;
+    .tab[aria-selected="true"] {
+      border-color: rgba(142,230,107,0.56);
+      background: rgba(142,230,107,0.12);
+      color: #dcefd7;
     }
 
-    .demo-panel {
+    .panel {
       display: none;
+      min-height: 640px;
       border: 1px solid var(--line-strong);
-      border-radius: 24px;
-      background: rgba(3,8,16,0.68);
-      overflow: hidden;
+      border-radius: 26px;
+      background: rgba(4, 12, 22, 0.74);
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .demo-panel.active { display: block; }
+    .panel.active { display: block; }
 
-    .demo-top {
+    .panel-head {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 18px 20px;
+      padding: 18px 22px;
       border-bottom: 1px solid var(--line);
     }
 
-    .demo-top strong { letter-spacing: -0.03em; }
+    .panel-head strong { letter-spacing: -0.03em; }
 
-    .demo-body {
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border: 1px solid rgba(142,230,107,0.36);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(142,230,107,0.09);
+      font-size: 0.76rem;
+      font-weight: 820;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .panel-grid {
       display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 0;
+      grid-template-columns: 0.9fr 1.1fr;
+      min-height: 590px;
     }
 
-    .commit,
-    .truthdoc {
-      padding: 22px;
-      min-height: 430px;
+    .evidence,
+    .truth-sheet {
+      padding: 24px;
     }
 
-    .commit {
+    .evidence {
       border-right: 1px solid var(--line);
       background: rgba(255,255,255,0.025);
     }
 
-    .small-label {
+    .label {
       display: block;
       margin-bottom: 14px;
       color: var(--green);
       font-size: 0.78rem;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .commit-list {
-      display: grid;
-      gap: 10px;
-    }
+    .evidence-list { display: grid; gap: 11px; }
 
-    .commit-row {
+    .file-row,
+    .claim-row {
       padding: 12px 13px;
-      border: 1px solid rgba(200,218,244,0.11);
+      border: 1px solid rgba(220,236,255,0.11);
       border-radius: 12px;
       background: rgba(255,255,255,0.035);
-      color: #dce5f2;
+      color: #dfe9f6;
       font: 0.88rem/1.42 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
-    .truthdoc h3 {
-      margin: 0 0 14px;
-      font-size: 1.35rem;
-      letter-spacing: -0.035em;
-    }
-
-    .truthdoc h4 {
-      margin: 18px 0 8px;
-      color: var(--green);
-      font-size: 0.95rem;
-      letter-spacing: -0.01em;
-    }
-
-    .truthdoc p,
-    .truthdoc li {
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .truthdoc ul { margin: 8px 0 0; padding-left: 19px; }
-
-    .diff-add { color: #a5f28c; }
-    .diff-edit { color: #f4d783; }
-    .diff-note { color: #9fb0c8; }
-
-    .lane-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .lane-card {
-      padding: 26px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: var(--panel);
-    }
-
-    .lane-card h3 {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 16px;
-      font-size: 1.5rem;
+    .truth-sheet h3 {
+      margin: 0 0 12px;
+      font-size: 1.48rem;
+      line-height: 1.1;
       letter-spacing: -0.045em;
     }
 
-    .lane-card p,
-    .lane-card li {
-      color: var(--muted);
-      line-height: 1.58;
+    .truth-sheet h4 {
+      margin: 18px 0 8px;
+      color: var(--green);
+      font-size: 0.96rem;
+      letter-spacing: -0.01em;
     }
 
-    .lane-card ul { padding-left: 18px; }
+    .truth-sheet p,
+    .truth-sheet li { color: var(--muted); line-height: 1.55; }
+    .truth-sheet ul { margin: 8px 0 0; padding-left: 18px; }
 
-    .visual-system {
+    .add { color: #b8f5a4; }
+    .edit { color: #f5d37d; }
+    .move { color: #9fdcff; }
+    .quiet { color: #9dafc4; }
+
+    .split-view {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .lane {
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+    }
+
+    .lane h3 {
+      margin: 0 0 12px;
+      font-size: 1.7rem;
+      letter-spacing: -0.055em;
+    }
+
+    .lane p,
+    .lane li { color: var(--muted); line-height: 1.58; }
+    .lane ul { padding-left: 18px; }
+
+    .diagram {
       margin-top: 28px;
-    }
-
-    .visual-thumb {
-      position: relative;
-      overflow: hidden;
+      padding: 24px;
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.035);
-      aspect-ratio: 16 / 10;
+      border-radius: 26px;
+      background:
+        linear-gradient(135deg, rgba(142,230,107,0.08), transparent 38%),
+        rgba(255,255,255,0.035);
     }
 
-    .visual-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.72;
-      transform: scale(1.04);
-    }
-
-    .visual-thumb span {
-      position: absolute;
-      left: 10px;
-      bottom: 10px;
-      padding: 5px 8px;
-      border-radius: 999px;
-      background: rgba(2,7,15,0.78);
-      border: 1px solid var(--line);
-      color: var(--text);
-      font-size: 0.75rem;
-      font-weight: 760;
-    }
-
-    .install-grid {
+    .diagram-grid {
       display: grid;
-      grid-template-columns: 0.86fr 1.14fr;
-      gap: 20px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: center;
+    }
+
+    .diagram-cell {
+      min-height: 118px;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+      border: 1px solid rgba(220,236,255,0.13);
+      border-radius: 18px;
+      background: rgba(4,12,22,0.58);
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.38;
+    }
+
+    .diagram-cell strong { color: var(--text); display: block; margin-bottom: 6px; }
+    .arrow { color: var(--green); font-size: 1.8rem; text-align: center; }
+
+    .install {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 22px;
       align-items: stretch;
     }
 
     .terminal {
       border: 1px solid var(--line-strong);
-      border-radius: 22px;
-      background: rgba(2, 7, 15, 0.78);
+      border-radius: 24px;
+      background: rgba(3,9,18,0.78);
       box-shadow: var(--shadow);
       overflow: hidden;
     }
 
-    .terminal-bar {
+    .terminal-top {
       display: flex;
-      align-items: center;
       gap: 8px;
-      padding: 15px 18px;
+      padding: 16px 18px;
       border-bottom: 1px solid var(--line);
       background: rgba(255,255,255,0.035);
     }
 
+    .term-dot { width: 10px; height: 10px; border-radius: 999px; background: #5f6b7a; }
+    .term-dot:nth-child(2) { background: #94a0ae; }
+    .term-dot:nth-child(3) { background: var(--green); }
+
     pre {
       margin: 0;
-      padding: 24px;
-      color: #dce5f2;
+      padding: 25px;
+      color: #dfe9f6;
       white-space: pre-wrap;
       font: 500 0.97rem/1.78 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
     .prompt { color: var(--green); }
-    .comment { color: #7f8ca1; }
+    .comment { color: var(--dim); }
 
     .footer {
       display: flex;
       justify-content: space-between;
       gap: 24px;
       padding: 44px 0 64px;
-      border-top: 1px solid rgba(200,218,244,0.08);
-      color: var(--soft);
+      border-top: 1px solid rgba(220,236,255,0.08);
+      color: var(--dim);
     }
 
     .footer a { color: var(--text); text-decoration: none; }
 
-    @media (max-width: 1000px) {
+    @media (max-width: 1080px) {
       .hero,
-      .mock-grid,
-      .demo-shell,
-      .demo-body,
-      .lane-grid,
-      .install-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .commit { border-right: 0; border-bottom: 1px solid var(--line); }
-      .value-grid { grid-template-columns: 1fr; }
-      .visual-system { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .timeline,
+      .panel-grid,
+      .split-view,
+      .install { grid-template-columns: 1fr; }
+      .stage { min-height: 620px; }
+      .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .diagram-grid { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      .evidence { border-right: 0; border-bottom: 1px solid var(--line); }
       .nav-links { display: none; }
     }
 
-    @media (max-width: 640px) {
-      .shell { width: min(100% - 28px, 1220px); }
-      .hero { padding-top: 54px; }
-      .proof-strip { grid-template-columns: 1fr; }
-      .visual-system { grid-template-columns: 1fr; }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 28px, 1240px); }
+      .hero { padding-top: 52px; }
+      .signals,
+      .map-grid { grid-template-columns: 1fr; }
+      .stage { min-height: 720px; }
+      .node { width: 145px; }
+      .node.a { top: 30px; left: 20px; }
+      .node.b { top: 54px; right: 20px; }
+      .node.c { left: 20px; bottom: 58px; }
+      .node.d { right: 20px; bottom: 40px; }
+      .rail { display: none; }
       .footer { flex-direction: column; }
     }
   </style>
@@ -680,17 +684,14 @@
   <header class="nav">
     <div class="shell nav-inner">
       <a class="brand" href="#top" aria-label="Truthmark home">
-        <svg class="shield" viewBox="0 0 80 80" role="img" aria-label="Truthmark shield">
-          <path d="M40 6 68 21v21c0 17-11.6 28.5-28 35C23.6 70.5 12 59 12 42V21L40 6Z" fill="none" stroke="#78d65b" stroke-width="8" stroke-linejoin="round"/>
-          <path d="m25 40 10 10 22-25" fill="none" stroke="#f6f7fb" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <span class="glyph" aria-hidden="true"></span>
         <span>Truthmark</span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#advantage">Advantage</a>
-        <a href="#demo">Demo</a>
+        <a href="#surface-map">Surface map</a>
+        <a href="#storyboard">Storyboard</a>
         <a href="#lanes">Lanes</a>
-        <a href="#system">System</a>
+        <a href="#workflow">Workflow</a>
         <a href="https://github.com/merlinhu1/truthmark">GitHub</a>
       </nav>
     </div>
@@ -699,257 +700,135 @@
   <main id="top">
     <section class="shell hero">
       <div>
-        <div class="eyebrow">Repository truth that ships with the branch</div>
-        <h1>Branch-scoped truth for AI coding agents.</h1>
-        <p class="lead">Truthmark keeps current repository truth close to the code that changed. Agents work through committed instructions, humans review ordinary Git diffs, and the workflow still works without a service in the loop.</p>
-        <div class="actions">
+        <div class="eyebrow"><span class="pulse"></span>Repository truth carried by the branch</div>
+        <h1>The branch should explain itself.</h1>
+        <p class="lead">Truthmark gives AI-assisted work a reviewable truth layer: current claims, ownership routes, product promises, and implementation facts travel with the same Git branch as the code.</p>
+        <div class="hero-actions">
           <a class="button primary" href="https://github.com/merlinhu1/truthmark">View on GitHub</a>
-          <a class="button" href="#demo">See the truth-doc demo</a>
+          <a class="button" href="#storyboard">Open the demo</a>
         </div>
-        <div class="proof-strip" aria-label="Truthmark operating model">
-          <div class="proof"><strong>No day-to-day daemon</strong><span>Normal work runs from repository files and host-native agent surfaces.</span></div>
-          <div class="proof"><strong>Continuous curation</strong><span>Truth docs are maintained as code changes, not generated once and abandoned.</span></div>
-          <div class="proof"><strong>Lane-separated truth</strong><span>Product promises and engineering behavior can evolve without being flattened together.</span></div>
+        <div class="signals" aria-label="Truthmark summary signals">
+          <div class="signal"><strong>Checkout-native</strong><span>After setup, normal agent work can proceed from committed repository files.</span></div>
+          <div class="signal"><strong>Claim-level review</strong><span>Docs change as small, source-backed claims instead of anonymous summaries.</span></div>
+          <div class="signal"><strong>Topology aware</strong><span>When truth gets too broad, ownership gets repaired rather than hidden.</span></div>
+          <div class="signal"><strong>Host-shaped</strong><span>Instructions meet agents in their existing coding environments.</span></div>
         </div>
       </div>
 
-      <aside class="hero-product" aria-label="Truthmark product interface illustration">
-        <div class="product-top">
-          <div class="window-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-          <span>branch: feature/webhook-retry</span>
-        </div>
-        <div class="mock-grid">
-          <div class="pane">
-            <div class="pane-title"><span>Agent closeout</span><span class="tag">Truth Sync</span></div>
-            <div class="flow-list">
-              <div class="flow-item"><div class="num">1</div><div><strong>Code changed</strong><span>Retry policy and webhook delivery behavior updated.</span></div></div>
-              <div class="flow-item"><div class="num">2</div><div><strong>Tests run</strong><span>Behavior is verified before documentation work starts.</span></div></div>
-              <div class="flow-item"><div class="num">3</div><div><strong>Routes resolve</strong><span>Truthmark maps the change to bounded truth owners.</span></div></div>
-              <div class="flow-item"><div class="num">4</div><div><strong>Truth diff reviewed</strong><span>Humans see code and truth updates in the same branch.</span></div></div>
-            </div>
-          </div>
-          <div class="pane">
-            <div class="pane-title"><span>docs/truthmark/engineering/webhooks.md</span><span class="tag">Git diff</span></div>
-            <div class="doc-card">
-              <h3>Webhook delivery behavior</h3>
-              <div class="doc-lines">
-                <div class="doc-line diff-add">+ Failed deliveries retry up to three times.</div>
-                <div class="doc-line diff-add">+ Backoff starts at 30 seconds and doubles per attempt.</div>
-                <div class="doc-line diff-edit">~ Manual replay remains available after retries are exhausted.</div>
-                <div class="doc-line diff-note">source: src/webhooks/retry-policy.ts</div>
-              </div>
-            </div>
-          </div>
+      <aside class="stage" aria-label="Original Truthmark concept illustration">
+        <div class="rail r1"></div><div class="rail r2"></div><div class="rail r3"></div><div class="rail r4"></div>
+        <div class="orbit node a"><strong>Code delta</strong><span>Changed files enter through the active checkout.</span></div>
+        <div class="orbit node b"><strong>Route owner</strong><span>The repo says which truth surface owns the claim.</span></div>
+        <div class="orbit node c"><strong>Human review</strong><span>Truth diffs sit beside implementation diffs.</span></div>
+        <div class="orbit node d"><strong>Agent host</strong><span>Codex, Claude Code, Copilot, Cursor, OpenCode, and peers read local guidance.</span></div>
+        <div class="orbit core">
+          <h2>Branch truth ledger</h2>
+          <p>A compact view of what this branch changed, which claims are affected, and which docs need curation before handoff.</p>
+          <div class="route-line"><i></i><span>src/webhooks/retry.ts</span><em>engineering/webhook-delivery.md</em></div>
+          <div class="route-line"><i></i><span>README reliability copy</span><em>product/webhook-reliability.md</em></div>
+          <div class="route-line"><i></i><span>operator replay UI</span><em>engineering/webhook-replay.md</em></div>
         </div>
       </aside>
     </section>
 
-    <section id="advantage" class="shell section">
+    <section id="surface-map" class="shell section">
       <div class="section-header">
-        <h2>The unusual part is the combination.</h2>
-        <p>Truthmark does not need to claim that no other tool has one piece of this. The stronger point is that these properties work together in one repository-native loop.</p>
+        <h2>More than a docs generator.</h2>
+        <p>Truthmark is best understood as a repository-truth workflow surface. The value is not one feature; it is how several constraints reinforce each other.</p>
       </div>
-      <div class="value-grid">
-        <article class="value-card featured">
-          <div class="value-icon">01</div>
-          <h3>Day-to-day work does not depend on a CLI, MCP server, hook, or daemon.</h3>
-          <p>The installed workflow is carried by repository files and host-native agent surfaces. Optional helpers can validate and refresh, but normal agent work should not be blocked by a missing service.</p>
-          <ul>
-            <li>Fits Codex, Claude Code, Copilot, Cursor, OpenCode, and similar hosts.</li>
-            <li>Keeps the fallback path inspectable in Git.</li>
-          </ul>
-        </article>
-        <article class="value-card">
-          <div class="value-icon">02</div>
-          <h3>Truth docs are curated continuously.</h3>
-          <p>Truthmark treats documentation as a closeout responsibility for code changes. If a doc becomes too broad, the answer is ownership repair, not just more prose.</p>
-          <ul>
-            <li>Truth Sync updates current behavior.</li>
-            <li>Truth Structure splits broad or mixed-owner docs.</li>
-          </ul>
-        </article>
-        <article class="value-card">
-          <div class="value-icon">03</div>
-          <h3>Product and engineering truth stay in separate lanes.</h3>
-          <p>Product capability promises and engineering implementation facts are related, but they are not the same document. Truthmark keeps that distinction reviewable.</p>
-          <ul>
-            <li>Product docs describe promises and boundaries.</li>
-            <li>Engineering docs describe current implementation behavior.</li>
-          </ul>
-        </article>
+      <div class="map-grid">
+        <article class="surface-card" data-index="01"><span class="mini-kicker">Operation</span><h3>No resident service in the critical path</h3><p>Helpers can validate and refresh, but the daily closeout path is designed to remain readable from the checkout.</p></article>
+        <article class="surface-card" data-index="02"><span class="mini-kicker">Continuity</span><h3>Truth is maintained after the first draft</h3><p>Code changes keep revisiting the mapped docs, so documentation becomes a living review artifact rather than a launch-week export.</p></article>
+        <article class="surface-card" data-index="03"><span class="mini-kicker">Architecture</span><h3>Routes make ownership explicit</h3><p>Files, areas, and truth docs are connected by committed routing metadata instead of implicit tribal knowledge.</p></article>
+        <article class="surface-card" data-index="04"><span class="mini-kicker">Governance</span><h3>Product truth and mechanics do not collapse together</h3><p>User-facing promises can link to implementation reality without becoming the same document.</p></article>
+        <article class="surface-card" data-index="05"><span class="mini-kicker">Review</span><h3>Claims are small enough for Git</h3><p>The desired unit is a durable claim per line or bullet, making truth updates easy to inspect in pull requests.</p></article>
+        <article class="surface-card" data-index="06"><span class="mini-kicker">Portability</span><h3>Agent guidance follows the repo</h3><p>Generated skills, prompts, commands, and instruction blocks are committed where the agent can read them.</p></article>
+        <article class="surface-card" data-index="07"><span class="mini-kicker">Repair</span><h3>Overgrown docs trigger structure work</h3><p>When a file starts mixing owners, Truth Structure is the product answer, not a larger paragraph.</p></article>
+        <article class="surface-card" data-index="08"><span class="mini-kicker">Boundary</span><h3>Repository files outrank session memory</h3><p>Current truth lives where maintainers can diff, revert, blame, and review it.</p></article>
       </div>
     </section>
 
-    <section id="demo" class="shell section">
+    <section id="storyboard" class="shell section">
       <div class="section-header">
-        <h2>A truth doc across three real-looking changes.</h2>
-        <p>This is dummy text, but the shape is the point: short durable claims, source-backed edits, and curation over time instead of one-time generation.</p>
+        <h2>A truth document over time.</h2>
+        <p>This demo is fictional, but the workflow is concrete: create the right doc, update it when behavior changes, and split it when ownership gets crowded.</p>
       </div>
-
-      <div class="demo-shell">
-        <div class="tab-list" role="tablist" aria-label="Truth document demo timeline">
-          <button class="tab-button" role="tab" aria-selected="true" aria-controls="demo-panel-1" id="demo-tab-1"><strong>Change 1 · create</strong>New webhook retry behavior needs engineering truth.</button>
-          <button class="tab-button" role="tab" aria-selected="false" aria-controls="demo-panel-2" id="demo-tab-2"><strong>Change 2 · curate</strong>A product promise appears and moves to the product lane.</button>
-          <button class="tab-button" role="tab" aria-selected="false" aria-controls="demo-panel-3" id="demo-tab-3"><strong>Change 3 · restructure</strong>The doc gets too broad and Truth Structure splits ownership.</button>
+      <div class="timeline">
+        <div class="tabs" role="tablist" aria-label="Truth document curation timeline">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1"><strong>Episode 1 · New invariant</strong>A retry policy appears in code and needs a current-state owner.</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2"><strong>Episode 2 · Promise pressure</strong>Marketing copy changes; product truth and engineering truth diverge.</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3"><strong>Episode 3 · Ownership split</strong>Replay, delivery, audit, and alerts no longer belong in one file.</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-4" id="tab-4"><strong>Episode 4 · Reviewer packet</strong>The pull request shows implementation, evidence, and truth changes together.</button>
         </div>
 
-        <article class="demo-panel active" role="tabpanel" id="demo-panel-1" aria-labelledby="demo-tab-1">
-          <div class="demo-top"><strong>Truth Document creates the first bounded doc.</strong><span class="tag">create</span></div>
-          <div class="demo-body">
-            <div class="commit">
-              <span class="small-label">Code evidence</span>
-              <div class="commit-list">
-                <div class="commit-row">src/webhooks/retry-policy.ts</div>
-                <div class="commit-row">tests/webhooks/retry-policy.test.ts</div>
-                <div class="commit-row">config/webhooks.yml</div>
-              </div>
-            </div>
-            <div class="truthdoc">
-              <span class="small-label">Created truth doc</span>
-              <h3>Webhook delivery behavior</h3>
-              <h4>Current behavior</h4>
-              <ul>
-                <li class="diff-add">Failed webhook deliveries retry up to three times.</li>
-                <li class="diff-add">Retry backoff starts at 30 seconds and doubles per attempt.</li>
-                <li class="diff-add">Manual replay remains available after retries are exhausted.</li>
-              </ul>
-              <h4>Source references</h4>
-              <ul><li>src/webhooks/retry-policy.ts</li><li>tests/webhooks/retry-policy.test.ts</li></ul>
-            </div>
+        <article class="panel active" role="tabpanel" id="panel-1" aria-labelledby="tab-1">
+          <div class="panel-head"><strong>Truth Document creates a narrow engineering owner.</strong><span class="status-pill">created</span></div>
+          <div class="panel-grid">
+            <div class="evidence"><span class="label">Evidence read</span><div class="evidence-list"><div class="file-row">src/webhooks/retry-policy.ts</div><div class="file-row">tests/webhooks/retry-policy.test.ts</div><div class="file-row">config/webhook-delivery.yml</div></div></div>
+            <div class="truth-sheet"><span class="label">Created doc</span><h3>Webhook delivery behavior</h3><h4>Current behavior</h4><ul><li class="add">Failed deliveries are retried three times.</li><li class="add">Backoff starts at 30 seconds and doubles per attempt.</li><li class="add">Manual replay remains available after automatic retries stop.</li></ul><h4>Non-goals</h4><ul><li class="quiet">The service does not claim exactly-once delivery.</li></ul></div>
           </div>
         </article>
 
-        <article class="demo-panel" role="tabpanel" id="demo-panel-2" aria-labelledby="demo-tab-2">
-          <div class="demo-top"><strong>Truth Sync keeps implementation facts and product promises separate.</strong><span class="tag">curate</span></div>
-          <div class="demo-body">
-            <div class="commit">
-              <span class="small-label">Product change</span>
-              <div class="commit-list">
-                <div class="commit-row">README.md mentions delivery confidence.</div>
-                <div class="commit-row">src/webhooks/replay.ts adds replay audit rows.</div>
-                <div class="commit-row">tests/webhooks/replay-audit.test.ts</div>
-              </div>
-            </div>
-            <div class="truthdoc">
-              <span class="small-label">Curated truth</span>
-              <h3>Two lanes, two docs</h3>
-              <h4>Engineering lane</h4>
-              <ul>
-                <li class="diff-edit">Replay attempts write audit rows with actor, timestamp, and delivery id.</li>
-                <li class="diff-note">The retry limit remains three attempts.</li>
-              </ul>
-              <h4>Product lane</h4>
-              <ul>
-                <li class="diff-add">Operators can inspect failed webhook delivery history before replay.</li>
-                <li class="diff-add">The product does not promise exactly-once delivery.</li>
-              </ul>
-            </div>
+        <article class="panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2">
+          <div class="panel-head"><strong>Truth Sync separates a user promise from runtime mechanics.</strong><span class="status-pill">curated</span></div>
+          <div class="panel-grid">
+            <div class="evidence"><span class="label">Branch changes</span><div class="evidence-list"><div class="file-row">README.md adds operator reliability copy</div><div class="file-row">src/webhooks/replay-audit.ts</div><div class="file-row">tests/webhooks/replay-audit.test.ts</div></div></div>
+            <div class="truth-sheet"><span class="label">Two updated surfaces</span><h3>Product promise vs implementation fact</h3><h4>Product truth</h4><ul><li class="add">Operators can inspect failed delivery history before replay.</li><li class="add">The product presents replay as an operator recovery tool, not an automatic guarantee.</li></ul><h4>Engineering truth</h4><ul><li class="edit">Replay writes an audit row with actor, delivery id, and timestamp.</li><li class="quiet">The retry limit remains unchanged.</li></ul></div>
           </div>
         </article>
 
-        <article class="demo-panel" role="tabpanel" id="demo-panel-3" aria-labelledby="demo-tab-3">
-          <div class="demo-top"><strong>Truth Structure fixes ownership when the doc grows beyond one owner.</strong><span class="tag">structure</span></div>
-          <div class="demo-body">
-            <div class="commit">
-              <span class="small-label">Topology pressure</span>
-              <div class="commit-list">
-                <div class="commit-row">webhook delivery, operator replay, audit export, and alerting now share one doc.</div>
-                <div class="commit-row">The route owner is no longer narrow enough for safe updates.</div>
-                <div class="commit-row">Truth Structure proposes a split before more prose is added.</div>
-              </div>
-            </div>
-            <div class="truthdoc">
-              <span class="small-label">After split</span>
-              <h3>Owned truth docs</h3>
-              <ul>
-                <li class="diff-add">engineering/webhook-delivery.md owns retry and delivery behavior.</li>
-                <li class="diff-add">engineering/webhook-replay.md owns manual replay and audit rows.</li>
-                <li class="diff-add">product/webhook-reliability.md owns user-facing reliability promises.</li>
-                <li class="diff-note">The old broad doc becomes a navigation link or is removed.</li>
-              </ul>
-            </div>
+        <article class="panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3">
+          <div class="panel-head"><strong>Truth Structure changes the shape before prose gets heavier.</strong><span class="status-pill">split</span></div>
+          <div class="panel-grid">
+            <div class="evidence"><span class="label">Topology pressure</span><div class="evidence-list"><div class="file-row">delivery retries + manual replay + alert thresholds + export audit</div><div class="file-row">one doc now has four owners</div><div class="file-row">future edits would be ambiguous</div></div></div>
+            <div class="truth-sheet"><span class="label">New ownership map</span><h3>Owned docs after split</h3><ul><li class="move">engineering/webhook-delivery.md owns retry and delivery lifecycle.</li><li class="move">engineering/webhook-replay.md owns operator replay behavior.</li><li class="move">engineering/webhook-audit.md owns audit rows and export format.</li><li class="move">product/webhook-reliability.md owns customer-facing recovery promises.</li></ul></div>
+          </div>
+        </article>
+
+        <article class="panel" role="tabpanel" id="panel-4" aria-labelledby="tab-4">
+          <div class="panel-head"><strong>The reviewer sees a small packet, not a mystery transcript.</strong><span class="status-pill">review</span></div>
+          <div class="panel-grid">
+            <div class="evidence"><span class="label">Pull request surface</span><div class="evidence-list"><div class="file-row">code diff: retry + replay behavior</div><div class="file-row">test diff: replay audit coverage</div><div class="file-row">truth diff: product + engineering docs</div><div class="file-row">route diff: ownership split</div></div></div>
+            <div class="truth-sheet"><span class="label">Reviewer questions</span><h3>What the PR now answers</h3><ul><li class="add">Which user promise changed?</li><li class="add">Which implementation behavior supports it?</li><li class="add">Which files own future updates?</li><li class="add">Which claims should be rejected if the code changes again?</li></ul></div>
           </div>
         </article>
       </div>
     </section>
 
     <section id="lanes" class="shell section">
-      <div class="section-header">
-        <h2>Separate lanes make the docs more honest.</h2>
-        <p>A product promise should not be buried inside implementation prose. An implementation fact should not accidentally become a product commitment.</p>
-      </div>
-      <div class="lane-grid">
-        <article class="lane-card">
-          <h3><span class="tag">Product lane</span> What users can rely on</h3>
-          <p>Product truth captures capabilities, boundaries, non-goals, acceptance criteria, and decisions.</p>
-          <ul>
-            <li>“Operators can inspect failed webhook delivery history before replay.”</li>
-            <li>“Truthmark does not require a hosted service for normal repository workflow execution.”</li>
-          </ul>
-        </article>
-        <article class="lane-card">
-          <h3><span class="tag">Engineering lane</span> What the code currently does</h3>
-          <p>Engineering truth captures runtime behavior, contracts, operations, architecture, and implementation decisions.</p>
-          <ul>
-            <li>“Backoff starts at 30 seconds and doubles per attempt.”</li>
-            <li>“The Pages workflow deploys only the committed static site under site/**.”</li>
-          </ul>
-        </article>
+      <div class="section-header"><h2>Two lanes, linked on purpose.</h2><p>Truthmark can let product and engineering documents reference each other without forcing them into the same voice or authority level.</p></div>
+      <div class="split-view">
+        <article class="lane"><span class="mini-kicker">Promise lane</span><h3>What the project says users can rely on</h3><p>This lane is for product capabilities, boundaries, acceptance criteria, and non-goals.</p><ul><li>Operators can inspect replay history.</li><li>The workflow is repository-native by default.</li><li>Generated presentation pages are not canonical truth.</li></ul></article>
+        <article class="lane"><span class="mini-kicker">Mechanics lane</span><h3>What the current implementation actually does</h3><p>This lane is for runtime behavior, contracts, operations, architecture, and failure modes.</p><ul><li>Backoff doubles after each failed delivery attempt.</li><li>GitHub Pages deploys the committed static site under site/**.</li><li>Generated surfaces refresh when rendered content changes.</li></ul></article>
       </div>
     </section>
 
-    <section id="system" class="shell section">
-      <div class="section-header">
-        <h2>Designed around existing agent hosts.</h2>
-        <p>The website uses the README artwork as brand reference, but the page itself is a website: structured sections, readable demos, and product surfaces that can expand over time.</p>
-      </div>
-      <div class="value-grid">
-        <article class="value-card">
-          <div class="value-icon">A</div>
-          <h3>Host-native instructions</h3>
-          <p>Truthmark installs prompts, skills, commands, and managed instruction blocks for the tools teams already use.</p>
-        </article>
-        <article class="value-card">
-          <div class="value-icon">B</div>
-          <h3>Repository-file authority</h3>
-          <p>Repository files outrank chat history, hidden memory, generated summaries, and off-repo caches.</p>
-        </article>
-        <article class="value-card">
-          <div class="value-icon">C</div>
-          <h3>Reviewable change surface</h3>
-          <p>The output is ordinary Git: routing changes, truth-doc edits, generated surface refreshes, and code diffs.</p>
-        </article>
-      </div>
-      <div class="visual-system" aria-label="Truthmark visual references">
-        <div class="visual-thumb"><img src="assets/truthmark-banner.png" alt="Truthmark banner artwork"><span>branch truth</span></div>
-        <div class="visual-thumb"><img src="assets/truthmark-features.png" alt="Truthmark features artwork"><span>features</span></div>
-        <div class="visual-thumb"><img src="assets/truthmark-position.png" alt="Truthmark positioning artwork"><span>position</span></div>
-        <div class="visual-thumb"><img src="assets/truthmark-syncflow.png" alt="Truthmark sync flow artwork"><span>workflow</span></div>
+    <section id="workflow" class="shell section">
+      <div class="section-header"><h2>The workflow is deliberately boring at runtime.</h2><p>Truthmark's ambition is in the repository model, not in requiring every contributor to adopt a new always-on system.</p></div>
+      <div class="diagram">
+        <div class="diagram-grid" aria-label="Truthmark workflow diagram">
+          <div class="diagram-cell"><strong>1. Setup</strong><span>Configure routes and install agent-facing surfaces.</span></div>
+          <div class="arrow">→</div>
+          <div class="diagram-cell"><strong>2. Work</strong><span>Agent changes code in its normal host.</span></div>
+          <div class="arrow">→</div>
+          <div class="diagram-cell"><strong>3. Closeout</strong><span>Mapped truth docs are checked, edited, split, or left unchanged with evidence.</span></div>
+        </div>
       </div>
     </section>
 
-    <section id="install" class="shell section install-grid">
-      <div class="section-header">
-        <h2>Start with committed configuration.</h2>
-        <p>Truthmark is local-first and Git-native. Configure the hierarchy, install the workflow surfaces, then let agent closeout keep docs aligned with code changes.</p>
-      </div>
-      <div class="terminal" aria-label="Install commands">
-        <div class="terminal-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        <pre><span class="prompt">$</span> cd /path/to/your-repo
+    <section id="install" class="shell section install">
+      <div class="section-header"><h2>Start with the repo, not a server.</h2><p>Install once, commit the workflow surface, and let future branches carry their truth updates through normal review.</p></div>
+      <div class="terminal" aria-label="Install commands"><div class="terminal-top"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span></div><pre><span class="prompt">$</span> cd /path/to/your-repo
 <span class="prompt">$</span> npm install -g truthmark
 <span class="prompt">$</span> truthmark config
 <span class="prompt">$</span> truthmark init
 <span class="prompt">$</span> truthmark check
 
-<span class="comment"># day-to-day agent workflow continues from repo files</span></pre>
-      </div>
+<span class="comment"># After setup, agent guidance and truth routes live in the checkout.</span></pre></div>
     </section>
   </main>
 
-  <footer class="shell footer">
-    <div>Branch-scoped, committed, inspectable repository truth.</div>
-    <div><a href="https://github.com/merlinhu1/truthmark">GitHub</a> · <a href="https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md">User guide</a></div>
-  </footer>
+  <footer class="shell footer"><div>Truthmark keeps current repository truth reviewable where code review already happens.</div><div><a href="https://github.com/merlinhu1/truthmark">GitHub</a> · <a href="https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md">User guide</a></div></footer>
 
   <script>
     const tabs = Array.from(document.querySelectorAll('[role="tab"]'));

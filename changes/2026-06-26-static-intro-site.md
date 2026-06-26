@@ -4,15 +4,16 @@ Version action: none
 
 ## PR Summary
 
-- Add a static introduction website under `site/` for GitHub Pages, using the existing Truthmark artwork as brand reference rather than stacked poster content.
-- Add a tabbed truth-doc curation demo that shows creation, lane separation, and later ownership restructuring over time.
-- Add product-positioning sections for no-service day-to-day operation, continuous truth curation, lane-separated truth, host-native instructions, repository-file authority, and Git-reviewable changes.
+- Add a static introduction website under `site/` for GitHub Pages with original CSS-only visual design rather than copied README poster artwork.
+- Add a richer tabbed truth-doc storyboard that shows a new invariant, product-promise pressure, ownership splitting, and the final reviewer packet.
+- Add product-positioning sections for checkout-native operation, claim-level review, explicit route ownership, topology repair, repository-file authority, host-shaped agent guidance, and Git-reviewable handoff.
+- Remove copied poster assets from the site branch; the public page no longer depends on README banner images.
 - Add a Pages deployment workflow that publishes `site/**` after relevant pushes to `main` or manual dispatch.
 - Link the site from the root README and document that the site is presentation, not canonical repository truth.
 
 ## Release Note
 
-- Truthmark now has a static GitHub Pages introduction site for concise public onboarding, including a truth-doc curation demo and branch-scoped product positioning.
+- Truthmark now has a static GitHub Pages introduction site for public onboarding, with original visual design, a truth-doc curation storyboard, and broader repository-truth positioning.
 
 ## Verification
 
