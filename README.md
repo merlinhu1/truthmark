@@ -2,6 +2,11 @@
 
 **Your agents write code. Truthmark maintains human-facing, Git-reviewable documentation.**
 
+[![npm version](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](package.json)
+
 [Website](https://merlinhu1.github.io/truthmark/) | [GitHub](https://github.com/merlinhu1/truthmark) | [User Guide](docs/user-guide.md)
 
 [🇺🇸 English](README.md) | [🇨🇳 简体中文](docs/readmes/README.zh.md) | [🇯🇵 日本語](docs/readmes/README.ja.md) | [🇰🇷 한국어](docs/readmes/README.ko.md) | [🇩🇪 Deutsch](docs/readmes/README.de.md) | [🇫🇷 Français](docs/readmes/README.fr.md) | [🇪🇸 Español](docs/readmes/README.es.md) | [🇧🇷 Português](docs/readmes/README.pt.md) | [🇷🇺 Русский](docs/readmes/README.ru.md) | [🇸🇦 العربية](docs/readmes/README.ar.md) | [🇮🇹 Italiano](docs/readmes/README.it.md) | [🇵🇱 Polski](docs/readmes/README.pl.md) | [🇹🇷 Türkçe](docs/readmes/README.tr.md) | [🇻🇳 Tiếng Việt](docs/readmes/README.vi.md) | [🇮🇩 Bahasa Indonesia](docs/readmes/README.id.md) | [🇬🇷 Ελληνικά](docs/readmes/README.el.md)
