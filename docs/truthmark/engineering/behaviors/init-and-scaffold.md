@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-21
+last_reviewed: 2026-06-26
 ---
 
 # Init And Scaffold
@@ -61,6 +61,13 @@ Those files may contain user-owned instructions alongside old Truthmark injectio
 
 Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
 
+Engineering behavior templates include a `Behavior Scenarios` section after `Core Rules`:
+
+- Scenario blocks are optional and clarify normal, fallback, or compatibility-critical behavior.
+- Scenario bullets use `GIVEN`, `WHEN`, `THEN`, and optional `AND` labels.
+- Scenario guidance frames entries as current implemented truth rather than future requirements.
+- Scenario bullets do not replace source-backed behavior claims or Source References.
+
 Global diff-friendly authoring style lives in the Truth Document workflow procedure rather than in every template preamble:
 
 - Prefer one durable claim per bullet or line.
@@ -92,8 +99,32 @@ Capability docs own:
 
 - Scaffolded paths derive from `truthmark.workspace`.
 - Template filenames match `truth_kind` values.
+- Engineering behavior templates provide optional current-state scenario blocks for normal, fallback, or compatibility-critical behavior.
 - Fresh configs do not assume any AI host platform.
 - Global prose style guidance belongs in writer-facing workflow procedures, not every truth-doc template preamble.
+
+## Behavior Scenarios
+
+#### Scenario: Fresh config does not assume a host platform
+
+- **GIVEN** a repository uses the default generated Truthmark config
+- **WHEN** `truthmark init` creates or refreshes the scaffold
+- **THEN** `platforms` remains omitted by default
+- **AND** host-specific workflow surfaces require explicit platform configuration
+
+#### Scenario: Retired Gemini surfaces are preserved for manual cleanup
+
+- **GIVEN** a repository contains retired Gemini instruction or command surfaces
+- **WHEN** `truthmark init` removes auto-removable retired generated artifacts
+- **THEN** it leaves `GEMINI.md` and `.gemini/**` in place
+- **AND** check diagnostics tell maintainers to review stale Gemini guidance manually
+
+#### Scenario: Engineering behavior templates support compact scenarios
+
+- **GIVEN** Truthmark renders the editable `engineering-behavior.md` template
+- **WHEN** maintainers create or refresh truth-doc templates
+- **THEN** the template includes an optional `Behavior Scenarios` section after `Core Rules`
+- **AND** the guidance frames scenarios as current implemented truth rather than `SHALL`-style future requirements
 
 ## Flows And States
 
@@ -121,10 +152,15 @@ Capability docs own:
 - Decision (2026-06-18): Fresh configs omit `platforms` by default.
   - Truthmark does not infer Codex, OpenCode, or any other host from a fresh checkout; host-native workflow surfaces require explicit platform configuration.
 - Decision (2026-06-21): Init does not delete retired Gemini surfaces automatically; users remove stale injected Gemini guidance manually after reviewing `GEMINI.md` and `.gemini/**`.
+- Decision (2026-06-26): Engineering behavior templates may use compact scenario blocks for behavior clarity.
+  - Scenario guidance adopts the useful requirement/scenario shape from specification formats while preserving Truthmark's current-state, evidence-backed truth-doc role.
+  - The template avoids `SHALL`-style future requirements and does not require a scenario for every rule.
 
 ## Rationale
 
 Fixed workspace-derived scaffold paths keep Truthmark predictable while route files provide the semantic ownership layer.
+
+Optional scenario blocks make normal and fallback behavior easier to review in Git without turning truth docs into future-looking requirement specs.
 
 Keeping templates kind-specific and moving global prose style into workflow guidance reduces generated-template bloat.
 
@@ -145,3 +181,4 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
 - ../../../../tests/init/init-instructions.test.ts
+- ../../../../tests/init/truth-doc-templates.test.ts
