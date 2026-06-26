@@ -16,7 +16,7 @@ It covers GitHub workflow triggers, verification steps, and generated GitHub Act
 
 ## Current Implementation Behavior
 
-Release, CI, GitHub Pages deployment, and repository-readiness automation are implemented through checked-in GitHub workflow files, repository automation configuration, and GitHub repository settings.
+Release, CI, GitHub Pages deployment, and repository-readiness automation are implemented through checked-in GitHub workflow files and GitHub repository settings.
 
 The npm publish workflow runs from `release/**` tag push events, with manual `workflow_dispatch` as an operator fallback. Tag-triggered publishing keeps the GitHub Actions OIDC signing certificate tied to a concrete `refs/tags/...` source ref for npm provenance verification.
 
@@ -30,12 +30,11 @@ OpenSSF Scorecard runs as a repository-readiness check on mainline, pull request
 
 The Scorecard workflow does not upload SARIF and does not request `security-events: write`; it publishes Scorecard results through OIDC on non-pull-request events.
 
-Dependabot checks npm dependencies and GitHub Actions weekly.
+Dependency-update monitoring is managed by existing GitHub repository configuration outside this PR's checked-in workflow changes.
 
 ## Operational Surface
 
 - GitHub Actions workflows under `.github/workflows/**`
-- Dependabot configuration at `.github/dependabot.yml`
 - static introduction site files under `site/**`
 - GitHub Action template rendering in `src/templates/github-action.ts`
 
@@ -46,8 +45,7 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 ## Configuration
 
 - GitHub workflow YAML files define CI, release, Pages deployment, and Scorecard triggers.
-- GitHub repository settings own CodeQL default setup.
-- `.github/dependabot.yml` defines dependency-update monitoring for npm and GitHub Actions.
+- GitHub repository settings own CodeQL default setup and existing dependency-update monitoring.
 - `src/templates/github-action.ts` owns generated GitHub Action template behavior.
 
 ## Permissions
@@ -81,7 +79,7 @@ The Scorecard workflow keeps workflow-level token permissions read-only and gran
 - Decision (2026-06-26): Project-readiness checks use standard GitHub-native scanners before custom readiness badges or claims.
   - CodeQL default setup covers code scanning without a checked-in advanced workflow.
   - OpenSSF Scorecard covers external repository-health/security heuristics.
-  - Dependabot covers dependency-update monitoring.
+  - Existing GitHub repository configuration covers dependency-update monitoring.
 
 ## Rationale
 
@@ -94,7 +92,7 @@ Release automation is documented as operations truth because failures, permissio
 
 ## Maintenance Notes
 
-Update when CI triggers, release prerequisites, publish steps, Pages deployment steps, readiness scans, dependency-update monitoring, or action templates change.
+Update when CI triggers, release prerequisites, publish steps, Pages deployment steps, checked-in readiness scans, or action templates change.
 
 ## Source References
 
@@ -102,9 +100,7 @@ Update when CI triggers, release prerequisites, publish steps, Pages deployment 
 - ../../../../.github/workflows/pages.yml
 - ../../../../src/templates/github-action.ts
 - ../../../../.github/workflows/scorecard.yml
-- ../../../../.github/dependabot.yml
 - ../../../../site/index.html
 - `.github/workflows/**`
-- `.github/dependabot.yml`
 - `site/**`
 - `src/templates/github-action.ts`
