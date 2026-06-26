@@ -12,14 +12,15 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  security-events: write
 
 jobs:
   scorecard:
     name: Scorecard
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -27,11 +28,6 @@ jobs:
       - name: OSSF Scorecard action
         uses: ossf/scorecard-action@v2.4.3
         with:
-          results_file: results.sarif
-          results_format: sarif
+          results_file: results.json
+          results_format: json
           publish_results: ${{ github.event_name != 'pull_request' }}
-      - name: Upload Scorecard SARIF
-        if: ${{ always() && hashFiles('results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: results.sarif

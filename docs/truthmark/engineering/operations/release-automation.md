@@ -16,15 +16,19 @@ It covers GitHub workflow triggers, verification steps, and generated GitHub Act
 
 ## Current Implementation Behavior
 
-Release, CI, GitHub Pages deployment, and repository-readiness automation are implemented through checked-in GitHub workflow files and repository automation configuration.
+Release, CI, GitHub Pages deployment, and repository-readiness automation are implemented through checked-in GitHub workflow files, repository automation configuration, and GitHub repository settings.
 
 The npm publish workflow runs from `release/**` tag push events, with manual `workflow_dispatch` as an operator fallback. Tag-triggered publishing keeps the GitHub Actions OIDC signing certificate tied to a concrete `refs/tags/...` source ref for npm provenance verification.
 
 The GitHub Pages workflow deploys the committed static introduction site from `site/**` after pushes to `main` that change the site or Pages workflow.
 
-CodeQL scans TypeScript/JavaScript sources on pushes to `main`, pull requests, scheduled runs, and manual dispatch.
+CodeQL is handled by GitHub's default setup for this repository.
+
+Checked-in advanced CodeQL workflow configuration is intentionally absent while default setup is enabled.
 
 OpenSSF Scorecard runs as a repository-readiness check on mainline, pull request, scheduled, manual, and branch-protection-rule events.
+
+The Scorecard workflow does not upload SARIF and does not request `security-events: write`; it publishes Scorecard results through OIDC on non-pull-request events.
 
 Dependabot checks npm dependencies and GitHub Actions weekly.
 
@@ -41,7 +45,8 @@ Automation runs in GitHub Actions. There is no Truthmark daemon or persistent ru
 
 ## Configuration
 
-- GitHub workflow YAML files define CI, release, Pages deployment, CodeQL, and Scorecard triggers.
+- GitHub workflow YAML files define CI, release, Pages deployment, and Scorecard triggers.
+- GitHub repository settings own CodeQL default setup.
 - `.github/dependabot.yml` defines dependency-update monitoring for npm and GitHub Actions.
 - `src/templates/github-action.ts` owns generated GitHub Action template behavior.
 
@@ -51,7 +56,7 @@ Permissions are owned by the checked-in GitHub workflow and action template defi
 
 This doc does not add permissions beyond those source files.
 
-CodeQL and Scorecard workflows request `security-events: write` so their SARIF results can be uploaded to GitHub code scanning.
+The Scorecard workflow keeps workflow-level token permissions read-only and grants `id-token: write` only to the Scorecard job.
 
 ## Deployment And Rollback
 
@@ -74,7 +79,7 @@ CodeQL and Scorecard workflows request `security-events: write` so their SARIF r
 - Decision (2026-06-26): GitHub Pages deploys only the committed static introduction site under `site/**`.
   - The site is a presentation artifact; Markdown truth docs remain canonical.
 - Decision (2026-06-26): Project-readiness checks use standard GitHub-native scanners before custom readiness badges or claims.
-  - CodeQL covers code scanning.
+  - CodeQL default setup covers code scanning without a checked-in advanced workflow.
   - OpenSSF Scorecard covers external repository-health/security heuristics.
   - Dependabot covers dependency-update monitoring.
 
@@ -94,7 +99,6 @@ Update when CI triggers, release prerequisites, publish steps, Pages deployment 
 ## Source References
 
 - ../../../../.github/workflows/ci.yml
-- ../../../../.github/workflows/codeql.yml
 - ../../../../.github/workflows/pages.yml
 - ../../../../src/templates/github-action.ts
 - ../../../../.github/workflows/scorecard.yml
