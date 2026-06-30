@@ -1,0 +1,17 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - detect-broad-routes
+  - bounded-ownership-proposals
+  - lane-separation
+  - preserve-decisions-rationale
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { renderTruthRealizeCompletedReport } from "../../src/realize/report.js";
 
@@ -6,7 +7,9 @@ describe("renderTruthRealizeCompletedReport", () => {
   it("matches the README handoff-note shape", () => {
     expect(
       renderTruthRealizeCompletedReport({
-        truthDocsUsed: ["docs/truthmark/engineering/behaviors/authentication.md"],
+        truthDocsUsed: [
+          "docs/truthmark/engineering/behaviors/authentication.md",
+        ],
         codeUpdated: ["src/auth/session.ts"],
         verification: ["npm test -- auth"],
       }),

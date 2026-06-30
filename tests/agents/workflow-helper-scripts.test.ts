@@ -1,11 +1,28 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { renderTruthmarkSkillPackage } from "../../src/templates/workflow-surfaces.js";
 import { runCli } from "../helpers/run-cli.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
+
+type TestCase = readonly unknown[];
+
+const formatCaseName = (name: string, values: TestCase): string =>
+  values.reduce<string>(
+    (result, value) => result.replace(/%[sdifoOpj]/u, String(value)),
+    name,
+  );
+
+const itEach =
+  <T extends TestCase>(cases: readonly T[]) =>
+  (name: string, fn: (...values: T) => void | Promise<void>): void => {
+    for (const values of cases) {
+      it(formatCaseName(name, values), () => fn(...values));
+    }
+  };
 
 type HelperResult = {
   exitCode: number;
@@ -33,7 +50,9 @@ const parseValidationEnvelope = (stdout: string): HelperResult["json"] => {
   const validation = parsed.data?.validation;
 
   if (validation === undefined) {
-    throw new Error(`missing data.validation in helper JSON\nstdout:\n${stdout}`);
+    throw new Error(
+      `missing data.validation in helper JSON\nstdout:\n${stdout}`,
+    );
   }
 
   return validation;
@@ -41,7 +60,9 @@ const parseValidationEnvelope = (stdout: string): HelperResult["json"] => {
 
 const tempRepos: Array<Awaited<ReturnType<typeof createTempRepo>>> = [];
 
-const snapshotFiles = async (rootDir: string): Promise<Record<string, string>> => {
+const snapshotFiles = async (
+  rootDir: string,
+): Promise<Record<string, string>> => {
   const entries = await fs.readdir(rootDir, {
     recursive: true,
     withFileTypes: true,
@@ -49,7 +70,9 @@ const snapshotFiles = async (rootDir: string): Promise<Record<string, string>> =
 
   const filePaths = entries
     .filter((entry) => entry.isFile())
-    .map((entry) => path.relative(rootDir, path.join(entry.parentPath, entry.name)))
+    .map((entry) =>
+      path.relative(rootDir, path.join(entry.parentPath, entry.name)),
+    )
     .sort();
 
   return Object.fromEntries(
@@ -94,13 +117,17 @@ const runCliHelper = async ({
   };
 };
 
-const getGeneratedReportExample = (workflowId: "truthmark-document" | "truthmark-sync"): string => {
+const getGeneratedReportExample = (
+  workflowId: "truthmark-document" | "truthmark-sync",
+): string => {
   const files = renderTruthmarkSkillPackage({
     skillPath: `.agents/skills/${workflowId}/SKILL.md`,
     workflowId,
     host: "codex",
   });
-  const reportTemplate = files.find((file) => file.path.endsWith("/support/report-template.md"));
+  const reportTemplate = files.find((file) =>
+    file.path.endsWith("/support/report-template.md"),
+  );
   const match = reportTemplate?.content.match(/```md\n([\s\S]*?)\n```/u);
 
   if (match === null || match === undefined) {
@@ -110,7 +137,9 @@ const getGeneratedReportExample = (workflowId: "truthmark-document" | "truthmark
   return match[1];
 };
 
-const materializeSkillPackage = async (workflowId: "truthmark-document" | "truthmark-sync") => {
+const materializeSkillPackage = async (
+  workflowId: "truthmark-document" | "truthmark-sync",
+) => {
   const repo = await createTempRepo();
   tempRepos.push(repo);
 
@@ -125,7 +154,9 @@ const materializeSkillPackage = async (workflowId: "truthmark-document" | "truth
   return repo;
 };
 
-const syncReportWithEvidence = (evidenceChecked: string): string => `Truth Sync: completed
+const syncReportWithEvidence = (
+  evidenceChecked: string,
+): string => `Truth Sync: completed
 
 Changed code reviewed:
 - src/init/init.ts
@@ -150,7 +181,9 @@ Notes:
 - Complete.
 `;
 
-const documentReportWithEvidence = (evidenceChecked: string): string => `Truth Document: completed
+const documentReportWithEvidence = (
+  evidenceChecked: string,
+): string => `Truth Document: completed
 
 Implementation reviewed:
 - src/templates/workflow-surfaces.ts
@@ -196,7 +229,13 @@ const runWriteLease = async ({
       "lease.yml": lease,
       "changed-files.txt": changedFiles,
     },
-    args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
+    args: [
+      "validate",
+      "write-lease",
+      "lease.yml",
+      "changed-files.txt",
+      "--json",
+    ],
   });
 
 afterEach(async () => {
@@ -227,7 +266,9 @@ describe("workflow helper scripts", () => {
         const helperPolicy = files.find((file) =>
           file.path.endsWith("/support/helper-policy.md"),
         );
-        const entrypoint = files.find((file) => file.path.endsWith("/SKILL.md"));
+        const entrypoint = files.find((file) =>
+          file.path.endsWith("/SKILL.md"),
+        );
 
         expect(manifest).toBeUndefined();
         expect(helperPolicy).toBeUndefined();
@@ -239,7 +280,10 @@ describe("workflow helper scripts", () => {
 
   it("keeps report validators available without generated helper manifests", async () => {
     const repo = await materializeSkillPackage("truthmark-sync");
-    const skillDirectory = path.join(repo.rootDir, ".agents/skills/truthmark-sync");
+    const skillDirectory = path.join(
+      repo.rootDir,
+      ".agents/skills/truthmark-sync",
+    );
 
     await expect(
       fs.access(path.join(skillDirectory, "helper-manifest.yml")),
@@ -254,9 +298,12 @@ describe("workflow helper scripts", () => {
       "utf8",
     );
 
-    const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
-      cwd: skillDirectory,
-    });
+    const result = await runCli(
+      ["validate", "sync-report", "report.md", "--json"],
+      {
+        cwd: skillDirectory,
+      },
+    );
 
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout)).toMatchObject({
@@ -315,14 +362,18 @@ Notes:
   });
 
   it("accepts Truth Sync helper status bullets with flexible whitespace", async () => {
-    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+    const report =
+      syncReportWithEvidence(`- Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
   Result: supported`)
-      .replace("- validate-sync-report: ran, passed", "-   validate-sync-report: ran, passed")
-      .replace(
-        "- validate-write-lease: skipped, no write lease used",
-        "-\tvalidate-write-lease: skipped, no write lease used",
-      );
+        .replace(
+          "- validate-sync-report: ran, passed",
+          "-   validate-sync-report: ran, passed",
+        )
+        .replace(
+          "- validate-write-lease: skipped, no write lease used",
+          "-\tvalidate-write-lease: skipped, no write lease used",
+        );
     const result = await runSyncReport(report);
 
     expect(result.exitCode).toBe(0);
@@ -374,16 +425,19 @@ Notes:
     expect(result.json.ok).toBe(true);
   });
 
-  it.each([
+  itEach([
     ["blocked", "Reason"],
     ["skipped", "Reason"],
-  ])("rejects a Truth Sync %s report with no required body", async (status, expectedError) => {
-    const result = await runSyncReport(`Truth Sync: ${status}\n`);
+  ])(
+    "rejects a Truth Sync %s report with no required body",
+    async (status, expectedError) => {
+      const result = await runSyncReport(`Truth Sync: ${status}\n`);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain(expectedError);
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain(expectedError);
+    },
+  );
 
   it("rejects a blocked Truth Sync report missing manual-review files", async () => {
     const result = await runSyncReport(`Truth Sync: blocked
@@ -397,18 +451,24 @@ Next action:
 
     expect(result.exitCode).toBe(1);
     expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("Files requiring manual review");
+    expect(result.json.errors?.join("\n")).toContain(
+      "Files requiring manual review",
+    );
   });
 
-  it.each([
+  itEach([
     ["Changed code reviewed"],
     ["Ownership reviewed"],
     ["Truth docs updated"],
     ["Notes"],
   ])("rejects a completed Truth Sync report with empty %s", async (label) => {
-    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+    const report =
+      syncReportWithEvidence(`- Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
-  Result: supported`).replace(new RegExp(`${label}:\\n- [^\\n]+`, "u"), `${label}:`);
+  Result: supported`).replace(
+        new RegExp(`${label}:\\n- [^\\n]+`, "u"),
+        `${label}:`,
+      );
     const result = await runSyncReport(report);
 
     expect(result.exitCode).toBe(1);
@@ -479,7 +539,7 @@ Notes:
     expect(result.json.errors?.join("\n")).toContain("Evidence checked");
   });
 
-  it.each([
+  itEach([
     ["empty Evidence checked", ""],
     [
       "missing Result",
@@ -498,31 +558,37 @@ Notes:
 Evidence: src/init/init.ts
   Result: supported`,
     ],
-  ])("rejects a completed Truth Sync report with %s", async (_name, evidenceChecked) => {
-    const result = await runSyncReport(syncReportWithEvidence(evidenceChecked));
+  ])(
+    "rejects a completed Truth Sync report with %s",
+    async (_name, evidenceChecked) => {
+      const result = await runSyncReport(
+        syncReportWithEvidence(evidenceChecked),
+      );
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("Evidence checked");
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain("Evidence checked");
+    },
+  );
 
-  it.each([
-    ["validate-sync-report"],
-    ["validate-write-lease"],
-  ])("rejects a completed Truth Sync report when %s ran and failed", async (helperId) => {
-    const report = syncReportWithEvidence(`- Claim: Init writes generated workflow files.
+  itEach([["validate-sync-report"], ["validate-write-lease"]])(
+    "rejects a completed Truth Sync report when %s ran and failed",
+    async (helperId) => {
+      const report =
+        syncReportWithEvidence(`- Claim: Init writes generated workflow files.
   Evidence: src/init/init.ts
   Result: supported`).replace(
-      `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
-      `- ${helperId}: ran, failed`,
-    );
+          `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
+          `- ${helperId}: ran, failed`,
+        );
 
-    const result = await runSyncReport(report);
+      const result = await runSyncReport(report);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("ran, failed");
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain("ran, failed");
+    },
+  );
 
   it("accepts a valid completed Truth Document report", async () => {
     const result = await runCliHelper({
@@ -608,21 +674,27 @@ Notes:
     expect(result.json.errors?.join("\n")).toContain("Reason");
   });
 
-  it.each([
+  itEach([
     ["Implementation reviewed"],
     ["Ownership reviewed"],
     ["Truth docs created"],
     ["Notes"],
-  ])("rejects a completed Truth Document report with empty %s", async (label) => {
-    const report = documentReportWithEvidence(`- Claim: Helpers are optional.
+  ])(
+    "rejects a completed Truth Document report with empty %s",
+    async (label) => {
+      const report = documentReportWithEvidence(`- Claim: Helpers are optional.
   Evidence: src/agents/workflow-manifest.ts
-  Result: supported`).replace(new RegExp(`${label}:\\n- [^\\n]+`, "u"), `${label}:`);
-    const result = await runDocumentReport(report);
+  Result: supported`).replace(
+        new RegExp(`${label}:\\n- [^\\n]+`, "u"),
+        `${label}:`,
+      );
+      const result = await runDocumentReport(report);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain(label);
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain(label);
+    },
+  );
 
   it("rejects a completed Truth Document report with malformed Evidence checked entries", async () => {
     const result = await runCliHelper({
@@ -653,7 +725,7 @@ Notes:
     expect(result.json.errors?.join("\n")).toContain("Evidence checked");
   });
 
-  it.each([
+  itEach([
     ["empty Evidence checked", ""],
     [
       "labels outside Evidence checked",
@@ -681,33 +753,38 @@ Notes:
 Evidence: src/agents/workflow-manifest.ts
   Result: supported`,
     ],
-  ])("rejects a completed Truth Document report with %s", async (_name, evidenceChecked) => {
-    const result = await runDocumentReport(documentReportWithEvidence(evidenceChecked));
+  ])(
+    "rejects a completed Truth Document report with %s",
+    async (_name, evidenceChecked) => {
+      const result = await runDocumentReport(
+        documentReportWithEvidence(evidenceChecked),
+      );
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("Evidence checked");
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain("Evidence checked");
+    },
+  );
 
-  it.each([
-    ["validate-document-report"],
-    ["validate-write-lease"],
-  ])("rejects a completed Truth Document report when %s ran and failed", async (helperId) => {
-    const report = documentReportWithEvidence(`- Claim: Helpers are optional.
+  itEach([["validate-document-report"], ["validate-write-lease"]])(
+    "rejects a completed Truth Document report when %s ran and failed",
+    async (helperId) => {
+      const report = documentReportWithEvidence(`- Claim: Helpers are optional.
   Evidence: src/agents/workflow-manifest.ts
   Result: supported`).replace(
-      `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
-      `- ${helperId}: ran, failed`,
-    );
+        `- ${helperId}: ${helperId === "validate-write-lease" ? "skipped, no write lease used" : "ran, passed"}`,
+        `- ${helperId}: ran, failed`,
+      );
 
-    const result = await runDocumentReport(report);
+      const result = await runDocumentReport(report);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("ran, failed");
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.json.ok).toBe(false);
+      expect(result.json.errors?.join("\n")).toContain("ran, failed");
+    },
+  );
 
-  it.each([
+  itEach([
     [
       "block list",
       `allowedWrites:
@@ -716,7 +793,10 @@ forbiddenWrites:
   - src/**
 `,
     ],
-    ["flow list", "allowedWrites: [docs/truthmark/truth/**]\nforbiddenWrites: []\n"],
+    [
+      "flow list",
+      "allowedWrites: [docs/truthmark/truth/**]\nforbiddenWrites: []\n",
+    ],
     [
       "quoted paths and comments",
       `# parent-issued lease
@@ -749,7 +829,7 @@ filesChanged:
     expect(result.json.ok).toBe(true);
   });
 
-  it.each([
+  itEach([
     [
       "invalid YAML",
       `allowedWrites:
@@ -802,7 +882,13 @@ forbiddenWrites:
 `,
         "changed-files.txt": "src/init/init.ts\n",
       },
-      args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
+      args: [
+        "validate",
+        "write-lease",
+        "lease.yml",
+        "changed-files.txt",
+        "--json",
+      ],
     });
 
     expect(result.exitCode).toBe(1);
@@ -810,10 +896,22 @@ forbiddenWrites:
     expect(result.json.errors?.join("\n")).toContain("outside allowedWrites");
   });
 
-  it.each([
-    ["parent-directory changed file", "../outside.md", "invalid changed file path"],
-    ["absolute changed file", "/docs/truthmark/truth/workflows/overview.md", "invalid changed file path"],
-    ["normalized-outside changed file", "docs/truthmark/truth/../../src/init.ts", "invalid changed file path"],
+  itEach([
+    [
+      "parent-directory changed file",
+      "../outside.md",
+      "invalid changed file path",
+    ],
+    [
+      "absolute changed file",
+      "/docs/truthmark/truth/workflows/overview.md",
+      "invalid changed file path",
+    ],
+    [
+      "normalized-outside changed file",
+      "docs/truthmark/truth/../../src/init.ts",
+      "invalid changed file path",
+    ],
   ])("rejects write-lease %s", async (_name, changedFiles, expectedError) => {
     const result = await runWriteLease({
       lease: `allowedWrites:
@@ -829,7 +927,7 @@ forbiddenWrites:
     expect(result.json.errors?.join("\n")).toContain(expectedError);
   });
 
-  it.each([
+  itEach([
     ["parent-directory allowedWrites", "../docs/truthmark/truth/**"],
     ["absolute allowedWrites", "/docs/truthmark/truth/**"],
     ["normalized-outside allowedWrites", "docs/truthmark/truth/../../src/**"],
@@ -844,7 +942,9 @@ forbiddenWrites: []
 
     expect(result.exitCode).toBe(1);
     expect(result.json.ok).toBe(false);
-    expect(result.json.errors?.join("\n")).toContain("invalid allowedWrites path");
+    expect(result.json.errors?.join("\n")).toContain(
+      "invalid allowedWrites path",
+    );
   });
 
   it("rejects unsupported write-lease glob patterns with manual-validation guidance", async () => {
@@ -856,7 +956,13 @@ forbiddenWrites: []
 `,
         "changed-files.txt": "docs/truthmark/truth/workflows/overview.md\n",
       },
-      args: ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],
+      args: [
+        "validate",
+        "write-lease",
+        "lease.yml",
+        "changed-files.txt",
+        "--json",
+      ],
     });
 
     expect(result.exitCode).toBe(1);

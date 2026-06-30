@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { parseAreasMarkdown } from "../../src/routing/areas.js";
 

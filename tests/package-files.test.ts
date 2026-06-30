@@ -1,8 +1,9 @@
 import path from "node:path";
+import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { expect } from "expect";
 import { execa } from "execa";
-import { describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

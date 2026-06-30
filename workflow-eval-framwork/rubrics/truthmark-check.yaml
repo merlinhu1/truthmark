@@ -1,0 +1,17 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - read-only-audit
+  - evidence-backed-findings
+  - correct-next-workflow
+  - no-silent-rewrites
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

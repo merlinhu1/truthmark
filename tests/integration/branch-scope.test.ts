@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runCheck } from "../../src/checks/check.js";
 import { runConfig } from "../../src/config/command.js";
@@ -99,16 +100,26 @@ describe("branch-scoped truth integration", () => {
 
       const primaryResult = await runCheck(repo.rootDir);
       const secondaryResult = await runCheck(secondary.rootDir);
-      const primaryHash = (primaryResult.data?.branchScope as { relevantFileHashes: Record<string, string> })
-        .relevantFileHashes["docs/truthmark/routes/areas.md"];
-      const secondaryHash = (secondaryResult.data?.branchScope as { relevantFileHashes: Record<string, string> })
-        .relevantFileHashes["docs/truthmark/routes/areas.md"];
+      const primaryHash = (
+        primaryResult.data?.branchScope as {
+          relevantFileHashes: Record<string, string>;
+        }
+      ).relevantFileHashes["docs/truthmark/routes/areas.md"];
+      const secondaryHash = (
+        secondaryResult.data?.branchScope as {
+          relevantFileHashes: Record<string, string>;
+        }
+      ).relevantFileHashes["docs/truthmark/routes/areas.md"];
 
       expect(primaryHash).toBeTruthy();
       expect(secondaryHash).toBeTruthy();
       expect(primaryHash).not.toBe(secondaryHash);
-      expect(await repo.readFile("docs/truthmark/routes/areas.md")).not.toContain("Feature Branch Notes");
-      expect(await secondary.readFile("docs/truthmark/routes/areas.md")).toContain("Feature Branch Notes");
+      expect(
+        await repo.readFile("docs/truthmark/routes/areas.md"),
+      ).not.toContain("Feature Branch Notes");
+      expect(
+        await secondary.readFile("docs/truthmark/routes/areas.md"),
+      ).toContain("Feature Branch Notes");
     } finally {
       await repo.cleanup();
     }

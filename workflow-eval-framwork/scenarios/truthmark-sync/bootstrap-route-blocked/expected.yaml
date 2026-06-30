@@ -1,0 +1,29 @@
+must_read:
+  - .truthmark/config.yml
+  - docs/truthmark/routes/areas.md
+  - docs/truthmark/routes/areas/fixture.md
+
+must_change:
+  []
+
+must_not_change:
+  - docs/truthmark/engineering/bootstrap-routing.md
+  - src/**
+  - tests/**
+
+must_run_or_explain:
+  - npx tsx src/cli/main.ts check --json
+
+report:
+  required: true
+  validator: none
+
+assertions:
+
+  - id: bootstrap-handoff
+    kind: outcome
+    pass: agent blocks write-capable Sync and recommends bounded Truth Structure repair
+
+  - id: no-functional-write
+    kind: diff
+    pass: agent does not change source or tests

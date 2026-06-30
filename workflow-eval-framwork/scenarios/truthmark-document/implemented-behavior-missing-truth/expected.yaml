@@ -1,0 +1,28 @@
+must_read:
+  - .truthmark/config.yml
+  - docs/truthmark/routes/areas.md
+  - src/cache.ts
+  - docs/truthmark/engineering/contracts/widget-api.md
+
+must_change:
+  - docs/truthmark/engineering/behaviors/widget-cache.md
+
+must_not_change:
+  - src/**
+  - tests/**
+  - docs/truthmark/product/**
+  - docs/truthmark/engineering/contracts/**
+  - docs/truthmark/engineering/operations/**
+
+must_run_or_explain:
+  - npx tsx src/cli/main.ts check --json
+
+report:
+  required: true
+  validator: none
+
+assertions:
+
+  - id: document-current-behavior
+    kind: outcome
+    pass: the missing behavior truth is created from source evidence without code edits

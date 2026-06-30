@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runCheck } from "../../src/checks/check.js";
 import { runConfig } from "../../src/config/command.js";
@@ -51,7 +52,9 @@ describe("freshness diagnostics", () => {
         category: "freshness",
         severity: "review",
         file: "src/index.ts",
-        message: expect.stringContaining("affected truth docs but none were changed"),
+        message: expect.stringContaining(
+          "affected truth docs but none were changed",
+        ),
       }),
     );
   });

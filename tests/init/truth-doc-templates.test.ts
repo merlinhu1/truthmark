@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { renderBehaviorDocTemplateFile } from "../../src/templates/init-files.js";
 
@@ -32,11 +33,11 @@ describe("truth doc templates", () => {
     for (const path of behaviorTruthDocs) {
       const doc = await fs.readFile(path, "utf8");
 
-      expect(doc, path).toContain("truth_kind: engineering-behavior");
-      expect(doc, path).toContain("## Behavior Scenarios");
-      expect(doc, path).toContain("- **GIVEN**");
-      expect(doc, path).toContain("- **WHEN**");
-      expect(doc, path).toContain("- **THEN**");
+      expect(doc).toContain("truth_kind: engineering-behavior");
+      expect(doc).toContain("## Behavior Scenarios");
+      expect(doc).toContain("- **GIVEN**");
+      expect(doc).toContain("- **WHEN**");
+      expect(doc).toContain("- **THEN**");
     }
   });
 });

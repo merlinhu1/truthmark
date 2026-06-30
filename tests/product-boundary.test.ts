@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 describe("Truthmark product boundary", () => {
   it("keeps spec/proposal lifecycle and workflow-engine drift out of scope", () => {

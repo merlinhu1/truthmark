@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import {
   TRUTH_CHECK_EXPLICIT_INVOCATIONS,
@@ -32,7 +33,9 @@ describe("renderTruthCheckSkillBody", () => {
   it("renders the agent-led truth audit workflow", () => {
     const skill = renderTruthCheckSkillBody();
 
-    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain("Cursor /truthmark-check");
+    expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain(
+      "Cursor /truthmark-check",
+    );
     expect(skill).toContain("name: truthmark-check");
     expect(skill).toContain(
       "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
@@ -98,7 +101,9 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckSkill()).toContain(
       "Parent agent owns the final Truth Check report",
     );
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain("Codex subagent mode:");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+      "Codex subagent mode:",
+    );
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
       "Claude Code subagent mode:",
     );
@@ -111,8 +116,12 @@ describe("Truth Check generated surfaces", () => {
     expect(renderTruthmarkCheckClaudeSkill()).toContain(
       "truth-doc-reviewer subagent",
     );
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain("OpenCode /skill truthmark-check");
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain("Cursor @truthmark-check");
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+      "OpenCode /skill truthmark-check",
+    );
+    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+      "Cursor @truthmark-check",
+    );
     expect(renderTruthmarkCheckSkillMetadata()).toContain(
       'display_name: "Truthmark Check"',
     );
@@ -162,7 +171,9 @@ describe("Truth Check generated surfaces", () => {
     const docReviewer = renderTruthmarkClaudeDocReviewerAgent();
     expect(routeAuditor).toContain("name: truth-route-auditor");
     expect(routeAuditor).toContain("tools: Read, Grep, Glob, LS");
-    expect(routeAuditor).toContain("Manual invocation: use the truth-route-auditor subagent");
+    expect(routeAuditor).toContain(
+      "Manual invocation: use the truth-route-auditor subagent",
+    );
     expect(routeAuditor).toContain(readOnlyContextBoundary);
     expect(routeAuditor).toContain("Do not edit files");
     expect(routeAuditor).toContain("Return JSON only");
@@ -231,7 +242,8 @@ describe("Truth Check generated surfaces", () => {
     customConfig.truthmark.paths.engineeringTruthRoot = "product/engineering";
     customConfig.truthmark.paths.routesIndex = "product/routes/index.md";
     customConfig.truthmark.paths.routeAreasRoot = "product/routes/areas";
-    const customOpenCodeWriter = renderTruthmarkOpenCodeDocWriterAgent(customConfig);
+    const customOpenCodeWriter =
+      renderTruthmarkOpenCodeDocWriterAgent(customConfig);
 
     expect(codexWriter).toContain('name = "truth_doc_writer"');
     expect(codexWriter).toContain('sandbox_mode = "workspace-write"');
@@ -243,15 +255,17 @@ describe("Truth Check generated surfaces", () => {
     expect(openCodeWriter).toContain('"docs/truthmark/routes/areas.md": allow');
     expect(openCodeWriter).toContain("@truth-doc-writer");
     expect(customOpenCodeWriter).toContain('"product/engineering/**": allow');
-    expect(customOpenCodeWriter).toContain(
-      '"product/routes/index.md": allow',
-    );
+    expect(customOpenCodeWriter).toContain('"product/routes/index.md": allow');
     expect(customOpenCodeWriter).toContain(
       '"product/routes/areas/**/*.md": allow',
     );
-    expect(customOpenCodeWriter).not.toContain('"docs/truthmark/engineering/**": allow');
+    expect(customOpenCodeWriter).not.toContain(
+      '"docs/truthmark/engineering/**": allow',
+    );
     expect(claudeWriter).toContain("name: truth-doc-writer");
-    expect(claudeWriter).toContain("tools: Read, Grep, Glob, LS, Edit, MultiEdit");
+    expect(claudeWriter).toContain(
+      "tools: Read, Grep, Glob, LS, Edit, MultiEdit",
+    );
     expect(copilotWriter).toContain("name: truth-doc-writer");
     expect(copilotWriter).toContain("tools: [read, search, edit]");
     expect(copilotWriter).toContain("offLeaseChanges");

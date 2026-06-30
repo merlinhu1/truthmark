@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import {
   parseTruthSyncReport,
@@ -15,10 +16,13 @@ describe("Truth Sync reporting", () => {
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      truthDocsUpdated: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
       evidenceChecked: [
         {
-          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          claim:
+            "Session timeout behavior is documented in the authentication truth doc.",
           evidence: [
             "src/auth/session.ts:12",
             "docs/truthmark/routes/areas/repository.md:18",
@@ -54,11 +58,14 @@ Notes:
       status: "completed",
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      truthDocsUpdated: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
       decisionRationaleCaptured: ["none provided in task conversation"],
       evidenceChecked: [
         {
-          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          claim:
+            "Session timeout behavior is documented in the authentication truth doc.",
           evidence: [
             "src/auth/session.ts:12",
             "docs/truthmark/routes/areas/repository.md:18",
@@ -74,7 +81,9 @@ Notes:
     const syncIntent = {
       changedCodeReviewed: ["src/auth/session.ts"],
       affectedRouteOrTruthOwner: ["docs/truthmark/routes/areas/repository.md"],
-      targetTruthDocs: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      targetTruthDocs: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
       intendedUpdate: ["Update documented session timeout behavior."],
       evidenceToVerify: ["src/auth/session.ts:12"],
       userProvidedDecisionRationale: [
@@ -88,10 +97,13 @@ Notes:
       changedCode: ["src/auth/session.ts"],
       syncIntent,
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      truthDocsUpdated: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
       evidenceChecked: [
         {
-          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          claim:
+            "Session timeout behavior is documented in the authentication truth doc.",
           evidence: ["src/auth/session.ts:12"],
           result: "supported",
         },
@@ -119,7 +131,9 @@ Notes:
         "Placed user rationale in docs/truthmark/engineering/behaviors/authentication.md under Engineering Decisions and Rationale.",
       ],
       changedCode: ["src/auth/session.ts"],
-      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      truthDocsUpdated: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
     });
   });
 
@@ -155,10 +169,13 @@ Notes:
     const report = renderTruthSyncCompletedReport({
       changedCode: ["src/auth/session.ts"],
       ownershipReviewed: ["docs/truthmark/routes/areas/repository.md"],
-      truthDocsUpdated: ["docs/truthmark/engineering/behaviors/authentication.md"],
+      truthDocsUpdated: [
+        "docs/truthmark/engineering/behaviors/authentication.md",
+      ],
       evidenceChecked: [
         {
-          claim: "Session timeout behavior is documented in the authentication truth doc.",
+          claim:
+            "Session timeout behavior is documented in the authentication truth doc.",
           evidence: ["src/auth/session.ts:12"],
           result: "supported",
         },
@@ -191,7 +208,9 @@ Reason:
     expect(
       renderTruthSyncBlockedReport({
         reason: "relevant tests failed before sync",
-        manualReviewFiles: ["docs/truthmark/engineering/behaviors/authentication.md"],
+        manualReviewFiles: [
+          "docs/truthmark/engineering/behaviors/authentication.md",
+        ],
         nextAction: "fix the failing tests, then rerun Truth Sync",
       }),
     ).toBe(`Truth Sync: blocked

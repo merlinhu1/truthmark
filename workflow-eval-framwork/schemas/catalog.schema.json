@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "required": ["version", "manual_only", "workflows"],
+  "additionalProperties": true,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "manual_only": { "const": true },
+    "last_reviewed": { "type": ["string", "null"] },
+    "workflows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "priority", "rubric", "scenarios"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string", "pattern": "^truthmark-[a-z-]+$" },
+          "priority": { "enum": ["critical", "high", "medium", "low"] },
+          "manual_only": { "const": true },
+          "surface_paths": { "type": "array", "items": { "type": "string" } },
+          "rubric": { "type": "string", "pattern": "^workflow-eval-framwork/rubrics/.+\\.yaml$" },
+          "scenarios": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^workflow-eval-framwork/scenarios/.+/scenario\\.yaml$" }
+          }
+        }
+      }
+    },
+    "runners": { "type": "object" },
+    "budgets": { "type": "object" }
+  }
+}

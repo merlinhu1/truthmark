@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-26
+last_reviewed: 2026-06-29
 ---
 
 # Installed Workflow Runtime
@@ -151,6 +151,25 @@ Optional CLI repository-intelligence helpers are compact advisory cards:
 - `impact` exposes branch-diff routing data.
 - Neither helper emits source-file or truth-doc body contents.
 
+- The repository includes a maintainer-only workflow evaluation framework under `workflow-eval-framwork/`; it is not part of the published npm package and normal Truthmark users do not need it:
+
+- It tests agent behavior for installed workflow skills and prompts using cataloged scenarios, rubrics, realistic multi-file development fixtures, fake agents, deterministic grading, required manual LLM judge commands, and human review.
+- Scenarios include source files, tests, route ownership, product truth, engineering behavior truth, API contract truth, and operations truth so workflow agents must choose the correct lane and bounded owner instead of solving a one-file toy case.
+- A catalog run executes registered scenarios across Truth Sync, Truth Document, Truth Realize, Truth Check, and Truth Structure, then persists only `final-report.md` and `audit.json` for the full suite.
+- Per-scenario command output, patches, reports, and judge scratch files are temporary in catalog mode and are discarded after aggregation.
+- Scenario setup patches are applied after the fixture baseline commit so agents evaluate real pre-existing diffs.
+- Deterministic expectations are prompt-visible or semantically forced by the workflow; exact command requirements and required file targets are not hidden arbitrary grader traps.
+- Catalog runs without judge results are `not_evaluable`; deterministic-only output is only a harness smoke test.
+- Judge failures produce failed runs; `not_evaluable` is reserved for missing or malformed judge output.
+- Explicit `--agent-model` and `--judge-model` labels are preserved in `audit.json`, `final-report.md`, and wrapper environment variables for reproducible model comparisons.
+- The runner exports `TRUTHMARK_EVAL_AGENT_USAGE` and `TRUTHMARK_EVAL_JUDGE_USAGE` sidecar paths so wrappers can report provider token usage without coupling the runner to one provider event format.
+- Scenario results, suite `audit.json`, and `final-report.md` record measured agent tokens, judge tokens, and suite totals for prompt/workflow-surface usage comparisons.
+- `--require-usage` makes missing or invalid usage sidecars non-passing for real model-comparison runs.
+- The framework does not enforce token budgets or estimate dollar cost; raw token counts are the durable telemetry signal.
+- Focused single-scenario runs require an explicit debug flag and are not sufficient for workflow-quality claims across the product surface.
+- Manual run artifacts stay ignored by default so expensive or stale eval history is not committed accidentally.
+- The framework is not part of normal `truthmark check`, `truthmark init`, generated host surfaces, package install, downstream workflow execution, or default CI agent execution.
+
 Truth Sync workflow status separates impacted primary truth docs from candidate stale truth docs and route files.
 
 This keeps stale repository-truth correction available without making every indexed doc look like the starting scope.
@@ -252,6 +271,8 @@ Update this doc when workflow manifest fields, generated surface paths, optional
 - ../../../../src/templates/workflow-surfaces.ts
 - ../../../../src/templates/generated-surfaces.ts
 - ../../../../src/checks/generated-surfaces.ts
+- ../../../../workflow-eval-framwork/catalog.yaml
+- ../../../../scripts/workflow-eval-framwork/run-agent-scenario.mjs
 - `src/agents/workflow-manifest.ts`
 - `src/templates/workflow-surfaces.ts`
 - `src/templates/generated-surfaces.ts`

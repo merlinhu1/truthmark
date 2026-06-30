@@ -1,0 +1,18 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - truth-as-requirements
+  - code-only-writes
+  - stale-truth-blocking
+  - test-verification
+  - no-truth-doc-edits
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

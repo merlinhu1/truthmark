@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { resolveAreaRouting } from "../../src/routing/area-resolver.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -56,7 +57,9 @@ Update truth when:
       expect(result.areas).toEqual([
         expect.objectContaining({
           name: "Checkout",
-          truthDocuments: ["docs/truthmark/engineering/behaviors/payments-checkout.md"],
+          truthDocuments: [
+            "docs/truthmark/engineering/behaviors/payments-checkout.md",
+          ],
           sourcePath: "docs/truthmark/routes/areas/payments.md",
           parentName: "Payments",
         }),
@@ -96,7 +99,9 @@ Update truth when:
             category: "area-index",
             severity: "error",
             file: "docs/payments.md",
-            message: expect.stringContaining("must live under docs/truthmark/routes/areas"),
+            message: expect.stringContaining(
+              "must live under docs/truthmark/routes/areas",
+            ),
           }),
         ]),
       );
@@ -151,7 +156,9 @@ Update truth when:
             category: "area-index",
             severity: "error",
             file: "docs/truthmark/routes/areas/payments.md",
-            message: expect.stringContaining("Child area files must contain leaf areas only"),
+            message: expect.stringContaining(
+              "Child area files must contain leaf areas only",
+            ),
           }),
         ]),
       );
@@ -269,7 +276,9 @@ Update truth when:
             category: "area-index",
             severity: "review",
             file: "docs/truthmark/routes/areas/payments.md",
-            message: expect.stringContaining("outside parent area Payments code surface"),
+            message: expect.stringContaining(
+              "outside parent area Payments code surface",
+            ),
           }),
         ]),
       );
@@ -323,7 +332,9 @@ Update truth when:
             category: "area-index",
             severity: "review",
             file: "docs/truthmark/routes/areas/apps.md",
-            message: expect.stringContaining("outside parent area Apps code surface"),
+            message: expect.stringContaining(
+              "outside parent area Apps code surface",
+            ),
           }),
         ]),
       );

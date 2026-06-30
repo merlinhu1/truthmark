@@ -1,0 +1,33 @@
+must_read:
+  - .truthmark/config.yml
+  - docs/truthmark/routes/areas.md
+  - docs/truthmark/routes/areas/fixture.md
+  - docs/truthmark/engineering/contracts/widget-api.md
+
+must_change:
+  - docs/truthmark/routes/areas/widget-cache.md
+
+must_not_change:
+  - src/**
+  - tests/**
+  - docs/truthmark/engineering/behaviors/widget-cache.md
+  - docs/truthmark/product/**
+  - docs/truthmark/engineering/contracts/**
+  - docs/truthmark/engineering/operations/**
+
+must_run_or_explain:
+  - npx tsx src/cli/main.ts check --json
+
+report:
+  required: true
+  validator: none
+
+assertions:
+
+  - id: bounded-route-owner
+    kind: outcome
+    pass: a broad catch-all route is narrowed to bounded widget-cache ownership
+
+  - id: no-functional-write
+    kind: diff
+    pass: Truth Structure does not change functional code or truth docs

@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { getBranchScopeData } from "../../src/checks/branch-scope.js";
@@ -24,7 +25,8 @@ describe("getBranchScopeData", () => {
       expect(branchScope.relevantFileHashes).toEqual(
         expect.objectContaining({
           ".truthmark/config.yml": expect.stringMatching(/^[0-9a-f]{64}$/),
-          "docs/truthmark/routes/areas.md": expect.stringMatching(/^[0-9a-f]{64}$/),
+          "docs/truthmark/routes/areas.md":
+            expect.stringMatching(/^[0-9a-f]{64}$/),
         }),
       );
       expect(Object.keys(branchScope.relevantFileHashes).sort()).toEqual([
@@ -74,7 +76,9 @@ describe("runCheck branch scope", () => {
             headSha: string | null;
           }
         | undefined;
-      const categories = result.diagnostics.map((diagnostic) => diagnostic.category as string);
+      const categories = result.diagnostics.map(
+        (diagnostic) => diagnostic.category as string,
+      );
 
       expect(branchScope?.identity).toBe("unborn:main");
       expect(branchScope?.headSha).toBeNull();

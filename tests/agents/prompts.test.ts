@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderTruthRealizePrompt } from "../../src/agents/prompts.js";
@@ -20,7 +21,9 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).toContain(
       "implement only bounded, current truth claims from the source docs",
     );
-    expect(prompt).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
+    expect(prompt).toContain(
+      "RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context",
+    );
     expect(prompt).toContain("workflow write boundaries");
     expect(prompt).toContain(
       "read product truth under docs/truthmark/product as requirements",
@@ -37,7 +40,9 @@ describe("renderTruthRealizePrompt", () => {
     expect(prompt).not.toContain("Truth-doc restructure gate");
     expect(prompt).not.toContain("Truth-doc shape repair review");
     expect(prompt).not.toContain("restructure truth docs");
-    expect(prompt).toContain("Report changed code files and verification steps");
+    expect(prompt).toContain(
+      "Report changed code files and verification steps",
+    );
     expect(prompt).toContain("installed instruction or skill");
     expect(prompt).not.toContain("Invocations:");
     expect(prompt).not.toContain("OpenCode /skill truthmark-realize");
@@ -53,11 +58,15 @@ describe("renderTruthRealizePrompt", () => {
 
     const prompt = renderTruthRealizePrompt(config);
 
-    expect(prompt).toContain("docs/product/product/capabilities/authentication-session.md");
+    expect(prompt).toContain(
+      "docs/product/product/capabilities/authentication-session.md",
+    );
     expect(prompt).toContain(
       "read engineering truth under docs/product/engineering as implementation context",
     );
-    expect(prompt).not.toContain("docs/truthmark/product/capabilities/authentication-session.md");
+    expect(prompt).not.toContain(
+      "docs/truthmark/product/capabilities/authentication-session.md",
+    );
   });
 
   it("renders adjacent-workflow exclusions in generated skill metadata", () => {

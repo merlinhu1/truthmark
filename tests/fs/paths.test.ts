@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { ensureRepoFile, writeRepoFile } from "../../src/fs/paths.js";
 import { createTempRepo } from "../helpers/temp-repo.js";

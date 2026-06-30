@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
@@ -50,10 +51,8 @@ describe("Truthmark Portal generated surfaces", () => {
     for (const procedurePath of readOnlyProcedurePaths) {
       const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
 
-      expect(content, procedurePath).not.toContain(
-        staleWriteAuthorizingLaneText,
-      );
-      expect(content, procedurePath).toContain(
+      expect(content).not.toContain(staleWriteAuthorizingLaneText);
+      expect(content).toContain(
         "classify the request or changed surface as product-lane, engineering-lane, both-lane, or ambiguous for reporting only",
       );
     }
@@ -63,23 +62,19 @@ describe("Truthmark Portal generated surfaces", () => {
     for (const procedurePath of syncProcedurePaths) {
       const content = readFileSync(join(process.cwd(), procedurePath), "utf8");
 
-      expect(content, procedurePath).toContain("Product truth decision");
-      expect(content, procedurePath).toContain(
+      expect(content).toContain("Product truth decision");
+      expect(content).toContain(
         "ask whether a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed",
       );
-      expect(content, procedurePath).toContain(
+      expect(content).toContain(
         "if no, default to engineering truth under docs/truthmark/engineering for internal implementation changes",
       );
-      expect(content, procedurePath).toContain(
+      expect(content).toContain(
         "Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.",
       );
-      expect(content, procedurePath).toContain(
-        "User-provided decisions/rationale",
-      );
-      expect(content, procedurePath).not.toContain(
-        staleWriteAuthorizingLaneText,
-      );
-      expect(content, procedurePath).not.toContain(
+      expect(content).toContain("User-provided decisions/rationale");
+      expect(content).not.toContain(staleWriteAuthorizingLaneText);
+      expect(content).not.toContain(
         "classify lane impact as product-lane, engineering-lane, both-lane, or ambiguous before writing",
       );
     }
@@ -112,7 +107,7 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(publicWorkflowSurfaces.length).toBeGreaterThan(0);
     for (const surface of publicWorkflowSurfaces) {
       for (const text of forbiddenText) {
-        expect(surface.content, surface.path).not.toContain(text);
+        expect(surface.content).not.toContain(text);
       }
     }
   });
@@ -142,7 +137,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
     for (const surface of runtimeSurfaces) {
       for (const text of crossHostInvocationText) {
-        expect(surface.content, surface.path).not.toContain(text);
+        expect(surface.content).not.toContain(text);
       }
     }
 
@@ -150,8 +145,8 @@ describe("Truthmark Portal generated surfaces", () => {
       surface.path.endsWith("/SKILL.md"),
     );
     for (const surface of skillEntrypoints) {
-      expect(surface.content, surface.path).toContain("Progressive disclosure:");
-      expect(surface.content, surface.path).not.toContain("Read support/");
+      expect(surface.content).toContain("Progressive disclosure:");
+      expect(surface.content).not.toContain("Read support/");
     }
 
     const flatRules = runtimeSurfaces.filter(
@@ -161,16 +156,12 @@ describe("Truthmark Portal generated surfaces", () => {
     );
     expect(flatRules.length).toBeGreaterThan(0);
     for (const surface of flatRules) {
-      expect(surface.content, surface.path).not.toContain("Quick procedure:");
-      expect(surface.content, surface.path).not.toContain("support/procedure.md");
-      expect(surface.content, surface.path).not.toContain(
-        "support/report-template.md",
-      );
-      expect(surface.content, surface.path).not.toContain(
-        "support/subagents-and-leases.md",
-      );
-      expect(surface.content, surface.path).toContain("## Procedure");
-      expect(surface.content, surface.path).toContain("## Report Template");
+      expect(surface.content).not.toContain("Quick procedure:");
+      expect(surface.content).not.toContain("support/procedure.md");
+      expect(surface.content).not.toContain("support/report-template.md");
+      expect(surface.content).not.toContain("support/subagents-and-leases.md");
+      expect(surface.content).toContain("## Procedure");
+      expect(surface.content).toContain("## Report Template");
     }
   });
 
@@ -189,7 +180,9 @@ describe("Truthmark Portal generated surfaces", () => {
     const syncProcedure =
       byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
 
-    expect(syncSkill).toContain("Use this skill automatically before finishing");
+    expect(syncSkill).toContain(
+      "Use this skill automatically before finishing",
+    );
     expect(syncSkill).not.toContain("Parent workflow:");
     expect(syncSkill).toContain("support/procedure.md");
     expect(syncSkill).toContain("support/report-template.md");
@@ -200,32 +193,50 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(syncProcedure).toContain(
       "truthmark validate sync-report <report-file> --json",
     );
-    expect(byPath.has(".agents/skills/truthmark-sync/helper-manifest.yml")).toBe(false);
-    expect(byPath.has(".agents/skills/truthmark-sync/support/helper-policy.md")).toBe(false);
+    expect(
+      byPath.has(".agents/skills/truthmark-sync/helper-manifest.yml"),
+    ).toBe(false);
+    expect(
+      byPath.has(".agents/skills/truthmark-sync/support/helper-policy.md"),
+    ).toBe(false);
     expect(byPath.has(".agents/skills/truthmark-preview/SKILL.md")).toBe(false);
-    expect(byPath.has(".github/prompts/truthmark-preview.prompt.md")).toBe(false);
+    expect(byPath.has(".github/prompts/truthmark-preview.prompt.md")).toBe(
+      false,
+    );
     expect(byPath.has(".gemini/commands/truthmark/preview.toml")).toBe(false);
     expect(byPath.has("GEMINI.md")).toBe(false);
     expect(byPath.has(".gemini/skills/truthmark-sync/SKILL.md")).toBe(false);
     expect(byPath.has(".gemini/commands/truthmark/sync.toml")).toBe(false);
     expect(byPath.has(".antigravity/rules/truthmark-sync.md")).toBe(true);
     expect(byPath.has(".cursor/skills/truthmark-sync/SKILL.md")).toBe(true);
-    expect(byPath.has(".cursor/skills/truthmark-sync/support/procedure.md")).toBe(true);
-    expect(byPath.has(".cursor/skills/truthmark-sync/support/report-template.md")).toBe(true);
-    expect(byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml")).toBe(
-      false,
-    );
+    expect(
+      byPath.has(".cursor/skills/truthmark-sync/support/procedure.md"),
+    ).toBe(true);
+    expect(
+      byPath.has(".cursor/skills/truthmark-sync/support/report-template.md"),
+    ).toBe(true);
+    expect(
+      byPath.has(".agents/skills/truthmark-preview/agents/openai.yaml"),
+    ).toBe(false);
   });
 
   it("does not render unused repo-local agent package copies", () => {
     const config = createDefaultConfig();
     config.platforms = [...allPlatforms];
-    const paths = renderGeneratedSurfaces(config).map((surface) => surface.path);
+    const paths = renderGeneratedSurfaces(config).map(
+      (surface) => surface.path,
+    );
 
-    expect(paths.some((path) => path.startsWith(".truthmark/agent/"))).toBe(false);
+    expect(paths.some((path) => path.startsWith(".truthmark/agent/"))).toBe(
+      false,
+    );
     expect(paths).toContain(".agents/skills/truthmark-sync/SKILL.md");
-    expect(paths).toContain(".agents/skills/truthmark-sync/support/procedure.md");
-    expect(paths).toContain(".opencode/skills/truthmark-sync/support/procedure.md");
+    expect(paths).toContain(
+      ".agents/skills/truthmark-sync/support/procedure.md",
+    );
+    expect(paths).toContain(
+      ".opencode/skills/truthmark-sync/support/procedure.md",
+    );
   });
 
   it("renders host skill packages with colocated native resources", () => {
@@ -242,14 +253,17 @@ describe("Truthmark Portal generated surfaces", () => {
     const codexProcedure =
       byPath.get(".agents/skills/truthmark-sync/support/procedure.md") ?? "";
     const opencodeReport =
-      byPath.get(".opencode/skills/truthmark-sync/support/report-template.md") ??
-      "";
+      byPath.get(
+        ".opencode/skills/truthmark-sync/support/report-template.md",
+      ) ?? "";
 
     expect(claudeProcedure).toContain("Parent workflow:");
     expect(codexProcedure).toContain("Parent workflow:");
     expect(opencodeReport).toContain("Changed code reviewed:");
     expect(opencodeReport).toContain("Decision/rationale captured:");
-    expect(claudeProcedure).not.toContain("truthmark:adapter-mode=expanded-adapter");
+    expect(claudeProcedure).not.toContain(
+      "truthmark:adapter-mode=expanded-adapter",
+    );
   });
 
   it("does not teach Sync to update bootstrap routing as behavior truth", () => {
@@ -260,7 +274,8 @@ describe("Truthmark Portal generated surfaces", () => {
       (surface) =>
         surface.path.endsWith("truthmark-sync/support/report-template.md") ||
         surface.path === ".antigravity/rules/truthmark-sync.md" ||
-        surface.path === ".cursor/skills/truthmark-sync/support/report-template.md",
+        surface.path ===
+          ".cursor/skills/truthmark-sync/support/report-template.md",
     );
     const checkedInSyncReportPaths = [
       ".agents/skills/truthmark-sync/support/report-template.md",
@@ -271,7 +286,10 @@ describe("Truthmark Portal generated surfaces", () => {
       ".cursor/skills/truthmark-sync/support/report-template.md",
     ];
     const surfacesToCheck = [
-      { path: "renderTruthSyncSkillBody", content: renderTruthSyncSkillBody(config) },
+      {
+        path: "renderTruthSyncSkillBody",
+        content: renderTruthSyncSkillBody(config),
+      },
       ...generatedSyncReportSurfaces,
       ...checkedInSyncReportPaths.map((path) => ({
         path,
@@ -281,28 +299,28 @@ describe("Truthmark Portal generated surfaces", () => {
 
     expect(generatedSyncReportSurfaces.length).toBeGreaterThan(0);
     for (const surface of surfacesToCheck) {
-      expect(surface.content, surface.path).toContain(
+      expect(surface.content).toContain(
         "docs/truthmark/routes/areas/authentication.md",
       );
-      expect(surface.content, surface.path).toContain(
+      expect(surface.content).toContain(
         "docs/truthmark/engineering/behaviors/session-timeout.md",
       );
-      expect(surface.content, surface.path).toContain(
+      expect(surface.content).toContain(
         "Changed code maps only to the provisional bootstrap route.",
       );
-      expect(surface.content, surface.path).toContain(
+      expect(surface.content).toContain(
         "Run Truth Structure for src/auth/** before updating behavior truth.",
       );
-      expect(surface.content, surface.path).not.toContain(
+      expect(surface.content).not.toContain(
         "- Target truth docs: docs/truthmark/engineering/repository/bootstrap-routing.md",
       );
-      expect(surface.content, surface.path).not.toContain(
+      expect(surface.content).not.toContain(
         [
           "Truth docs updated:",
           "- docs/truthmark/engineering/repository/bootstrap-routing.md",
         ].join("\n"),
       );
-      expect(surface.content, surface.path).not.toContain(
+      expect(surface.content).not.toContain(
         "Session timeout behavior is documented in the mapped repository truth doc.",
       );
     }
@@ -345,7 +363,8 @@ describe("Truthmark Portal generated surfaces", () => {
       byPath.get(".github/prompts/truthmark-portal.prompt.md") ?? "";
     const antigravityRule =
       byPath.get(".antigravity/rules/truthmark-portal.md") ?? "";
-    const cursorSkill = byPath.get(".cursor/skills/truthmark-portal/SKILL.md") ?? "";
+    const cursorSkill =
+      byPath.get(".cursor/skills/truthmark-portal/SKILL.md") ?? "";
     const cursorProcedure =
       byPath.get(".cursor/skills/truthmark-portal/support/procedure.md") ?? "";
     const agentsBlock = renderAgentsBlock(config);

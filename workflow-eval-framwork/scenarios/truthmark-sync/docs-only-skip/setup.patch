@@ -1,0 +1,5 @@
+--- a/README.md
++++ b/README.md
+@@ -5,0 +6,2 @@
++
++Docs-only release note: clarify that cache tuning work shipped without a public API change.

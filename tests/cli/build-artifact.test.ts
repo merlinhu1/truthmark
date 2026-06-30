@@ -3,13 +3,16 @@ import os from "node:os";
 import { execa } from "execa";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
-const workspaceRoot = path.resolve(fileURLToPath(new URL("../../", import.meta.url)));
+const workspaceRoot = path.resolve(
+  fileURLToPath(new URL("../../", import.meta.url)),
+);
 const builtCliEntrypoint = path.resolve(
   fileURLToPath(new URL("../../dist/main.js", import.meta.url)),
 );
@@ -23,10 +26,14 @@ describe("built truthmark CLI", () => {
 
     expect(buildResult.exitCode).toBe(0);
 
-    const result = await execa(process.execPath, [builtCliEntrypoint, "--help"], {
-      cwd: workspaceRoot,
-      reject: false,
-    });
+    const result = await execa(
+      process.execPath,
+      [builtCliEntrypoint, "--help"],
+      {
+        cwd: workspaceRoot,
+        reject: false,
+      },
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: truthmark");
@@ -46,10 +53,14 @@ describe("built truthmark CLI", () => {
     await fs.symlink(builtCliEntrypoint, linkedCliEntrypoint);
 
     try {
-      const result = await execa(process.execPath, [linkedCliEntrypoint, "--help"], {
-        cwd: workspaceRoot,
-        reject: false,
-      });
+      const result = await execa(
+        process.execPath,
+        [linkedCliEntrypoint, "--help"],
+        {
+          cwd: workspaceRoot,
+          reject: false,
+        },
+      );
 
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain("Usage: truthmark");
@@ -66,10 +77,14 @@ describe("built truthmark CLI", () => {
 
     expect(buildResult.exitCode).toBe(0);
 
-    const result = await execa(process.execPath, [builtCliEntrypoint, "check", "--help"], {
-      cwd: workspaceRoot,
-      reject: false,
-    });
+    const result = await execa(
+      process.execPath,
+      [builtCliEntrypoint, "check", "--help"],
+      {
+        cwd: workspaceRoot,
+        reject: false,
+      },
+    );
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).not.toContain("--workflow");
@@ -121,7 +136,14 @@ describe("built truthmark CLI", () => {
       await runInit(repo.rootDir);
       const result = await execa(
         process.execPath,
-        [builtCliEntrypoint, "workflow", "status", "--workflow", "truthmark-check", "--json"],
+        [
+          builtCliEntrypoint,
+          "workflow",
+          "status",
+          "--workflow",
+          "truthmark-check",
+          "--json",
+        ],
         {
           cwd: repo.rootDir,
           reject: false,
@@ -134,11 +156,12 @@ describe("built truthmark CLI", () => {
 
       expect(result.exitCode).toBe(0);
       expect(output.command).toBe("workflow status");
-      expect(output.data.workflowState.schemaVersion).toBe("truthmark-workflow/v0");
+      expect(output.data.workflowState.schemaVersion).toBe(
+        "truthmark-workflow/v0",
+      );
       expect(output.data.workflowState.workflow).toBe("truthmark-check");
     } finally {
       await repo.cleanup();
     }
   });
-
 });

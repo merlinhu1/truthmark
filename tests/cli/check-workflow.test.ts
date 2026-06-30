@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runCli } from "../helpers/run-cli.js";
 
@@ -11,7 +12,12 @@ describe("truthmark check workflow options", () => {
   });
 
   it("rejects old workflow helper invocations as unsupported", async () => {
-    const result = await runCli(["check", "--json", "--workflow", "truth-sync"]);
+    const result = await runCli([
+      "check",
+      "--json",
+      "--workflow",
+      "truth-sync",
+    ]);
 
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toBe("");

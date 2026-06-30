@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { buildImpactSet } from "../../src/impact/build.js";
@@ -157,7 +158,7 @@ describe("buildImpactSet", () => {
     );
     await repo.writeFile(
       "tests/repo-index/build.test.ts",
-      "import { describe, it } from 'vitest';\ndescribe('repo index package', () => { it('builds', () => undefined); });\n",
+      "import { describe, it } from 'node:test';\ndescribe('repo index package', () => { it('builds', () => undefined); });\n",
     );
     await runConfig(repo.rootDir, { force: false, stdout: false });
     await runInit(repo.rootDir);

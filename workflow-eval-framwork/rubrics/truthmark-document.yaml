@@ -1,0 +1,18 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - document-existing-behavior
+  - no-functional-code-writes
+  - bounded-canonical-doc
+  - route-only-when-needed
+  - preserve-decisions-rationale
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

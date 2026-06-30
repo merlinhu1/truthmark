@@ -1,0 +1,18 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - fixture-setup
+  - forbidden-writes
+  - missing-report
+  - invalid-report
+  - failed-required-validator
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

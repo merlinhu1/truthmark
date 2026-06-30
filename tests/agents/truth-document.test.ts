@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
@@ -37,7 +38,9 @@ describe("renderTruthDocumentSkillBody", () => {
   it("renders the manual existing-implementation documentation workflow", () => {
     const skill = renderTruthDocumentSkillBody();
 
-    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain("Cursor /truthmark-document");
+    expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain(
+      "Cursor /truthmark-document",
+    );
     expect(skill).toContain("name: truthmark-document");
     expect(skill).toContain("manual and implementation-first");
     expect(skill).toContain("existing implemented behavior");
@@ -47,15 +50,23 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain("When creating or updating a truth doc");
     expect(skill).toContain("Truth-doc prose style:");
     expect(skill).toContain("Use professional, plain technical prose");
-    expect(skill).toContain("Prefer specific current-state claims over promotional, symbolic, or generic significance language");
+    expect(skill).toContain(
+      "Prefer specific current-state claims over promotional, symbolic, or generic significance language",
+    );
     expect(skill).toContain("Avoid common AI-writing tells");
     expect(skill).toContain(
       "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
     );
-    expect(skill).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
-    expect(skill).toContain("without removing scope, evidence, decisions, or source references");
+    expect(skill).toContain(
+      "Do not add personality, rhetorical flourish, first-person commentary, or marketing tone",
+    );
+    expect(skill).toContain(
+      "without removing scope, evidence, decisions, or source references",
+    );
     expect(skill).not.toContain("PERSONALITY AND SOUL");
-    expect(skill).not.toContain("What makes the below so obviously AI generated?");
+    expect(skill).not.toContain(
+      "What makes the below so obviously AI generated?",
+    );
     expect(skill).toContain("HTML comments under each template section");
     expect(skill).toContain("normative authoring guidance");
     expect(skill).toContain("Truth-doc ownership review");
@@ -65,9 +76,7 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain(
       "report Ownership reviewed, Structure required, Truth docs split, Truth docs restructured, or Manual handoff reason",
     );
-    expect(skill).toContain(
-      "Decision/Rationale preservation review",
-    );
+    expect(skill).toContain("Decision/Rationale preservation review");
     expect(skill).toContain(
       "before any truth-doc split, restructure, or shape repair, inventory existing Product Decisions, Engineering Decisions, and Rationale sections",
     );
@@ -101,15 +110,17 @@ describe("renderTruthDocumentSkillBody", () => {
     expect(skill).toContain(
       "Repository instruction files and explicitly configured policy docs remain instruction authority when present; do not assume a repository uses any particular policy path.",
     );
-    expect(skill).toContain("RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context");
-    expect(skill).toContain("repository-intelligence artifacts were not generated");
+    expect(skill).toContain(
+      "RepoIndex, RouteMap, ImpactSet, and WorkflowState/action context",
+    );
+    expect(skill).toContain(
+      "repository-intelligence artifacts were not generated",
+    );
     expect(skill).toContain("Evidence checklist");
     expect(skill).toContain(
       "route-first: map the documented behavior to bounded route owners and primary canonical docs",
     );
-    expect(skill).toContain(
-      "support claims with primary checkout evidence",
-    );
+    expect(skill).toContain("support claims with primary checkout evidence");
     expect(skill).toContain(
       "remove, narrow, or record unsupported claims for manual handoff",
     );
@@ -141,14 +152,18 @@ describe("renderTruthDocumentSkillBody", () => {
     const skill = renderTruthDocumentSkillBody(config);
 
     expect(skill).toContain("docs/truthmark/engineering/contracts/routing.md");
-    expect(skill).toContain("docs/truthmark/engineering/behaviors/check-diagnostics.md");
+    expect(skill).toContain(
+      "docs/truthmark/engineering/behaviors/check-diagnostics.md",
+    );
     expect(skill).toContain("docs/routes/index.md");
   });
 });
 
 describe("Truth Document generated surfaces", () => {
   it("renders Codex metadata and OpenCode skill content", () => {
-    expect(renderTruthmarkDocumentSkill()).toContain("name: truthmark-document");
+    expect(renderTruthmarkDocumentSkill()).toContain(
+      "name: truthmark-document",
+    );
     expect(renderTruthmarkDocumentSkill()).toContain("Codex subagent mode:");
     expect(renderTruthmarkDocumentSkill()).toContain(
       "use automatically when this workflow runs in Codex",
@@ -186,8 +201,12 @@ describe("Truth Document generated surfaces", () => {
     expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("OpenCode /skill truthmark-document");
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain("Cursor /truthmark-document");
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+      "OpenCode /skill truthmark-document",
+    );
+    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+      "Cursor /truthmark-document",
+    );
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
       'display_name: "Truthmark Document"',
     );
@@ -203,13 +222,16 @@ describe("Truth Document generated surfaces", () => {
       host: "cursor",
     });
     const cursorDocumentSkill =
-      cursorDocumentPackage.find((file) => file.path.endsWith("/SKILL.md"))?.content ?? "";
+      cursorDocumentPackage.find((file) => file.path.endsWith("/SKILL.md"))
+        ?.content ?? "";
     const cursorDocumentProcedure =
-      cursorDocumentPackage.find((file) => file.path.endsWith("/support/procedure.md"))
-        ?.content ?? "";
+      cursorDocumentPackage.find((file) =>
+        file.path.endsWith("/support/procedure.md"),
+      )?.content ?? "";
     const cursorDocumentReportTemplate =
-      cursorDocumentPackage.find((file) => file.path.endsWith("/support/report-template.md"))
-        ?.content ?? "";
+      cursorDocumentPackage.find((file) =>
+        file.path.endsWith("/support/report-template.md"),
+      )?.content ?? "";
 
     expect(cursorDocumentSkill).toContain("Use as a Cursor Agent Skill.");
     expect(cursorDocumentSkill).toContain(".cursor/skills/");
@@ -220,7 +242,9 @@ describe("Truth Document generated surfaces", () => {
       "This prompt is the GitHub Copilot entrypoint for Truthmark Document.",
     );
     for (const surface of [renderTruthmarkCopilotDocumentPrompt()]) {
-      expect(surface).toContain("Do not invoke another Truthmark command from here.");
+      expect(surface).toContain(
+        "Do not invoke another Truthmark command from here.",
+      );
       expect(surface).toContain(
         "If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.",
       );
@@ -234,7 +258,11 @@ describe("Truth Document generated surfaces", () => {
       "support/report-template.md",
     );
     expect(cursorDocumentProcedure).toContain("Truthmark Document Procedure");
-    expect(cursorDocumentProcedure).not.toContain("Report completion in this shape:");
-    expect(cursorDocumentReportTemplate).toContain("Report completion in this shape:");
+    expect(cursorDocumentProcedure).not.toContain(
+      "Report completion in this shape:",
+    );
+    expect(cursorDocumentReportTemplate).toContain(
+      "Report completion in this shape:",
+    );
   });
 });

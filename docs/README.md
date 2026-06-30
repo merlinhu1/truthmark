@@ -11,7 +11,7 @@ source_of_truth:
 
 ## Purpose
 
-`docs/` is Truthmark's canonical repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, and current lane-separated truth docs separate from onboarding copy and historical planning notes.
+`docs/` is Truthmark's repository documentation tree. It keeps repository-wide agent rules, reusable standards, current architecture, current lane-separated truth docs, and non-canonical research notes separate from onboarding copy.
 
 `AGENTS.md` is the agent entry point, but it delegates repository-wide rules to [docs/ai/repo-rules.md](ai/repo-rules.md). [README.md](../README.md) remains the human onboarding and product entry point. [docs/user-guide.md](user-guide.md) owns detailed human-facing command, workflow, and configuration guidance. `.truthmark/config.yml` defines the committed hierarchy contract.
 
@@ -35,6 +35,7 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 - `docs/truthmark/product/` for product capability promises, boundaries, and acceptance criteria
 - `docs/truthmark/engineering/` for current implementation behavior, architecture, contracts, workflows, and operations
 - `docs/architecture/` for repository-specific architecture guardrails
+- `docs/research/` for non-canonical research and planning notes
 - `docs/truthmark/templates/` for editable scaffold templates used to create new docs
 - `docs/truthmark/engineering/contracts/` for stable contracts the CLI exposes
 
@@ -45,16 +46,17 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 
 ## Directory Map
 
-| Path | Type | Primary audience | Purpose |
-| --- | --- | --- | --- |
-| `docs/ai/` | agent rules | agent | Repository-wide rules and fast onboarding |
-| `docs/truthmark/routes/` | routing | both | Truth-routing metadata such as `areas.md` and `areas/**/*.md` |
-| `docs/standards/` | standard | agent | Reusable constraints, verification rules, completion gates |
-| `docs/truthmark/product/` | product truth | agent | Product capability promises, boundaries, decisions, and acceptance criteria |
-| `docs/truthmark/engineering/` | engineering truth | agent | Current implementation behavior for init, check, contracts, workflows, and operations |
-| `docs/architecture/` | architecture | agent | Repository-specific architecture guardrails |
-| `docs/truthmark/templates/` | template | both | Editable templates for scaffolded docs; templates are not Truth Sync targets |
-| `docs/user-guide.md` | guide | human | Detailed usage guide kept out of the root README so onboarding stays concise |
+| Path                          | Type              | Primary audience | Purpose                                                                               |
+| ----------------------------- | ----------------- | ---------------- | ------------------------------------------------------------------------------------- |
+| `docs/ai/`                    | agent rules       | agent            | Repository-wide rules and fast onboarding                                             |
+| `docs/truthmark/routes/`      | routing           | both             | Truth-routing metadata such as `areas.md` and `areas/**/*.md`                         |
+| `docs/standards/`             | standard          | agent            | Reusable constraints, verification rules, completion gates                            |
+| `docs/truthmark/product/`     | product truth     | agent            | Product capability promises, boundaries, decisions, and acceptance criteria           |
+| `docs/truthmark/engineering/` | engineering truth | agent            | Current implementation behavior for init, check, contracts, workflows, and operations |
+| `docs/architecture/`          | architecture      | agent            | Repository-specific architecture guardrails                                           |
+| `docs/research/`              | research          | human            | Non-canonical research, comparison, and planning notes                                |
+| `docs/truthmark/templates/`   | template          | both             | Editable templates for scaffolded docs; templates are not Truth Sync targets          |
+| `docs/user-guide.md`          | guide             | human            | Detailed usage guide kept out of the root README so onboarding stays concise          |
 
 ## Frontmatter Policy
 

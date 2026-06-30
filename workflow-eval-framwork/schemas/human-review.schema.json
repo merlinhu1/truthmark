@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "required": ["status", "reviewer", "notes"],
+  "properties": {
+    "status": { "enum": ["accepted", "rejected", "needs-rerun", "not-evaluable"] },
+    "reviewer": { "type": "string" },
+    "reviewed_at": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "follow_up": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

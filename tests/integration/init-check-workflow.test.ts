@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
 import { runCli } from "../helpers/run-cli.js";

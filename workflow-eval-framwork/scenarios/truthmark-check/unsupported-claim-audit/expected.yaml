@@ -1,0 +1,27 @@
+must_read:
+  - .truthmark/config.yml
+  - src/cache.ts
+  - tests/widget-cache.test.ts
+  - docs/truthmark/engineering/behaviors/widget-cache.md
+
+must_change:
+  []
+
+must_not_change:
+  - README.md
+  - src/**
+  - tests/**
+  - docs/truthmark/**
+
+must_run_or_explain:
+  []
+
+report:
+  required: false
+  validator: none
+
+assertions:
+
+  - id: read-only-audit
+    kind: diff
+    pass: Truth Check does not edit files while auditing claim support

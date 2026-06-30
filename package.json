@@ -50,12 +50,12 @@
     "build": "tsup",
     "prepack": "npm run build",
     "dev": "tsx src/cli/main.ts",
-    "format:check": "prettier --check eslint.config.js package.json package-lock.json tests/package-files.test.ts tsconfig.json vitest.config.ts",
+    "format:check": "prettier --check eslint.config.js package.json package-lock.json tests/package-files.test.ts tsconfig.json",
     "lint": "eslint .",
-    "package:check": "vitest run tests/package-files.test.ts",
+    "package:check": "node --import tsx --test --test-concurrency=1 tests/package-files.test.ts",
     "release:check": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build && npm run package:check && npm audit --omit=dev",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "node --import tsx --test --test-concurrency=1 \"tests/**/*.test.ts\"",
+    "test:watch": "node --watch --import tsx --test --test-concurrency=1 \"tests/**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
@@ -75,11 +75,11 @@
     "@eslint/js": "^9.39.4",
     "@types/node": "^24.9.1",
     "eslint": "^9.39.4",
+    "expect": "^30.2.0",
     "prettier": "^3.8.3",
     "tsup": "^8.5.0",
     "tsx": "^4.20.6",
-    "typescript-eslint": "^8.59.2",
-    "vitest": "^4.0.8"
+    "typescript-eslint": "^8.59.2"
   },
   "overrides": {
     "esbuild": "0.28.1"

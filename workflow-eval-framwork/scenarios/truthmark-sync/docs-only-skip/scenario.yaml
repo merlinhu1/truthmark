@@ -1,0 +1,23 @@
+id: docs-only-skip
+workflow: truthmark-sync
+priority: critical
+manual_only: true
+summary: Docs-only change should not launch a write workflow.
+fixture: fixture
+prompt: prompt.md
+expected: expected.yaml
+setup:
+  patch: setup.patch
+requires:
+  generated_surfaces: false
+  truthmark_config: true
+  git_repo: true
+grading:
+  deterministic:
+    - changed-files
+    - write-boundary
+    - report-presence
+  llm_judges:
+    - workflow-eval-framwork/judges/trace-grader.md
+    - workflow-eval-framwork/judges/diff-grader.md
+    - workflow-eval-framwork/judges/report-grader.md
