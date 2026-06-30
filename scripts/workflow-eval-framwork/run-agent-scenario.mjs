@@ -59,7 +59,7 @@ function safeSegment(value) {
 }
 
 function timestampSegment(date = new Date()) {
-  return date.toISOString().replace(/[:.]/gu, "").replace(/Z$/u, "Z");
+  return date.toISOString().replace(/[:.]/gu, "");
 }
 
 async function readYaml(filePath) {
