@@ -1,0 +1,19 @@
+version: 1
+manual_only: true
+deterministic_gates:
+  - skip-non-code-changes
+  - bounded-route-owner
+  - no-functional-code-writes
+  - structure-handoff
+  - evidence-backed-claims
+  - valid-sync-report
+
+semantic_dimensions:
+  - triggering
+  - context-selection
+  - routing-judgment
+  - write-boundary
+  - evidence-discipline
+  - report-quality
+  - human-review-quality
+  - token-discipline

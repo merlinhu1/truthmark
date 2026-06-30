@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { parseAreasMarkdown } from "../../src/routing/areas.js";
 
@@ -51,7 +52,10 @@ Update truth when:
           }),
         ],
         codeSurface: ["src/auth/**", "src/session/**"],
-        updateTruthWhen: ["authentication behavior changes", "permissions change"],
+        updateTruthWhen: [
+          "authentication behavior changes",
+          "permissions change",
+        ],
       }),
     ]);
   });
@@ -153,7 +157,9 @@ Update truth when:
         expect.objectContaining({
           category: "area-index",
           severity: "error",
-          message: expect.stringContaining("exactly one of Truth documents or Area files"),
+          message: expect.stringContaining(
+            "exactly one of Truth documents or Area files",
+          ),
         }),
       ]),
     );

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 import { parse } from "yaml";
 
 import { runConfig } from "../../src/config/command.js";
@@ -34,14 +35,16 @@ describe("runConfig", () => {
       expect(JSON.stringify(config)).not.toContain("docs/standards");
       expect(JSON.stringify(config)).not.toContain("docs/architecture");
       expect(JSON.stringify(config)).not.toContain("docs/ai");
-      expect(JSON.stringify(config)).not.toContain("docs/truth\"");
+      expect(JSON.stringify(config)).not.toContain('docs/truth"');
       expect(JSON.stringify(config)).not.toContain("product_root");
       expect(JSON.stringify(config)).not.toContain("engineering_root");
       expect(JSON.stringify(config)).not.toContain("docs/templates");
       expect(configText).not.toContain("routes:");
       expect(configText).not.toContain("templates:");
       await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
-      await expect(fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`)).rejects.toThrow();
+      await expect(
+        fs.stat(`${repo.rootDir}/docs/truthmark/routes/areas.md`),
+      ).rejects.toThrow();
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -60,11 +63,16 @@ describe("runConfig", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile(".truthmark/config.yml", "version: 1\ncustom: true\n");
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        "version: 1\ncustom: true\n",
+      );
 
       const result = await runConfig(repo.rootDir, {});
 
-      expect(await repo.readFile(".truthmark/config.yml")).toBe("version: 1\ncustom: true\n");
+      expect(await repo.readFile(".truthmark/config.yml")).toBe(
+        "version: 1\ncustom: true\n",
+      );
       expect(result.summary).toContain("already exists");
     } finally {
       await repo.cleanup();
@@ -75,12 +83,19 @@ describe("runConfig", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile(".truthmark/config.yml", "version: 1\ncustom: true\n");
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        "version: 1\ncustom: true\n",
+      );
 
       const result = await runConfig(repo.rootDir, { force: true });
 
-      expect(await repo.readFile(".truthmark/config.yml")).toContain("workspace: docs/truthmark");
-      expect(await repo.readFile(".truthmark/config.yml")).not.toContain("custom: true");
+      expect(await repo.readFile(".truthmark/config.yml")).toContain(
+        "workspace: docs/truthmark",
+      );
+      expect(await repo.readFile(".truthmark/config.yml")).not.toContain(
+        "custom: true",
+      );
       expect(result.summary).toContain("Wrote");
     } finally {
       await repo.cleanup();
@@ -96,8 +111,12 @@ describe("runConfig", () => {
       expect(result.data).toMatchObject({
         path: ".truthmark/config.yml",
       });
-      expect(String(result.data?.content)).toContain("workspace: docs/truthmark");
-      await expect(fs.stat(`${repo.rootDir}/.truthmark/config.yml`)).rejects.toThrow();
+      expect(String(result.data?.content)).toContain(
+        "workspace: docs/truthmark",
+      );
+      await expect(
+        fs.stat(`${repo.rootDir}/.truthmark/config.yml`),
+      ).rejects.toThrow();
     } finally {
       await repo.cleanup();
     }

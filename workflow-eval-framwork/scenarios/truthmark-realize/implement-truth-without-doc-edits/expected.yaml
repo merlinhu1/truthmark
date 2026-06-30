@@ -1,0 +1,25 @@
+must_read:
+  - .truthmark/config.yml
+  - docs/truthmark/engineering/behaviors/widget-cache.md
+  - docs/truthmark/product/capabilities/widget-cache.md
+  - src/cache.ts
+
+must_change:
+  - src/cache.ts
+  - tests/widget-cache.test.ts
+
+must_not_change:
+  - docs/truthmark/**
+
+must_run_or_explain:
+  []
+
+report:
+  required: true
+  validator: none
+
+assertions:
+
+  - id: code-only-realize
+    kind: diff
+    pass: Realize implements code while preserving truth docs

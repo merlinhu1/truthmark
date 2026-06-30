@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { parseTruthDocUpdateDraft } from "../../src/generation/validate.js";
 import type { ContentPromptContext } from "../../src/generation/types.js";
@@ -44,7 +45,10 @@ const validDraft = {
 
 describe("parseTruthDocUpdateDraft", () => {
   it("accepts a valid evidence-backed draft", () => {
-    const draft = parseTruthDocUpdateDraft(JSON.stringify(validDraft), promptContext);
+    const draft = parseTruthDocUpdateDraft(
+      JSON.stringify(validDraft),
+      promptContext,
+    );
 
     expect(draft.status).toBe("drafted");
     expect(draft.claims[0]?.evidenceIds).toEqual(["E1"]);
@@ -63,11 +67,15 @@ describe("parseTruthDocUpdateDraft", () => {
     );
 
     expect(draft.status).toBe("blocked");
-    expect(draft.openQuestions).toEqual(["Which bounded doc owns this behavior?"]);
+    expect(draft.openQuestions).toEqual([
+      "Which bounded doc owns this behavior?",
+    ]);
   });
 
   it("rejects non-json output", () => {
-    expect(() => parseTruthDocUpdateDraft("not json", promptContext)).toThrow("Invalid JSON");
+    expect(() => parseTruthDocUpdateDraft("not json", promptContext)).toThrow(
+      "Invalid JSON",
+    );
   });
 
   it("rejects claims without evidence IDs", () => {
@@ -100,7 +108,9 @@ describe("parseTruthDocUpdateDraft", () => {
         JSON.stringify({
           ...validDraft,
           targetDocs: ["docs/truthmark/truth/other.md"],
-          patches: [{ ...validDraft.patches[0], path: "docs/truthmark/truth/other.md" }],
+          patches: [
+            { ...validDraft.patches[0], path: "docs/truthmark/truth/other.md" },
+          ],
         }),
         promptContext,
       ),
@@ -125,7 +135,9 @@ describe("parseTruthDocUpdateDraft", () => {
       parseTruthDocUpdateDraft(
         JSON.stringify({
           ...validDraft,
-          targetDocs: ["docs/truthmark/truth/authentication/session-timeout.md"],
+          targetDocs: [
+            "docs/truthmark/truth/authentication/session-timeout.md",
+          ],
           patches: [],
         }),
         promptContext,

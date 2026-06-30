@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { loadConfig } from "../../src/config/load.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -33,9 +34,9 @@ describe("loadConfig", () => {
 
       expect(result.status).toBe("invalid");
       expect(result.config).toBeNull();
-      expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
-        "Unsupported Truthmark config shape",
-      );
+      expect(
+        result.diagnostics.map((diagnostic) => diagnostic.message).join("\n"),
+      ).toContain("Unsupported Truthmark config shape");
     } finally {
       await repo.cleanup();
     }
@@ -59,7 +60,9 @@ describe("loadConfig", () => {
       expect(result.config).toBeNull();
       expect(result.diagnostics).toContainEqual(
         expect.objectContaining({
-          message: expect.stringContaining("additional property truth is not allowed"),
+          message: expect.stringContaining(
+            "additional property truth is not allowed",
+          ),
         }),
       );
     } finally {
@@ -86,10 +89,14 @@ describe("loadConfig", () => {
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            message: expect.stringContaining("additional property routes is not allowed"),
+            message: expect.stringContaining(
+              "additional property routes is not allowed",
+            ),
           }),
           expect.objectContaining({
-            message: expect.stringContaining("additional property templates is not allowed"),
+            message: expect.stringContaining(
+              "additional property templates is not allowed",
+            ),
           }),
         ]),
       );
@@ -104,7 +111,10 @@ describe("loadConfig", () => {
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        validConfig().replace("workspace: docs/truthmark", "workspace: ../truthmark"),
+        validConfig().replace(
+          "workspace: docs/truthmark",
+          "workspace: ../truthmark",
+        ),
       );
 
       const result = await loadConfig(repo.rootDir);
@@ -113,7 +123,9 @@ describe("loadConfig", () => {
       expect(result.config).toBeNull();
       expect(result.diagnostics).toContainEqual(
         expect.objectContaining({
-          message: expect.stringContaining("truthmark.workspace must be a non-empty repo-relative directory"),
+          message: expect.stringContaining(
+            "truthmark.workspace must be a non-empty repo-relative directory",
+          ),
         }),
       );
     } finally {
@@ -127,7 +139,9 @@ describe("loadConfig", () => {
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        validConfig("      output: docs/custom-portal\n      template: docs/custom-template.md\n"),
+        validConfig(
+          "      output: docs/custom-portal\n      template: docs/custom-template.md\n",
+        ),
       );
 
       const result = await loadConfig(repo.rootDir);
@@ -137,10 +151,14 @@ describe("loadConfig", () => {
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            message: expect.stringContaining("additional property output is not allowed"),
+            message: expect.stringContaining(
+              "additional property output is not allowed",
+            ),
           }),
           expect.objectContaining({
-            message: expect.stringContaining("additional property template is not allowed"),
+            message: expect.stringContaining(
+              "additional property template is not allowed",
+            ),
           }),
         ]),
       );
@@ -158,14 +176,19 @@ describe("loadConfig", () => {
       const result = await loadConfig(repo.rootDir);
 
       expect(result.status).toBe("loaded");
-      expect(result.config?.truthmark.generated.portal).toEqual({ enabled: true });
-      expect(result.config?.truthmark.paths.portalOutput).toBe("docs/truthmark/generated/portal");
-      expect(result.config?.truthmark.paths.portalTemplate).toBe("docs/truthmark/templates/portal.html");
+      expect(result.config?.truthmark.generated.portal).toEqual({
+        enabled: true,
+      });
+      expect(result.config?.truthmark.paths.portalOutput).toBe(
+        "docs/truthmark/generated/portal",
+      );
+      expect(result.config?.truthmark.paths.portalTemplate).toBe(
+        "docs/truthmark/templates/portal.html",
+      );
     } finally {
       await repo.cleanup();
     }
   });
-
 
   it("accepts active platform support values", async () => {
     const repo = await createTempRepo();
@@ -219,7 +242,9 @@ describe("loadConfig", () => {
       expect(result.config).toBeNull();
       expect(result.diagnostics).toContainEqual(
         expect.objectContaining({
-          message: expect.stringContaining("must be equal to one of the allowed values"),
+          message: expect.stringContaining(
+            "must be equal to one of the allowed values",
+          ),
         }),
       );
     } finally {
@@ -251,7 +276,10 @@ describe("loadConfig", () => {
     try {
       await repo.writeFile(
         ".truthmark/config.yml",
-        validConfig().replace("workspace: docs/truthmark", "workspace: docs/custom-truthmark"),
+        validConfig().replace(
+          "workspace: docs/truthmark",
+          "workspace: docs/custom-truthmark",
+        ),
       );
 
       const result = await loadConfig(repo.rootDir);
@@ -264,7 +292,9 @@ describe("loadConfig", () => {
         maxDelegationDepth: 1,
       });
       expect(result.config?.truthmark.truth.productRoot).toBe("product");
-      expect(result.config?.truthmark.truth.engineeringRoot).toBe("engineering");
+      expect(result.config?.truthmark.truth.engineeringRoot).toBe(
+        "engineering",
+      );
       expect(result.config?.truthmark.templates.root).toBe("templates");
       expect(result.config?.truthmark.paths.routesIndex).toBe(
         "docs/custom-truthmark/routes/areas.md",
@@ -272,7 +302,9 @@ describe("loadConfig", () => {
       expect(result.config?.truthmark.paths.routeAreasRoot).toBe(
         "docs/custom-truthmark/routes/areas",
       );
-      expect(result.config?.truthmark.paths.productTruthRoot).toBe("docs/custom-truthmark/product");
+      expect(result.config?.truthmark.paths.productTruthRoot).toBe(
+        "docs/custom-truthmark/product",
+      );
       expect(result.config?.truthmark.paths.engineeringTruthRoot).toBe(
         "docs/custom-truthmark/engineering",
       );

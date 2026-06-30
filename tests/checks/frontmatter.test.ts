@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { checkFrontmatter } from "../../src/checks/frontmatter.js";
 import { createDefaultConfig } from "../../src/config/defaults.js";

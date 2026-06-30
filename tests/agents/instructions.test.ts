@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
@@ -13,32 +14,44 @@ describe("renderTruthSyncInstructions", () => {
 
     expect(instructions).toContain("### Truth Sync");
     expect(instructions).toContain("Automatic finish-time trigger");
-    expect(instructions).toContain("use the truthmark-sync skill before finishing");
+    expect(instructions).toContain(
+      "use the truthmark-sync skill before finishing",
+    );
     expect(instructions).toContain(
       "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Antigravity @truthmark-sync; Cursor /truthmark-sync",
     );
-    expect(instructions).toContain("staged, unstaged, and untracked functional code files");
+    expect(instructions).toContain(
+      "staged, unstaged, and untracked functional code files",
+    );
     expect(instructions).toContain("Run relevant tests before finishing");
     expect(instructions).toContain(
       "Support new or changed behavior-bearing truth claims with checkout evidence",
     );
     expect(instructions).toContain("documentation-only change");
     expect(instructions).toContain("Explicit invocation runs immediately");
-    expect(instructions).toContain("Later functional-code changes need a fresh finish-time review");
+    expect(instructions).toContain(
+      "Later functional-code changes need a fresh finish-time review",
+    );
     expect(instructions).toContain("must not rewrite functional code");
     expect(instructions).toContain("host supports subagent dispatch");
-    expect(instructions).toContain("WorkflowState and ImpactSet are optional compact derived context");
+    expect(instructions).toContain(
+      "WorkflowState and ImpactSet are optional compact derived context",
+    );
     expect(instructions).toContain(
       "If routing is missing, stale, broad, overloaded, catch-all, or cannot map changed code to a bounded truth owner",
     );
     expect(instructions).toContain("run Truth Structure before syncing");
-    expect(instructions).toContain("otherwise stop and recommend Truth Structure");
+    expect(instructions).toContain(
+      "otherwise stop and recommend Truth Structure",
+    );
     expect(instructions).not.toContain(".truthmark/local.yml");
     expect(instructions).not.toContain("truth_sync.sync_agent");
     expect(instructions).not.toContain("Truth Sync: completed");
     expect(instructions).not.toContain("Truth Sync: skipped");
     expect(instructions).not.toContain("truthmark packet --changed");
-    expect(instructions).not.toContain("truthmark check --json --workflow truth-sync");
+    expect(instructions).not.toContain(
+      "truthmark check --json --workflow truth-sync",
+    );
   });
 
   it("keeps the managed Truth Sync reminder small", () => {
@@ -58,18 +71,28 @@ describe("renderTruthSyncInstructions", () => {
 
     expect(instructions).toContain("docs/routes/index.md; docs/routes/areas/");
     expect(instructions).toContain("only when present");
-    expect(instructions).not.toContain("docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/");
+    expect(instructions).not.toContain(
+      "docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/",
+    );
   });
 });
 
 describe("agent-native workflow instructions", () => {
   it("renders Truth Structure and Truth Check summaries", () => {
     expect(renderTruthStructureInstructions()).toContain("truthmark-structure");
-    expect(renderTruthStructureInstructions()).toContain("configured route files when present");
-    expect(renderTruthStructureInstructions()).toContain("missing, stale, broad, overloaded, catch-all, unrouteable");
-    expect(renderTruthStructureInstructions()).toContain("canonical current-truth destinations");
+    expect(renderTruthStructureInstructions()).toContain(
+      "configured route files when present",
+    );
+    expect(renderTruthStructureInstructions()).toContain(
+      "missing, stale, broad, overloaded, catch-all, unrouteable",
+    );
+    expect(renderTruthStructureInstructions()).toContain(
+      "canonical current-truth destinations",
+    );
     expect(renderTruthStructureInstructions()).toContain("topology pressure");
-    expect(renderTruthStructureInstructions()).toContain("If the skill is unavailable");
+    expect(renderTruthStructureInstructions()).toContain(
+      "If the skill is unavailable",
+    );
     expect(renderTruthCheckInstructions()).toContain("truthmark-check");
     expect(renderTruthCheckInstructions()).toContain(
       "run the truthmark check command only when available for additional validation",

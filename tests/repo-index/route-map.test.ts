@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";

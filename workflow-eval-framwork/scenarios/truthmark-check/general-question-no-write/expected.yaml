@@ -1,0 +1,26 @@
+must_read:
+  - .truthmark/config.yml
+  - docs/truthmark/routes/areas.md
+  - docs/truthmark/product/capabilities/widget-cache.md
+
+must_change:
+  []
+
+must_not_change:
+  - README.md
+  - src/**
+  - tests/**
+  - docs/truthmark/**
+
+must_run_or_explain:
+  []
+
+report:
+  required: false
+  validator: none
+
+assertions:
+
+  - id: read-only-question
+    kind: diff
+    pass: general questions do not trigger write workflows

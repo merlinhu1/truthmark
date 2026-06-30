@@ -87,6 +87,8 @@ Code surface:
 - src/checks/generated-surfaces.ts
 - src/truth/\*\*
 - src/version.ts
+- workflow-eval-framwork/\*\*
+- scripts/workflow-eval-framwork/\*\*
 - tests/evals/\*\*
 - tests/templates/\*\*
 

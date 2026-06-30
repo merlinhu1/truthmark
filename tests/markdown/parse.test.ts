@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
 import { parseMarkdownDocument } from "../../src/markdown/parse.js";
@@ -26,7 +27,10 @@ Ignore [external](https://example.com).
       { depth: 1, text: "Authentication" },
       { depth: 2, text: "Timeouts" },
     ]);
-    expect(document.internalLinks).toEqual(["docs/api/authentication.md", "#timeouts"]);
+    expect(document.internalLinks).toEqual([
+      "docs/api/authentication.md",
+      "#timeouts",
+    ]);
   });
 });
 
@@ -35,7 +39,10 @@ describe("resolveAuthorityPaths", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("docs/truthmark/routes/areas.md", "# Truthmark Areas\n");
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        "# Truthmark Areas\n",
+      );
       await repo.writeFile("docs/guides/beta.md", "# Beta\n");
       await repo.writeFile("docs/guides/alpha.md", "# Alpha\n");
       await repo.writeFile("docs/api/authentication.md", "# Auth API\n");

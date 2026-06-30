@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runCli } from "../helpers/run-cli.js";
 
@@ -75,6 +76,8 @@ describe("truthmark CLI", () => {
     expect(typeof payload.summary).toBe("string");
     expect(payload.summary.length).toBeGreaterThan(0);
     expect(Array.isArray(payload.diagnostics)).toBe(true);
-    expect(payload.data?.scorecard?.schemaVersion).toBe("truthmark-scorecard/v0");
+    expect(payload.data?.scorecard?.schemaVersion).toBe(
+      "truthmark-scorecard/v0",
+    );
   });
 });

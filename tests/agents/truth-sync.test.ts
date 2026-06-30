@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 import { parseFrontmatter } from "../../src/markdown/frontmatter.js";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
@@ -126,7 +127,9 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("Affected route/truth owner");
     expect(skillBody).toContain("User-provided decisions/rationale");
     expect(skillBody).toContain("Decision/rationale captured");
-    expect(skillBody).toContain("Preserve concise user-provided decision rationale");
+    expect(skillBody).toContain(
+      "Preserve concise user-provided decision rationale",
+    );
     expect(skillBody).toContain("No-update-needed rationale");
     expect(skillBody).toContain(
       "Only edit allowed truth docs/routes after Sync Intent is clear",
@@ -138,9 +141,13 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain(
       "one durable claim per bullet or line; paragraphs should be no longer than one or two short sentences",
     );
-    expect(skillBody).toContain("Do not add personality, rhetorical flourish, first-person commentary, or marketing tone");
+    expect(skillBody).toContain(
+      "Do not add personality, rhetorical flourish, first-person commentary, or marketing tone",
+    );
     expect(skillBody).not.toContain("PERSONALITY AND SOUL");
-    expect(skillBody).not.toContain("What makes the below so obviously AI generated?");
+    expect(skillBody).not.toContain(
+      "What makes the below so obviously AI generated?",
+    );
     expect(skillBody).toContain("Claim:");
     expect(skillBody).toContain("Result: supported");
     expect(skillBody).toContain("structured Truth Sync report contract");
@@ -235,18 +242,12 @@ describe("Truth Sync generated metadata", () => {
         file.path.endsWith("/support/report-template.md"),
       )?.content;
 
-      expect(entrypoint, workflowId).toContain("Progressive disclosure:");
-      expect(entrypoint, workflowId).toContain("support/procedure.md");
-      expect(entrypoint, workflowId).toContain("support/report-template.md");
-      expect(procedure, workflowId).toContain(
-        "Truthmark-managed generated file",
-      );
-      expect(procedure, workflowId).not.toContain(
-        "Report completion in this shape:",
-      );
-      expect(reportTemplate, workflowId).toContain(
-        "Report completion in this shape:",
-      );
+      expect(entrypoint).toContain("Progressive disclosure:");
+      expect(entrypoint).toContain("support/procedure.md");
+      expect(entrypoint).toContain("support/report-template.md");
+      expect(procedure).toContain("Truthmark-managed generated file");
+      expect(procedure).not.toContain("Report completion in this shape:");
+      expect(reportTemplate).toContain("Report completion in this shape:");
     }
   });
 
@@ -294,13 +295,15 @@ describe("Truth Sync generated metadata", () => {
       host: "cursor",
     });
     const cursorSyncSkill =
-      cursorSyncPackage.find((file) => file.path.endsWith("/SKILL.md"))?.content ?? "";
-    const cursorSyncProcedure =
-      cursorSyncPackage.find((file) => file.path.endsWith("/support/procedure.md"))
+      cursorSyncPackage.find((file) => file.path.endsWith("/SKILL.md"))
         ?.content ?? "";
+    const cursorSyncProcedure =
+      cursorSyncPackage.find((file) =>
+        file.path.endsWith("/support/procedure.md"),
+      )?.content ?? "";
 
     expect(cursorSyncSkill).toContain(
-      'description: Use automatically at finish-time after functional code changes',
+      "description: Use automatically at finish-time after functional code changes",
     );
     expect(cursorSyncSkill).toContain("Use as a Cursor Agent Skill.");
     expect(cursorSyncSkill).toContain("support/procedure.md");
@@ -323,12 +326,16 @@ describe("Truth Sync generated metadata", () => {
       expect(surface).not.toContain("helper package unavailable");
     }
 
-    expect(renderTruthmarkCopilotSyncPrompt()).toContain("support/procedure.md");
+    expect(renderTruthmarkCopilotSyncPrompt()).toContain(
+      "support/procedure.md",
+    );
     expect(renderTruthmarkCopilotSyncPrompt()).toContain(
       "support/report-template.md",
     );
     expect(cursorSyncProcedure).toContain("Truthmark Sync Procedure");
-    expect(cursorSyncProcedure).not.toContain("Report completion in this shape:");
+    expect(cursorSyncProcedure).not.toContain(
+      "Report completion in this shape:",
+    );
   });
 
   it("adds host-specific subagent guidance without changing generic surfaces", () => {
@@ -374,11 +381,10 @@ describe("Truth Sync generated metadata", () => {
         skillPath: ".cursor/skills/truthmark-sync/SKILL.md",
         workflowId: "truthmark-sync",
         host: "cursor",
-      }).find((file) => file.path.endsWith("/support/procedure.md"))?.content ?? "";
+      }).find((file) => file.path.endsWith("/support/procedure.md"))?.content ??
+      "";
 
-    expect(cursorSyncProcedure).not.toContain(
-      "Codex subagent mode:",
-    );
+    expect(cursorSyncProcedure).not.toContain("Codex subagent mode:");
     expect(renderTruthmarkCopilotSyncPrompt()).not.toContain(
       "Codex subagent mode:",
     );

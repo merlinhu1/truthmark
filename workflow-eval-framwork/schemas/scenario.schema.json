@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "required": ["id", "workflow", "priority", "manual_only", "summary", "fixture", "prompt", "expected", "grading"],
+  "additionalProperties": true,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "workflow": { "type": "string", "pattern": "^truthmark-[a-z-]+$" },
+    "priority": { "enum": ["critical", "high", "medium", "low"] },
+    "manual_only": { "const": true },
+    "summary": { "type": "string", "minLength": 1 },
+    "fixture": { "type": "string", "minLength": 1 },
+    "prompt": { "type": "string", "minLength": 1 },
+    "expected": { "type": "string", "minLength": 1 },
+    "setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "patch": { "type": "string", "pattern": "^.+\\.patch$" }
+      }
+    },
+    "requires": { "type": "object" },
+    "grading": {
+      "type": "object",
+      "required": ["deterministic", "llm_judges"],
+      "additionalProperties": true,
+      "properties": {
+        "deterministic": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "llm_judges": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}

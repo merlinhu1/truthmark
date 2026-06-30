@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { truthDocUpdatePrompt } from "../../src/generation/prompts/truth-doc-update.js";
 import type { ContentPromptContext } from "../../src/generation/types.js";
@@ -30,7 +31,9 @@ describe("truthDocUpdatePrompt", () => {
     expect(prompt).toContain('"evidenceSnippets"');
     expect(prompt).toContain('"id": "E1"');
     expect(prompt).toContain("SESSION_TIMEOUT_MS");
-    expect(prompt).toContain("When blocked, leave targetDocs, claims, and patches empty");
+    expect(prompt).toContain(
+      "When blocked, leave targetDocs, claims, and patches empty",
+    );
   });
 
   it("does not contain workflow authority language", () => {

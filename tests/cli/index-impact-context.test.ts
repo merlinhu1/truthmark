@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
@@ -42,15 +43,24 @@ describe("repository intelligence CLI commands", () => {
       await repo.runGit(["commit", "-m", "initial"]);
       await repo.writeFile("src/index.ts", "export const value = 2;\n");
 
-      const result = await runCli(["impact", "--base", "main", "--json"], { cwd: repo.rootDir });
+      const result = await runCli(["impact", "--base", "main", "--json"], {
+        cwd: repo.rootDir,
+      });
       const output = JSON.parse(result.stdout) as {
         command: string;
-        data: { impactSet: { schemaVersion: string; changedFiles: Array<{ path: string }> } };
+        data: {
+          impactSet: {
+            schemaVersion: string;
+            changedFiles: Array<{ path: string }>;
+          };
+        };
       };
 
       expect(output.command).toBe("impact");
       expect(output.data.impactSet.schemaVersion).toBe("impact-set/v0");
-      expect(output.data.impactSet.changedFiles.map((file) => file.path)).toContain("src/index.ts");
+      expect(
+        output.data.impactSet.changedFiles.map((file) => file.path),
+      ).toContain("src/index.ts");
     } finally {
       await repo.cleanup();
     }
@@ -61,13 +71,20 @@ describe("repository intelligence CLI commands", () => {
     try {
       await repo.writeFile(
         "package.json",
-        JSON.stringify({ name: "sample", scripts: { test: "vitest" } }, null, 2),
+        JSON.stringify(
+          { name: "sample", scripts: { test: "vitest" } },
+          null,
+          2,
+        ),
       );
       await repo.writeFile(
         "src/math.ts",
         "export function add(left: number, right: number) { return left + right; }\n",
       );
-      await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\nvoid add;\n");
+      await repo.writeFile(
+        "tests/math.test.ts",
+        "import { add } from '../src/math.js';\nvoid add;\n",
+      );
       await runConfig(repo.rootDir, { force: false, stdout: false });
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
@@ -78,7 +95,15 @@ describe("repository intelligence CLI commands", () => {
       );
 
       const result = await runCli(
-        ["workflow", "status", "--workflow", "truthmark-sync", "--base", "main", "--json"],
+        [
+          "workflow",
+          "status",
+          "--workflow",
+          "truthmark-sync",
+          "--base",
+          "main",
+          "--json",
+        ],
         { cwd: repo.rootDir },
       );
       const output = JSON.parse(result.stdout) as {
@@ -100,7 +125,11 @@ describe("repository intelligence CLI commands", () => {
               likelyRouteOwners: string[];
               suggestedTruthDocs: string[];
               openQuestions: string[];
-              skippedHelperStatus: Array<{ helper: string; status: string; reason: string }>;
+              skippedHelperStatus: Array<{
+                helper: string;
+                status: string;
+                reason: string;
+              }>;
             };
             checks: {
               reviewChecklist: string[];
@@ -132,9 +161,13 @@ describe("repository intelligence CLI commands", () => {
       expect(state.actionContext.primaryTruthDocs).toEqual(
         state.targetTruthDocs,
       );
-      expect(state.actionContext.allowedWritePaths).toContain("docs/truthmark/routes/areas.md");
+      expect(state.actionContext.allowedWritePaths).toContain(
+        "docs/truthmark/routes/areas.md",
+      );
       expect(state.targetTruthDocs.length).toBeGreaterThan(0);
-      expect(state.changedFiles.map((file) => file.path)).toContain("src/math.ts");
+      expect(state.changedFiles.map((file) => file.path)).toContain(
+        "src/math.ts",
+      );
       expect(state.affectedRoutes.length).toBeGreaterThan(0);
       expect(state.actionContext.evidencePrompts.length).toBeGreaterThan(0);
       expect(state.actionContext.requiredEvidence).toBeUndefined();
@@ -144,11 +177,16 @@ describe("repository intelligence CLI commands", () => {
       expect(state.checks.helpers.length).toBeGreaterThan(0);
       expect(state.workflowCard.affectedFiles).toContain("src/math.ts");
       expect(state.workflowCard.likelyRouteOwners.length).toBeGreaterThan(0);
-      expect(state.workflowCard.suggestedTruthDocs).toEqual(state.targetTruthDocs);
+      expect(state.workflowCard.suggestedTruthDocs).toEqual(
+        state.targetTruthDocs,
+      );
       expect(state.workflowCard.openQuestions).toEqual([]);
       expect(state.workflowCard.skippedHelperStatus).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ helper: "validate-sync-report", status: "skipped" }),
+          expect.objectContaining({
+            helper: "validate-sync-report",
+            status: "skipped",
+          }),
         ]),
       );
       expect(Array.isArray(state.nextSteps)).toBe(true);
@@ -170,7 +208,15 @@ describe("repository intelligence CLI commands", () => {
       await repo.writeFile("src/index.ts", "export const value = 2;\n");
 
       const statusResult = await runCli(
-        ["workflow", "status", "--workflow", "truthmark-sync", "--base", "main", "--json"],
+        [
+          "workflow",
+          "status",
+          "--workflow",
+          "truthmark-sync",
+          "--base",
+          "main",
+          "--json",
+        ],
         { cwd: repo.rootDir },
       );
       const statusOutput = JSON.parse(statusResult.stdout) as {
@@ -191,20 +237,36 @@ describe("repository intelligence CLI commands", () => {
 
       expect(statusResult.exitCode).toBe(0);
       expect(statusOutput.command).toBe("workflow status");
-      expect(statusOutput.data.workflowState.schemaVersion).toBe("truthmark-workflow/v0");
+      expect(statusOutput.data.workflowState.schemaVersion).toBe(
+        "truthmark-workflow/v0",
+      );
       expect(statusOutput.data.workflowState.workflow).toBe("truthmark-sync");
       expect(statusOutput.data.workflowState.contextPack).toBeUndefined();
-      expect(statusOutput.data.workflowState.actionContext.helperValidationCommands.length).toBeGreaterThan(0);
-      expect(statusOutput.data.workflowState.checks.helpers.length).toBeGreaterThan(0);
+      expect(
+        statusOutput.data.workflowState.actionContext.helperValidationCommands
+          .length,
+      ).toBeGreaterThan(0);
+      expect(
+        statusOutput.data.workflowState.checks.helpers.length,
+      ).toBeGreaterThan(0);
       expect(statusJson).not.toContain('"contextPack"');
       expect(statusJson).not.toContain('"sourceFiles"');
       expect(statusJson).not.toContain('"truthDocs":[{');
       expect(statusJson).not.toContain('"routeMap"');
       expect(statusJson).not.toContain('"content":');
 
-      const impactResult = await runCli(["impact", "--base", "main", "--json"], { cwd: repo.rootDir });
+      const impactResult = await runCli(
+        ["impact", "--base", "main", "--json"],
+        { cwd: repo.rootDir },
+      );
       const impactOutput = JSON.parse(impactResult.stdout) as {
-        data: { impactSet: { contextPack?: unknown; sourceFiles?: unknown; truthDocs?: unknown } };
+        data: {
+          impactSet: {
+            contextPack?: unknown;
+            sourceFiles?: unknown;
+            truthDocs?: unknown;
+          };
+        };
       };
       const impactJson = JSON.stringify(impactOutput.data.impactSet);
 
@@ -228,9 +290,12 @@ describe("repository intelligence CLI commands", () => {
       await runConfig(repo.rootDir, { force: false, stdout: false });
       await runInit(repo.rootDir);
 
-      const result = await runCli(["context", "--workflow", "truth-sync", "--base", "main", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["context", "--workflow", "truth-sync", "--base", "main", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
 
       expect(result.exitCode).toBe(1);
       expect(`${result.stdout}\n${result.stderr}`).toContain("unknown command");

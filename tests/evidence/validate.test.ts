@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { validateEvidenceReferences } from "../../src/evidence/validate.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";

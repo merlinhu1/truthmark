@@ -14,7 +14,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["**/*.ts", "**/*.mjs"],
     rules: {
       "no-undef": "off",
     },

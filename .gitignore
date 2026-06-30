@@ -35,3 +35,7 @@ Thumbs.db
 .hermes/
 .lean-ctx/graph.db
 .lean-ctx/graph.meta.json
+
+# Manual workflow eval run artifacts
+workflow-eval-framwork/runs/*
+!workflow-eval-framwork/runs/.gitkeep

@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
@@ -236,15 +237,13 @@ Local stale edit.
         ".gemini/agents/truth-doc-writer.md",
         ".gemini/commands/truthmark/sync.toml",
       ]) {
-        expect(
-          result.diagnostics.filter(
-            (diagnostic) =>
-              diagnostic.category === "generated-surface" &&
-              diagnostic.file === retiredPath &&
-              diagnostic.message.includes("obsolete"),
-          ),
-          retiredPath,
-        ).toHaveLength(1);
+        const obsoleteDiagnostics = result.diagnostics.filter(
+          (diagnostic) =>
+            diagnostic.category === "generated-surface" &&
+            diagnostic.file === retiredPath &&
+            diagnostic.message.includes("obsolete"),
+        );
+        expect(obsoleteDiagnostics).toHaveLength(1);
       }
       expect(
         result.diagnostics.filter(

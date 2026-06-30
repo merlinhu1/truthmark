@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "must_read": { "type": "array", "items": { "type": "string" } },
+    "must_change": { "type": "array", "items": { "type": "string" } },
+    "must_not_change": { "type": "array", "items": { "type": "string" } },
+    "must_run_or_explain": { "type": "array", "items": { "type": "string" } },
+    "report": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "required": { "type": "boolean" },
+        "validator": { "type": "string" },
+        "required_sections": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "pass"],
+        "additionalProperties": true,
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string" },
+          "pass": { "type": "string" }
+        }
+      }
+    }
+  }
+}

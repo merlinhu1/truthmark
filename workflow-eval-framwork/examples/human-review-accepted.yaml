@@ -1,0 +1,7 @@
+status: accepted
+reviewer: Merlin
+reviewed_at: 2026-06-29
+notes:
+  - Deterministic gates passed.
+  - Semantic behavior matched the scenario expectation.
+follow_up: []

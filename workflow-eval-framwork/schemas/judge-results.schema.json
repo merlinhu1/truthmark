@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "required": ["status", "judges"],
+  "properties": {
+    "status": { "enum": ["passed", "failed", "not_evaluable", "skipped"] },
+    "judges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["passed", "failed", "not_evaluable", "skipped"] },
+          "summary": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "note": { "type": "string" }
+  },
+  "additionalProperties": true
+}

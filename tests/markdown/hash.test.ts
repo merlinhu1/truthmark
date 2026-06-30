@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { hashJsonLike, hashText } from "../../src/markdown/hash.js";
 

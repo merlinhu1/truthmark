@@ -1,0 +1,21 @@
+id: broad-route-repair
+workflow: truthmark-structure
+priority: high
+manual_only: true
+summary: Truth Structure should split a broad catch-all route into bounded ownership before other workflows write truth.
+fixture: fixture
+prompt: prompt.md
+expected: expected.yaml
+requires:
+  generated_surfaces: false
+  truthmark_config: true
+  git_repo: true
+grading:
+  deterministic:
+    - changed-files
+    - write-boundary
+    - report-presence
+  llm_judges:
+    - workflow-eval-framwork/judges/trace-grader.md
+    - workflow-eval-framwork/judges/diff-grader.md
+    - workflow-eval-framwork/judges/report-grader.md

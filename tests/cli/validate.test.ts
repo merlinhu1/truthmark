@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runCli } from "../helpers/run-cli.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -75,9 +76,12 @@ describe("truthmark validate CLI helpers", () => {
     try {
       await repo.writeFile("report.md", validSyncReport);
 
-      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["validate", "sync-report", "report.md", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
       const output = JSON.parse(result.stdout) as {
         command: string;
         summary: string;
@@ -111,9 +115,12 @@ describe("truthmark validate CLI helpers", () => {
     try {
       await repo.writeFile("report.md", validSyncReportWithIntent);
 
-      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["validate", "sync-report", "report.md", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
       const output = JSON.parse(result.stdout) as {
         data?: { validation?: { ok: boolean; checks?: string[] } };
       };
@@ -142,9 +149,12 @@ describe("truthmark validate CLI helpers", () => {
           ),
       );
 
-      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["validate", "sync-report", "report.md", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
       const output = JSON.parse(result.stdout) as {
         data?: { validation?: { ok: boolean; errors?: string[] } };
       };
@@ -164,9 +174,12 @@ describe("truthmark validate CLI helpers", () => {
     try {
       await repo.writeFile("report.md", validDocumentReport);
 
-      const result = await runCli(["validate", "document-report", "report.md", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["validate", "document-report", "report.md", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
       const output = JSON.parse(result.stdout) as {
         data?: { validation?: { ok: boolean; helper: string } };
       };
@@ -190,12 +203,18 @@ describe("truthmark validate CLI helpers", () => {
     try {
       await repo.writeFile(
         "report.md",
-        validSyncReport.replace("validate-sync-report: ran, passed", "validate-sync-report: ran, failed"),
+        validSyncReport.replace(
+          "validate-sync-report: ran, passed",
+          "validate-sync-report: ran, failed",
+        ),
       );
 
-      const result = await runCli(["validate", "sync-report", "report.md", "--json"], {
-        cwd: repo.rootDir,
-      });
+      const result = await runCli(
+        ["validate", "sync-report", "report.md", "--json"],
+        {
+          cwd: repo.rootDir,
+        },
+      );
       const output = JSON.parse(result.stdout) as {
         data?: { validation?: { ok: boolean; errors?: string[] } };
       };
@@ -207,7 +226,9 @@ describe("truthmark validate CLI helpers", () => {
         diagnostics: [],
         data: { validation: { ok: false } },
       });
-      expect(output.data?.validation?.errors?.join("\n")).toContain("ran, failed");
+      expect(output.data?.validation?.errors?.join("\n")).toContain(
+        "ran, failed",
+      );
     } finally {
       await repo.cleanup();
     }
@@ -216,8 +237,14 @@ describe("truthmark validate CLI helpers", () => {
   it("rejects write-lease path traversal and Windows absolute changed paths", async () => {
     const repo = await createTempRepo();
     try {
-      await repo.writeFile("lease.yml", "allowedWrites:\n  - docs/truthmark/truth/**\nforbiddenWrites:\n  - src/**\n");
-      await repo.writeFile("changed-files.txt", "C:/repo/docs/truthmark/truth/secret.md\n");
+      await repo.writeFile(
+        "lease.yml",
+        "allowedWrites:\n  - docs/truthmark/truth/**\nforbiddenWrites:\n  - src/**\n",
+      );
+      await repo.writeFile(
+        "changed-files.txt",
+        "C:/repo/docs/truthmark/truth/secret.md\n",
+      );
 
       const result = await runCli(
         ["validate", "write-lease", "lease.yml", "changed-files.txt", "--json"],

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { getUncommittedChanges } from "../../src/git/changes.js";
 import { buildChangedSurfaces } from "../../src/sync/surfaces.js";
@@ -17,19 +18,28 @@ describe("buildChangedSurfaces", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("src/auth/session.ts", `${buildNumberedSource(12)}\n`);
+      await repo.writeFile(
+        "src/auth/session.ts",
+        `${buildNumberedSource(12)}\n`,
+      );
       await repo.runGit(["add", "src/auth/session.ts"]);
       await repo.runGit(["commit", "-m", "test: baseline tracked source"]);
 
       await repo.writeFile(
         "src/auth/session.ts",
-        `${buildNumberedSource(5)}\nexport const line6 = 'updated';\n${buildNumberedSource(12)
+        `${buildNumberedSource(5)}\nexport const line6 = 'updated';\n${buildNumberedSource(
+          12,
+        )
           .split("\n")
           .slice(6)
           .join("\n")}\n`,
       );
 
-      const surfaces = await buildChangedSurfaces(repo.rootDir, await getUncommittedChanges(repo.rootDir), []);
+      const surfaces = await buildChangedSurfaces(
+        repo.rootDir,
+        await getUncommittedChanges(repo.rootDir),
+        [],
+      );
 
       expect(surfaces).toHaveLength(1);
       expect(surfaces[0]).toMatchObject({
@@ -42,8 +52,12 @@ describe("buildChangedSurfaces", () => {
           },
         ],
       });
-      expect(surfaces[0]?.segments[0]?.content.includes("line6 = 'updated'"))?.toBe(true);
-      expect(surfaces[0]?.segments[0]?.content.includes("line1 = 1"))?.toBe(false);
+      expect(
+        surfaces[0]?.segments[0]?.content.includes("line6 = 'updated'"),
+      )?.toBe(true);
+      expect(surfaces[0]?.segments[0]?.content.includes("line1 = 1"))?.toBe(
+        false,
+      );
     } finally {
       await repo.cleanup();
     }
@@ -55,7 +69,11 @@ describe("buildChangedSurfaces", () => {
     try {
       await repo.writeFile("src/new-file.ts", `${buildNumberedSource(80)}\n`);
 
-      const surfaces = await buildChangedSurfaces(repo.rootDir, await getUncommittedChanges(repo.rootDir), []);
+      const surfaces = await buildChangedSurfaces(
+        repo.rootDir,
+        await getUncommittedChanges(repo.rootDir),
+        [],
+      );
 
       expect(surfaces).toHaveLength(1);
       expect(surfaces[0]).toMatchObject({
@@ -68,8 +86,12 @@ describe("buildChangedSurfaces", () => {
           },
         ],
       });
-      expect(surfaces[0]?.segments[0]?.content.includes("line40 = 40"))?.toBe(true);
-      expect(surfaces[0]?.segments[0]?.content.includes("line41 = 41"))?.toBe(false);
+      expect(surfaces[0]?.segments[0]?.content.includes("line40 = 40"))?.toBe(
+        true,
+      );
+      expect(surfaces[0]?.segments[0]?.content.includes("line41 = 41"))?.toBe(
+        false,
+      );
     } finally {
       await repo.cleanup();
     }
@@ -79,13 +101,18 @@ describe("buildChangedSurfaces", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("src/auth/session.ts", `${buildNumberedSource(12)}\n`);
+      await repo.writeFile(
+        "src/auth/session.ts",
+        `${buildNumberedSource(12)}\n`,
+      );
       await repo.runGit(["add", "src/auth/session.ts"]);
       await repo.runGit(["commit", "-m", "test: baseline tracked source"]);
 
       await repo.writeFile(
         "src/auth/session.ts",
-        `${buildNumberedSource(5)}\nexport const line6 = 'expanded';\n${buildNumberedSource(12)
+        `${buildNumberedSource(5)}\nexport const line6 = 'expanded';\n${buildNumberedSource(
+          12,
+        )
           .split("\n")
           .slice(6)
           .join("\n")}\n`,
@@ -102,8 +129,12 @@ describe("buildChangedSurfaces", () => {
         startLine: 2,
         endLine: 10,
       });
-      expect(surfaces[0]?.segments[0]?.content.includes("line2 = 2"))?.toBe(true);
-      expect(surfaces[0]?.segments[0]?.content.includes("line11 = 11"))?.toBe(false);
+      expect(surfaces[0]?.segments[0]?.content.includes("line2 = 2"))?.toBe(
+        true,
+      );
+      expect(surfaces[0]?.segments[0]?.content.includes("line11 = 11"))?.toBe(
+        false,
+      );
     } finally {
       await repo.cleanup();
     }
@@ -113,10 +144,19 @@ describe("buildChangedSurfaces", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
-      await repo.writeFile("docs/guides/authentication.md", "# Authentication\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
+      await repo.writeFile(
+        "docs/guides/authentication.md",
+        "# Authentication\n",
+      );
       await repo.writeFile("package.json", '{"name":"truthmark"}\n');
-      await repo.writeFile("dist/generated.js", "export const generated = true;\n");
+      await repo.writeFile(
+        "dist/generated.js",
+        "export const generated = true;\n",
+      );
       await repo.writeFile(".truthmark/cache/state.json", '{"cached":true}\n');
 
       const surfaces = await buildChangedSurfaces(
@@ -125,7 +165,9 @@ describe("buildChangedSurfaces", () => {
         ["dist/**"],
       );
 
-      expect(surfaces.map((surface) => surface.path)).toEqual(["src/auth/session.ts"]);
+      expect(surfaces.map((surface) => surface.path)).toEqual([
+        "src/auth/session.ts",
+      ]);
     } finally {
       await repo.cleanup();
     }
@@ -135,7 +177,10 @@ describe("buildChangedSurfaces", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("src/auth/session.ts", "export const session = true;\n");
+      await repo.writeFile(
+        "src/auth/session.ts",
+        "export const session = true;\n",
+      );
       await repo.runGit(["add", "src/auth/session.ts"]);
       await repo.runGit(["commit", "-m", "test: baseline tracked source"]);
 
@@ -165,7 +210,10 @@ describe("buildChangedSurfaces", () => {
     const repo = await createTempRepo();
 
     try {
-      await repo.writeFile("docs/guides/authentication.md", "# Authentication\n");
+      await repo.writeFile(
+        "docs/guides/authentication.md",
+        "# Authentication\n",
+      );
       await repo.runGit(["add", "docs/guides/authentication.md"]);
       await repo.runGit(["commit", "-m", "test: baseline tracked guide"]);
 

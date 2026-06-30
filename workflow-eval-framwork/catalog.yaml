@@ -1,0 +1,59 @@
+version: 1
+manual_only: true
+last_reviewed: 2026-06-29
+workflows:
+  - id: truthmark-sync
+    priority: critical
+    manual_only: true
+    surface_paths:
+      - src/agents/truth-sync.ts
+      - src/templates/workflow-surfaces.ts
+    rubric: workflow-eval-framwork/rubrics/truthmark-sync.yaml
+    scenarios:
+      - workflow-eval-framwork/scenarios/truthmark-sync/docs-only-skip/scenario.yaml
+      - workflow-eval-framwork/scenarios/truthmark-sync/bootstrap-route-blocked/scenario.yaml
+      - workflow-eval-framwork/scenarios/truthmark-sync/stale-engineering-truth/scenario.yaml
+  - id: truthmark-document
+    priority: high
+    manual_only: true
+    surface_paths:
+      - src/agents/truth-document.ts
+    rubric: workflow-eval-framwork/rubrics/truthmark-document.yaml
+    scenarios:
+      - workflow-eval-framwork/scenarios/truthmark-document/implemented-behavior-missing-truth/scenario.yaml
+  - id: truthmark-realize
+    priority: high
+    manual_only: true
+    surface_paths:
+      - src/agents/prompts.ts
+      - src/realize/report.ts
+    rubric: workflow-eval-framwork/rubrics/truthmark-realize.yaml
+    scenarios:
+      - workflow-eval-framwork/scenarios/truthmark-realize/implement-truth-without-doc-edits/scenario.yaml
+  - id: truthmark-check
+    priority: high
+    manual_only: true
+    surface_paths:
+      - src/agents/truth-check.ts
+    rubric: workflow-eval-framwork/rubrics/truthmark-check.yaml
+    scenarios:
+      - workflow-eval-framwork/scenarios/truthmark-check/unsupported-claim-audit/scenario.yaml
+      - workflow-eval-framwork/scenarios/truthmark-check/general-question-no-write/scenario.yaml
+  - id: truthmark-structure
+    priority: medium
+    manual_only: true
+    surface_paths:
+      - src/agents/truth-structure.ts
+    rubric: workflow-eval-framwork/rubrics/truthmark-structure.yaml
+    scenarios:
+      - workflow-eval-framwork/scenarios/truthmark-structure/broad-route-repair/scenario.yaml
+runners:
+  harness_hosts:
+    - fake
+  manual_agent_hosts:
+    - codex
+    - claude-code
+budgets:
+  max_agent_runs_per_scenario: 1
+  max_judge_calls_per_scenario: 3
+  default_timeout_seconds: 900

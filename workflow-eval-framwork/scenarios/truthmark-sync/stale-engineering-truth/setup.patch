@@ -1,0 +1,12 @@
+--- a/src/cache.ts
++++ b/src/cache.ts
+@@ -9,8 +9,8 @@
+   return {
+     key,
+     value,
+-    maxAgeSeconds: 60,
+-    staleWhileRevalidateSeconds: 30,
++    maxAgeSeconds: 300,
++    staleWhileRevalidateSeconds: 120,
+   };
+ }

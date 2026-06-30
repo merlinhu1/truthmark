@@ -1,0 +1,9 @@
+status: rejected
+reviewer: Merlin
+reviewed_at: 2026-06-29
+notes:
+  - Agent selected the wrong Truthmark workflow.
+  - Changed files violated the scenario write boundary.
+follow_up:
+  - Tighten the workflow skill trigger description.
+  - Promote the failure into a smaller regression scenario.

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
@@ -106,7 +107,7 @@ ignore: []
       );
       await repo.writeFile(
         ".gemini/commands/truthmark/preview.toml",
-        "description = \"Legacy Preview Command\"\n",
+        'description = "Legacy Preview Command"\n',
       );
       await repo.writeFile("GEMINI.md", "# Legacy Gemini instructions\n");
       await repo.writeFile(
@@ -119,7 +120,7 @@ ignore: []
       );
       await repo.writeFile(
         ".gemini/commands/truthmark/sync.toml",
-        "description = \"Legacy Sync Command\"\n",
+        'description = "Legacy Sync Command"\n',
       );
       await repo.writeFile(
         ".agents/skills/truthmark-sync/helper-manifest.yml",
@@ -152,7 +153,9 @@ ignore: []
         fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/sync.toml`),
       ).resolves.toBeDefined();
       await expect(
-        fs.stat(`${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`),
+        fs.stat(
+          `${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`,
+        ),
       ).rejects.toThrow();
       await expect(
         fs.stat(

@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": ["status", "runDir", "scenario", "host", "deterministic", "judge", "usage"],
+  "properties": {
+    "status": { "enum": ["passed", "failed", "blocked", "not_evaluable"] },
+    "runDir": { "type": "string" },
+    "scenario": { "type": "string" },
+    "host": { "type": "string" },
+    "agentModel": { "type": "string" },
+    "judgeModel": { "type": "string" },
+    "deterministic": { "type": "object" },
+    "judge": { "type": "object" },
+    "usage": {
+      "type": "object",
+      "required": ["status", "agent", "judge", "total", "requirement"],
+      "additionalProperties": true,
+      "properties": {
+        "status": { "enum": ["measured", "unavailable", "invalid"] },
+        "agent": { "type": "object" },
+        "judge": { "type": "object" },
+        "total": { "type": "object" },
+        "requirement": { "type": "object" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

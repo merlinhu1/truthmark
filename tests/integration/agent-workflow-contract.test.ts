@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
 import { runCli } from "../helpers/run-cli.js";
@@ -160,9 +161,15 @@ describe("installed workflow contract", () => {
         repo.readFile(".gemini/commands/truthmark/preview.toml"),
       ).rejects.toThrow();
       await expect(repo.readFile("GEMINI.md")).rejects.toThrow();
-      await expect(repo.readFile(".gemini/skills/truthmark-sync/SKILL.md")).rejects.toThrow();
-      await expect(repo.readFile(".gemini/commands/truthmark/sync.toml")).rejects.toThrow();
-      expect(antigravitySyncRule).toContain("This rule is the Antigravity entrypoint");
+      await expect(
+        repo.readFile(".gemini/skills/truthmark-sync/SKILL.md"),
+      ).rejects.toThrow();
+      await expect(
+        repo.readFile(".gemini/commands/truthmark/sync.toml"),
+      ).rejects.toThrow();
+      expect(antigravitySyncRule).toContain(
+        "This rule is the Antigravity entrypoint",
+      );
       expect(cursorSyncSkill).toContain("Use as a Cursor Agent Skill.");
       expect(cursorSyncSkill).toContain("support/procedure.md");
       expect(checkSkill).toContain("name: truthmark-check");

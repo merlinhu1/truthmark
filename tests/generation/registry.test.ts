@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "node:test";
+import { expect } from "expect";
 
-import { getContentPrompt, listContentPrompts } from "../../src/generation/registry.js";
+import {
+  getContentPrompt,
+  listContentPrompts,
+} from "../../src/generation/registry.js";
 import { CONTENT_PROMPT_IDS } from "../../src/generation/types.js";
 
 describe("generation prompt ids", () => {
@@ -11,7 +15,9 @@ describe("generation prompt ids", () => {
 
 describe("content prompt registry", () => {
   it("lists registered prompts", () => {
-    expect(listContentPrompts().map((prompt) => prompt.id)).toEqual(["truth-doc-update"]);
+    expect(listContentPrompts().map((prompt) => prompt.id)).toEqual([
+      "truth-doc-update",
+    ]);
   });
 
   it("returns a prompt by id", () => {

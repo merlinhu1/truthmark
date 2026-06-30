@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, it } from "node:test";
+import { expect } from "expect";
 
 import { TRUTHMARK_WORKFLOW_MANIFEST } from "../../src/agents/workflow-manifest.js";
 import { runConfig } from "../../src/config/command.js";
@@ -11,7 +12,10 @@ import { buildWorkflowState } from "../../src/workflow-state/build.js";
 import type { WorkflowState } from "../../src/workflow-state/types.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
 
-const readTree = async (rootDir: string, relativeRoot: string): Promise<Record<string, string>> => {
+const readTree = async (
+  rootDir: string,
+  relativeRoot: string,
+): Promise<Record<string, string>> => {
   const absoluteRoot = path.join(rootDir, relativeRoot);
   const snapshot: Record<string, string> = {};
 
@@ -28,7 +32,9 @@ const readTree = async (rootDir: string, relativeRoot: string): Promise<Record<s
       if (entry.isDirectory()) {
         await visit(absolutePath);
       } else if (entry.isFile()) {
-        const relativePath = path.relative(rootDir, absolutePath).replace(/\\/gu, "/");
+        const relativePath = path
+          .relative(rootDir, absolutePath)
+          .replace(/\\/gu, "/");
         snapshot[relativePath] = await fs.readFile(absolutePath, "utf8");
       }
     }
@@ -50,7 +56,10 @@ const setupConfiguredRepo = async (
     "src/math.ts",
     "export function add(left: number, right: number) { return left + right; }\n",
   );
-  await repo.writeFile("tests/math.test.ts", "import { add } from '../src/math.js';\nvoid add;\n");
+  await repo.writeFile(
+    "tests/math.test.ts",
+    "import { add } from '../src/math.js';\nvoid add;\n",
+  );
   await runConfig(repo.rootDir, { force: false, stdout: false });
   await runInit(repo.rootDir);
   if (options.includeUnrelatedRoute) {
@@ -139,11 +148,14 @@ describe("action context", () => {
 
   it("restricts sync and document to routed truth and route writes", () => {
     for (const workflow of ["truthmark-sync", "truthmark-document"] as const) {
-      const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST[workflow], {
-        routeIndexPath: "docs/truthmark/routes/areas.md",
-        routeFiles: ["docs/truthmark/routes/areas/repository.md"],
-        truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
-      });
+      const context = buildWorkflowActionContext(
+        TRUTHMARK_WORKFLOW_MANIFEST[workflow],
+        {
+          routeIndexPath: "docs/truthmark/routes/areas.md",
+          routeFiles: ["docs/truthmark/routes/areas/repository.md"],
+          truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
+        },
+      );
 
       expect(context.mode).toBe("truth-doc-write");
       expect(context.allowedWritePaths).toEqual([
@@ -158,11 +170,14 @@ describe("action context", () => {
   });
 
   it("restricts structure to route files and starter truth docs", () => {
-    const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-structure"], {
-      routeIndexPath: "docs/truthmark/routes/areas.md",
-      routeFiles: ["docs/truthmark/routes/areas/new-area.md"],
-      starterTruthDocs: ["docs/truthmark/engineering/new-area.md"],
-    });
+    const context = buildWorkflowActionContext(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-structure"],
+      {
+        routeIndexPath: "docs/truthmark/routes/areas.md",
+        routeFiles: ["docs/truthmark/routes/areas/new-area.md"],
+        starterTruthDocs: ["docs/truthmark/engineering/new-area.md"],
+      },
+    );
 
     expect(context.mode).toBe("route-write");
     expect(context.allowedWritePaths).toEqual([
@@ -174,13 +189,16 @@ describe("action context", () => {
   });
 
   it("forbids truth documentation writes for realize", () => {
-    const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-realize"], {
-      routeIndexPath: "docs/truthmark/routes/areas.md",
-      routeFiles: ["docs/truthmark/routes/areas/repository.md"],
-      truthRoot: "docs/truthmark/engineering",
-      truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
-      codeWritePaths: ["src/**/*.ts"],
-    });
+    const context = buildWorkflowActionContext(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-realize"],
+      {
+        routeIndexPath: "docs/truthmark/routes/areas.md",
+        routeFiles: ["docs/truthmark/routes/areas/repository.md"],
+        truthRoot: "docs/truthmark/engineering",
+        truthDocs: ["docs/truthmark/engineering/repository/overview.md"],
+        codeWritePaths: ["src/**/*.ts"],
+      },
+    );
 
     expect(context.mode).toBe("code-write");
     expect(context.allowedWritePaths).toEqual(["src/**/*.ts"]);
@@ -193,17 +211,25 @@ describe("action context", () => {
   });
 
   it("restricts portal writes to configured output when enabled", () => {
-    const enabled = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-portal"], {
-      portalEnabled: true,
-      portalOutputPath: "docs/truthmark/generated/portal",
-    });
-    const disabled = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-portal"], {
-      portalEnabled: false,
-      portalOutputPath: "docs/truthmark/generated/portal",
-    });
+    const enabled = buildWorkflowActionContext(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-portal"],
+      {
+        portalEnabled: true,
+        portalOutputPath: "docs/truthmark/generated/portal",
+      },
+    );
+    const disabled = buildWorkflowActionContext(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-portal"],
+      {
+        portalEnabled: false,
+        portalOutputPath: "docs/truthmark/generated/portal",
+      },
+    );
 
     expect(enabled.mode).toBe("portal-write");
-    expect(enabled.allowedWritePaths).toEqual(["docs/truthmark/generated/portal/**"]);
+    expect(enabled.allowedWritePaths).toEqual([
+      "docs/truthmark/generated/portal/**",
+    ]);
     expect(disabled.allowedWritePaths).toEqual([]);
   });
 
@@ -214,7 +240,9 @@ describe("action context", () => {
       "truthmark-structure",
       "truthmark-portal",
     ] as const) {
-      const context = buildWorkflowActionContext(TRUTHMARK_WORKFLOW_MANIFEST[workflow]);
+      const context = buildWorkflowActionContext(
+        TRUTHMARK_WORKFLOW_MANIFEST[workflow],
+      );
 
       expect(context.allowedWritePaths).toEqual([]);
       expect(context.allowedWritePaths).not.toContain("*");
@@ -243,7 +271,9 @@ describe("buildWorkflowState", () => {
     expect(state.workflow).toBe("truthmark-sync");
     expect("base" in state).toBe(false);
     expect(state.workflow).not.toBe("truth-sync");
-    expect(state.changedFiles).toContainEqual(expect.objectContaining({ path: "src/math.ts" }));
+    expect(state.changedFiles).toContainEqual(
+      expect.objectContaining({ path: "src/math.ts" }),
+    );
     expect(state.affectedRoutes.length).toBeGreaterThan(0);
     expect(state.targetTruthDocs.length).toBeGreaterThan(0);
     expect(state.actionContext.mode).toBe("truth-doc-write");
@@ -251,25 +281,40 @@ describe("buildWorkflowState", () => {
       expect.arrayContaining(state.targetTruthDocs),
     );
     expect(state.checks.reviewChecklist).toEqual(
-      expect.arrayContaining(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reviewQuestions),
+      expect.arrayContaining(
+        TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reviewQuestions,
+      ),
     );
-    expect(state.actionContext.evidencePrompts.join("\n")).toContain("Evidence checklist");
+    expect(state.actionContext.evidencePrompts.join("\n")).toContain(
+      "Evidence checklist",
+    );
     expect(state.workflowCard.affectedFiles).toContain("src/math.ts");
     expect(state.workflowCard.likelyRouteOwners.length).toBeGreaterThan(0);
-    expect(state.workflowCard.suggestedTruthDocs).toEqual(state.targetTruthDocs);
+    expect(state.workflowCard.suggestedTruthDocs).toEqual(
+      state.targetTruthDocs,
+    );
     expect(state.workflowCard.skippedHelperStatus).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ helper: "validate-sync-report", status: "skipped" }),
+        expect.objectContaining({
+          helper: "validate-sync-report",
+          status: "skipped",
+        }),
       ]),
     );
     expect(JSON.stringify(state)).not.toContain(["required", "Gates"].join(""));
     expect(JSON.stringify(state)).not.toContain("requiredEvidence");
     expect(JSON.stringify(state)).not.toContain("reviewQuestions");
-    expect(state.checks.helpers.map((helper) => helper.id)).toContain("validate-sync-report");
-    expect(JSON.stringify((state.checks as { affectedTests?: string[] }).affectedTests ?? [])).toContain(
-      "tests/math.test.ts",
+    expect(state.checks.helpers.map((helper) => helper.id)).toContain(
+      "validate-sync-report",
     );
-    expect(state.reportSections).toEqual(TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections);
+    expect(
+      JSON.stringify(
+        (state.checks as { affectedTests?: string[] }).affectedTests ?? [],
+      ),
+    ).toContain("tests/math.test.ts");
+    expect(state.reportSections).toEqual(
+      TRUTHMARK_WORKFLOW_MANIFEST["truthmark-sync"].reportSections,
+    );
     expect(Array.isArray(state.diagnostics)).toBe(true);
     expect("base" in state).toBe(false);
     expect("contextPack" in state).toBe(false);
@@ -290,15 +335,15 @@ describe("buildWorkflowState", () => {
     expect(state.affectedRoutes.map((route) => route.sourcePath)).toEqual([
       "docs/truthmark/routes/areas/repository.md",
     ]);
-    expect(state.targetTruthDocs).toEqual(["docs/truthmark/engineering/repository/bootstrap-routing.md"]);
-    expect(state.actionContext.allowedWritePaths).toEqual(
-      [
-        "docs/truthmark/engineering/repository/bootstrap-routing.md",
-        "docs/truthmark/routes/areas.md",
-        "docs/truthmark/routes/areas/repository.md",
-        "docs/truthmark/routes/areas/unrelated.md",
-      ],
-    );
+    expect(state.targetTruthDocs).toEqual([
+      "docs/truthmark/engineering/repository/bootstrap-routing.md",
+    ]);
+    expect(state.actionContext.allowedWritePaths).toEqual([
+      "docs/truthmark/engineering/repository/bootstrap-routing.md",
+      "docs/truthmark/routes/areas.md",
+      "docs/truthmark/routes/areas/repository.md",
+      "docs/truthmark/routes/areas/unrelated.md",
+    ]);
     expect(state.actionContext.candidateStaleTruthDocs).toEqual([]);
   });
 
@@ -311,7 +356,9 @@ describe("buildWorkflowState", () => {
       base: "main",
       // Legacy callers may still pass this at runtime; WorkflowState must ignore it.
       includeContextPack: true,
-    } as Parameters<typeof buildWorkflowState>[1] & { includeContextPack: true });
+    } as Parameters<typeof buildWorkflowState>[1] & {
+      includeContextPack: true;
+    });
 
     expect("contextPack" in state).toBe(false);
     expect("sourceFiles" in state).toBe(false);
@@ -323,10 +370,14 @@ describe("buildWorkflowState", () => {
     const repo = await setupConfiguredRepo();
     repos.push(repo);
 
-    const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+    });
 
     expect(state.applicability.state).not.toBe("blocked");
-    expect(state.changedFiles).toContainEqual(expect.objectContaining({ path: "src/math.ts" }));
+    expect(state.changedFiles).toContainEqual(
+      expect.objectContaining({ path: "src/math.ts" }),
+    );
     expect(state.targetTruthDocs.length).toBeGreaterThan(0);
     expect(state.nextSteps.join("\n")).not.toContain("--base");
   });
@@ -336,10 +387,14 @@ describe("buildWorkflowState", () => {
     repos.push(repo);
     await repo.runGit(["branch", "-m", "feature/no-base"]);
 
-    const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+    });
 
     expect(state.applicability.state).toBe("needs_manual_review");
-    expect(state.applicability.reasons.join("\n")).toContain("Choose a comparison base with --base <ref>");
+    expect(state.applicability.reasons.join("\n")).toContain(
+      "Choose a comparison base with --base <ref>",
+    );
     expect(state.actionContext.allowedWritePaths).toEqual([]);
     expect(state.changedFiles).toEqual([]);
     expect(state.targetTruthDocs).toEqual([]);
@@ -351,10 +406,16 @@ describe("buildWorkflowState", () => {
     repos.push(repo);
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
 
-    const state = await buildWorkflowState(repo.rootDir, { workflow: "truthmark-sync" });
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+    });
 
-    expect(["needs_manual_review", "not_applicable"]).toContain(state.applicability.state);
-    expect(state.applicability.reasons.join("\n")).toContain("Missing .truthmark/config.yml");
+    expect(["needs_manual_review", "not_applicable"]).toContain(
+      state.applicability.state,
+    );
+    expect(state.applicability.reasons.join("\n")).toContain(
+      "Missing .truthmark/config.yml",
+    );
     expect(state.actionContext.allowedWritePaths).toEqual([]);
   });
 
@@ -368,7 +429,10 @@ describe("buildWorkflowState", () => {
       "docs/truthmark/routes/areas.md",
       "# Truthmark Areas\n\n## Docs Only\n\nTruth documents:\n- docs/truthmark/engineering/docs-only.md\n\nCode surface:\n- docs/**\n\nUpdate truth when:\n- docs change\n",
     );
-    await repo.writeFile("docs/truthmark/engineering/docs-only.md", "# Docs Only\n");
+    await repo.writeFile(
+      "docs/truthmark/engineering/docs-only.md",
+      "# Docs Only\n",
+    );
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
     await repo.writeFile("src/unmapped.ts", "export const value = 2;\n");
@@ -378,7 +442,9 @@ describe("buildWorkflowState", () => {
       base: "main",
     });
 
-    expect(["needs_routing_review", "needs_manual_review"]).toContain(state.applicability.state);
+    expect(["needs_routing_review", "needs_manual_review"]).toContain(
+      state.applicability.state,
+    );
     expect(state.targetTruthDocs).toEqual([]);
     expect(state.nextSteps.join("\n")).toMatch(/Truth Structure|route repair/u);
   });
@@ -391,7 +457,6 @@ describe("buildWorkflowState", () => {
       buildWorkflowState(repo.rootDir, { workflow: "truth-sync" as never }),
     ).rejects.toThrow(/Unknown Truthmark workflow/u);
   });
-
 
   it("does not mutate truth, route, or generated files", async () => {
     const repo = await setupConfiguredRepo();
