@@ -1,13 +1,8 @@
 import fs from "node:fs/promises";
-import path from "node:path";
-
 import type { TruthmarkConfig } from "../config/schema.js";
-import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
+import { isSafeExactFile, resolveRepoPath } from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
-import {
-  TRUTHMARK_BLOCK_END,
-  TRUTHMARK_BLOCK_START,
-} from "../templates/agents-block.js";
+import { parseManagedBlock } from "../managed-block.js";
 import {
   renderGeneratedSurfaceCatalog,
   renderGeneratedSurfaces,
@@ -35,26 +30,7 @@ export type LifecyclePlan = {
   applied: boolean;
 };
 
-type ParsedBlock =
-  | { status: "absent" }
-  | { status: "valid"; start: number; end: number }
-  | { status: "malformed" };
-
 const plannedContents = new WeakMap<LifecyclePlan, Map<string, string>>();
-
-export const parseManagedBlock = (content: string): ParsedBlock => {
-  const starts = [...content.matchAll(new RegExp(TRUTHMARK_BLOCK_START, "g"))];
-  const ends = [...content.matchAll(new RegExp(TRUTHMARK_BLOCK_END, "g"))];
-  if (starts.length === 0 && ends.length === 0) return { status: "absent" };
-  if (starts.length !== 1 || ends.length !== 1) return { status: "malformed" };
-  const start = starts[0].index;
-  const endStart = ends[0].index;
-  if (start === undefined || endStart === undefined || endStart < start) {
-    return { status: "malformed" };
-  }
-  return { status: "valid", start, end: endStart + TRUTHMARK_BLOCK_END.length };
-};
-
 const readFile = async (
   rootDir: string,
   filePath: string,
@@ -65,39 +41,6 @@ const readFile = async (
     if (error instanceof Error && "code" in error && error.code === "ENOENT")
       return null;
     throw error;
-  }
-};
-
-const pathIsSafe = async (
-  rootDir: string,
-  filePath: string,
-  allowMissing: boolean,
-): Promise<boolean> => {
-  try {
-    const absolutePath = resolveRepoPath(rootDir, filePath);
-    await assertRepoContainment(rootDir, absolutePath);
-    const relative = path.relative(rootDir, absolutePath);
-    let current = rootDir;
-    for (const segment of relative.split(path.sep)) {
-      current = path.join(current, segment);
-      try {
-        const stat = await fs.lstat(current);
-        if (stat.isSymbolicLink()) return false;
-        if (current === absolutePath) return stat.isFile() && stat.nlink === 1;
-        if (!stat.isDirectory()) return false;
-      } catch (error: unknown) {
-        if (
-          error instanceof Error &&
-          "code" in error &&
-          error.code === "ENOENT"
-        )
-          return allowMissing;
-        throw error;
-      }
-    }
-    return false;
-  } catch {
-    return false;
   }
 };
 
@@ -199,7 +142,7 @@ export const buildLifecyclePlan = async (
   let applicable = true;
 
   for (const surface of desired.filter(({ managedBlock }) => managedBlock)) {
-    if (!(await pathIsSafe(rootDir, surface.path, true))) {
+    if (!(await isSafeExactFile(rootDir, surface.path, true))) {
       applicable = false;
       entries.push({
         path: surface.path,
@@ -243,7 +186,7 @@ export const buildLifecyclePlan = async (
     if (desiredPaths.has(surface.path)) continue;
     const content = await readFile(rootDir, surface.path);
     if (content === null) continue;
-    if (!(await pathIsSafe(rootDir, surface.path, false))) {
+    if (!(await isSafeExactFile(rootDir, surface.path, false))) {
       applicable = false;
       entries.push({
         path: surface.path,
@@ -339,7 +282,7 @@ export const applyLifecyclePlan = async (
       entry.action !== "remove-managed-block"
     )
       return null;
-    if (!(await pathIsSafe(rootDir, entry.path, false)))
+    if (!(await isSafeExactFile(rootDir, entry.path, false)))
       return `Unsafe lifecycle target: ${entry.path}`;
     const content = await readFile(rootDir, entry.path);
     if (content === null || expected?.get(entry.path) !== content)
@@ -371,7 +314,6 @@ export const applyLifecyclePlan = async (
   }
   for (const entry of plan.entries) {
     const absolutePath = resolveRepoPath(rootDir, entry.path);
-    await assertRepoContainment(rootDir, absolutePath);
     if (entry.action === "remove-file") {
       const stat = await fs.lstat(absolutePath);
       if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1)

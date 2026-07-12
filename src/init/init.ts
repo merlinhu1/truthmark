@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 import { loadConfig } from "../config/load.js";
+import { upsertManagedBlock as upsertManagedInstructionBlock } from "../managed-block.js";
 import type { TruthmarkConfig } from "../config/schema.js";
 import type {
   CommandResult,
@@ -13,151 +14,12 @@ import {
   writeRepoFile,
 } from "../fs/paths.js";
 import { scaffoldHierarchy } from "./hierarchy.js";
-import {
-  renderAgentsBlock,
-  TRUTHMARK_BLOCK_END,
-  TRUTHMARK_BLOCK_START,
-} from "../templates/agents-block.js";
+import { renderAgentsBlock } from "../templates/agents-block.js";
 import {
   renderGeneratedSurfaces,
   type GeneratedSurface,
 } from "../templates/generated-surfaces.js";
 import { applyLifecyclePlan, buildLifecyclePlan } from "./lifecycle.js";
-
-const escapeRegExp = (value: string): string => {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-};
-
-const MANAGED_WORKFLOW_HEADING = "## Truthmark Workflow";
-const CANONICAL_MANAGED_LINES = new Set(
-  renderAgentsBlock()
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(
-      (line) =>
-        line.length > 0 &&
-        line !== TRUTHMARK_BLOCK_START &&
-        line !== TRUTHMARK_BLOCK_END,
-    ),
-);
-
-const countCanonicalManagedLineMatches = (lines: string[]): number => {
-  return lines.reduce((matchCount, line) => {
-    return CANONICAL_MANAGED_LINES.has(line.trim())
-      ? matchCount + 1
-      : matchCount;
-  }, 0);
-};
-
-const isManagedChunk = (lines: string[], minimumMatches: number): boolean => {
-  return countCanonicalManagedLineMatches(lines) >= minimumMatches;
-};
-
-const removeTrailingManagedChunk = (preservedLines: string[]): void => {
-  let startIndex = -1;
-
-  for (let index = preservedLines.length - 1; index >= 0; index -= 1) {
-    if (preservedLines[index].trim() === MANAGED_WORKFLOW_HEADING) {
-      startIndex = index;
-      break;
-    }
-  }
-
-  if (startIndex === -1) {
-    return;
-  }
-
-  const candidateChunk = preservedLines.slice(startIndex);
-  const looksManaged = isManagedChunk(candidateChunk, 4);
-
-  if (looksManaged) {
-    preservedLines.splice(startIndex);
-  }
-};
-
-const upsertManagedBlock = (
-  existingContent: string | null,
-  block: string,
-): string => {
-  if (!existingContent || existingContent.trim().length === 0) {
-    return block;
-  }
-
-  const normalizedExistingContent = existingContent;
-  const startMarkerPattern = new RegExp(
-    escapeRegExp(TRUTHMARK_BLOCK_START),
-    "g",
-  );
-  const endMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_END), "g");
-  const managedBlockPattern = new RegExp(
-    `${escapeRegExp(TRUTHMARK_BLOCK_START)}[\\s\\S]*?${escapeRegExp(TRUTHMARK_BLOCK_END)}`,
-    "g",
-  );
-  const completeBlocks =
-    normalizedExistingContent.match(managedBlockPattern) ?? [];
-  const startCount =
-    normalizedExistingContent.match(startMarkerPattern)?.length ?? 0;
-  const endCount =
-    normalizedExistingContent.match(endMarkerPattern)?.length ?? 0;
-
-  if (startCount === 1 && endCount === 1 && completeBlocks.length === 1) {
-    return normalizedExistingContent.replace(managedBlockPattern, block);
-  }
-
-  const preservedLines: string[] = [];
-  let insideManagedBlock = false;
-  let managedLines: string[] = [];
-
-  for (const line of normalizedExistingContent.split("\n")) {
-    const trimmedLine = line.trim();
-
-    if (trimmedLine === TRUTHMARK_BLOCK_START) {
-      if (insideManagedBlock && !isManagedChunk(managedLines, 2)) {
-        preservedLines.push(...managedLines);
-      }
-
-      insideManagedBlock = true;
-      managedLines = [];
-      continue;
-    }
-
-    if (trimmedLine === TRUTHMARK_BLOCK_END) {
-      if (insideManagedBlock) {
-        insideManagedBlock = false;
-        managedLines = [];
-        continue;
-      }
-
-      if (!insideManagedBlock) {
-        removeTrailingManagedChunk(preservedLines);
-      }
-
-      continue;
-    }
-
-    if (insideManagedBlock) {
-      managedLines.push(line);
-      continue;
-    }
-
-    preservedLines.push(line);
-  }
-
-  if (insideManagedBlock && !isManagedChunk(managedLines, 2)) {
-    preservedLines.push(...managedLines);
-  }
-
-  const preservedContent = preservedLines
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-
-  if (preservedContent.length === 0) {
-    return block;
-  }
-
-  return `${preservedContent}\n\n${block}`;
-};
 
 const writeManagedAgentsFile = async (
   rootDir: string,
@@ -181,7 +43,7 @@ const writeManagedAgentsFile = async (
   return writeRepoFile(
     rootDir,
     path,
-    upsertManagedBlock(existingContent, block),
+    upsertManagedInstructionBlock(existingContent, block),
   );
 };
 

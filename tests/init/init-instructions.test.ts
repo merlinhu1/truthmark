@@ -5,6 +5,11 @@ import { expect } from "expect";
 
 import { runConfig } from "../../src/config/command.js";
 import { runInit } from "../../src/init/init.js";
+import type { LifecyclePlan } from "../../src/init/lifecycle.js";
+import {
+  TRUTHMARK_BLOCK_END,
+  TRUTHMARK_BLOCK_START,
+} from "../../src/templates/agents-block.js";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
 
@@ -98,6 +103,171 @@ ignore: []
       await repo.cleanup();
     }
   });
+
+  it("ignores legacy instruction_targets and only writes platform-derived instruction surfaces", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        `version: 2
+platforms:
+  - codex
+  - claude-code
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
+instruction_targets:
+  - src/session.ts
+frontmatter:
+  required: []
+  recommended: []
+ignore: []
+`,
+      );
+      await repo.writeFile("src/session.ts", "export const session = true;\n");
+
+      const result = await runInit(repo.rootDir);
+
+      expect(
+        await repo.readFile("src/session.ts"),
+      ).toBe("export const session = true;\n");
+      expect(await repo.readFile("AGENTS.md")).toContain("Truthmark Workflow");
+      expect(await repo.readFile("CLAUDE.md")).toContain("Truthmark Workflow");
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining("instruction_targets"),
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rerenders managed AGENTS with CRLF user prefixes and suffixes preserved", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        `version: 2
+platforms:
+  - codex
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
+frontmatter:
+  required: []
+  recommended:
+    - status
+ignore: []
+`,
+      );
+      await runInit(repo.rootDir);
+
+      const prefix = "  before\r\n";
+      const suffix = "\r\n  after  \r\n\r\n";
+      const generated = await repo.readFile("AGENTS.md");
+      await repo.writeFile(
+        "AGENTS.md",
+        `${prefix}${generated.trimEnd().replace(/\n/g, "\r\n")}${suffix}`,
+      );
+      const result = await runInit(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.not.arrayContaining([
+          expect.objectContaining({ severity: "error" }),
+        ]),
+      );
+      const refreshed = await repo.readFile("AGENTS.md");
+      expect(refreshed.startsWith(prefix)).toBe(true);
+      expect(refreshed.endsWith(suffix)).toBe(true);
+      expect(refreshed).toContain("Truthmark Workflow");
+      expect(refreshed).toContain("Truthmark-managed block");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  for (const [caseName, malformedBlock] of [
+    [
+      "duplicate managed blocks",
+      `${TRUTHMARK_BLOCK_START}\nManaged 1\n${TRUTHMARK_BLOCK_START}\nManaged 2\n${TRUTHMARK_BLOCK_END}`,
+    ],
+    [
+      "reversed managed markers",
+      `${TRUTHMARK_BLOCK_END}\nManaged 1\n${TRUTHMARK_BLOCK_START}\n`,
+    ],
+    [
+      "unmatched managed start marker",
+      `${TRUTHMARK_BLOCK_START}\nManaged 1\n`,
+    ],
+    [
+      "unmatched managed end marker",
+      `Managed 1\n${TRUTHMARK_BLOCK_END}\n`,
+    ],
+  ] as const) {
+    it(`blocks init when managed markers are ${caseName}`, async () => {
+      const repo = await createTempRepo();
+
+      try {
+        await runConfig(repo.rootDir, {});
+        await repo.writeFile(
+          ".truthmark/config.yml",
+          `version: 2
+platforms:
+  - codex
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
+frontmatter:
+  required: []
+  recommended:
+    - status
+ignore: []
+`,
+        );
+        await runInit(repo.rootDir);
+        await repo.writeFile("AGENTS.md", `${malformedBlock}\n`);
+        const before = await repo.readFile("AGENTS.md");
+
+        const result = await runInit(repo.rootDir);
+
+        expect(result.summary).toContain("preflight failed");
+        expect(await repo.readFile("AGENTS.md")).toBe(before);
+        expect(result.diagnostics).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              category: "generated-surface",
+              severity: "error",
+              message: expect.stringContaining("preflight"),
+            }),
+          ]),
+        );
+        const lifecyclePlan = result.data?.lifecyclePlan as LifecyclePlan | undefined;
+        expect(lifecyclePlan?.entries).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              action: "manual-review",
+              path: "AGENTS.md",
+            }),
+          ]),
+        );
+      } finally {
+        await repo.cleanup();
+      }
+    });
+  }
 
   it("removes auto-removable retired generated surfaces but preserves stale Gemini surfaces", async () => {
     const repo = await createTempRepo();

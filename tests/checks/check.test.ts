@@ -2248,6 +2248,50 @@ Update truth when:
     }
   });
 
+  it("limits coverage diagnostics for mixed-surface repositories to ordinary functional source only", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir);
+      const configPath = path.join(repo.rootDir, ".truthmark/config.yml");
+      const configFile = await fs.readFile(configPath, "utf8");
+      await fs.writeFile(
+        configPath,
+        configFile.replace(
+          "version: 2\n",
+          [
+            "version: 2",
+            "platforms:",
+            "  - codex",
+            "",
+          ].join("\n"),
+        ),
+      );
+      await runInit(repo.rootDir);
+
+      await repo.writeFile("backend/service.ts", "export const service = true;\n");
+      await repo.writeFile("README.md", "# Read me\n");
+      await repo.writeFile("assets/logo.png", "pretend-png\n");
+      await repo.writeFile("tests/service.test.ts", "void 0;\n");
+      await repo.writeFile("backend/service.spec.ts", "void 0;\n");
+      await repo.writeFile("backend/service.test.ts", "void 0;\n");
+      await repo.writeFile("docs/truthmark/engineering/overview.md", "# Overview\n");
+      await repo.writeFile(
+        "tests/nested/nested.unit.spec.ts",
+        "void 0;\n",
+      );
+
+      const result = await runCheck(repo.rootDir);
+      const coverageFiles = result.diagnostics
+        .filter((diagnostic) => diagnostic.category === "coverage")
+        .map((diagnostic) => diagnostic.file);
+
+      expect(coverageFiles).toEqual(["backend/service.ts"]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("does not treat symlinked source directories outside the repo as live code coverage", async () => {
     const repo = await createTempRepo();
 

@@ -3,12 +3,9 @@ import fs from "node:fs/promises";
 import type { TruthmarkConfig } from "../config/schema.js";
 import { resolveRepoPath } from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
-import {
-  TRUTHMARK_BLOCK_END,
-  TRUTHMARK_BLOCK_START,
-} from "../templates/agents-block.js";
 import { renderGeneratedSurfaces } from "../templates/generated-surfaces.js";
 import { buildLifecyclePlan } from "../init/lifecycle.js";
+import { extractManagedBlock } from "../managed-block.js";
 
 const readOptionalFile = async (
   rootDir: string,
@@ -23,17 +20,6 @@ const readOptionalFile = async (
 
     throw error;
   }
-};
-
-const extractManagedBlock = (content: string): string | null => {
-  const startIndex = content.indexOf(TRUTHMARK_BLOCK_START);
-  const endIndex = content.indexOf(TRUTHMARK_BLOCK_END);
-
-  if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
-    return null;
-  }
-
-  return content.slice(startIndex, endIndex + TRUTHMARK_BLOCK_END.length);
 };
 
 const normalizeGeneratedSurfaceContent = (
