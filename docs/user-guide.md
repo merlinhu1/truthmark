@@ -69,6 +69,7 @@ Unknown platform names are config errors.
 Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
 
 Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned. Legacy version-2 `instruction_targets` values still parse but are ignored and never authorize writes.
+If `platforms` is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
 
 Before leaving Truthmark, run `truthmark uninstall --dry-run`, review the exact-path `truthmark-lifecycle/v0` plan, then run `truthmark uninstall --apply`. Uninstall preserves `.truthmark/config.yml`, routes, truth documents, editable templates, Portal presentation output, Gemini files, unrelated host-directory files, and content outside managed markers. Remove those manually only after review. A globally installed npm package is separate; remove it with your package manager if desired.
 
@@ -249,7 +250,7 @@ Important config areas include:
 | Fixed truth lanes | Product truth lives under `product/` and engineering truth under `engineering/` inside `truthmark.workspace`. |
 | Fixed templates | Truth-doc templates live under `templates/` inside `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
-| `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
+| `instruction_targets` | Legacy parse-only compatibility field; still parsed for compatibility but ignored by the renderer and never a write authority. |
 | `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
 | `frontmatter.recommended` | Metadata fields that produce review diagnostics when missing. |
 | `ignore` | Glob patterns excluded from relevant checks and routing logic. |

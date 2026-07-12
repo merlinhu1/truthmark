@@ -11,6 +11,7 @@ export const SUPPORTED_PLATFORMS = [
 
 export type TruthmarkPlatform = (typeof SUPPORTED_PLATFORMS)[number];
 
+// Omitted platforms are deliberate host-neutral state: no active platform ownership is inferred; empty means deprovisioned.
 export const DEFAULT_PLATFORMS =
   [] as const satisfies readonly TruthmarkPlatform[];
 

@@ -29,7 +29,7 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
 - Managed-block removal preserves all bytes outside the single valid marker range; a block-only file is removed.
 
 - When `platforms` is omitted, fresh config does not assume a host platform.
-- `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries.
+- `platforms` is the complete platform-ownership declaration. An explicit platform refreshes or retains renderer-owned instruction surfaces. Omitting `platforms` means no active platform, so `truthmark init` reconciles recognized generated surfaces/blocks away to an empty rendered host set.
 - Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents.
 - Generated helper manifest and helper policy files are intentionally not emitted.
 - GitHub Copilot prompt files are lightweight workflow adapters for supported generated workflows.
