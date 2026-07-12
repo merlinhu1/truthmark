@@ -224,6 +224,6 @@ Ini bukan layanan ter-host, server MCP, basis data vektor, lapisan memori tersem
 
 MIT. Lihat [LICENSE](../../LICENSE).
 
-## Safe removal
+## Penghapusan aman
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+Gunakan `truthmark uninstall --dry-run` untuk meninjau permukaan host yang tepat dihasilkan, lalu `truthmark uninstall --apply` untuk menghapusnya. Truth hasil penulisan, konfigurasi, template, keluaran Portal, berkas Gemini, dan berkas pengguna yang tidak terkait akan tetap dipertahankan; hapus instalasi npm global secara terpisah melalui pengelola paket Anda.

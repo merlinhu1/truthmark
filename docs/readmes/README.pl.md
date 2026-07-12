@@ -224,6 +224,6 @@ Nie jest usługą hostowaną, serwerem MCP, wektorową bazą danych, ukrytą war
 
 MIT. Zobacz [LICENSE](../../LICENSE).
 
-## Safe removal
+## Bezpieczne usuwanie
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+Użyj `truthmark uninstall --dry-run`, aby przejrzeć dokładnie wygenerowane powierzchnie hosta, a następnie `truthmark uninstall --apply`, aby je usunąć. Utworzone truth, konfiguracja, szablony, wyjście Portalu, pliki Gemini i niezwiązane pliki użytkownika są zachowane; globalną instalację npm usuń oddzielnie za pomocą swojego menedżera pakietów.

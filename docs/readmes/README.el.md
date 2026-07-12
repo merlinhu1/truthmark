@@ -224,6 +224,6 @@ keep the result reviewable in Git
 
 MIT. Δείτε [LICENSE](../../LICENSE).
 
-## Safe removal
+## Ασφαλής κατάργηση
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+Χρησιμοποιήστε το `truthmark uninstall --dry-run` για να ελέγξετε τις ακριβώς παραγόμενες επιφάνειες host και στη συνέχεια το `truthmark uninstall --apply` για να τις αφαιρέσετε. Το δημιουργημένο truth, η διαμόρφωση, τα templates, η έξοδος του Portal, τα αρχεία Gemini και τα μη σχετιζόμενα αρχεία χρήστη διατηρούνται. Καταργήστε την παγκόσμια εγκατάσταση του npm ξεχωριστά με το εργαλείο διαχείρισης πακέτων σας.

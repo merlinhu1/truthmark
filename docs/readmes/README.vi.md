@@ -224,6 +224,6 @@ Nó không phải dịch vụ lưu trữ, máy chủ MCP, cơ sở dữ liệu v
 
 MIT. Xem [LICENSE](../../LICENSE).
 
-## Safe removal
+## Gỡ cài đặt an toàn
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+Sử dụng `truthmark uninstall --dry-run` để xem lại chính xác các bề mặt host đã tạo ra, rồi `truthmark uninstall --apply` để loại bỏ chúng. Các truth đã tạo, cấu hình, mẫu, đầu ra Portal, tệp Gemini và các tệp người dùng không liên quan sẽ được giữ nguyên; hãy gỡ bỏ cài đặt npm toàn cục riêng biệt bằng trình quản lý gói của bạn.

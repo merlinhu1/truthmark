@@ -224,6 +224,6 @@ Barındırılan bir hizmet, MCP sunucusu, vektör veritabanı, gizli bellek katm
 
 MIT. Bkz. [LICENSE](../../LICENSE).
 
-## Safe removal
+## Güvenli kaldırma
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+`truthmark uninstall --dry-run` komutunu kullanarak tam olarak oluşturulan ana bilgisayar yüzeylerini inceleyin, ardından kaldırmak için `truthmark uninstall --apply` komutunu çalıştırın. Oluşturulan truth, yapılandırma, şablonlar, Portal çıktısı, Gemini dosyaları ve alakasız kullanıcı dosyaları korunur; global npm kurulumunu paket yöneticinizle ayrı olarak kaldırın.

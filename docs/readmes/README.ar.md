@@ -224,6 +224,6 @@ Truthmark صغير عمداً: محلي، ملتزم به، مرتبط بالف�
 
 MIT. راجع [LICENSE](../../LICENSE).
 
-## Safe removal
+## إزالة آمنة
 
-Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.
+استخدم `truthmark uninstall --dry-run` لمراجعة أسطح الاستضافة المولّدة بدقة، ثم `truthmark uninstall --apply` لإزالتها. يتم الاحتفاظ بـ truth المؤلفة والتكوين والقوالب ومخرجات البوابة وملفات Gemini والملفات غير المتعلقة بالمستخدم؛ أزل التثبيت العالمي لـ npm بشكل منفصل عبر مدير الحزم.
