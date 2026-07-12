@@ -122,3 +122,7 @@ This capability covers:
 - ../../../../src/agents/workflow-manifest.ts
 - ../../../../src/templates/workflow-surfaces.ts
 - ../../../../src/templates/generated-surfaces.ts
+
+## Host instruction ownership (2026-07-10)
+
+Configured platforms, not arbitrary configuration paths, select instruction files. Shared-contract hosts aggregate ownership of `AGENTS.md`; Claude Code owns `CLAUDE.md`; other renderer-specific canonical instruction surfaces remain host-owned. Disabling a host makes only its exact recognized outputs eligible for reconciliation.

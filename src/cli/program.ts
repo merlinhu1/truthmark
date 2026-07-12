@@ -8,6 +8,7 @@ import {
   runImpact,
   runIndex,
   runInit,
+  runUninstall,
   runValidateDocumentReport,
   runValidateSyncReport,
   runValidateWriteLease,
@@ -37,8 +38,12 @@ type WorkflowOptions = OutputOptions & {
   base?: string;
 };
 
+type UninstallOptions = OutputOptions & { dryRun?: boolean; apply?: boolean };
+
 const markFailedWhenErrorDiagnosticsExist = (result: CommandResult): void => {
-  if (result.diagnostics.some((diagnostic) => diagnostic.severity === "error")) {
+  if (
+    result.diagnostics.some((diagnostic) => diagnostic.severity === "error")
+  ) {
     process.exitCode = 1;
   }
 };
@@ -49,12 +54,20 @@ const writeResult = (result: CommandResult, options: OutputOptions): void => {
   markFailedWhenErrorDiagnosticsExist(result);
 };
 
-const renderValidationHuman = (result: WorkflowHelperValidationResult): string => {
+const renderValidationHuman = (
+  result: WorkflowHelperValidationResult,
+): string => {
   if (result.ok === true) {
-    return [`${result.helper}: ok`, ...result.checks.map((check) => `- ${check}`)].join("\n");
+    return [
+      `${result.helper}: ok`,
+      ...result.checks.map((check) => `- ${check}`),
+    ].join("\n");
   }
 
-  return [`${result.helper}: failed`, ...result.errors.map((error) => `- ${error}`)].join("\n");
+  return [
+    `${result.helper}: failed`,
+    ...result.errors.map((error) => `- ${error}`),
+  ].join("\n");
 };
 
 const toValidationCommandResult = (
@@ -93,14 +106,21 @@ export const buildProgram = (): Command => {
 
   program
     .name("truthmark")
-    .description("Git-native, branch-scoped truth workflow installer for local AI coding agents.")
+    .description(
+      "Git-native, branch-scoped truth workflow installer for local AI coding agents.",
+    )
     .showHelpAfterError();
 
   addJsonOption(
     program
       .command("config")
-      .description("Create or render the Truthmark repository config before initialization.")
-      .option("--stdout", "Render default config in the JSON data payload without writing")
+      .description(
+        "Create or render the Truthmark repository config before initialization.",
+      )
+      .option(
+        "--stdout",
+        "Render default config in the JSON data payload without writing",
+      )
       .option("--force", "Overwrite an existing .truthmark/config.yml"),
   ).action(async (options: ConfigOptions) => {
     writeResult(await runConfig(options), options);
@@ -109,9 +129,32 @@ export const buildProgram = (): Command => {
   addJsonOption(
     program
       .command("init")
-      .description("Initialize Truthmark workflow files in the current repository."),
+      .description(
+        "Initialize Truthmark workflow files in the current repository.",
+      ),
   ).action(async (options: OutputOptions) => {
     writeResult(await runInit(), options);
+  });
+
+  addJsonOption(
+    program
+      .command("uninstall")
+      .description(
+        "Remove recognized generated host surfaces while preserving truth, config, Portal output, Gemini, and user files.",
+      )
+      .option("--dry-run", "Plan removals without changing files")
+      .option("--apply", "Apply the planned safe removals"),
+  ).action(async (options: UninstallOptions) => {
+    if (Boolean(options.dryRun) === Boolean(options.apply)) {
+      program.error(
+        "truthmark uninstall requires exactly one of --dry-run or --apply",
+      );
+      return;
+    }
+    writeResult(
+      await runUninstall(options.apply ? "apply" : "dry-run"),
+      options,
+    );
   });
 
   addJsonOption(
@@ -126,7 +169,9 @@ export const buildProgram = (): Command => {
   addJsonOption(
     program
       .command("index")
-      .description("Inspect derived Truthmark workflow routing metadata for the current checkout."),
+      .description(
+        "Inspect derived Truthmark workflow routing metadata for the current checkout.",
+      ),
   ).action(async (options: OutputOptions) => {
     writeResult(await runIndex(), options);
   });
@@ -134,7 +179,9 @@ export const buildProgram = (): Command => {
   addJsonOption(
     program
       .command("impact")
-      .description("Map changed files to truth routes, docs, owners, and tests.")
+      .description(
+        "Map changed files to truth routes, docs, owners, and tests.",
+      )
       .requiredOption("--base <ref>", "Base Git ref to compare against"),
   ).action(async (options: ImpactOptions) => {
     writeResult(await runImpact({ base: options.base }), options);
@@ -147,8 +194,13 @@ export const buildProgram = (): Command => {
   addJsonOption(
     workflow
       .command("status")
-      .description("Return schema-versioned workflow state for a canonical workflow ID.")
-      .option("--workflow <workflow>", "Canonical workflow ID, such as truthmark-sync")
+      .description(
+        "Return schema-versioned workflow state for a canonical workflow ID.",
+      )
+      .option(
+        "--workflow <workflow>",
+        "Canonical workflow ID, such as truthmark-sync",
+      )
       .option("--base <ref>", "Base Git ref for impact-backed workflow state"),
   ).action(async (options: WorkflowOptions) => {
     writeResult(
@@ -162,7 +214,9 @@ export const buildProgram = (): Command => {
 
   const validate = program
     .command("validate")
-    .description("Run optional Truthmark workflow helper validators from the installed CLI.");
+    .description(
+      "Run optional Truthmark workflow helper validators from the installed CLI.",
+    );
 
   addJsonOption(
     validate
@@ -170,7 +224,11 @@ export const buildProgram = (): Command => {
       .description("Validate a Truth Sync report file.")
       .argument("<report-file>", "Truth Sync report file"),
   ).action(async (reportFile: string, options: OutputOptions) => {
-    writeValidationResult("validate sync-report", await runValidateSyncReport(reportFile), options);
+    writeValidationResult(
+      "validate sync-report",
+      await runValidateSyncReport(reportFile),
+      options,
+    );
   });
 
   addJsonOption(
@@ -189,7 +247,9 @@ export const buildProgram = (): Command => {
   addJsonOption(
     validate
       .command("write-lease")
-      .description("Validate a workflow write lease or worker report against changed files.")
+      .description(
+        "Validate a workflow write lease or worker report against changed files.",
+      )
       .argument("<lease-or-report-file>", "Lease or worker report file")
       .argument("<changed-files-file>", "Newline-separated changed file list"),
   ).action(

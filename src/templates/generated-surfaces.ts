@@ -1,4 +1,8 @@
-import type { TruthmarkConfig, TruthmarkPlatform } from "../config/schema.js";
+import {
+  SUPPORTED_PLATFORMS,
+  type TruthmarkConfig,
+  type TruthmarkPlatform,
+} from "../config/schema.js";
 import { renderAgentsBlock } from "./agents-block.js";
 import {
   renderTruthmarkCopilotCheckPrompt,
@@ -90,8 +94,50 @@ export type GeneratedSurface = {
   managedBlock?: boolean;
 };
 
-const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
+export type GeneratedSurfaceOwner =
+  | {
+      kind: "platform" | "portal";
+      platform: TruthmarkPlatform;
+    }
+  | {
+      kind: "retired";
+      manualCleanupOnly: boolean;
+    };
+
+export type GeneratedSurfaceCatalogEntry = GeneratedSurface & {
+  owners: GeneratedSurfaceOwner[];
+  recognizedContents: string[];
+};
+
+export const RETIRED_GENERATED_SURFACES = {
+  exactPaths: [
+    "GEMINI.md",
+    ".github/prompts/truthmark-preview.prompt.md",
+    ".cursor/rules/truthmark-structure.mdc",
+    ".cursor/rules/truthmark-document.mdc",
+    ".cursor/rules/truthmark-sync.mdc",
+    ".cursor/rules/truthmark-realize.mdc",
+    ".cursor/rules/truthmark-check.mdc",
+    ".cursor/rules/truthmark-portal.mdc",
+  ],
+  recursiveRoots: [".gemini"],
+  skillRoots: [
+    ".agents/skills",
+    ".opencode/skills",
+    ".claude/skills",
+    ".github/skills",
+    ".cursor/skills",
+  ],
+  retiredPackages: ["truthmark-preview"],
+  retiredPackageFiles: ["helper-manifest.yml", "support/helper-policy.md"],
+} as const;
+
+const codexFiles = (
+  config: TruthmarkConfig,
+  block: string,
+): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
+    ...instructionBlockFiles(["AGENTS.md"], block),
     ...renderTruthmarkSkillPackage({
       skillPath: TRUTHMARK_STRUCTURE_SKILL_PATH,
       workflowId: "truthmark-structure",
@@ -166,7 +212,7 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
         skillPath: TRUTHMARK_PORTAL_SKILL_PATH,
         workflowId: "truthmark-portal",
         host: "codex",
-      config,
+        config,
       }),
       {
         path: TRUTHMARK_PORTAL_SKILL_METADATA_PATH,
@@ -178,8 +224,12 @@ const codexFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
   return files;
 };
 
-const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
+const opencodeFiles = (
+  config: TruthmarkConfig,
+  block: string,
+): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
+    ...instructionBlockFiles(["AGENTS.md"], block),
     ...renderTruthmarkSkillPackage({
       skillPath: ".opencode/skills/truthmark-structure/SKILL.md",
       workflowId: "truthmark-structure",
@@ -234,7 +284,7 @@ const opencodeFiles = (config: TruthmarkConfig): GeneratedSurface[] => {
         skillPath: ".opencode/skills/truthmark-portal/SKILL.md",
         workflowId: "truthmark-portal",
         host: "opencode",
-      config,
+        config,
       }),
     );
   }
@@ -502,9 +552,9 @@ const filesForPlatform = (
 ): GeneratedSurface[] => {
   switch (platform) {
     case "codex":
-      return codexFiles(config);
+      return codexFiles(config, block);
     case "opencode":
-      return opencodeFiles(config);
+      return opencodeFiles(config, block);
     case "claude-code":
       return claudeFiles(config, block);
     case "github-copilot":
@@ -520,14 +570,80 @@ export const renderGeneratedSurfaces = (
   config: TruthmarkConfig,
   block = renderAgentsBlock(config),
 ): GeneratedSurface[] => {
-  const files = [
-    ...instructionBlockFiles(config.instructionTargets, block),
-    ...config.platforms.flatMap((platform) =>
-      filesForPlatform(platform, config, block),
-    ),
-  ];
+  const files = config.platforms.flatMap((platform) =>
+    filesForPlatform(platform, config, block),
+  );
 
   return Array.from(
     new Map(files.map((file) => [file.path, file])).values(),
   ).sort((left, right) => left.path.localeCompare(right.path));
+};
+
+export const renderGeneratedSurfaceCatalog = (
+  config: TruthmarkConfig,
+): GeneratedSurfaceCatalogEntry[] => {
+  const catalog = new Map<string, GeneratedSurfaceCatalogEntry>();
+
+  for (const platform of SUPPORTED_PLATFORMS) {
+    const baseConfig = {
+      ...config,
+      platforms: [platform],
+      truthmark: {
+        ...config.truthmark,
+        generated: { portal: { enabled: false } },
+      },
+    };
+    const basePaths = new Set(
+      renderGeneratedSurfaces(baseConfig).map(({ path }) => path),
+    );
+
+    for (const surface of renderGeneratedSurfaces({
+      ...baseConfig,
+      truthmark: {
+        ...baseConfig.truthmark,
+        generated: { portal: { enabled: true } },
+      },
+    })) {
+      const owner: GeneratedSurfaceOwner = {
+        kind: basePaths.has(surface.path) ? "platform" : "portal",
+        platform,
+      };
+      const existing = catalog.get(surface.path);
+      const recognizedContent = surface.content.endsWith("\n")
+        ? surface.content
+        : `${surface.content}\n`;
+      if (existing) {
+        existing.owners.push(owner);
+        if (!existing.recognizedContents.includes(recognizedContent)) {
+          existing.recognizedContents.push(recognizedContent);
+        }
+      } else {
+        catalog.set(surface.path, {
+          ...surface,
+          owners: [owner],
+          recognizedContents: [recognizedContent],
+        });
+      }
+    }
+  }
+
+  for (const retiredPath of RETIRED_GENERATED_SURFACES.exactPaths) {
+    if (!catalog.has(retiredPath))
+      catalog.set(retiredPath, {
+        path: retiredPath,
+        content: "",
+        owners: [
+          {
+            kind: "retired",
+            manualCleanupOnly:
+              retiredPath === "GEMINI.md" || retiredPath.startsWith(".gemini/"),
+          },
+        ],
+        recognizedContents: [],
+      });
+  }
+
+  return [...catalog.values()].sort((left, right) =>
+    left.path.localeCompare(right.path),
+  );
 };

@@ -122,4 +122,8 @@ Update when check categories, severity rules, lane audit behavior, or product ki
 - src/output/diagnostic.ts
 - tests/checks/check.test.ts
 - tests/checks/frontmatter.test.ts
-- tests/templates/generated-surfaces.test.ts
+- tests/checks/check.test.ts
+
+## Inactive surfaces and unknown roots (2026-07-10)
+
+Check reports unmapped functional code under any Git-visible root and feeds those findings into routing-coverage and ownership-clarity scorecard dimensions. It also previews exact inactive generated surfaces without treating unrelated files in host directories as owned.

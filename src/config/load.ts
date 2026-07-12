@@ -6,7 +6,7 @@ import { parse } from "yaml";
 
 import type { Diagnostic } from "../output/diagnostic.js";
 import { resolveRepoPath } from "../fs/paths.js";
-import { DEFAULT_INSTRUCTION_TARGETS, DERIVED_TRUTHMARK_PATHS } from "./defaults.js";
+import { DERIVED_TRUTHMARK_PATHS } from "./defaults.js";
 import {
   DEFAULT_PLATFORMS,
   type RawTruthmarkConfig,
@@ -84,8 +84,15 @@ const FORBIDDEN_WORKSPACE_OVERLAPS = [
   "tests",
 ] as const;
 
-const unsupportedShapeDiagnostics = (parsedConfig: unknown, configPath: string): Diagnostic[] => {
-  if (!parsedConfig || typeof parsedConfig !== "object" || Array.isArray(parsedConfig)) {
+const unsupportedShapeDiagnostics = (
+  parsedConfig: unknown,
+  configPath: string,
+): Diagnostic[] => {
+  if (
+    !parsedConfig ||
+    typeof parsedConfig !== "object" ||
+    Array.isArray(parsedConfig)
+  ) {
     return [];
   }
 
@@ -122,7 +129,9 @@ const validateWorkspacePaths = (
 
   if (
     isUnsafeRepoRelativePath(rawConfig.truthmark.workspace) ||
-    FORBIDDEN_WORKSPACE_OVERLAPS.some((forbidden) => pathsOverlap(workspace, forbidden))
+    FORBIDDEN_WORKSPACE_OVERLAPS.some((forbidden) =>
+      pathsOverlap(workspace, forbidden),
+    )
   ) {
     diagnostics.push(
       toConfigDiagnostic(
@@ -132,32 +141,36 @@ const validateWorkspacePaths = (
     );
   }
 
-  for (const target of rawConfig.instruction_targets ?? DEFAULT_INSTRUCTION_TARGETS) {
-    if (isUnsafeRepoRelativePath(target) || pathsOverlap(workspace, target)) {
-      diagnostics.push(
-        toConfigDiagnostic(
-          "instruction_targets must be repo-relative files outside truthmark.workspace.",
-          configPath,
-        ),
-      );
-    }
-  }
-
   return diagnostics;
 };
 
 const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
   const workspace = normalizeRepoRelativePath(rawConfig.truthmark.workspace);
-  const routesIndex = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.routesIndex);
-  const routeAreasRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.routeAreasRoot);
-  const productTruthRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.productTruthRoot);
+  const routesIndex = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.routesIndex,
+  );
+  const routeAreasRoot = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.routeAreasRoot,
+  );
+  const productTruthRoot = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.productTruthRoot,
+  );
   const engineeringTruthRoot = joinWorkspacePath(
     workspace,
     DERIVED_TRUTHMARK_PATHS.engineeringTruthRoot,
   );
-  const templatesRoot = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.templatesRoot);
+  const templatesRoot = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.templatesRoot,
+  );
   const portalOutput = portalOutputFor(workspace);
-  const portalTemplate = joinWorkspacePath(workspace, DERIVED_TRUTHMARK_PATHS.portalTemplate);
+  const portalTemplate = joinWorkspacePath(
+    workspace,
+    DERIVED_TRUTHMARK_PATHS.portalTemplate,
+  );
 
   return {
     version: rawConfig.version,
@@ -199,7 +212,6 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
         `${templatesRoot}/*.md`,
       ],
     },
-    instructionTargets: rawConfig.instruction_targets ?? [...DEFAULT_INSTRUCTION_TARGETS],
     frontmatter: {
       required: rawConfig.frontmatter?.required ?? [],
       recommended: rawConfig.frontmatter?.recommended ?? [],
@@ -208,7 +220,28 @@ const normalizeConfig = (rawConfig: RawTruthmarkConfig): TruthmarkConfig => {
   };
 };
 
-export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => {
+const compatibilityDiagnostics = (
+  rawConfig: RawTruthmarkConfig,
+  configPath: string,
+): Diagnostic[] => {
+  if (!("instruction_targets" in rawConfig)) {
+    return [];
+  }
+
+  return [
+    {
+      category: "config",
+      severity: "review",
+      message:
+        "instruction_targets is accepted for compatibility but ignored; select platforms to control managed instruction-file writes.",
+      file: configPath,
+    },
+  ];
+};
+
+export const loadConfig = async (
+  rootDir: string,
+): Promise<LoadConfigResult> => {
   const absolutePath = resolveRepoPath(rootDir, CONFIG_PATH);
 
   let source: string;
@@ -220,7 +253,9 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
       return {
         status: "missing",
         config: null,
-        diagnostics: [toConfigDiagnostic("Missing .truthmark/config.yml.", CONFIG_PATH)],
+        diagnostics: [
+          toConfigDiagnostic("Missing .truthmark/config.yml.", CONFIG_PATH),
+        ],
         configPath: CONFIG_PATH,
       };
     }
@@ -246,7 +281,10 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
     };
   }
 
-  const unsupportedDiagnostics = unsupportedShapeDiagnostics(parsedConfig, CONFIG_PATH);
+  const unsupportedDiagnostics = unsupportedShapeDiagnostics(
+    parsedConfig,
+    CONFIG_PATH,
+  );
   if (unsupportedDiagnostics.length > 0) {
     return {
       status: "invalid",
@@ -260,25 +298,30 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
     return {
       status: "invalid",
       config: null,
-      diagnostics: (validateTruthmarkConfig.errors ?? []).map((error: ErrorObject) => {
-        const propertyPath = error.instancePath || "/";
-        const additionalProperty =
-          error.keyword === "additionalProperties" &&
-          error.params &&
-          "additionalProperty" in error.params
-            ? String(error.params.additionalProperty)
-            : null;
-        const message = additionalProperty
-          ? `${propertyPath} additional property ${additionalProperty} is not allowed`
-          : `${propertyPath} ${error.message ?? "is invalid"}`.trim();
+      diagnostics: (validateTruthmarkConfig.errors ?? []).map(
+        (error: ErrorObject) => {
+          const propertyPath = error.instancePath || "/";
+          const additionalProperty =
+            error.keyword === "additionalProperties" &&
+            error.params &&
+            "additionalProperty" in error.params
+              ? String(error.params.additionalProperty)
+              : null;
+          const message = additionalProperty
+            ? `${propertyPath} additional property ${additionalProperty} is not allowed`
+            : `${propertyPath} ${error.message ?? "is invalid"}`.trim();
 
-        return toConfigDiagnostic(message, CONFIG_PATH);
-      }),
+          return toConfigDiagnostic(message, CONFIG_PATH);
+        },
+      ),
       configPath: CONFIG_PATH,
     };
   }
 
-  const pathDiagnostics = validateWorkspacePaths(parsedConfig as RawTruthmarkConfig, CONFIG_PATH);
+  const pathDiagnostics = validateWorkspacePaths(
+    parsedConfig as RawTruthmarkConfig,
+    CONFIG_PATH,
+  );
 
   if (pathDiagnostics.length > 0) {
     return {
@@ -292,7 +335,10 @@ export const loadConfig = async (rootDir: string): Promise<LoadConfigResult> => 
   return {
     status: "loaded",
     config: normalizeConfig(parsedConfig as RawTruthmarkConfig),
-    diagnostics: [],
+    diagnostics: compatibilityDiagnostics(
+      parsedConfig as RawTruthmarkConfig,
+      CONFIG_PATH,
+    ),
     configPath: CONFIG_PATH,
   };
 };

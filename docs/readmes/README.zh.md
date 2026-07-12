@@ -223,3 +223,7 @@ Truthmark 有意保持小而明确：本地、已提交、按分支生效、可�
 ## 许可证
 
 MIT。见 [LICENSE](../../LICENSE)。
+
+## Safe removal
+
+Use `truthmark uninstall --dry-run` to review exact generated host surfaces, then `truthmark uninstall --apply` to remove them. Authored truth, configuration, templates, Portal output, Gemini files, and unrelated user files are preserved; remove a global npm installation separately with your package manager.

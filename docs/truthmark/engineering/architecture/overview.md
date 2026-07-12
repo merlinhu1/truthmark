@@ -92,3 +92,7 @@ Update when module boundaries, generated-surface ownership, or command architect
 - `src/config/load.ts`
 - `src/routing/areas.ts`
 - `src/templates/generated-surfaces.ts`
+
+## Renderer-derived lifecycle (2026-07-10)
+
+Generated ownership is derived from renderer outputs rather than host-directory prefixes or a persistent manifest. Optional Init, Check, and Uninstall helpers operate on exact paths; repository files remain the complete host-native runtime.

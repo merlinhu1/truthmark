@@ -150,3 +150,7 @@ Update when config fields, route metadata, diagnostics, route/index output schem
 - `src/routing/areas.ts`
 - `src/repo-index/types.ts`
 - `src/output/diagnostic.ts`
+
+## Routing and lifecycle update (2026-07-10)
+
+Instruction destinations are derived from configured platforms. The version-2 `instruction_targets` field remains parseable but is ignored with a review diagnostic and is omitted from new configuration. `uninstall` requires exactly one of `--dry-run` or `--apply` and returns a deterministic `truthmark-lifecycle/v0` plan.

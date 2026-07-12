@@ -5,6 +5,7 @@ import micromatch from "micromatch";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
+import { discoverRepositoryFilePaths } from "../git/files.js";
 import { resolveAreaRouting } from "../routing/area-resolver.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import {
@@ -12,7 +13,7 @@ import {
   mergeTruthDocumentEntryRelationships,
   type TruthDocumentEntry,
 } from "../routing/areas.js";
-import { classifyPath } from "../sync/classify.js";
+import { classifyPath, isTestPath } from "../sync/classify.js";
 import {
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
@@ -45,34 +46,6 @@ const pathExists = async (absolutePath: string): Promise<boolean> => {
     throw error;
   }
 };
-
-const COVERAGE_SCAN_PATTERNS = [
-  "app/**/*",
-  "api/**/*",
-  "apps/**/*",
-  "bin/**/*",
-  "client/**/*",
-  "cmd/**/*",
-  "frontend/**/*",
-  "infra/**/*",
-  "infrastructure/**/*",
-  "internal/**/*",
-  "k8s/**/*",
-  "kubernetes/**/*",
-  "lib/**/*",
-  "packages/**/*",
-  "pkg/**/*",
-  "proto/**/*",
-  "schema/**/*",
-  "schemas/**/*",
-  "scripts/**/*",
-  "server/**/*",
-  "services/**/*",
-  "src/**/*",
-  "terraform/**/*",
-  "web/**/*",
-  ".github/workflows/**/*",
-] as const;
 
 const BROAD_CODE_SURFACES = new Set([
   "app/**",
@@ -237,15 +210,14 @@ export const checkAreas = async (
     engineeringTruthRoot: resolveEngineeringTruthRoot(config),
   });
 
-  const discoveredCodeFiles = await fg([...COVERAGE_SCAN_PATTERNS], {
-    cwd: rootDir,
-    onlyFiles: true,
-    ignore: config.ignore,
-    followSymbolicLinks: false,
-    dot: true,
-  });
+  const discoveredCodeFiles = await discoverRepositoryFilePaths(
+    rootDir,
+    config.ignore,
+  );
   const rawCodeFiles = discoveredCodeFiles.filter(
-    (filePath) => classifyPath(filePath, config.ignore) === "functional-code",
+    (filePath) =>
+      classifyPath(filePath, config.ignore) === "functional-code" &&
+      !isTestPath(filePath),
   );
   const diagnostics: Diagnostic[] = [...routing.diagnostics];
   const truthDocumentPaths: string[] = [];
@@ -257,16 +229,7 @@ export const checkAreas = async (
     valid: true,
     patterns: [] as string[],
   }));
-  const codeFiles: string[] = [];
-
-  for (const codeFile of rawCodeFiles.sort()) {
-    try {
-      await assertRepoContainment(rootDir, resolveRepoPath(rootDir, codeFile));
-      codeFiles.push(codeFile);
-    } catch {
-      continue;
-    }
-  }
+  const codeFiles = rawCodeFiles;
 
   const truthReferences = routing.truthDocumentReferences;
 

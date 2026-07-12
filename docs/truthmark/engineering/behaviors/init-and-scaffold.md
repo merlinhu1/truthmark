@@ -44,7 +44,7 @@ Generated truth-doc frontmatter includes `truth_kind`.
 
 Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
-`truthmark init` removes auto-removable retired generated-surface artifacts when those paths are no longer part of current generated output.
+`truthmark init` removes auto-removable retired generated-surface artifacts only when their whole-file bytes are recognized and those paths are no longer part of current generated output.
 
 Auto-removable retired artifacts include:
 
@@ -130,7 +130,10 @@ Capability docs own:
 
 - `truthmark init` creates or refreshes workspace scaffold files.
 - It renders current templates and generated host surfaces from source renderers.
-- It removes retired non-Gemini generated-surface artifacts that are no longer part of current generated output.
+- Before any scaffold or generated-surface write, it rejects aliased, non-regular, or hard-linked managed instruction destinations and preflights every planned lifecycle mutation.
+- It revalidates every planned mutation before applying the first one, so a changed or unsafe later target prevents partial cleanup and scaffold writes.
+- It removes retired non-Gemini generated-surface artifacts only when exact recognized whole-file bytes or one valid managed block establish ownership.
+- It preserves user bytes outside a removed managed block, including surrounding whitespace and line-ending convention.
 - It leaves retired Gemini surfaces for manual cleanup.
 
 ## Contracts
@@ -180,5 +183,9 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../src/config/defaults.ts
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
-- ../../../../tests/init/init-instructions.test.ts
+- ../../../../tests/lifecycle/uninstall.test.ts
 - ../../../../tests/init/truth-doc-templates.test.ts
+
+## Platform Reconciliation (2026-07-10)
+
+Init derives `AGENTS.md` for shared-contract hosts and `CLAUDE.md` for Claude Code, retains renderer-owned host instructions, and writes no generic instruction file when no platform is configured. Its deterministic lifecycle plan and diagnostics expose removals, preserved diverged files, manual-only Gemini paths, and preflight failures to both human and JSON callers.

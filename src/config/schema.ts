@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from "ajv";
 
-const SUPPORTED_PLATFORMS = [
+export const SUPPORTED_PLATFORMS = [
   "codex",
   "opencode",
   "claude-code",
@@ -11,7 +11,8 @@ const SUPPORTED_PLATFORMS = [
 
 export type TruthmarkPlatform = (typeof SUPPORTED_PLATFORMS)[number];
 
-export const DEFAULT_PLATFORMS = [] as const satisfies readonly TruthmarkPlatform[];
+export const DEFAULT_PLATFORMS =
+  [] as const satisfies readonly TruthmarkPlatform[];
 
 type TruthmarkPortalConfig = {
   enabled: boolean;
@@ -71,7 +72,6 @@ export type TruthmarkConfig = {
   version: 2;
   platforms: TruthmarkPlatform[];
   truthmark: TruthmarkWorkspaceConfig;
-  instructionTargets: string[];
   frontmatter: {
     required: string[];
     recommended: string[];

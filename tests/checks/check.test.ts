@@ -210,7 +210,7 @@ Local stale edit.
       );
       await repo.writeFile(
         ".gemini/commands/truthmark/sync.toml",
-        "description = \"Legacy Gemini sync command\"\n",
+        'description = "Legacy Gemini sync command"\n',
       );
       await repo.writeFile(
         ".agents/skills/truthmark-sync/helper-manifest.yml",
@@ -848,7 +848,9 @@ Update truth when:
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         ".agents/skills/truthmark-sync/SKILL.md",
-        `${(await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")).replace(
+        `${(
+          await repo.readFile(".agents/skills/truthmark-sync/SKILL.md")
+        ).replace(
           "Truthmark-managed generated file.",
           "Locally edited generated file.",
         )}\n`,
@@ -2135,6 +2137,112 @@ ignore:
       ).toBe(false);
       expect(coverageFiles).toContain("src/unmapped/manual.ts");
       expect(coverageFiles).not.toContain("src/generated/out.ts");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("reports unmapped functional code under an unknown root in coverage and scorecard output", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "backend/auth/session.ts",
+        "export const session = true;\n",
+      );
+
+      const result = await runCheck(repo.rootDir);
+      const coverageDiagnostics = result.diagnostics.filter(
+        (diagnostic) => diagnostic.category === "coverage",
+      );
+      const scorecard = scorecardFrom(result);
+
+      expect(coverageDiagnostics).toEqual([
+        expect.objectContaining({
+          category: "coverage",
+          severity: "review",
+          message:
+            "Code file backend/auth/session.ts is not covered by any Truthmark area mapping.",
+          file: "backend/auth/session.ts",
+        }),
+      ]);
+      expect(
+        (result.data?.truthVisibility as { unmappedSurfaceCount: number })
+          .unmappedSurfaceCount,
+      ).toBe(1);
+      expect(scorecardDimension(scorecard, "routing-coverage").status).toBe(
+        "warn",
+      );
+      expect(scorecardDimension(scorecard, "ownership-clarity").status).toBe(
+        "warn",
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("recognizes a mapped functional source file under an unknown root", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile("engine/runtime/main.rs", "fn main() {}\n");
+      await repo.writeFile(
+        "docs/truthmark/engineering/runtime.md",
+        "---\nstatus: active\n---\n\n# Runtime\n",
+      );
+      await repo.writeFile(
+        "docs/truthmark/routes/areas.md",
+        `# Truthmark Areas
+
+## Runtime
+
+Truth documents:
+- docs/truthmark/engineering/runtime.md
+
+Code surface:
+- engine/runtime/**
+
+Update truth when:
+- runtime behavior changes
+`,
+      );
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).not.toContainEqual(
+        expect.objectContaining({
+          category: "coverage",
+          file: "engine/runtime/main.rs",
+        }),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("limits coverage diagnostics to ordinary non-test functional code", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await repo.writeFile(
+        "backend/service.ts",
+        "export const service = true;\n",
+      );
+      await repo.writeFile("README.md", "# Read me\n");
+      await repo.writeFile("assets/logo.png", "not a source file\n");
+      await repo.writeFile("tests/service.test.ts", "void 0;\n");
+      await repo.writeFile("backend/service.test.ts", "void 0;\n");
+      await repo.writeFile("backend/service.spec.ts", "void 0;\n");
+
+      const result = await runCheck(repo.rootDir);
+      const coverageFiles = result.diagnostics
+        .filter((diagnostic) => diagnostic.category === "coverage")
+        .map((diagnostic) => diagnostic.file);
+
+      expect(coverageFiles).toEqual(["backend/service.ts"]);
     } finally {
       await repo.cleanup();
     }

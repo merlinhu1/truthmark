@@ -156,3 +156,7 @@ Update when index, route-map, impact, evidence, freshness, or workflow-state out
 - tests/impact/build.test.ts
 - tests/evidence/validate.test.ts
 - tests/workflow-state/build.test.ts
+
+## Shared file discovery (2026-07-10)
+
+Check and RepoIndex share NUL-delimited `git ls-files` discovery for tracked and visible untracked current regular files. Results apply default and configured ignores, exclude deleted or escaping paths, and are normalized, deduplicated, and sorted. A deterministic full-tree fallback is used when Git enumeration is unavailable; it conservatively cannot reproduce every Git ignore rule.

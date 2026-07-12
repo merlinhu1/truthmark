@@ -2,13 +2,27 @@ import fs from "node:fs/promises";
 
 import { loadConfig } from "../config/load.js";
 import type { TruthmarkConfig } from "../config/schema.js";
-import type { CommandResult, DiagnosticCategory } from "../output/diagnostic.js";
+import type {
+  CommandResult,
+  DiagnosticCategory,
+} from "../output/diagnostic.js";
 import { getGitRepository } from "../git/repository.js";
-import { resolveRepoPath, type FileWriteResult, writeRepoFile } from "../fs/paths.js";
+import {
+  resolveRepoPath,
+  type FileWriteResult,
+  writeRepoFile,
+} from "../fs/paths.js";
 import { scaffoldHierarchy } from "./hierarchy.js";
-import { findAutoRemovableRetiredGeneratedSurfaces } from "../checks/generated-surfaces.js";
-import { renderAgentsBlock, TRUTHMARK_BLOCK_END, TRUTHMARK_BLOCK_START } from "../templates/agents-block.js";
-import { renderGeneratedSurfaces, type GeneratedSurface } from "../templates/generated-surfaces.js";
+import {
+  renderAgentsBlock,
+  TRUTHMARK_BLOCK_END,
+  TRUTHMARK_BLOCK_START,
+} from "../templates/agents-block.js";
+import {
+  renderGeneratedSurfaces,
+  type GeneratedSurface,
+} from "../templates/generated-surfaces.js";
+import { applyLifecyclePlan, buildLifecyclePlan } from "./lifecycle.js";
 
 const escapeRegExp = (value: string): string => {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -29,7 +43,9 @@ const CANONICAL_MANAGED_LINES = new Set(
 
 const countCanonicalManagedLineMatches = (lines: string[]): number => {
   return lines.reduce((matchCount, line) => {
-    return CANONICAL_MANAGED_LINES.has(line.trim()) ? matchCount + 1 : matchCount;
+    return CANONICAL_MANAGED_LINES.has(line.trim())
+      ? matchCount + 1
+      : matchCount;
   }, 0);
 };
 
@@ -59,21 +75,30 @@ const removeTrailingManagedChunk = (preservedLines: string[]): void => {
   }
 };
 
-const upsertManagedBlock = (existingContent: string | null, block: string): string => {
+const upsertManagedBlock = (
+  existingContent: string | null,
+  block: string,
+): string => {
   if (!existingContent || existingContent.trim().length === 0) {
     return block;
   }
 
   const normalizedExistingContent = existingContent;
-  const startMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_START), "g");
+  const startMarkerPattern = new RegExp(
+    escapeRegExp(TRUTHMARK_BLOCK_START),
+    "g",
+  );
   const endMarkerPattern = new RegExp(escapeRegExp(TRUTHMARK_BLOCK_END), "g");
   const managedBlockPattern = new RegExp(
     `${escapeRegExp(TRUTHMARK_BLOCK_START)}[\\s\\S]*?${escapeRegExp(TRUTHMARK_BLOCK_END)}`,
     "g",
   );
-  const completeBlocks = normalizedExistingContent.match(managedBlockPattern) ?? [];
-  const startCount = normalizedExistingContent.match(startMarkerPattern)?.length ?? 0;
-  const endCount = normalizedExistingContent.match(endMarkerPattern)?.length ?? 0;
+  const completeBlocks =
+    normalizedExistingContent.match(managedBlockPattern) ?? [];
+  const startCount =
+    normalizedExistingContent.match(startMarkerPattern)?.length ?? 0;
+  const endCount =
+    normalizedExistingContent.match(endMarkerPattern)?.length ?? 0;
 
   if (startCount === 1 && endCount === 1 && completeBlocks.length === 1) {
     return normalizedExistingContent.replace(managedBlockPattern, block);
@@ -122,7 +147,10 @@ const upsertManagedBlock = (existingContent: string | null, block: string): stri
     preservedLines.push(...managedLines);
   }
 
-  const preservedContent = preservedLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  const preservedContent = preservedLines
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
   if (preservedContent.length === 0) {
     return block;
@@ -141,12 +169,20 @@ const writeManagedAgentsFile = async (
   try {
     existingContent = await fs.readFile(resolveRepoPath(rootDir, path), "utf8");
   } catch (error: unknown) {
-    if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
+    if (
+      !(error instanceof Error) ||
+      !("code" in error) ||
+      error.code !== "ENOENT"
+    ) {
       throw error;
     }
   }
 
-  return writeRepoFile(rootDir, path, upsertManagedBlock(existingContent, block));
+  return writeRepoFile(
+    rootDir,
+    path,
+    upsertManagedBlock(existingContent, block),
+  );
 };
 
 const diagnosticCategoryForPath = (
@@ -191,7 +227,6 @@ const diagnosticCategoryForPath = (
   if (filePath.startsWith(".agents/skills/truthmark-")) {
     return "truth-sync";
   }
-
 
   if (filePath === config.truthmark.paths.routesIndex) {
     return "area-index";
@@ -258,39 +293,78 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
   const results: FileWriteResult[] = [];
 
   const config = loadedConfig.config;
-  results.push(...(await scaffoldHierarchy(rootDir, config)));
   const block = renderAgentsBlock(config);
   const platformFiles = renderGeneratedSurfaces(config, block);
-  const expectedSurfacePaths = new Set(platformFiles.map((file) => file.path));
+  const lifecyclePlan = await buildLifecyclePlan(
+    rootDir,
+    config,
+    "apply",
+    platformFiles,
+  );
+  if (!lifecyclePlan.applicable) {
+    return {
+      command: "init",
+      summary:
+        "Truthmark init made no changes because generated-surface preflight failed.",
+      diagnostics: [...loadedConfig.diagnostics, ...lifecyclePlan.diagnostics],
+      data: { lifecyclePlan },
+    };
+  }
+  const appliedLifecyclePlan = await applyLifecyclePlan(rootDir, lifecyclePlan);
+  if (!appliedLifecyclePlan.applicable) {
+    return {
+      command: "init",
+      summary:
+        "Truthmark init made no changes because generated-surface preflight failed.",
+      diagnostics: [
+        ...loadedConfig.diagnostics,
+        ...appliedLifecyclePlan.diagnostics,
+      ],
+      data: { lifecyclePlan: appliedLifecyclePlan },
+    };
+  }
 
+  results.push(...(await scaffoldHierarchy(rootDir, config)));
   for (const file of platformFiles) {
     results.push(await writePlatformFile(rootDir, file));
   }
 
-  const obsoleteSurfacePaths = await findAutoRemovableRetiredGeneratedSurfaces(
-    rootDir,
-    expectedSurfacePaths,
+  const changedResults = results.filter(
+    (result) => result.status !== "unchanged",
   );
-
-  for (const obsoletePath of obsoleteSurfacePaths) {
-    await fs.rm(resolveRepoPath(rootDir, obsoletePath), { force: true });
-  }
-
-  const changedResults = results.filter((result) => result.status !== "unchanged");
+  const lifecycleChanged = appliedLifecyclePlan.entries.some(
+    ({ action }) =>
+      action === "remove-file" || action === "remove-managed-block",
+  );
 
   return {
     command: "init",
     summary:
-      changedResults.length > 0
+      changedResults.length > 0 || lifecycleChanged
         ? "Initialized or updated the Truthmark repository scaffold."
         : "Truthmark repository scaffold is already up to date.",
-    diagnostics: writeDiagnostics(results, config),
+    diagnostics: [
+      ...loadedConfig.diagnostics,
+      ...appliedLifecyclePlan.diagnostics,
+      ...appliedLifecyclePlan.entries.map((entry) => ({
+        category: "generated-surface" as const,
+        severity:
+          entry.action === "remove-file" ||
+          entry.action === "remove-managed-block"
+            ? ("action" as const)
+            : ("review" as const),
+        message: `${entry.action}: ${entry.reason}`,
+        file: entry.path,
+      })),
+      ...writeDiagnostics(results, config),
+    ],
     data: {
       repositoryRoot: repository.repositoryRoot,
       worktreePath: repository.worktreePath,
       branchName: repository.branchName,
       isDetached: repository.isDetached,
       isUnborn: repository.isUnborn,
+      lifecyclePlan: appliedLifecyclePlan,
     },
   };
 };

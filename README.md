@@ -101,8 +101,9 @@ Truthmark has one repo-local contract with two ways to use it.
 Maintainers and CI use the CLI:
 
 * `truthmark config` - create the initial configuration.
-* `truthmark init` - install or refresh routing, truth-doc scaffolds, and AI-host instructions.
+* `truthmark init` - install or refresh routing, truth-doc scaffolds, and AI-host instructions, reconciling safely recognized disabled-host surfaces.
 * `truthmark check` - validate the repository truth from the terminal.
+* `truthmark uninstall --dry-run|--apply` - preview or remove generated host surfaces while preserving authored truth and configuration.
 
 ### Agents follow the contract while coding
 
@@ -214,7 +215,7 @@ For command-by-command usage, surface comparisons, supported platform details, c
 
 The current release provides:
 
-- local CLI commands for config, init, check, index, impact, and workflow status
+- local CLI commands for config, init, uninstall, check, index, impact, workflow status, and validate
 - generated repo-local agent instructions for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
 - route, authority, frontmatter, link, freshness, generated-surface, branch-scope, and coverage diagnostics
 - branch-scoped truth docs and derived repository-intelligence artifacts

@@ -1,0 +1,396 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+
+import type { TruthmarkConfig } from "../config/schema.js";
+import { assertRepoContainment, resolveRepoPath } from "../fs/paths.js";
+import type { Diagnostic } from "../output/diagnostic.js";
+import {
+  TRUTHMARK_BLOCK_END,
+  TRUTHMARK_BLOCK_START,
+} from "../templates/agents-block.js";
+import {
+  renderGeneratedSurfaceCatalog,
+  renderGeneratedSurfaces,
+  RETIRED_GENERATED_SURFACES,
+} from "../templates/generated-surfaces.js";
+
+export type LifecycleAction =
+  | "remove-file"
+  | "remove-managed-block"
+  | "preserve"
+  | "manual-review";
+
+export type LifecyclePlanEntry = {
+  path: string;
+  action: LifecycleAction;
+  reason: string;
+};
+
+export type LifecyclePlan = {
+  schemaVersion: "truthmark-lifecycle/v0";
+  mode: "dry-run" | "apply";
+  entries: LifecyclePlanEntry[];
+  diagnostics: Diagnostic[];
+  applicable: boolean;
+  applied: boolean;
+};
+
+type ParsedBlock =
+  | { status: "absent" }
+  | { status: "valid"; start: number; end: number }
+  | { status: "malformed" };
+
+const plannedContents = new WeakMap<LifecyclePlan, Map<string, string>>();
+
+export const parseManagedBlock = (content: string): ParsedBlock => {
+  const starts = [...content.matchAll(new RegExp(TRUTHMARK_BLOCK_START, "g"))];
+  const ends = [...content.matchAll(new RegExp(TRUTHMARK_BLOCK_END, "g"))];
+  if (starts.length === 0 && ends.length === 0) return { status: "absent" };
+  if (starts.length !== 1 || ends.length !== 1) return { status: "malformed" };
+  const start = starts[0].index;
+  const endStart = ends[0].index;
+  if (start === undefined || endStart === undefined || endStart < start) {
+    return { status: "malformed" };
+  }
+  return { status: "valid", start, end: endStart + TRUTHMARK_BLOCK_END.length };
+};
+
+const readFile = async (
+  rootDir: string,
+  filePath: string,
+): Promise<string | null> => {
+  try {
+    return await fs.readFile(resolveRepoPath(rootDir, filePath), "utf8");
+  } catch (error: unknown) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT")
+      return null;
+    throw error;
+  }
+};
+
+const pathIsSafe = async (
+  rootDir: string,
+  filePath: string,
+  allowMissing: boolean,
+): Promise<boolean> => {
+  try {
+    const absolutePath = resolveRepoPath(rootDir, filePath);
+    await assertRepoContainment(rootDir, absolutePath);
+    const relative = path.relative(rootDir, absolutePath);
+    let current = rootDir;
+    for (const segment of relative.split(path.sep)) {
+      current = path.join(current, segment);
+      try {
+        const stat = await fs.lstat(current);
+        if (stat.isSymbolicLink()) return false;
+        if (current === absolutePath) return stat.isFile() && stat.nlink === 1;
+        if (!stat.isDirectory()) return false;
+      } catch (error: unknown) {
+        if (
+          error instanceof Error &&
+          "code" in error &&
+          error.code === "ENOENT"
+        )
+          return allowMissing;
+        throw error;
+      }
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+const listFiles = async (
+  rootDir: string,
+  directory: string,
+): Promise<string[]> => {
+  const files: string[] = [];
+  const stack = [directory];
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    try {
+      for (const entry of await fs.readdir(resolveRepoPath(rootDir, current), {
+        withFileTypes: true,
+      })) {
+        const next = `${current}/${entry.name}`;
+        if (entry.isDirectory()) stack.push(next);
+        else if (entry.isFile() || entry.isSymbolicLink()) files.push(next);
+      }
+    } catch (error: unknown) {
+      if (
+        !(error instanceof Error && "code" in error && error.code === "ENOENT")
+      )
+        throw error;
+    }
+  }
+  return files;
+};
+
+const findRetiredSurfaces = async (rootDir: string): Promise<string[]> => {
+  const paths = new Set<string>();
+  for (const filePath of RETIRED_GENERATED_SURFACES.exactPaths) {
+    try {
+      await fs.lstat(resolveRepoPath(rootDir, filePath));
+      paths.add(filePath);
+    } catch (error: unknown) {
+      if (
+        !(error instanceof Error && "code" in error && error.code === "ENOENT")
+      )
+        throw error;
+    }
+  }
+  for (const root of RETIRED_GENERATED_SURFACES.recursiveRoots)
+    for (const filePath of await listFiles(rootDir, root)) paths.add(filePath);
+  for (const skillRoot of RETIRED_GENERATED_SURFACES.skillRoots) {
+    for (const packageName of RETIRED_GENERATED_SURFACES.retiredPackages)
+      for (const filePath of await listFiles(
+        rootDir,
+        `${skillRoot}/${packageName}`,
+      ))
+        paths.add(filePath);
+    let packages: string[] = [];
+    try {
+      packages = (
+        await fs.readdir(resolveRepoPath(rootDir, skillRoot), {
+          withFileTypes: true,
+        })
+      )
+        .filter(
+          (entry) => entry.isDirectory() && entry.name.startsWith("truthmark-"),
+        )
+        .map((entry) => entry.name);
+    } catch (error: unknown) {
+      if (
+        !(error instanceof Error && "code" in error && error.code === "ENOENT")
+      )
+        throw error;
+    }
+    for (const packageName of packages)
+      for (const retiredFile of RETIRED_GENERATED_SURFACES.retiredPackageFiles) {
+        const filePath = `${skillRoot}/${packageName}/${retiredFile}`;
+        try {
+          await fs.lstat(resolveRepoPath(rootDir, filePath));
+          paths.add(filePath);
+        } catch (error: unknown) {
+          if (
+            !(
+              error instanceof Error &&
+              "code" in error &&
+              error.code === "ENOENT"
+            )
+          )
+            throw error;
+        }
+      }
+  }
+  return [...paths];
+};
+
+export const buildLifecyclePlan = async (
+  rootDir: string,
+  config: TruthmarkConfig,
+  mode: "dry-run" | "apply",
+  desired = renderGeneratedSurfaces(config),
+): Promise<LifecyclePlan> => {
+  const desiredPaths = new Set(desired.map(({ path }) => path));
+  const entries: LifecyclePlanEntry[] = [];
+  const diagnostics: Diagnostic[] = [];
+  let applicable = true;
+
+  for (const surface of desired.filter(({ managedBlock }) => managedBlock)) {
+    if (!(await pathIsSafe(rootDir, surface.path, true))) {
+      applicable = false;
+      entries.push({
+        path: surface.path,
+        action: "manual-review",
+        reason:
+          "Managed instruction destination is aliased or not a regular single-link file.",
+      });
+    }
+  }
+
+  for (const surface of desired.filter(({ managedBlock }) => managedBlock)) {
+    const content = await readFile(rootDir, surface.path);
+    if (content !== null && parseManagedBlock(content).status === "malformed") {
+      applicable = false;
+      entries.push({
+        path: surface.path,
+        action: "manual-review",
+        reason: "Truthmark managed-block markers are malformed.",
+      });
+    }
+  }
+
+  const catalog = renderGeneratedSurfaceCatalog(config);
+  for (const retiredPath of await findRetiredSurfaces(rootDir)) {
+    if (!catalog.some(({ path: catalogPath }) => catalogPath === retiredPath))
+      catalog.push({
+        path: retiredPath,
+        content: "",
+        owners: [
+          {
+            kind: "retired",
+            manualCleanupOnly:
+              retiredPath === "GEMINI.md" || retiredPath.startsWith(".gemini/"),
+          },
+        ],
+        recognizedContents: [],
+      });
+  }
+
+  for (const surface of catalog) {
+    if (desiredPaths.has(surface.path)) continue;
+    const content = await readFile(rootDir, surface.path);
+    if (content === null) continue;
+    if (!(await pathIsSafe(rootDir, surface.path, false))) {
+      applicable = false;
+      entries.push({
+        path: surface.path,
+        action: "manual-review",
+        reason: "Path is not safely contained in the worktree.",
+      });
+      continue;
+    }
+    if (surface.path === "GEMINI.md" || surface.path.startsWith(".gemini/")) {
+      entries.push({
+        path: surface.path,
+        action: "preserve",
+        reason: "Gemini surfaces require manual cleanup.",
+      });
+    } else if (surface.managedBlock) {
+      const block = parseManagedBlock(content);
+      if (block.status === "malformed") {
+        applicable = false;
+        entries.push({
+          path: surface.path,
+          action: "manual-review",
+          reason: "Truthmark managed-block markers are malformed.",
+        });
+      } else if (block.status === "valid") {
+        entries.push({
+          path: surface.path,
+          action: "remove-managed-block",
+          reason: "No configured platform owns this managed block.",
+        });
+      }
+    } else if (surface.recognizedContents.includes(content)) {
+      entries.push({
+        path: surface.path,
+        action: "remove-file",
+        reason: "Generated file has no active platform owner.",
+      });
+    } else {
+      entries.push({
+        path: surface.path,
+        action: "preserve",
+        reason: "Generated path has diverged content and requires review.",
+      });
+      diagnostics.push({
+        category: "generated-surface",
+        severity: "review",
+        message: `Generated surface ${surface.path} has diverged content; preserved for manual review.`,
+        file: surface.path,
+      });
+    }
+  }
+
+  entries.sort(
+    (a, b) => a.path.localeCompare(b.path) || a.action.localeCompare(b.action),
+  );
+  if (!applicable)
+    diagnostics.push({
+      category: "generated-surface",
+      severity: "error",
+      message:
+        "Lifecycle changes were not applied because preflight found unsafe or malformed generated surfaces.",
+    });
+  const plan: LifecyclePlan = {
+    schemaVersion: "truthmark-lifecycle/v0",
+    mode,
+    entries,
+    diagnostics,
+    applicable,
+    applied: false,
+  };
+  const contents = new Map<string, string>();
+  for (const entry of entries) {
+    if (
+      entry.action === "remove-file" ||
+      entry.action === "remove-managed-block"
+    ) {
+      const content = await readFile(rootDir, entry.path);
+      if (content !== null) contents.set(entry.path, content);
+    }
+  }
+  plannedContents.set(plan, contents);
+  return plan;
+};
+
+export const applyLifecyclePlan = async (
+  rootDir: string,
+  plan: LifecyclePlan,
+): Promise<LifecyclePlan> => {
+  if (!plan.applicable || plan.mode !== "apply") return plan;
+  const expected = plannedContents.get(plan);
+  const failure = async (entry: LifecyclePlanEntry): Promise<string | null> => {
+    if (
+      entry.action !== "remove-file" &&
+      entry.action !== "remove-managed-block"
+    )
+      return null;
+    if (!(await pathIsSafe(rootDir, entry.path, false)))
+      return `Unsafe lifecycle target: ${entry.path}`;
+    const content = await readFile(rootDir, entry.path);
+    if (content === null || expected?.get(entry.path) !== content)
+      return `Lifecycle target changed after planning: ${entry.path}`;
+    if (
+      entry.action === "remove-managed-block" &&
+      parseManagedBlock(content).status !== "valid"
+    )
+      return `Managed block changed during removal: ${entry.path}`;
+    return null;
+  };
+  for (const entry of plan.entries) {
+    const message = await failure(entry);
+    if (message)
+      return {
+        ...plan,
+        applicable: false,
+        applied: false,
+        diagnostics: [
+          ...plan.diagnostics,
+          {
+            category: "generated-surface",
+            severity: "error",
+            message,
+            file: entry.path,
+          },
+        ],
+      };
+  }
+  for (const entry of plan.entries) {
+    const absolutePath = resolveRepoPath(rootDir, entry.path);
+    await assertRepoContainment(rootDir, absolutePath);
+    if (entry.action === "remove-file") {
+      const stat = await fs.lstat(absolutePath);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1)
+        throw new Error(
+          `Refusing unsafe generated file removal: ${entry.path}`,
+        );
+      await fs.rm(absolutePath);
+    } else if (entry.action === "remove-managed-block") {
+      const stat = await fs.lstat(absolutePath);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1)
+        throw new Error(`Refusing unsafe managed-block removal: ${entry.path}`);
+      const content = await fs.readFile(absolutePath, "utf8");
+      const block = parseManagedBlock(content);
+      if (block.status !== "valid")
+        throw new Error(`Managed block changed during removal: ${entry.path}`);
+      const remaining = `${content.slice(0, block.start)}${content.slice(block.end)}`;
+      if (remaining.trim().length === 0) await fs.rm(absolutePath);
+      else await fs.writeFile(absolutePath, remaining, "utf8");
+    }
+  }
+  return { ...plan, applied: true };
+};
