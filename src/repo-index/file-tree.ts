@@ -1,10 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { execa } from "execa";
-import fg from "fast-glob";
-import micromatch from "micromatch";
-
+import { discoverRepositoryFilePaths } from "../git/files.js";
 import { parseFrontmatter } from "../markdown/frontmatter.js";
 import { parseMarkdownDocument } from "../markdown/parse.js";
 import {
@@ -13,7 +10,7 @@ import {
   laneForTruthDocumentKind,
   type TruthDocumentKind,
 } from "../routing/areas.js";
-import { classifyPath } from "../sync/classify.js";
+import { classifyPath, isTestPath } from "../sync/classify.js";
 import { parseSourceReferences } from "../truth/source-references.js";
 import type {
   RepoDocEntry,
@@ -35,14 +32,6 @@ const languageByExtension = new Map<string, string>([
   [".yaml", "yaml"],
   [".toml", "toml"],
 ]);
-
-const isTestPath = (filePath: string): boolean => {
-  return (
-    filePath.startsWith("tests/") ||
-    filePath.includes("/__tests__/") ||
-    /(?:^|[./-])(test|spec)\.[cm]?[jt]sx?$/u.test(path.posix.basename(filePath))
-  );
-};
 
 const fileKind = (filePath: string, ignore: string[]): RepoFileKind => {
   const classification = classifyPath(filePath, ignore);
@@ -92,40 +81,11 @@ const targetHintsForTest = (filePath: string): string[] => {
   return [...hints].sort();
 };
 
-const defaultIgnore = [".git/**", "node_modules/**", "dist/**", "build/**"];
-
-const normalizePath = (filePath: string): string =>
-  filePath.replaceAll("\\", "/").replace(/^\.\/+/u, "");
-
 const isTruthDocumentKind = (value: unknown): value is TruthDocumentKind => {
   return (
     typeof value === "string" &&
     TRUTH_DOCUMENT_KINDS.includes(value as TruthDocumentKind)
   );
-};
-
-const gitDiscoverableFiles = async (
-  rootDir: string,
-): Promise<string[] | null> => {
-  const result = await execa(
-    "git",
-    ["ls-files", "--cached", "--others", "--exclude-standard", "--deduplicate"],
-    {
-      cwd: rootDir,
-      reject: false,
-    },
-  );
-  if ((result.exitCode ?? 1) !== 0) {
-    return null;
-  }
-  return result.stdout
-    .split("\n")
-    .map((line) => normalizePath(line.trim()))
-    .filter((line) => line.length > 0);
-};
-
-const isIgnoredPath = (filePath: string, ignore: string[]): boolean => {
-  return micromatch.isMatch(filePath, [...defaultIgnore, ...ignore]);
 };
 
 export const discoverRepoFiles = async (
@@ -136,22 +96,12 @@ export const discoverRepoFiles = async (
   docs: RepoDocEntry[];
   tests: RepoTestEntry[];
 }> => {
-  const discoveredFiles =
-    (await gitDiscoverableFiles(rootDir)) ??
-    (await fg(["**/*"], {
-      cwd: rootDir,
-      onlyFiles: true,
-      dot: true,
-      ignore: [...defaultIgnore, ...ignore],
-      followSymbolicLinks: false,
-    }));
+  const discoveredFiles = await discoverRepositoryFilePaths(rootDir, ignore);
   const files: RepoFileEntry[] = [];
   const docs: RepoDocEntry[] = [];
   const tests: RepoTestEntry[] = [];
 
-  for (const filePath of discoveredFiles
-    .filter((entry) => !isIgnoredPath(entry, ignore))
-    .sort()) {
+  for (const filePath of discoveredFiles) {
     let stat: Awaited<ReturnType<typeof fs.stat>>;
     try {
       stat = await fs.stat(path.join(rootDir, filePath));

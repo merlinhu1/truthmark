@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import micromatch from "micromatch";
 
 export type PathClassification =
@@ -112,6 +114,14 @@ const getExtension = (filePath: string): string => {
   return baseName.slice(extensionIndex).toLowerCase();
 };
 
+export const isTestPath = (filePath: string): boolean => {
+  return (
+    filePath.startsWith("tests/") ||
+    filePath.includes("/__tests__/") ||
+    /(?:^|[./-])(test|spec)\.[cm]?[jt]sx?$/u.test(path.posix.basename(filePath))
+  );
+};
+
 const isConfigPath = (filePath: string): boolean => {
   const normalizedPath = normalizePath(filePath);
   const baseName = getBaseName(normalizedPath);
@@ -180,7 +190,10 @@ export const classifyPath = (
     return "derived";
   }
 
-  if (ignorePatterns.length > 0 && micromatch.isMatch(normalizedPath, ignorePatterns)) {
+  if (
+    ignorePatterns.length > 0 &&
+    micromatch.isMatch(normalizedPath, ignorePatterns)
+  ) {
     return "ignored";
   }
 

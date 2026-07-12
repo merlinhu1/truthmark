@@ -223,3 +223,7 @@ Truthmark는 호스팅 서비스, MCP 서버, 벡터 데이터베이스, 숨겨�
 ## 라이선스
 
 MIT. [LICENSE](../../LICENSE)를 참조하세요.
+
+## 안전한 제거
+
+`truthmark uninstall --dry-run`을(를) 사용하여 정확히 생성된 호스트 표면을 검토한 후 `truthmark uninstall --apply`를 사용해 제거하세요. 작성된 truth, 구성, 템플릿, Portal 출력, Gemini 파일 및 관련 없는 사용자 파일은 보존되며, npm 전역 설치는 패키지 관리자에서 별도로 제거하십시오.

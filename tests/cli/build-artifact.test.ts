@@ -17,6 +17,16 @@ const builtCliEntrypoint = path.resolve(
   fileURLToPath(new URL("../../dist/main.js", import.meta.url)),
 );
 
+const runBuiltCli = async (
+  repoDir: string,
+  args: string[],
+): Promise<Awaited<ReturnType<typeof execa>>> => {
+  return execa(process.execPath, [builtCliEntrypoint, ...args], {
+    cwd: repoDir,
+    reject: false,
+  });
+};
+
 describe("built truthmark CLI", () => {
   it("renders top-level help from the built artifact", async () => {
     const buildResult = await execa("npm", ["run", "build"], {
@@ -160,6 +170,71 @@ describe("built truthmark CLI", () => {
         "truthmark-workflow/v0",
       );
       expect(output.data.workflowState.workflow).toBe("truthmark-check");
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("supports uninstall dry-run and apply from the built artifact without mutating on dry-run", async () => {
+    const buildResult = await execa("npm", ["run", "build"], {
+      cwd: workspaceRoot,
+      reject: false,
+    });
+    expect(buildResult.exitCode).toBe(0);
+
+    const repo = await createTempRepo();
+
+    try {
+      await runConfig(repo.rootDir, { force: false, stdout: false });
+      const configPath = `${repo.rootDir}/.truthmark/config.yml`;
+      const configFile = await fs.readFile(configPath, "utf8");
+      await fs.writeFile(
+        configPath,
+        configFile.replace("version: 2\n", "version: 2\nplatforms:\n  - codex\n"),
+        "utf8",
+      );
+      await runInit(repo.rootDir);
+
+      await fs.writeFile(`${repo.rootDir}/GEMINI.md`, "manual\n", "utf8");
+      await fs.writeFile(`${repo.rootDir}/.agents/user.txt`, "authored\n", "utf8");
+
+      const managedBefore = await fs.readFile(
+        `${repo.rootDir}/AGENTS.md`,
+        "utf8",
+      );
+
+      const dryRunResult = await runBuiltCli(repo.rootDir, [
+        "uninstall",
+        "--dry-run",
+        "--json",
+      ]);
+      expect(dryRunResult.exitCode).toBe(0);
+      const managedAfterDryRun = await fs.readFile(
+        `${repo.rootDir}/AGENTS.md`,
+        "utf8",
+      );
+      expect(managedAfterDryRun).toBe(managedBefore);
+
+      const applyResult = await runBuiltCli(repo.rootDir, [
+        "uninstall",
+        "--apply",
+        "--json",
+      ]);
+      expect(applyResult.exitCode).toBe(0);
+      if (typeof applyResult.stdout !== "string") {
+        throw new Error("Built CLI uninstall json output should be a string.");
+      }
+
+      const payload = JSON.parse(applyResult.stdout) as {
+        data: { lifecyclePlan: { mode: string; applied: boolean } };
+      };
+      expect(payload.data.lifecyclePlan.mode).toBe("apply");
+      expect(payload.data.lifecyclePlan.applied).toBe(true);
+      expect(await fs.readFile(`${repo.rootDir}/GEMINI.md`, "utf8")).toBe("manual\n");
+      expect(await fs.readFile(`${repo.rootDir}/.agents/user.txt`, "utf8")).toBe(
+        "authored\n",
+      );
+      await expect(fs.access(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
     } finally {
       await repo.cleanup();
     }

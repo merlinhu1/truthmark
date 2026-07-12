@@ -18,15 +18,18 @@ It covers configured platform output paths, generated workflow files, managed in
 
 Truthmark renders workflow surfaces only for configured platforms. Legacy package artifacts and retired Preview adapters are explicitly retired.
 
-- `truthmark init` removes obsolete generated files that are no longer in `renderGeneratedSurfaces(...)`.
+- `truthmark init` removes obsolete generated files that are no longer in `renderGeneratedSurfaces(...)` only when exact recognized bytes establish whole-file ownership.
   - Removed obsolete files include `truthmark-preview` package contents.
   - Removed obsolete files include retired non-Gemini Preview adapters.
   - Removed obsolete files include legacy `helper-manifest.yml` and `support/helper-policy.md` files under host skill roots.
 - `truthmark check` reports missing, stale, or obsolete generated surfaces when render outputs and committed files differ.
   - Stale Gemini surfaces are reported for manual cleanup rather than deleted by init.
+- Check, Init reconciliation, and Uninstall consume the same renderer-derived current catalog and retired-surface inventory.
+- Destructive lifecycle application snapshots and revalidates containment, parent and final link status, regular-file and hard-link status, managed-block structure, and recognized whole-file bytes for every mutation before applying the first mutation.
+- Managed-block removal preserves all bytes outside the single valid marker range; a block-only file is removed.
 
 - When `platforms` is omitted, fresh config does not assume a host platform.
-- `truthmark init` still maintains instruction targets, but host-specific skill/prompt/command surfaces are opt-in through explicit `platforms` entries.
+- `platforms` is the complete platform-ownership declaration. An explicit platform refreshes or retains renderer-owned instruction surfaces. Omitting `platforms` means no active platform, so `truthmark init` reconciles recognized generated surfaces/blocks away to an empty rendered host set.
 - Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents.
 - Generated helper manifest and helper policy files are intentionally not emitted.
 - GitHub Copilot prompt files are lightweight workflow adapters for supported generated workflows.
@@ -132,3 +135,7 @@ Update when platform paths, supported hosts, optional validation commands, or ma
 - `src/templates/generated-surfaces.ts`
 - `src/templates/workflow-surfaces.ts`
 - `src/templates/agents-block.ts`
+
+## Exact-path lifecycle ownership (2026-07-10)
+
+Renderers catalogue exact generated paths with aggregated platform and Portal claims plus retired exact paths and bounded retired package/helper patterns. Check previews inactive claims; Init and Uninstall reconcile only recognized whole files or valid managed blocks. Diverged files, malformed blocks, unsafe aliases or hard links, Gemini surfaces, and unrelated sibling files are preserved for review without recursive directory deletion.

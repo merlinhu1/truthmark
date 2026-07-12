@@ -223,3 +223,7 @@ Truthmark 有意保持小而明确：本地、已提交、按分支生效、可�
 ## 许可证
 
 MIT。见 [LICENSE](../../LICENSE)。
+
+## 安全移除
+
+使用 `truthmark uninstall --dry-run` 查看精确生成的主机表面（host surfaces），然后使用 `truthmark uninstall --apply` 将其移除。已创建的 truth、配置、模板、Portal 输出、Gemini 文件以及不相关的用户文件将被保留；请使用包管理器单独移除全局 npm 安装。

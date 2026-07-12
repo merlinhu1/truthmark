@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import { expect } from "expect";
 
 import { loadConfig } from "../../src/config/load.js";
+import { runConfig } from "../../src/config/command.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const validConfig = (portalProperties = "") => `version: 2
@@ -270,6 +271,36 @@ describe("loadConfig", () => {
     }
   });
 
+  it("accepts legacy instruction_targets with review guidance", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        validConfig().replace(
+          "  - AGENTS.md\n",
+          "  - src/session.ts\n  - AGENTS.md\n",
+        ),
+      );
+
+      const result = await loadConfig(repo.rootDir);
+
+      expect(result.status).toBe("loaded");
+      expect(result.config?.platforms).toEqual(["codex"]);
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "instruction_targets is accepted for compatibility but ignored",
+            ),
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("derives fixed internal paths from a custom workspace", async () => {
     const repo = await createTempRepo();
 
@@ -317,6 +348,21 @@ describe("loadConfig", () => {
       expect(result.config?.truthmark.paths.portalTemplate).toBe(
         "docs/custom-truthmark/templates/portal.html",
       );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("renders a default config without legacy instruction_targets", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      const result = await runConfig(repo.rootDir, { stdout: true, force: true });
+      const rendered = result.data?.content as string | undefined;
+
+      expect(result.summary).toBe("Rendered default Truthmark config.");
+      expect(rendered).toBeDefined();
+      expect(rendered).not.toContain("instruction_targets:");
     } finally {
       await repo.cleanup();
     }

@@ -36,6 +36,13 @@ describe("buildRepoIndex", () => {
       "import { add } from '../src/math.js';\n",
     );
     await runConfig(repo.rootDir, { force: false, stdout: false });
+    await repo.writeFile(
+      ".truthmark/config.yml",
+      (await repo.readFile(".truthmark/config.yml")).replace(
+        "version: 2\n",
+        "version: 2\nplatforms:\n  - codex\n",
+      ),
+    );
     await runInit(repo.rootDir);
 
     const result = await buildRepoIndex(repo.rootDir);

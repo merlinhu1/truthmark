@@ -223,3 +223,7 @@ Nó không phải dịch vụ lưu trữ, máy chủ MCP, cơ sở dữ liệu v
 ## Giấy phép
 
 MIT. Xem [LICENSE](../../LICENSE).
+
+## Gỡ cài đặt an toàn
+
+Sử dụng `truthmark uninstall --dry-run` để xem lại chính xác các bề mặt host đã tạo ra, rồi `truthmark uninstall --apply` để loại bỏ chúng. Các truth đã tạo, cấu hình, mẫu, đầu ra Portal, tệp Gemini và các tệp người dùng không liên quan sẽ được giữ nguyên; hãy gỡ bỏ cài đặt npm toàn cục riêng biệt bằng trình quản lý gói của bạn.

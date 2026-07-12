@@ -19,6 +19,7 @@ describe("truthmark CLI", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("config");
     expect(result.stdout).toContain("init");
+    expect(result.stdout).toContain("uninstall");
     expect(result.stdout).toContain("check");
     expect(result.stdout).toContain("index");
     expect(result.stdout).toContain("impact");
@@ -54,6 +55,16 @@ describe("truthmark CLI", () => {
     expect(result.stdout).toContain("Usage: truthmark check");
     expect(result.stdout).toContain("--json");
     expect(result.stdout).not.toContain("--workflow");
+  });
+
+  it("shows uninstall help with JSON and execution mode options", async () => {
+    const result = await runCli(["uninstall", "--help"]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Usage: truthmark uninstall");
+    expect(result.stdout).toContain("--dry-run");
+    expect(result.stdout).toContain("--apply");
+    expect(result.stdout).toContain("--json");
   });
 
   it("returns valid JSON for check", async () => {

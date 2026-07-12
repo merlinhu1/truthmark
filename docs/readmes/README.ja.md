@@ -223,3 +223,7 @@ Truthmark は意図的に小さく保たれています：ローカル、コミ�
 ## ライセンス
 
 MIT。[LICENSE](../../LICENSE) を参照してください。
+
+## 安全な削除
+
+`truthmark uninstall --dry-run` を使用して正確に生成されたホストサーフェスを確認し、次に `truthmark uninstall --apply` でそれらを削除します。作成した truth、設定、テンプレート、Portal の出力、Gemini ファイル、関連のないユーザーファイルは保持されます。npm のグローバルインストールはパッケージマネージャーで別途削除してください。

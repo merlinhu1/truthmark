@@ -7,7 +7,17 @@ import { expect } from "expect";
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
-import { renderGeneratedSurfaces } from "../../src/templates/generated-surfaces.js";
+import {
+  renderGeneratedSurfaces,
+  renderGeneratedSurfaceCatalog,
+  type GeneratedSurfaceOwner,
+} from "../../src/templates/generated-surfaces.js";
+
+const platformOwners = (owners: GeneratedSurfaceOwner[]) =>
+  owners.filter(
+    (owner): owner is Extract<GeneratedSurfaceOwner, { platform: string }> =>
+      "platform" in owner,
+  );
 
 const allPlatforms = [
   "codex",
@@ -401,5 +411,177 @@ describe("Truthmark Portal generated surfaces", () => {
     );
     expect(agentsBlock).toContain("docs/truthmark/generated/portal/");
     expect(agentsBlock).toContain("Markdown remains canonical");
+  });
+
+  it("maps platform-derived instruction files to AGENTS.md and CLAUDE.md with exact-path dedupe", () => {
+    const config = createDefaultConfig();
+    config.platforms = ["codex", "opencode", "claude-code"];
+    const allSurfaces = renderGeneratedSurfaces(config);
+    const allPaths = allSurfaces.map((surface) => surface.path);
+    const catalog = renderGeneratedSurfaceCatalog(config);
+    const agentsEntry = catalog.find((entry) => entry.path === "AGENTS.md");
+    const claudeEntry = catalog.find((entry) => entry.path === "CLAUDE.md");
+
+    expect(allPaths).toContain("AGENTS.md");
+    expect(allPaths).toContain("CLAUDE.md");
+    expect(new Set(allPaths).size).toBe(allPaths.length);
+    expect(allPaths.filter((path) => path === "AGENTS.md")).toHaveLength(1);
+    expect(allPaths.filter((path) => path === "CLAUDE.md")).toHaveLength(1);
+    expect(agentsEntry).toBeDefined();
+    const agentsPlatforms =
+      agentsEntry === undefined ? [] : platformOwners(agentsEntry.owners).map((owner) => owner.platform);
+    expect(new Set(agentsPlatforms).size).toBe(2);
+    expect(
+      agentsPlatforms.sort(),
+    ).toEqual(["codex", "opencode"]);
+    expect(claudeEntry).toBeDefined();
+    expect(claudeEntry?.owners).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "platform",
+          platform: "claude-code",
+        }),
+      ]),
+    );
+    expect(renderGeneratedSurfaces({ ...config, platforms: [] })).toEqual([]);
+  });
+
+  it("builds an ownership catalog with stable content signatures across all platforms", () => {
+    const config = createDefaultConfig();
+    const normalized = (content: string): string =>
+      content.endsWith("\n") ? content : `${content}\n`;
+    config.platforms = [...allPlatforms];
+
+    const catalog = renderGeneratedSurfaceCatalog(config);
+    const configForPlatformAndPortal = (
+      platform: (typeof allPlatforms)[number],
+      portalEnabled: boolean,
+    ) => ({
+      ...config,
+      truthmark: {
+        ...config.truthmark,
+        generated: {
+          ...config.truthmark.generated,
+          portal: { enabled: portalEnabled },
+        },
+      },
+      platforms: [platform],
+    });
+    const platformSurfaceContents = new Map<string, Set<string>>();
+    const addSurfaceContents = (surfaces: ReturnType<typeof renderGeneratedSurfaces>) => {
+      for (const surface of surfaces) {
+        const signatures = platformSurfaceContents.get(surface.path) ?? new Set();
+        signatures.add(normalized(surface.content));
+        platformSurfaceContents.set(surface.path, signatures);
+      }
+    };
+
+    for (const platform of allPlatforms) {
+      addSurfaceContents(renderGeneratedSurfaces(configForPlatformAndPortal(platform, false)));
+      addSurfaceContents(renderGeneratedSurfaces(configForPlatformAndPortal(platform, true)));
+    }
+
+    for (const entry of catalog) {
+      const expectedContents = platformSurfaceContents.get(entry.path);
+      if (expectedContents === undefined) continue;
+
+      expect(entry.recognizedContents.length).toBeGreaterThan(0);
+      for (const content of entry.recognizedContents) {
+        expect(expectedContents).toContain(content);
+      }
+    }
+  });
+
+  it("classifies shared renderer outputs as managed blocks and keeps all-platform ownership stable", () => {
+    const config = createDefaultConfig();
+    config.platforms = [...allPlatforms];
+    config.truthmark.generated.portal.enabled = true;
+
+    const surfaces = renderGeneratedSurfaces(config);
+    const managedBlockPaths = new Set(
+      ["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md"].filter(
+        (surfacePath) =>
+          surfaces.some((surface) => surface.path === surfacePath),
+      ),
+    );
+
+    for (const surface of surfaces) {
+      if (managedBlockPaths.has(surface.path)) {
+        expect(surface.managedBlock).toBe(true);
+      } else {
+        expect(surface).not.toHaveProperty("managedBlock");
+      }
+    }
+
+    const catalog = renderGeneratedSurfaceCatalog(config);
+    const agentsEntry = catalog.find((entry) => entry.path === "AGENTS.md");
+    const claudeEntry = catalog.find((entry) => entry.path === "CLAUDE.md");
+    const copilotEntry = catalog.find(
+      (entry) => entry.path === ".github/copilot-instructions.md",
+    );
+
+    expect(
+      agentsEntry === undefined
+        ? []
+        : platformOwners(agentsEntry.owners).map((owner) => owner.platform).sort(),
+    ).toEqual(["codex", "opencode"].sort());
+    expect(
+      claudeEntry === undefined
+        ? []
+        : platformOwners(claudeEntry.owners).map((owner) => owner.platform).sort(),
+    ).toEqual(["claude-code"]);
+    expect(
+      copilotEntry === undefined
+        ? []
+        : platformOwners(copilotEntry.owners).map((owner) => owner.platform).sort(),
+    ).toEqual([
+      "github-copilot",
+    ]);
+    expect(agentsEntry?.recognizedContents.length).toBeGreaterThanOrEqual(1);
+    expect(copilotEntry?.recognizedContents.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("keeps portal-specific host surfaces when enabled and removes them only for removed hosts", () => {
+    const enabledConfig = createDefaultConfig();
+    enabledConfig.platforms = [...allPlatforms];
+    enabledConfig.truthmark.generated.portal.enabled = true;
+
+    const allEnabled = renderGeneratedSurfaces(enabledConfig);
+    const allEnabledPaths = allEnabled.map((surface) => surface.path);
+    expect(
+      allEnabledPaths.includes(".opencode/skills/truthmark-portal/SKILL.md"),
+    ).toBe(true);
+    expect(
+      allEnabledPaths.includes(".github/prompts/truthmark-portal.prompt.md"),
+    ).toBe(true);
+
+    const oneHostRemoved = createDefaultConfig();
+    oneHostRemoved.platforms = [...allPlatforms.filter((platform) => platform !== "github-copilot")];
+    oneHostRemoved.truthmark.generated.portal.enabled = true;
+    const oneHostPaths = renderGeneratedSurfaces(oneHostRemoved).map(
+      (surface) => surface.path,
+    );
+
+    expect(
+      oneHostPaths.includes(".github/skills/truthmark-portal/SKILL.md"),
+    ).toBe(false);
+    expect(
+      oneHostPaths.includes(".github/prompts/truthmark-portal.prompt.md"),
+    ).toBe(false);
+
+    const portalDisabled = createDefaultConfig();
+    portalDisabled.platforms = ["codex"];
+    portalDisabled.truthmark.generated.portal.enabled = false;
+    const disabledPaths = renderGeneratedSurfaces(portalDisabled).map(
+      (surface) => surface.path,
+    );
+
+    expect(disabledPaths.includes("AGENTS.md")).toBe(true);
+    expect(disabledPaths.includes(".agents/skills/truthmark-portal/SKILL.md")).toBe(
+      false,
+    );
+    expect(disabledPaths.includes(".agents/skills/truthmark-portal/SKILL.md")).toBe(
+      false,
+    );
   });
 });

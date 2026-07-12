@@ -223,3 +223,7 @@ Ce n’est pas un service hébergé, un serveur MCP, une base de données vector
 ## Licence
 
 MIT. Voir [LICENSE](../../LICENSE).
+
+## Suppression sûre
+
+Utilisez `truthmark uninstall --dry-run` pour examiner précisément les surfaces hôtes générées, puis `truthmark uninstall --apply` pour les supprimer. Les truth rédigées, la configuration, les templates, la sortie Portal, les fichiers Gemini et les fichiers utilisateur non liés sont conservés ; supprimez séparément une installation npm globale avec votre gestionnaire de paquets.

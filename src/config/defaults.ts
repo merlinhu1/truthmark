@@ -21,8 +21,6 @@ export const DERIVED_TRUTHMARK_PATHS = {
   portalTemplate: "templates/portal.html",
 } as const;
 
-export const DEFAULT_INSTRUCTION_TARGETS = ["AGENTS.md"] as const;
-
 export const createDefaultRawConfig = () => ({
   version: 2 as const,
   truthmark: {
@@ -31,7 +29,6 @@ export const createDefaultRawConfig = () => ({
       portal: { ...DEFAULT_TRUTHMARK_WORKSPACE.generated.portal },
     },
   },
-  instruction_targets: [...DEFAULT_INSTRUCTION_TARGETS],
   frontmatter: {
     required: [],
     recommended: ["status", "last_reviewed"],
@@ -75,7 +72,6 @@ export const createDefaultConfig = (): TruthmarkConfig => ({
       "docs/truthmark/templates/*.md",
     ],
   },
-  instructionTargets: [...DEFAULT_INSTRUCTION_TARGETS],
   frontmatter: {
     required: [],
     recommended: ["status", "last_reviewed"],

@@ -4,7 +4,11 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { ensureRepoFile, writeRepoFile } from "../../src/fs/paths.js";
+import {
+  ensureRepoFile,
+  isSafeExactFile,
+  writeRepoFile,
+} from "../../src/fs/paths.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("repo path writes", () => {
@@ -95,6 +99,78 @@ describe("repo path writes", () => {
       await expect(fs.stat(outsidePath)).rejects.toThrow();
     } finally {
       await fs.rm(outsidePath, { force: true });
+      await repo.cleanup();
+    }
+  });
+
+  it("checks exact-file safety without allowing missing file parents", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile("src/session.ts", "export const session = true;\n");
+
+      await expect(isSafeExactFile(repo.rootDir, "src/session.ts", true)).resolves.toBe(
+        true,
+      );
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/session.ts", false),
+      ).resolves.toBe(true);
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/missing.ts", true),
+      ).resolves.toBe(true);
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/missing.ts", false),
+      ).resolves.toBe(false);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rejects hard-linked exact files as unsafe lifecycle targets", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      const sourcePath = path.join(repo.rootDir, "src", "session.ts");
+      const linkPath = path.join(repo.rootDir, "src", "session-copy.ts");
+
+      await repo.writeFile("src/session.ts", "export const session = true;\n");
+      await fs.link(sourcePath, linkPath);
+
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/session.ts", false),
+      ).resolves.toBe(false);
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/session-copy.ts", false),
+      ).resolves.toBe(false);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("rejects hard-linked descendants during lifecycle preflight", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile(
+        "docs/truthmark/engineering/overview.md",
+        "# Overview\n",
+      );
+      await repo.writeFile(
+        "src/session.ts",
+        "export const session = true;\n",
+      );
+      await fs.link(
+        path.join(repo.rootDir, "src", "session.ts"),
+        path.join(repo.rootDir, "src", "session-link.ts"),
+      );
+
+      await expect(
+        isSafeExactFile(repo.rootDir, "src/session.ts", false),
+      ).resolves.toBe(false);
+      await expect(
+        isSafeExactFile(repo.rootDir, "docs/truthmark/engineering/overview.md", false),
+      ).resolves.toBe(true);
+    } finally {
       await repo.cleanup();
     }
   });

@@ -68,6 +68,11 @@ Unknown platform names are config errors.
 
 Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
 
+Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned. Legacy version-2 `instruction_targets` values still parse but are ignored and never authorize writes.
+If `platforms` is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
+
+Before leaving Truthmark, run `truthmark uninstall --dry-run`, review the exact-path `truthmark-lifecycle/v0` plan, then run `truthmark uninstall --apply`. Uninstall preserves `.truthmark/config.yml`, routes, truth documents, editable templates, Portal presentation output, Gemini files, unrelated host-directory files, and content outside managed markers. Remove those manually only after review. A globally installed npm package is separate; remove it with your package manager if desired.
+
 ## Workflow commands
 
 These workflows are installed into supported AI coding hosts. They are not top-level shell commands.
@@ -168,6 +173,7 @@ Most maintainers start with three commands.
 | --- | --- |
 | `truthmark config` | Create `.truthmark/config.yml`. Writes only that file unless `--stdout` is used. |
 | `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
+| `truthmark uninstall --dry-run\|--apply` | Preview or apply safe removal of recognized generated host surfaces. Exactly one mode is required. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
 Optional repository-intelligence helpers generate derived review material for the active checkout, such as RepoIndex, RouteMap, ImpactSet, and compact WorkflowState/action-context JSON. Validation helpers are exposed as optional workflow metadata and explicit `truthmark validate ... --json` commands; they are accelerators, not bundled repo-local helper manifest or policy files and not sources of truth. Standalone Copilot prompts, Antigravity rules, and Cursor Agent Skills use the same CLI validator contract when the installed runner is available, and otherwise report a visible skipped helper status with manual validation.
@@ -244,7 +250,7 @@ Important config areas include:
 | Fixed truth lanes | Product truth lives under `product/` and engineering truth under `engineering/` inside `truthmark.workspace`. |
 | Fixed templates | Truth-doc templates live under `templates/` inside `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
-| `instruction_targets` | Files that receive shared managed instruction blocks, such as `AGENTS.md`. |
+| `instruction_targets` | Legacy parse-only compatibility field; still parsed for compatibility but ignored by the renderer and never a write authority. |
 | `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
 | `frontmatter.recommended` | Metadata fields that produce review diagnostics when missing. |
 | `ignore` | Glob patterns excluded from relevant checks and routing logic. |

@@ -1,5 +1,9 @@
-import { runConfig as runRepositoryConfig, type ConfigCommandOptions } from "../config/command.js";
+import {
+  runConfig as runRepositoryConfig,
+  type ConfigCommandOptions,
+} from "../config/command.js";
 import { runInit as runRepositoryInit } from "../init/init.js";
+import { runUninstall as runRepositoryUninstall } from "../init/uninstall.js";
 import { runCheck as runRepositoryCheck } from "../checks/check.js";
 import type { CommandResult } from "../output/diagnostic.js";
 import { buildImpactSet } from "../impact/build.js";
@@ -18,7 +22,9 @@ import {
 } from "../agents/workflow-helper-validation.js";
 import { buildRepoIndex } from "../repo-index/build.js";
 
-export const runConfig = async (options: ConfigCommandOptions): Promise<CommandResult> => {
+export const runConfig = async (
+  options: ConfigCommandOptions,
+): Promise<CommandResult> => {
   return runRepositoryConfig(process.cwd(), options);
 };
 
@@ -26,14 +32,26 @@ export const runInit = async (): Promise<CommandResult> => {
   return runRepositoryInit(process.cwd());
 };
 
-export const runCheck = async (options: { base?: string } = {}): Promise<CommandResult> => {
+export const runUninstall = async (
+  mode: "dry-run" | "apply",
+): Promise<CommandResult> => {
+  return runRepositoryUninstall(process.cwd(), mode);
+};
+
+export const runCheck = async (
+  options: { base?: string } = {},
+): Promise<CommandResult> => {
   return runRepositoryCheck(process.cwd(), options);
 };
 
 export const runIndex = async (): Promise<CommandResult> => {
   const repoIndex = await buildRepoIndex(process.cwd());
-  const errorCount = repoIndex.diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;
-  const reviewCount = repoIndex.diagnostics.filter((diagnostic) => diagnostic.severity === "review").length;
+  const errorCount = repoIndex.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "error",
+  ).length;
+  const reviewCount = repoIndex.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "review",
+  ).length;
 
   return {
     command: "index",
@@ -46,7 +64,9 @@ export const runIndex = async (): Promise<CommandResult> => {
   };
 };
 
-export const runImpact = async (options: { base?: string }): Promise<CommandResult> => {
+export const runImpact = async (options: {
+  base?: string;
+}): Promise<CommandResult> => {
   if (!options.base) {
     return {
       command: "impact",
@@ -62,8 +82,12 @@ export const runImpact = async (options: { base?: string }): Promise<CommandResu
   }
 
   const impactSet = await buildImpactSet(process.cwd(), { base: options.base });
-  const errorCount = impactSet.diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;
-  const reviewCount = impactSet.diagnostics.filter((diagnostic) => diagnostic.severity === "review").length;
+  const errorCount = impactSet.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "error",
+  ).length;
+  const reviewCount = impactSet.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "review",
+  ).length;
 
   return {
     command: "impact",
@@ -75,8 +99,13 @@ export const runImpact = async (options: { base?: string }): Promise<CommandResu
   };
 };
 
-const isTruthmarkWorkflowId = (value: unknown): value is TruthmarkWorkflowId => {
-  return typeof value === "string" && TRUTHMARK_WORKFLOW_IDS.includes(value as TruthmarkWorkflowId);
+const isTruthmarkWorkflowId = (
+  value: unknown,
+): value is TruthmarkWorkflowId => {
+  return (
+    typeof value === "string" &&
+    TRUTHMARK_WORKFLOW_IDS.includes(value as TruthmarkWorkflowId)
+  );
 };
 
 const invalidWorkflowResult = (
@@ -101,7 +130,10 @@ const invalidWorkflowResult = (
   },
 });
 
-const readHelperFile = async (filePath: string, helper: string): Promise<string | WorkflowHelperValidationResult> => {
+const readHelperFile = async (
+  filePath: string,
+  helper: string,
+): Promise<string | WorkflowHelperValidationResult> => {
   try {
     return await fs.readFile(filePath, "utf8");
   } catch (error: unknown) {
@@ -121,7 +153,9 @@ export const runValidateDocumentReport = async (
   reportFile: string,
 ): Promise<WorkflowHelperValidationResult> => {
   const text = await readHelperFile(reportFile, "validate-document-report");
-  return typeof text === "string" ? validateTruthDocumentReportText(text) : text;
+  return typeof text === "string"
+    ? validateTruthDocumentReportText(text)
+    : text;
 };
 
 export const runValidateWriteLease = async (
@@ -133,7 +167,10 @@ export const runValidateWriteLease = async (
     return leaseText;
   }
 
-  const changedText = await readHelperFile(changedFilesFile, "validate-write-lease");
+  const changedText = await readHelperFile(
+    changedFilesFile,
+    "validate-write-lease",
+  );
   if (typeof changedText !== "string") {
     return changedText;
   }

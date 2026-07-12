@@ -17,6 +17,10 @@ const isNodeErrorWithCode = (error: unknown, code: string): boolean => {
   return error instanceof Error && "code" in error && error.code === code;
 };
 
+const pathSegments = (absolutePath: string): string[] => {
+  return absolutePath.split(path.sep);
+};
+
 const joinMissingSegments = (resolvedPath: string, missingSegments: string[]): string => {
   return missingSegments.reduce<string>((currentResolvedPath, segment) => {
     return path.join(currentResolvedPath, segment);
@@ -72,6 +76,56 @@ export const resolveRepoPath = (rootDir: string, relativePath: string): string =
   }
 
   return resolvedPath;
+};
+
+export const isSafeExactFile = async (
+  rootDir: string,
+  relativePath: string,
+  allowMissing: boolean,
+): Promise<boolean> => {
+  try {
+    const absolutePath = resolveRepoPath(rootDir, relativePath);
+    await assertRepoContainment(rootDir, absolutePath);
+    const relative = path.relative(rootDir, absolutePath);
+    const segments = pathSegments(relative);
+
+    if (segments.length === 0 || segments.every((segment) => segment.length === 0)) {
+      return false;
+    }
+
+    let current = rootDir;
+    for (let index = 0; index < segments.length; index += 1) {
+      const segment = segments[index];
+      current = path.join(current, segment);
+
+      try {
+        const stat = await fs.lstat(current);
+
+        if (stat.isSymbolicLink()) {
+          return false;
+        }
+
+        const isFinal = index === segments.length - 1;
+        if (isFinal) {
+          return stat.isFile() && stat.nlink === 1;
+        }
+
+        if (!stat.isDirectory()) {
+          return false;
+        }
+      } catch (error: unknown) {
+        if (!isNodeErrorWithCode(error, "ENOENT")) {
+          throw error;
+        }
+
+        return allowMissing;
+      }
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
 };
 
 export const assertRepoContainment = async (

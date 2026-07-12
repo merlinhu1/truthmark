@@ -223,3 +223,7 @@ Es ist kein gehosteter Dienst, MCP-Server, keine Vektordatenbank, versteckte Mem
 ## Lizenz
 
 MIT. Siehe [LICENSE](../../LICENSE).
+
+## Sichere Entfernung
+
+Verwenden Sie `truthmark uninstall --dry-run`, um die exakt erzeugten Host-Surfaces zu prüfen, und anschließend `truthmark uninstall --apply`, um sie zu entfernen. Erstellte truth, Konfiguration, Templates, Portal-Ausgabe, Gemini-Dateien und nicht zusammenhängende Benutzerdateien bleiben erhalten; entfernen Sie eine globale npm-Installation separat mit Ihrem Paketmanager.

@@ -58,3 +58,7 @@ Maintainers can review product promises and implementation realization without e
 - ../../../../src/routing/areas.ts
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
+
+## Repository-wide coverage (2026-07-10)
+
+Routing coverage considers current Git-visible functional code under arbitrary repository roots. Tests, ignored paths, documentation, assets, and generated surfaces do not create unmapped-code findings.

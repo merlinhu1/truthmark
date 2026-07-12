@@ -223,3 +223,7 @@ Non è un servizio ospitato, un server MCP, un database vettoriale, un livello d
 ## Licenza
 
 MIT. Vedi [LICENSE](../../LICENSE).
+
+## Rimozione sicura
+
+Usa `truthmark uninstall --dry-run` per rivedere le superfici host generate con precisione, quindi `truthmark uninstall --apply` per rimuoverle. I truth creati, la configurazione, i template, l’output di Portal, i file Gemini e i file utente non correlati vengono preservati; rimuovi separatamente un’installazione npm globale con il tuo gestore pacchetti.
