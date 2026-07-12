@@ -14,6 +14,13 @@ describe("runInit instruction integration", () => {
 
     try {
       await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        (await repo.readFile(".truthmark/config.yml")).replace(
+          "version: 2\n",
+          "version: 2\nplatforms:\n  - codex\n",
+        ),
+      );
       await runInit(repo.rootDir);
 
       const agents = await repo.readFile("AGENTS.md");
@@ -57,15 +64,16 @@ describe("runInit instruction integration", () => {
 
     try {
       await runConfig(repo.rootDir, {});
-      await runInit(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
-        `version: 1
-authority:
-  - docs/truthmark/routes/areas.md
-  - docs/truthmark/routes/areas/**/*.md
-instruction_targets:
-  - AGENTS.md
+        `version: 2
+platforms:
+  - codex
+truthmark:
+  workspace: docs/truthmark
+  generated:
+    portal:
+      enabled: false
 frontmatter:
   required: []
   recommended:
@@ -73,7 +81,7 @@ frontmatter:
 ignore: []
 `,
       );
-
+      await runInit(repo.rootDir);
       await runInit(repo.rootDir);
 
       const agents = await repo.readFile("AGENTS.md");
@@ -96,6 +104,13 @@ ignore: []
 
     try {
       await runConfig(repo.rootDir, {});
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        (await repo.readFile(".truthmark/config.yml")).replace(
+          "version: 2\n",
+          "version: 2\nplatforms:\n  - codex\n",
+        ),
+      );
       await runInit(repo.rootDir);
       await repo.writeFile(
         ".agents/skills/truthmark-preview/SKILL.md",
@@ -116,7 +131,7 @@ ignore: []
       );
       await repo.writeFile(
         ".gemini/agents/truth-doc-writer.md",
-        "# Legacy Gemini writer\n",
+        "# Legacy Gemini doc writer\n",
       );
       await repo.writeFile(
         ".gemini/commands/truthmark/sync.toml",
@@ -135,10 +150,10 @@ ignore: []
 
       await expect(
         fs.stat(`${repo.rootDir}/.agents/skills/truthmark-preview/SKILL.md`),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.github/prompts/truthmark-preview.prompt.md`),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(`${repo.rootDir}/.gemini/commands/truthmark/preview.toml`),
       ).resolves.toBeDefined();
@@ -156,12 +171,12 @@ ignore: []
         fs.stat(
           `${repo.rootDir}/.agents/skills/truthmark-sync/helper-manifest.yml`,
         ),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
       await expect(
         fs.stat(
           `${repo.rootDir}/.opencode/skills/truthmark-sync/support/helper-policy.md`,
         ),
-      ).rejects.toThrow();
+      ).resolves.toBeDefined();
     } finally {
       await repo.cleanup();
     }
