@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-26
 ---
 
 # Repository Intelligence
@@ -42,6 +42,8 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
   - next steps
   - report sections
 - The advisory card presents affected files, likely route owners, suggested truth docs, open questions, and skipped optional-helper status so helper output remains review material rather than repository authority.
+- Human workflow status renders applicability plus non-empty advisory-card and next-step lists, capped at five entries per list; JSON retains the complete WorkflowState contract.
+- WorkflowState collapses exact duplicate diagnostics collected from config, RepoIndex, ImpactSet, and Check while preserving distinct diagnostics.
 - Workflow applicability uses context-shaped states such as `ready`, `needs_manual_review`, and `needs_routing_review`.
 - Diagnostics or missing route ownership produce open questions and manual handoff guidance instead of making the CLI the arbiter.
 - `truthmark-sync` includes `Sync Intent` in its report sections as a transient pre-write checklist and keeps affected truth docs in `targetTruthDocs` for review focus.
@@ -125,6 +127,8 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
 - Decision (2026-06-21): Sync `candidateStaleTruthDocs` stays signal-based.
   - WorkflowState does not enumerate every indexed truth doc outside the impact set.
   - It returns an empty candidate list unless freshness, relationships, source references, changed route metadata, or changed linked docs indicate a possible stale-truth repair.
+- Decision (2026-07-26): Human workflow status renders the existing advisory card as bounded context rather than requiring callers to load the full JSON contract.
+  - WorkflowState removes exact duplicate diagnostics at its composition boundary.
 
 ## Rationale
 

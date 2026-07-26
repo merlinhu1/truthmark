@@ -11,8 +11,6 @@ truthmark:
   generated:
     portal:
       enabled: false
-instruction_targets:
-  - AGENTS.md
 frontmatter:
   required: []
   recommended:

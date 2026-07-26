@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: routing
-last_reviewed: 2026-05-16
+last_reviewed: 2026-07-26
 ---
 
 # Installed Workflows Areas
@@ -40,6 +40,7 @@ Code surface:
 - src/templates/workflow-surfaces.ts
 - src/templates/generated-surfaces.ts
 - src/checks/generated-surfaces.ts
+- src/managed-block.ts
 - src/truth/\*\*
 - src/version.ts
 - workflow-eval-framwork/\*\*

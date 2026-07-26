@@ -10,3 +10,4 @@ SemVer rationale: This is a backward-compatible release that adds platform-deriv
 - Check and RepoIndex share Git-visible, NUL-safe repository discovery, including functional code under arbitrary roots.
 - Init reconciles exact safely recognized inactive generated surfaces while preserving diverged, Gemini, and unrelated files.
 - `truthmark uninstall --dry-run|--apply [--json]` provides a deterministic removal plan and preserves authored truth, configuration, templates, Portal output, and global package installation.
+- Human-readable `truthmark workflow status` output now presents bounded applicability and advisory context while JSON retains the full schema-versioned contract; duplicate diagnostics are collapsed at WorkflowState composition.

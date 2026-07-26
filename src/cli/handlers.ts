@@ -12,6 +12,7 @@ import {
   type TruthmarkWorkflowId,
 } from "../agents/workflow-manifest.js";
 import { buildWorkflowState } from "../workflow-state/build.js";
+import type { WorkflowState } from "../workflow-state/types.js";
 import fs from "node:fs/promises";
 
 import {
@@ -130,6 +131,35 @@ const invalidWorkflowResult = (
   },
 });
 
+const summarizeValues = (values: string[]): string =>
+  values.length <= 5
+    ? values.join(", ")
+    : `${values.slice(0, 5).join(", ")} (+${values.length - 5} more)`;
+
+const renderWorkflowStatusSummary = (state: WorkflowState): string => {
+  const card = state.workflowCard;
+
+  return [
+    `Truthmark workflow status completed for ${state.workflow}.`,
+    `Applicability: ${state.applicability.state}.`,
+    ...(card.affectedFiles.length > 0
+      ? [`Affected files: ${summarizeValues(card.affectedFiles)}`]
+      : []),
+    ...(card.likelyRouteOwners.length > 0
+      ? [`Likely route owners: ${summarizeValues(card.likelyRouteOwners)}`]
+      : []),
+    ...(card.suggestedTruthDocs.length > 0
+      ? [`Suggested truth docs: ${summarizeValues(card.suggestedTruthDocs)}`]
+      : []),
+    ...(card.openQuestions.length > 0
+      ? [`Open questions: ${summarizeValues(card.openQuestions)}`]
+      : []),
+    ...(state.nextSteps.length > 0
+      ? [`Next steps: ${summarizeValues(state.nextSteps)}`]
+      : []),
+  ].join("\n");
+};
+
 const readHelperFile = async (
   filePath: string,
   helper: string,
@@ -193,7 +223,7 @@ export const runWorkflowStatus = async (options: {
 
   return {
     command: "workflow status",
-    summary: `Truthmark workflow status completed for ${options.workflow}.`,
+    summary: renderWorkflowStatusSummary(workflowState),
     diagnostics: workflowState.diagnostics,
     data: {
       request: {
