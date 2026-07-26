@@ -192,6 +192,22 @@ describe("repository intelligence CLI commands", () => {
       expect(Array.isArray(state.nextSteps)).toBe(true);
       expect(Array.isArray(state.diagnostics)).toBe(true);
       expect(compactTestGuidance.join("\n")).toContain("tests/math.test.ts");
+
+      const humanResult = await runCli(
+        [
+          "workflow",
+          "status",
+          "--workflow",
+          "truthmark-sync",
+          "--base",
+          "main",
+        ],
+        { cwd: repo.rootDir },
+      );
+      expect(humanResult.stdout).toContain("Applicability: ready.");
+      expect(humanResult.stdout).toContain("Affected files: src/math.ts");
+      expect(humanResult.stdout).toContain("Likely route owners:");
+      expect(humanResult.stdout).toContain("Suggested truth docs:");
     } finally {
       await repo.cleanup();
     }

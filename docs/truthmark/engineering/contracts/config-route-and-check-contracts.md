@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-20
+last_reviewed: 2026-07-26
 ---
 
 # Config, Route, And Check Contracts
@@ -47,7 +47,7 @@ Conflicting duplicate kinds or lanes are reported as area-index errors.
 
 The public ContextPack command surface is retired.
 
-Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for:
+Agents use `truthmark workflow status --workflow <workflow> [--base <ref>]` for a bounded human-readable advisory card and add `--json` when they need the schema-versioned contract for:
 
 - an advisory workflow card
 - write-boundary suggestions
@@ -60,6 +60,10 @@ Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --jso
 - diagnostics
 - next steps
 - compact affected-test guidance
+
+The human-readable card reports applicability and non-empty affected files, likely route owners, suggested truth docs, open questions, and next steps. Each list is capped at five entries with a remaining-count summary.
+
+WorkflowState composes diagnostics from config, RepoIndex, ImpactSet, and Check by exact-value deduplication so the same review or error signal appears once.
 
 Agents use `truthmark impact --base <ref> --json` for branch-diff routing.
 
@@ -121,6 +125,8 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 - Decision (2026-06-15): Route relationships are route-local metadata; checks validate relationship targets for existence and lane compatibility without requiring a reciprocal global graph edge.
 - Decision (2026-06-15): ContextPack is folded into workflow status and impact; the standalone `truthmark context` command is hard-removed from the public CLI.
 - Decision (2026-06-18): Omitted `platforms` normalize to an empty platform list; all host-specific generated surfaces, including Codex, are explicit opt-in config.
+- Decision (2026-07-26): Human workflow status reuses the existing advisory card with bounded lists, while JSON retains the full schema-versioned state.
+  - Exact duplicate diagnostics are collapsed at WorkflowState composition so optional helper output stays compact without hiding distinct signals.
 
 ## Rationale
 

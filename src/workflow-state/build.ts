@@ -153,7 +153,8 @@ const candidateStaleTruthDocsFor = (
       doc.sourceOfTruth.some((reference) =>
         [...changedPaths].some(
           (changedPath) =>
-            reference === changedPath || micromatch.isMatch(changedPath, reference),
+            reference === changedPath ||
+            micromatch.isMatch(changedPath, reference),
         ),
       )
     ) {
@@ -363,10 +364,14 @@ export const buildWorkflowState = async (
     comparisonBase ? { base: comparisonBase } : {},
   );
   const diagnostics = [
-    ...loadResult.diagnostics,
-    ...repoIndex.diagnostics,
-    ...(impactSet?.diagnostics ?? []),
-    ...checkResult.diagnostics,
+    ...new Map(
+      [
+        ...loadResult.diagnostics,
+        ...repoIndex.diagnostics,
+        ...(impactSet?.diagnostics ?? []),
+        ...checkResult.diagnostics,
+      ].map((diagnostic) => [JSON.stringify(diagnostic), diagnostic] as const),
+    ).values(),
   ];
   const applicability = applicabilityFor(
     options.workflow,

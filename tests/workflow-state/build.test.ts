@@ -323,6 +323,26 @@ describe("buildWorkflowState", () => {
     expect(JSON.stringify(state)).not.toContain('"content":');
   });
 
+  it("deduplicates diagnostics composed from repository helpers", async () => {
+    const repo = await setupConfiguredRepo();
+    repos.push(repo);
+    await repo.writeFile(
+      ".truthmark/config.yml",
+      `${await repo.readFile(".truthmark/config.yml")}instruction_targets:\n  - AGENTS.md\n`,
+    );
+
+    const state = await buildWorkflowState(repo.rootDir, {
+      workflow: "truthmark-sync",
+      base: "main",
+    });
+
+    expect(
+      state.diagnostics.filter((diagnostic) =>
+        diagnostic.message.includes("instruction_targets"),
+      ),
+    ).toHaveLength(1);
+  });
+
   it("authorizes sync to correct signal-linked truth docs and routing files", async () => {
     const repo = await setupConfiguredRepo({ includeUnrelatedRoute: true });
     repos.push(repo);
