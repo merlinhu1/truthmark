@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-operations
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-26
 ---
 
 # Release Automation
@@ -21,6 +21,10 @@ Release, CI, GitHub Pages deployment, and repository-readiness automation are im
 The npm publish workflow runs from `release/**` tag push events, with manual `workflow_dispatch` as an operator fallback. Tag-triggered publishing keeps the GitHub Actions OIDC signing certificate tied to a concrete `refs/tags/...` source ref for npm provenance verification.
 
 The GitHub Pages workflow deploys the committed static introduction site from `site/**` after pushes to `main` that change the site or Pages workflow.
+
+The static introduction site replaces the positioned hero illustration with a bounded grid at narrow desktop and tablet widths, then stacks the same content at phone widths. The header brand mark uses an inline SVG checkmark that remains contained within its rounded glyph.
+
+The introduction site groups its overview, workflow guide, truth model, and adoption content into hash-addressable tab pages. The static page keeps each view in the committed HTML, uses client-side navigation as progressive enhancement, and keeps the selected tab visible inside the horizontally scrollable phone navigation.
 
 CodeQL is handled by GitHub's default setup for this repository.
 

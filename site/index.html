@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.classList.add('js');</script>
   <title>Truthmark — the branch explains itself</title>
   <meta name="description" content="Truthmark helps AI-assisted branches carry accurate, reviewable repository truth alongside code changes.">
   <meta property="og:title" content="Truthmark — the branch explains itself">
@@ -95,6 +96,8 @@
 
     .glyph {
       position: relative;
+      display: grid;
+      place-items: center;
       width: 38px;
       height: 38px;
       border: 1px solid rgba(142,230,107,0.55);
@@ -103,32 +106,66 @@
       box-shadow: 0 0 30px rgba(142,230,107,0.18);
     }
 
-    .glyph::before,
-    .glyph::after {
-      content: "";
-      position: absolute;
-      border-radius: 999px;
-      background: var(--green);
+    .glyph-mark {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 6px rgba(142,230,107,0.5));
     }
 
-    .glyph::before { width: 16px; height: 3px; left: 10px; top: 18px; transform: rotate(42deg); }
-    .glyph::after { width: 23px; height: 3px; left: 15px; top: 16px; transform: rotate(-48deg); }
-
-    .nav-links {
+    .page-tabs {
       display: flex;
       align-items: center;
-      gap: 21px;
+      gap: 4px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.035);
       color: var(--muted);
-      font-size: 0.94rem;
+      font-size: 0.88rem;
       font-weight: 620;
     }
 
-    .nav-links a {
+    .page-tab {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 14px;
+      border-radius: 999px;
       text-decoration: none;
-      transition: color 150ms ease;
+      white-space: nowrap;
+      transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
     }
 
-    .nav-links a:hover { color: var(--text); }
+    .page-tab:hover { color: var(--text); }
+
+    .page-tab[aria-selected="true"] {
+      color: #06110a;
+      background: var(--green);
+      box-shadow: 0 8px 24px rgba(142,230,107,0.2);
+    }
+
+    .nav-github {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 720;
+      text-decoration: none;
+    }
+
+    .nav-github:hover { color: var(--text); }
+
+    .page-view { scroll-margin-top: 88px; }
+    .js .page-view { display: none; }
+    .js .page-view.active { display: block; animation: page-enter 220ms ease-out; }
+
+    @keyframes page-enter {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .button {
       display: inline-flex;
@@ -211,6 +248,9 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-top: 34px;
+      margin-bottom: 0;
+      padding: 0;
+      list-style: none;
       max-width: 690px;
     }
 
@@ -349,6 +389,179 @@
       line-height: 1.62;
       letter-spacing: -0.015em;
     }
+
+    .page-intro {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 42px;
+      align-items: end;
+      padding: 76px 0 44px;
+    }
+
+    .page-intro h1,
+    .page-intro h2 {
+      margin: 0;
+      font-size: clamp(2.7rem, 5.5vw, 5.4rem);
+      line-height: 0.94;
+      letter-spacing: -0.072em;
+      text-wrap: balance;
+    }
+
+    .page-intro-copy {
+      max-width: 720px;
+      padding-bottom: 6px;
+    }
+
+    .page-intro-copy p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.16rem;
+      line-height: 1.62;
+    }
+
+    .page-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 820;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .workflow-deck {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .workflow-card {
+      grid-column: span 4;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--panel);
+    }
+
+    .workflow-card:nth-child(4),
+    .workflow-card:nth-child(5) { grid-column: span 6; }
+
+    .workflow-card .mode {
+      align-self: flex-start;
+      margin-bottom: 42px;
+      padding: 5px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--dim);
+      font-size: 0.72rem;
+      font-weight: 780;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .workflow-card h3 {
+      margin: auto 0 9px;
+      font-size: 1.55rem;
+      letter-spacing: -0.045em;
+    }
+
+    .workflow-card p { margin: 0; color: var(--muted); line-height: 1.52; }
+    .workflow-card code { color: var(--green); font-size: 0.82rem; }
+
+    .workflow-card.sync {
+      border-color: rgba(142,230,107,0.38);
+      background: linear-gradient(145deg, rgba(142,230,107,0.11), rgba(255,255,255,0.035));
+    }
+
+    .truth-anatomy {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .anatomy-card {
+      position: relative;
+      min-height: 230px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .anatomy-card::before {
+      content: attr(data-step);
+      position: absolute;
+      right: 18px;
+      top: 10px;
+      color: rgba(248,251,242,0.08);
+      font-size: 4rem;
+      font-weight: 850;
+      letter-spacing: -0.08em;
+    }
+
+    .anatomy-card h3 { position: relative; margin: 54px 0 10px; font-size: 1.45rem; letter-spacing: -0.04em; }
+    .anatomy-card p { position: relative; margin: 0; color: var(--muted); line-height: 1.55; }
+
+    .start-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .start-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+    }
+
+    .start-card h3 { margin: 0 0 10px; font-size: 1.55rem; letter-spacing: -0.045em; }
+    .start-card p { margin: 0; color: var(--muted); line-height: 1.58; }
+    .start-list { display: grid; gap: 10px; margin-top: 20px; }
+
+    .start-item {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 12px;
+      padding: 13px;
+      border: 1px solid rgba(220,236,255,0.11);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.028);
+    }
+
+    .start-item b {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #07131f;
+      background: var(--green);
+    }
+
+    .start-item strong { display: block; margin-bottom: 4px; }
+    .start-item span { color: var(--dim); font-size: 0.9rem; line-height: 1.42; }
+
+    .host-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+    .host-chip { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.82rem; }
+
+    .boundary-card {
+      margin-top: 18px;
+      padding: 22px;
+      border: 1px solid rgba(119,217,255,0.25);
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(119,217,255,0.09), rgba(255,255,255,0.03));
+    }
+
+    .boundary-card strong { display: block; margin-bottom: 8px; font-size: 1.1rem; }
+    .boundary-card p { margin: 0; color: var(--muted); line-height: 1.55; }
 
     .map-grid {
       display: grid;
@@ -655,13 +868,72 @@
       .timeline,
       .panel-grid,
       .split-view,
-      .install { grid-template-columns: 1fr; }
-      .stage { min-height: 620px; }
+      .install,
+      .page-intro,
+      .start-grid { grid-template-columns: 1fr; }
+
+      .page-intro { gap: 20px; }
+      .workflow-card { grid-column: span 6; }
+      .workflow-card:nth-child(5) { grid-column: span 12; }
+
+      .stage {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        min-height: auto;
+        padding: 14px;
+      }
+
+      .stage::before,
+      .rail { display: none; }
+
+      .orbit {
+        position: relative;
+        inset: auto;
+        transform: none;
+        width: 100%;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.2);
+      }
+
+      .orbit.core {
+        grid-column: 1 / -1;
+        left: auto;
+        top: auto;
+        order: -1;
+        transform: none;
+        width: 100%;
+      }
+
+      .node.a,
+      .node.b,
+      .node.c,
+      .node.d {
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+      }
+
       .map-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .diagram-grid { grid-template-columns: 1fr; }
       .arrow { transform: rotate(90deg); }
       .evidence { border-right: 0; border-bottom: 1px solid var(--line); }
-      .nav-links { display: none; }
+
+      .nav-inner {
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        padding: 10px 0 8px;
+      }
+
+      .page-tabs {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        scrollbar-width: none;
+      }
+
+      .page-tabs::-webkit-scrollbar { display: none; }
     }
 
     @media (max-width: 680px) {
@@ -678,8 +950,10 @@
       .nav-inner { min-height: 62px; }
       .brand { gap: 10px; font-size: 0.98rem; }
       .glyph { width: 32px; height: 32px; border-radius: 11px; }
-      .glyph::before { left: 8px; top: 15px; }
-      .glyph::after { left: 12px; top: 14px; }
+      .glyph-mark { width: 19px; height: 19px; }
+
+      .page-tab { min-height: 40px; padding: 0 13px; }
+      .nav-github { font-size: 0.82rem; }
 
       .hero {
         min-height: auto;
@@ -719,35 +993,39 @@
 
       .signals,
       .map-grid,
-      .split-view { grid-template-columns: 1fr; }
+      .split-view,
+      .truth-anatomy { grid-template-columns: 1fr; }
+
+      .page-intro { padding: 44px 0 24px; }
+      .page-intro h1,
+      .page-intro h2 { font-size: clamp(2.45rem, 12vw, 3.4rem); }
+      .page-intro-copy p { font-size: 1rem; line-height: 1.55; }
+
+      .workflow-card,
+      .workflow-card:nth-child(4),
+      .workflow-card:nth-child(5) {
+        grid-column: span 12;
+        min-height: 220px;
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .workflow-card .mode { margin-bottom: 30px; }
+      .anatomy-card { min-height: 190px; padding: 18px; border-radius: 18px; }
+      .anatomy-card h3 { margin-top: 42px; }
+      .start-card { padding: 18px; border-radius: 18px; }
+      .boundary-card { padding: 18px; border-radius: 18px; }
 
       .signals { margin-top: 24px; gap: 10px; }
       .signal { padding: 13px; border-radius: 14px; }
 
       .stage {
-        display: grid;
-        gap: 12px;
-        min-height: auto;
+        grid-template-columns: 1fr;
         padding: 14px;
         border-radius: 24px;
       }
 
-      .stage::before,
-      .rail { display: none; }
-
-      .orbit {
-        position: relative;
-        inset: auto;
-        transform: none;
-        width: 100%;
-        box-shadow: 0 14px 34px rgba(0,0,0,0.2);
-      }
-
       .orbit.core {
-        left: auto;
-        top: auto;
-        order: -1;
-        width: 100%;
         padding: 18px;
         border-radius: 20px;
       }
@@ -759,16 +1037,6 @@
         width: 100%;
         padding: 13px;
         border-radius: 16px;
-      }
-
-      .node.a,
-      .node.b,
-      .node.c,
-      .node.d {
-        top: auto;
-        right: auto;
-        bottom: auto;
-        left: auto;
       }
 
       .route-line {
@@ -877,20 +1145,23 @@
   <header class="nav">
     <div class="shell nav-inner">
       <a class="brand" href="#top" aria-label="Truthmark home">
-        <span class="glyph" aria-hidden="true"></span>
+        <span class="glyph" aria-hidden="true">
+          <svg class="glyph-mark" viewBox="0 0 24 24"><path d="m5.5 12.4 4.1 4.1 8.9-9"></path></svg>
+        </span>
         <span>Truthmark</span>
       </a>
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#surface-map">Surface map</a>
-        <a href="#storyboard">Storyboard</a>
-        <a href="#lanes">Lanes</a>
-        <a href="#workflow">Workflow</a>
-        <a href="https://github.com/merlinhu1/truthmark">GitHub</a>
+      <nav class="page-tabs" role="tablist" aria-label="Truthmark pages">
+        <a class="page-tab" id="page-tab-overview" role="tab" aria-selected="true" aria-controls="page-overview" href="#overview" data-page-tab="overview">Overview</a>
+        <a class="page-tab" id="page-tab-workflows" role="tab" aria-selected="false" aria-controls="page-workflows" href="#workflows" data-page-tab="workflows">Workflows</a>
+        <a class="page-tab" id="page-tab-truth-model" role="tab" aria-selected="false" aria-controls="page-truth-model" href="#truth-model" data-page-tab="truth-model">Truth model</a>
+        <a class="page-tab" id="page-tab-get-started" role="tab" aria-selected="false" aria-controls="page-get-started" href="#get-started" data-page-tab="get-started">Get started</a>
       </nav>
+      <a class="nav-github" href="https://github.com/merlinhu1/truthmark">GitHub ↗</a>
     </div>
   </header>
 
   <main id="top">
+    <div class="page-view active" id="page-overview" role="tabpanel" aria-labelledby="page-tab-overview" data-page="overview">
     <section class="shell hero">
       <div>
         <div class="eyebrow"><span class="pulse"></span>Repository truth carried by the branch</div>
@@ -898,14 +1169,14 @@
         <p class="lead">Truthmark gives AI-assisted work a reviewable truth layer: current claims, ownership routes, product promises, and implementation facts travel with the same Git branch as the code.</p>
         <div class="hero-actions">
           <a class="button primary" href="https://github.com/merlinhu1/truthmark">View on GitHub</a>
-          <a class="button" href="#storyboard">Open the demo</a>
+          <a class="button" href="#workflows" data-page-link="workflows">Explore the workflows</a>
         </div>
-        <div class="signals" aria-label="Truthmark summary signals">
-          <div class="signal"><strong>Checkout-native</strong><span>After setup, normal agent work can proceed from committed repository files.</span></div>
-          <div class="signal"><strong>Claim-level review</strong><span>Docs change as small, source-backed claims instead of anonymous summaries.</span></div>
-          <div class="signal"><strong>Topology aware</strong><span>When truth gets too broad, ownership gets repaired rather than hidden.</span></div>
-          <div class="signal"><strong>Host-shaped</strong><span>Instructions meet agents in their existing coding environments.</span></div>
-        </div>
+        <ul class="signals">
+          <li class="signal"><strong>Checkout-native</strong><span>After setup, normal agent work can proceed from committed repository files.</span></li>
+          <li class="signal"><strong>Claim-level review</strong><span>Docs change as small, source-backed claims instead of anonymous summaries.</span></li>
+          <li class="signal"><strong>Topology aware</strong><span>When truth gets too broad, ownership gets repaired rather than hidden.</span></li>
+          <li class="signal"><strong>Host-shaped</strong><span>Instructions meet agents in their existing coding environments.</span></li>
+        </ul>
       </div>
 
       <aside class="stage" aria-label="Original Truthmark concept illustration">
@@ -940,6 +1211,23 @@
         <article class="surface-card" data-index="08"><span class="mini-kicker">Boundary</span><h3>Repository files outrank session memory</h3><p>Current truth lives where maintainers can diff, revert, blame, and review it.</p></article>
       </div>
     </section>
+    </div>
+
+    <div class="page-view" id="page-workflows" role="tabpanel" aria-labelledby="page-tab-workflows" data-page="workflows">
+    <section class="shell page-intro">
+      <div><span class="page-note">Workflow field guide</span><h2>Five workflows. One reviewable loop.</h2></div>
+      <div class="page-intro-copy"><p>Truthmark does not turn every activity into a command. Three workflows are clear user entry points; Sync closes functional code changes; Structure appears only when ownership needs repair.</p></div>
+    </section>
+
+    <section class="shell section">
+      <div class="workflow-deck">
+        <article class="workflow-card"><span class="mode">You start · truth writes</span><code>/truthmark-document</code><h3>Document what already exists</h3><p>Read implementation and tests, then create or update bounded truth docs without changing functional code.</p></article>
+        <article class="workflow-card"><span class="mode">You start · code writes</span><code>/truthmark-realize</code><h3>Turn accepted truth into code</h3><p>Use product truth as requirements and engineering truth as implementation context. The source docs remain unchanged.</p></article>
+        <article class="workflow-card"><span class="mode">You start · read only</span><code>/truthmark-check</code><h3>Audit before review</h3><p>Inspect routing, evidence, lane shape, and truth health without authorizing writes.</p></article>
+        <article class="workflow-card sync"><span class="mode">Agent finish-time · truth writes</span><code>Truth Sync</code><h3>Close the branch honestly</h3><p>After functional code changes, review mapped truth, capture supported decisions, and update or explicitly leave claims unchanged with evidence.</p></article>
+        <article class="workflow-card"><span class="mode">Only when needed · topology</span><code>Truth Structure</code><h3>Repair ownership before adding prose</h3><p>Split broad routes and overgrown docs when the repository can no longer identify a bounded owner.</p></article>
+      </div>
+    </section>
 
     <section id="storyboard" class="shell section">
       <div class="section-header">
@@ -948,10 +1236,10 @@
       </div>
       <div class="timeline">
         <div class="tabs" role="tablist" aria-label="Truth document curation timeline">
-          <button class="tab" role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1"><strong>Episode 1 · New invariant</strong>A retry policy appears in code and needs a current-state owner.</button>
-          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2"><strong>Episode 2 · Promise pressure</strong>Marketing copy changes; product truth and engineering truth diverge.</button>
-          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3"><strong>Episode 3 · Ownership split</strong>Replay, delivery, audit, and alerts no longer belong in one file.</button>
-          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-4" id="tab-4"><strong>Episode 4 · Reviewer packet</strong>The pull request shows implementation, evidence, and truth changes together.</button>
+          <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="panel-1" id="tab-1"><strong>Episode 1 · New invariant</strong>A retry policy appears in code and needs a current-state owner.</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-2" id="tab-2"><strong>Episode 2 · Promise pressure</strong>Marketing copy changes; product truth and engineering truth diverge.</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-3" id="tab-3"><strong>Episode 3 · Ownership split</strong>Replay, delivery, audit, and alerts no longer belong in one file.</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-4" id="tab-4"><strong>Episode 4 · Reviewer packet</strong>The pull request shows implementation, evidence, and truth changes together.</button>
         </div>
 
         <article class="panel active" role="tabpanel" id="panel-1" aria-labelledby="tab-1">
@@ -987,6 +1275,13 @@
         </article>
       </div>
     </section>
+    </div>
+
+    <div class="page-view" id="page-truth-model" role="tabpanel" aria-labelledby="page-tab-truth-model" data-page="truth-model">
+    <section class="shell page-intro">
+      <div><span class="page-note">Repository truth model</span><h2>Keep the promise and the mechanism in different rooms.</h2></div>
+      <div class="page-intro-copy"><p>Truthmark links what users can rely on to how the repository currently realizes it. The relationship is explicit, but neither document inherits authority from the other.</p></div>
+    </section>
 
     <section id="lanes" class="shell section">
       <div class="section-header"><h2>Two lanes, linked on purpose.</h2><p>Truthmark can let product and engineering documents reference each other without forcing them into the same voice or authority level.</p></div>
@@ -996,10 +1291,19 @@
       </div>
     </section>
 
-    <section id="workflow" class="shell section">
+    <section class="shell section">
+      <div class="section-header"><h2>Three committed layers make the handoff legible.</h2><p>The route map decides ownership, truth docs preserve current claims, and host-native guidance tells the coding agent when each surface may change.</p></div>
+      <div class="truth-anatomy">
+        <article class="anatomy-card" data-step="01"><span class="mini-kicker">Route</span><h3>Find the bounded owner</h3><p>Changed paths map to an area and its canonical product or engineering truth docs.</p></article>
+        <article class="anatomy-card" data-step="02"><span class="mini-kicker">Truth</span><h3>Preserve the claim</h3><p>Human-facing Markdown records current behavior, rationale, boundaries, and evidence in the right lane.</p></article>
+        <article class="anatomy-card" data-step="03"><span class="mini-kicker">Guidance</span><h3>Meet the agent in its host</h3><p>Committed skills, prompts, commands, and instruction blocks carry write boundaries into normal coding work.</p></article>
+      </div>
+    </section>
+
+    <section id="review-path" class="shell section">
       <div class="section-header"><h2>The workflow is deliberately boring at runtime.</h2><p>Truthmark's ambition is in the repository model, not in requiring every contributor to adopt a new always-on system.</p></div>
       <div class="diagram">
-        <div class="diagram-grid" aria-label="Truthmark workflow diagram">
+        <div class="diagram-grid" role="img" aria-label="Truthmark workflow diagram">
           <div class="diagram-cell"><strong>1. Setup</strong><span>Configure routes and install agent-facing surfaces.</span></div>
           <div class="arrow">→</div>
           <div class="diagram-cell"><strong>2. Work</strong><span>Agent changes code in its normal host.</span></div>
@@ -1008,45 +1312,139 @@
         </div>
       </div>
     </section>
+    </div>
+
+    <div class="page-view" id="page-get-started" role="tabpanel" aria-labelledby="page-tab-get-started" data-page="get-started">
+    <section class="shell page-intro">
+      <div><span class="page-note">Adoption path</span><h2>Install the contract, then get out of the way.</h2></div>
+      <div class="page-intro-copy"><p>Choose the agent host your team already uses. Truthmark commits its guidance, routes, and truth docs to the repository, so the next branch can continue without a background service.</p></div>
+    </section>
 
     <section id="install" class="shell section install">
       <div class="section-header"><h2>Start with the repo, not a server.</h2><p>Install once, commit the workflow surface, and let future branches carry their truth updates through normal review.</p></div>
-      <div class="terminal" aria-label="Install commands"><div class="terminal-top"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span></div><pre><span class="prompt">$</span> cd /path/to/your-repo
+      <section class="terminal" aria-label="Install commands"><div class="terminal-top"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span></div><pre><span class="prompt">$</span> cd /path/to/your-repo
 <span class="prompt">$</span> npm install -g truthmark
 <span class="prompt">$</span> truthmark config
+<span class="comment"># Add the host you use to .truthmark/config.yml, for example: platforms: [codex]</span>
 <span class="prompt">$</span> truthmark init
 <span class="prompt">$</span> truthmark check
 
-<span class="comment"># After setup, agent guidance and truth routes live in the checkout.</span></pre></div>
+<span class="comment"># After setup, agent guidance and truth routes live in the checkout.</span></pre></section>
     </section>
+
+    <section class="shell section">
+      <div class="start-grid">
+        <article class="start-card">
+          <span class="mini-kicker">What lands in the repo</span>
+          <h3>A small contract with visible parts</h3>
+          <p>Every durable surface can be reviewed, blamed, reverted, and carried by the branch.</p>
+          <div class="start-list">
+            <div class="start-item"><b>1</b><div><strong>Config and routes</strong><span>Choose platforms and map code areas to bounded truth owners.</span></div></div>
+            <div class="start-item"><b>2</b><div><strong>Human-facing truth</strong><span>Keep product capabilities and engineering reality separate but linked.</span></div></div>
+            <div class="start-item"><b>3</b><div><strong>Host-native guidance</strong><span>Install the workflow shape where your coding agent already looks.</span></div></div>
+          </div>
+        </article>
+        <article class="start-card">
+          <span class="mini-kicker">Choose your first move</span>
+          <h3>Begin with one bounded area</h3>
+          <p>Document one implemented behavior with code and test evidence. Then keep coding normally and let finish-time Sync review future changes.</p>
+          <ul class="host-cloud">
+            <li class="host-chip">Codex</li><li class="host-chip">Claude Code</li><li class="host-chip">GitHub Copilot</li><li class="host-chip">OpenCode</li><li class="host-chip">Antigravity</li><li class="host-chip">Cursor</li>
+          </ul>
+          <div class="hero-actions"><a class="button primary" href="https://github.com/merlinhu1/truthmark#-quick-start-running-locally-in-five-minutes">Read the quick start</a><a class="button" href="https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md">Open the user guide</a></div>
+        </article>
+      </div>
+      <div class="boundary-card"><strong>Presentation is not authority.</strong><p>This website explains the product. Canonical behavior remains in the repository's README, routed truth docs, source, tests, and configuration. Truthmark adds no required daemon, database, hosted service, or hidden memory layer.</p></div>
+    </section>
+    </div>
   </main>
 
   <footer class="shell footer"><div>Truthmark keeps current repository truth reviewable where code review already happens.</div><div><a href="https://github.com/merlinhu1/truthmark">GitHub</a> · <a href="https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md">User guide</a></div></footer>
 
   <script>
-    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
-    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+    const pageTabs = Array.from(document.querySelectorAll('[data-page-tab]'));
+    const pageViews = Array.from(document.querySelectorAll('[data-page]'));
+    const pageLinks = Array.from(document.querySelectorAll('[data-page-link]'));
+    const pageTitles = {
+      overview: 'Truthmark — the branch explains itself',
+      workflows: 'Truthmark workflows — a reviewable loop',
+      'truth-model': 'Truthmark truth model — routes, lanes, and guidance',
+      'get-started': 'Get started with Truthmark'
+    };
 
-    function selectTab(tab) {
-      tabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
-      panels.forEach((panel) => panel.classList.toggle('active', panel.id === tab.getAttribute('aria-controls')));
+    function activatePage(name, { updateHash = false, focus = false, scroll = false } = {}) {
+      const selectedName = pageViews.some((view) => view.dataset.page === name) ? name : 'overview';
+      pageTabs.forEach((tab) => {
+        const selected = tab.dataset.pageTab === selectedName;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        if (selected && focus) tab.focus();
+      });
+      pageViews.forEach((view) => {
+        const selected = view.dataset.page === selectedName;
+        view.classList.toggle('active', selected);
+        view.hidden = !selected;
+      });
+      document.title = pageTitles[selectedName];
+      const selectedTab = pageTabs.find((tab) => tab.dataset.pageTab === selectedName);
+      if (selectedTab && window.innerWidth <= 1080) {
+        requestAnimationFrame(() => selectedTab.scrollIntoView({ block: 'nearest', inline: 'center' }));
+      }
+      if (updateHash) history.pushState(null, '', `#${selectedName}`);
+      if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => selectTab(tab));
+    pageTabs.forEach((tab) => {
+      tab.addEventListener('click', (event) => {
+        event.preventDefault();
+        activatePage(tab.dataset.pageTab, { updateHash: true, scroll: true });
+      });
       tab.addEventListener('keydown', (event) => {
-        const index = tabs.indexOf(tab);
+        const index = pageTabs.indexOf(tab);
+        let nextIndex = null;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % pageTabs.length;
+        if (event.key === 'ArrowLeft') nextIndex = (index - 1 + pageTabs.length) % pageTabs.length;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = pageTabs.length - 1;
+        if (nextIndex === null) return;
+        event.preventDefault();
+        activatePage(pageTabs[nextIndex].dataset.pageTab, { updateHash: true, focus: true, scroll: true });
+      });
+    });
+
+    pageLinks.forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        activatePage(link.dataset.pageLink, { updateHash: true, scroll: true });
+      });
+    });
+
+    window.addEventListener('hashchange', () => activatePage(location.hash.slice(1)));
+    activatePage(location.hash.slice(1));
+
+    const storyTabs = Array.from(document.querySelectorAll('.timeline [role="tab"]'));
+    const storyPanels = Array.from(document.querySelectorAll('.timeline [role="tabpanel"]'));
+
+    function selectStoryTab(tab) {
+      storyTabs.forEach((item) => item.setAttribute('aria-selected', String(item === tab)));
+      storyPanels.forEach((panel) => panel.classList.toggle('active', panel.id === tab.getAttribute('aria-controls')));
+    }
+
+    storyTabs.forEach((tab) => {
+      tab.addEventListener('click', () => selectStoryTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        const index = storyTabs.indexOf(tab);
         if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
           event.preventDefault();
-          const next = tabs[(index + 1) % tabs.length];
+          const next = storyTabs[(index + 1) % storyTabs.length];
           next.focus();
-          selectTab(next);
+          selectStoryTab(next);
         }
         if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
           event.preventDefault();
-          const previous = tabs[(index - 1 + tabs.length) % tabs.length];
+          const previous = storyTabs[(index - 1 + storyTabs.length) % storyTabs.length];
           previous.focus();
-          selectTab(previous);
+          selectStoryTab(previous);
         }
       });
     });
