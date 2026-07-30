@@ -15,6 +15,7 @@ import type {
 } from "../output/diagnostic.js";
 import { getGitRepository } from "../git/repository.js";
 import {
+  isSafeExactFile,
   resolveRepoPath,
   type FileWriteResult,
   writeRepoFile,
@@ -227,6 +228,23 @@ export const runInit = async (
   const results: FileWriteResult[] = [];
   const block = renderAgentsBlock(config);
   const platformFiles = renderGeneratedSurfaces(config, block);
+  if (!(await isSafeExactFile(rootDir, loadedConfig.configPath, true))) {
+    return {
+      command: "init",
+      summary:
+        "Truthmark init made no changes because the config path is unsafe.",
+      diagnostics: [
+        {
+          category: "config",
+          severity: "error",
+          message:
+            "Truthmark config path must be a regular file contained in the repository.",
+          file: loadedConfig.configPath,
+        },
+      ],
+      data: repositoryData,
+    };
+  }
   const lifecyclePlan = await buildLifecyclePlan(
     rootDir,
     config,
@@ -242,6 +260,15 @@ export const runInit = async (
       data: { ...repositoryData, lifecyclePlan },
     };
   }
+
+  results.push(...(await scaffoldHierarchy(rootDir, config)));
+  for (const file of platformFiles) {
+    results.push(await writePlatformFile(rootDir, file));
+  }
+  results.push(
+    await writeRepoFile(rootDir, loadedConfig.configPath, configSource),
+  );
+
   const appliedLifecyclePlan = await applyLifecyclePlan(rootDir, lifecyclePlan);
   if (!appliedLifecyclePlan.applicable) {
     return {
@@ -254,14 +281,6 @@ export const runInit = async (
       ],
       data: { ...repositoryData, lifecyclePlan: appliedLifecyclePlan },
     };
-  }
-
-  results.push(
-    await writeRepoFile(rootDir, loadedConfig.configPath, configSource),
-  );
-  results.push(...(await scaffoldHierarchy(rootDir, config)));
-  for (const file of platformFiles) {
-    results.push(await writePlatformFile(rootDir, file));
   }
 
   const changedResults = results.filter(

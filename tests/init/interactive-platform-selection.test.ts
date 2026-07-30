@@ -1,4 +1,6 @@
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { expect } from "expect";
 import { parse } from "yaml";
@@ -221,6 +223,38 @@ ignore: []
       expect(await repo.readFile(".truthmark/config.yml")).toBe(before);
     } finally {
       await repo.cleanup();
+    }
+  });
+
+  it("rejects an aliased config before removing generated surfaces", async () => {
+    const repo = await createTempRepo();
+    const outside = await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-config-"));
+    try {
+      await runInit(repo.rootDir, { platforms: ["codex"] });
+      const configPath = path.join(repo.rootDir, ".truthmark/config.yml");
+      const configSource = await fs.readFile(configPath, "utf8");
+      const agentsSource = await repo.readFile("AGENTS.md");
+      const outsideConfigPath = path.join(outside, "config.yml");
+      await fs.writeFile(outsideConfigPath, configSource, "utf8");
+      await fs.rm(configPath);
+      await fs.symlink(outsideConfigPath, configPath);
+
+      const result = await runInit(repo.rootDir, { platforms: [] });
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "config",
+            severity: "error",
+            file: ".truthmark/config.yml",
+          }),
+        ]),
+      );
+      expect(await repo.readFile("AGENTS.md")).toBe(agentsSource);
+      expect(await fs.readFile(outsideConfigPath, "utf8")).toBe(configSource);
+    } finally {
+      await repo.cleanup();
+      await fs.rm(outside, { recursive: true, force: true });
     }
   });
 
