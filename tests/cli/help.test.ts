@@ -37,6 +37,7 @@ describe("truthmark CLI", () => {
     expect(result.stdout).toContain("Usage: truthmark init");
     expect(result.stdout).toContain("--json");
     expect(result.stdout).toContain("--platform <id>");
+    expect(result.stdout).toContain("--clear-platforms");
   });
 
   it("rejects the removed config command", async () => {

@@ -21,6 +21,7 @@ type OutputOptions = {
 
 type InitCliOptions = OutputOptions & {
   platform?: string[];
+  clearPlatforms?: boolean;
 };
 
 type CheckCliOptions = OutputOptions & {
@@ -99,8 +100,11 @@ const addJsonOption = (command: Command): Command => {
   return command.option("--json", "Render command output as JSON");
 };
 
-const collectPlatform = (value: string, previous: string[]): string[] => [
-  ...previous,
+const collectPlatform = (
+  value: string,
+  previous: string[] | undefined,
+): string[] => [
+  ...(previous ?? []),
   value,
 ];
 
@@ -124,10 +128,17 @@ export const buildProgram = (): Command => {
         "--platform <id>",
         "Select a repository agent platform; repeat for multiple platforms",
         collectPlatform,
-        [],
+      )
+      .option(
+        "--clear-platforms",
+        "Remove all configured repository agent platforms",
       ),
   ).action(async (options: InitCliOptions) => {
-    const platforms = options.platform?.length ? options.platform : undefined;
+    if (options.clearPlatforms && options.platform !== undefined) {
+      program.error("truthmark init cannot combine --clear-platforms and --platform");
+      return;
+    }
+    const platforms = options.clearPlatforms ? [] : options.platform;
     writeResult(
       await runInit({ json: options.json, platforms }),
       options,

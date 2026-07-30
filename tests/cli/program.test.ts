@@ -23,6 +23,32 @@ describe("CLI program", () => {
     );
   });
 
+  it("clears saved platform selections through an explicit CLI flag", async () => {
+    const repo = await createTempRepo();
+    try {
+      const setup = await runCli(
+        ["init", "--platform", "codex", "--json"],
+        { cwd: repo.rootDir },
+      );
+      expect(setup.exitCode).toBe(0);
+      await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeDefined();
+
+      const result = await runCli(["init", "--clear-platforms", "--json"], {
+        cwd: repo.rootDir,
+      });
+      const config = parse(await repo.readFile(".truthmark/config.yml")) as Record<
+        string,
+        unknown
+      >;
+
+      expect(result.exitCode).toBe(0);
+      expect(config).not.toHaveProperty("platforms");
+      await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("supports repeatable init platform flags without prompting under JSON", async () => {
     const repo = await createTempRepo();
     try {
