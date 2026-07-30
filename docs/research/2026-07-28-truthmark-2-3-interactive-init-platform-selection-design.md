@@ -1,6 +1,6 @@
 # Truthmark 2.3 interactive init and platform selection
 
-Status: accepted direction, planned in OpenSpec
+Status: implemented in Truthmark 2.3
 
 Date: 2026-07-29
 
@@ -16,13 +16,4 @@ The public `truthmark config` command is removed in the next minor release. The 
 
 Personal installation, Git hooks, commit-triggered Sync, platform executors, and local automation runtime are deferred altogether.
 
-## Canonical implementation plan
-
-OpenSpec change: [`interactive-init-platform-selection`](../../openspec/changes/interactive-init-platform-selection/)
-
-- [Proposal](../../openspec/changes/interactive-init-platform-selection/proposal.md)
-- [Technical design](../../openspec/changes/interactive-init-platform-selection/design.md)
-- [Repository initialization requirements](../../openspec/changes/interactive-init-platform-selection/specs/repository-initialization/spec.md)
-- [Implementation tasks](../../openspec/changes/interactive-init-platform-selection/tasks.md)
-
-The OpenSpec artifacts are the implementation contract. This note remains a compact decision index and must not duplicate or expand their scope.
+This note is a compact decision index. The implementation is represented by the source, tests, generated surfaces, and release documentation in the repository.
