@@ -63,6 +63,8 @@ For automation, repeat `--platform <id>`. Explicit values replace the complete s
 truthmark init --platform codex --platform cursor
 ```
 
+Use `truthmark init --clear-platforms` to return the repository to host-neutral setup.
+
 `truthmark init --json` never prompts. On a first noninteractive run with no `--platform`, it creates a host-neutral repository with no host-specific surfaces. A later noninteractive no-flag rerun uses the saved selection. Truthmark never detects and silently selects the current host.
 
 | Platform config name | Generated surface | Invocation shape |
@@ -76,12 +78,12 @@ truthmark init --platform codex --platform cursor
 
 Unknown platform names passed through config or `--platform` are errors.
 
-Rerun interactive init and omit a previously selected platform to stop rendering its host-specific surfaces. Repeatable `--platform` flags also replace the full set for automation. `truthmark init` removes safely recognized disabled or retired managed artifacts, but review generated-surface diffs intentionally.
+Rerun interactive init and omit a previously selected platform, or use `--clear-platforms`, to stop rendering host-specific surfaces. `truthmark init` reconciles the selected surface set and removes only recognized managed artifacts; review generated-surface diffs intentionally.
 
-Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned. Legacy version-2 `instruction_targets` values still parse but are ignored and never authorize writes.
-If `platforms` is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
+Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned.
+If the config's `platforms` field is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
 
-Before leaving Truthmark, run `truthmark uninstall --dry-run`, review the exact-path `truthmark-lifecycle/v0` plan, then run `truthmark uninstall --apply`. Uninstall preserves `.truthmark/config.yml`, routes, truth documents, editable templates, Portal presentation output, Gemini files, unrelated host-directory files, and content outside managed markers. Remove those manually only after review. A globally installed npm package is separate; remove it with your package manager if desired.
+Before leaving Truthmark, run `truthmark uninstall --dry-run`, review the exact-path `truthmark-lifecycle/v0` plan, then run `truthmark uninstall --apply`. Uninstall preserves `.truthmark/config.yml`, routes, truth documents, editable templates, Portal presentation output, unrelated host-directory files, and content outside managed markers. Remove preserved files manually only after review. A globally installed npm package is separate; remove it with your package manager if desired.
 
 ## Workflow commands
 
@@ -181,7 +183,7 @@ Most maintainers start with `init` and `check`.
 
 | Command | Purpose |
 | --- | --- |
-| `truthmark init [--platform <id> ...] [--json]` | Create or refresh `.truthmark/config.yml`, routing, truth-doc scaffolds, and the selected workflow surfaces. Interactive TTY runs offer a zero-or-more numbered platform selector; `--json` and explicit platform flags never prompt. |
+| `truthmark init [--platform <id> ...] [--clear-platforms] [--json]` | Create or refresh `.truthmark/config.yml`, routing, truth-doc scaffolds, and the selected workflow surfaces. Interactive TTY runs offer a zero-or-more numbered platform selector; explicit platform options and `--json` never prompt. |
 | `truthmark uninstall --dry-run\|--apply` | Preview or apply safe removal of recognized generated host surfaces. Exactly one mode is required. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
@@ -261,7 +263,6 @@ Important config areas include:
 | Fixed truth lanes | Product truth lives under `product/` and engineering truth under `engineering/` inside `truthmark.workspace`. |
 | Fixed templates | Truth-doc templates live under `templates/` inside `truthmark.workspace`. |
 | `truthmark.generated.portal` | Optional manual presentation workflow enablement: `enabled`. |
-| `instruction_targets` | Legacy parse-only compatibility field; still parsed for compatibility but ignored by the renderer and never a write authority. |
 | `frontmatter.required` | Metadata fields that produce error diagnostics when missing. |
 | `frontmatter.recommended` | Metadata fields that produce review diagnostics when missing. |
 | `ignore` | Glob patterns excluded from relevant checks and routing logic. |
@@ -434,10 +435,12 @@ Then explicitly ask the agent host to run the installed Portal workflow when you
 Truthmark 2.3 provides:
 
 - `truthmark init`
+- `truthmark uninstall`
 - `truthmark check`
 - `truthmark index`
 - `truthmark impact`
 - `truthmark workflow status`
+- `truthmark validate`
 - branch-scope metadata
 - managed instruction blocks
 - generated Truth Structure workflow surfaces
@@ -514,11 +517,10 @@ It is not:
 - an autonomous code rewrite engine
 - a model-training or fine-tuning framework
 - a hidden memory layer
-- a Personal installation mode; Truthmark 2.3 installs repository-local contracts only
 
 Those boundaries are part of the product.
 
-Repository finish-time Truth Sync is unchanged in 2.3: after functional code changes, agents still run relevant tests and perform a fresh Sync review before handoff. Personal installation and commit-triggered automation remain deferred.
+After functional code changes, agents run relevant tests and perform a fresh Truth Sync review before handoff.
 
 Truthmark keeps the workflow local, committed, branch-scoped, and reviewable.
 
@@ -537,27 +539,6 @@ Teams should still:
 - keep human ownership over product and architecture decisions
 
 Truthmark makes agent-facing repository truth visible. It does not replace human judgment.
-
-## Roadmap direction
-
-The current future direction emphasizes:
-
-- stronger `truthmark check` evidence reporting
-- clearer adoption examples
-- example repositories showing real Truth Sync cycles
-- migration guides for teams already using agent instruction files
-- conformance tests for generated host surfaces
-- route-aware stale-truth hints
-- bounded implementation checklists for doc-first work
-
-The center of gravity stays the same:
-
-```text
-repository truth
-agent-native workflows
-Git review
-branch-scoped documentation
-```
 
 ## License
 

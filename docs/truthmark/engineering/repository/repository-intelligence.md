@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-07-26
+last_reviewed: 2026-07-30
 ---
 
 # Repository Intelligence
@@ -17,6 +17,7 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
 ## Current Implementation Behavior
 
 - RepoIndex and RouteMap are derived from the active checkout.
+- Check and RepoIndex share NUL-delimited `git ls-files` discovery for tracked and visible untracked regular files. Discovery applies configured and default ignores, excludes deleted or escaping paths, normalizes and sorts results, and uses a deterministic full-tree fallback when Git enumeration is unavailable; the fallback cannot reproduce every Git ignore rule.
 - They preserve repository metadata, discovered files, truth docs, test files, route lane metadata, and route-local relationship metadata.
 - RouteMap emits duplicate truth document entries with the same path, kind, and lane as one relationship view whose `realized_by`, `realizes`, and `depends_on` metadata is merged by unique sorted set.
 - RepoIndex derives truth-doc lane and doc type from `truth_kind` when canonical truth docs omit explicit `truth_lane` and `doc_type` frontmatter.
@@ -55,7 +56,6 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
 - Stale-candidate signals include truth docs whose `source_of_truth` references changed files.
 - Stale-candidate signals include changed route metadata and changed linked counterpart docs.
 - When no signal exists, `candidateStaleTruthDocs` is empty; agents may still inspect another document when direct checkout evidence reveals a stale claim.
-- The standalone ContextPack handoff is retired.
 - Agents use workflow status plus impact as optional guidance and continue with direct checkout inspection when helpers are skipped or unavailable.
 - These outputs do not emit source-file or truth-doc body contents.
 
@@ -114,19 +114,17 @@ It covers RepoIndex, RouteMap, ImpactSet, evidence validation, freshness, and Wo
 
 - Decision (2026-06-14): Repository intelligence is derived context, not hidden memory or off-repo authority.
 - Decision (2026-06-15): Repository intelligence is a language-neutral workflow helper, not a semantic code index; TypeScript-specific import/export/public-symbol analysis is not part of the public contract.
-- Decision (2026-06-15): The standalone ContextPack handoff is retired.
-  - Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for optional workflow-scoped guidance and `truthmark impact --base <ref> --json` for branch-diff routing.
-- Decision (2026-06-16): `workflow status` is status/debug/handoff only.
-  - Truthmark does not expose a `workflow instructions` command and generated workflows must remain usable from committed repository files without live CLI preflight.
+- Decision (2026-06-15): Agents use `truthmark workflow status --workflow <workflow> [--base <ref>] --json` for optional workflow-scoped guidance and `truthmark impact --base <ref> --json` for branch-diff routing.
+- Decision (2026-06-16): `workflow status` is status/debug/handoff only, and generated workflows remain usable from committed repository files without live CLI preflight.
 - Decision (2026-06-17): WorkflowState presents optional helper output as an advisory workflow card.
   - The advisory card includes affected files, likely route owners, suggested truth docs, open questions, skipped helper status, `reviewChecklist`, and `evidencePrompts`.
-  - It does not expose retired enforcement-shaped names such as `checks.required`, the old gate alias, or `requiredEvidence`.
 - Decision (2026-06-16): Sync Intent is a transient report-section checklist exposed through workflow/report surfaces and WorkflowState report sections; it is not repository-intelligence state or a persisted plan.
 - Decision (2026-06-17): Generated-surface freshness includes host-native package diagnostics.
   - These diagnostics are review output and do not add hooks, live services, duplicate workflow packages, or mandatory workflow preflight execution.
 - Decision (2026-06-21): Sync `candidateStaleTruthDocs` stays signal-based.
   - WorkflowState does not enumerate every indexed truth doc outside the impact set.
   - It returns an empty candidate list unless freshness, relationships, source references, changed route metadata, or changed linked docs indicate a possible stale-truth repair.
+- Decision (2026-07-10): Check and RepoIndex share one Git-visible file-discovery path so routing, coverage, and repository indexing operate on the same normalized file set.
 - Decision (2026-07-26): Human workflow status renders the existing advisory card as bounded context rather than requiring callers to load the full JSON contract.
   - WorkflowState removes exact duplicate diagnostics at its composition boundary.
 
@@ -160,7 +158,3 @@ Update when index, route-map, impact, evidence, freshness, or workflow-state out
 - tests/impact/build.test.ts
 - tests/evidence/validate.test.ts
 - tests/workflow-state/build.test.ts
-
-## Shared file discovery (2026-07-10)
-
-Check and RepoIndex share NUL-delimited `git ls-files` discovery for tracked and visible untracked current regular files. Results apply default and configured ignores, exclude deleted or escaping paths, and are normalized, deduplicated, and sorted. A deterministic full-tree fallback is used when Git enumeration is unavailable; it conservatively cannot reproduce every Git ignore rule.

@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: architecture
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-30
 source_of_truth:
   - ../../README.md
   - ../truthmark/product/capabilities/agent-native-workflow-injection.md
@@ -42,7 +42,7 @@ Truth-doc structure, wording, and style must be friendly for humans to read and 
 Human-friendly truth docs:
 
 - Make the audience and purpose clear near the top.
-- Separate current behavior from rationale, decisions, operations, contracts, and future or non-goals.
+- Separate current behavior from rationale, decisions, operations, contracts, and ownership non-goals.
 - Use scannable headings and bounded sections.
 - Use plain, concrete, present-tense wording.
 - Expand or link terms and acronyms that are not obvious to a maintainer.
@@ -58,7 +58,7 @@ Truthmark owns:
 
 - Git-tracked repository documentation and routing metadata
 - host-native agent workflow surfaces such as skills, prompts, commands, managed instruction blocks, and subagents
-- branch-local documentation checks, workflow indexes, impact summaries, context packs, and workflow state derived from the active checkout
+- branch-local documentation checks, workflow indexes, impact summaries, bounded workflow status, and workflow state derived from the active checkout
 - write boundaries for read-only, documentation-write, route-write, code-write, and presentation-write workflows
 - the static GitHub Pages introduction site as marketing/onboarding presentation, not repository truth
 - optional CLI/package helpers that improve validation or setup without becoming required for normal agent workflow execution

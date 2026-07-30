@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: index
-last_reviewed: 2026-06-20
+last_reviewed: 2026-07-30
 source_of_truth:
   - docs/ai/repo-rules.md
   - ../.truthmark/config.yml
@@ -35,7 +35,7 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 - `docs/truthmark/product/` for product capability promises, boundaries, and acceptance criteria
 - `docs/truthmark/engineering/` for current implementation behavior, architecture, contracts, workflows, and operations
 - `docs/architecture/` for repository-specific architecture guardrails
-- `docs/research/` for non-canonical research and planning notes
+- `docs/research/` for non-canonical research evidence, evaluations, and comparisons
 - `docs/truthmark/templates/` for editable scaffold templates used to create new docs
 - `docs/truthmark/engineering/contracts/` for stable contracts the CLI exposes
 
@@ -54,7 +54,7 @@ Repository-wide conflict order and completion policy live in [docs/ai/repo-rules
 | `docs/truthmark/product/`     | product truth     | agent            | Product capability promises, boundaries, decisions, and acceptance criteria           |
 | `docs/truthmark/engineering/` | engineering truth | agent            | Current implementation behavior for init, check, contracts, workflows, and operations |
 | `docs/architecture/`          | architecture      | agent            | Repository-specific architecture guardrails                                           |
-| `docs/research/`              | research          | human            | Non-canonical research, comparison, and planning notes                                |
+| `docs/research/`              | research          | human            | Non-canonical research evidence, evaluations, and comparisons                           |
 | `docs/truthmark/templates/`   | template          | both             | Editable templates for scaffolded docs; templates are not Truth Sync targets          |
 | `docs/user-guide.md`          | guide             | human            | Detailed usage guide kept out of the root README so onboarding stays concise          |
 
@@ -76,8 +76,8 @@ Canonical docs should include frontmatter and keep these fields current:
 - When `truthmark init` or scaffolded files change, update the relevant truth or architecture doc, not only [README.md](../README.md).
 - When `truthmark check` changes what it validates or how it reports diagnostics, update both the current truth doc and the contract doc.
 - When major product, onboarding, install, command, positioning, or workflow behavior changes, review the root [README.md](../README.md) and update it if the human entry point would otherwise be stale.
-- Keep planning or proposal material outside the canonical current-state docs until it becomes implemented truth.
-- When current behavior changes for architecture, contracts, or lane-separated truth docs, update the owning canonical doc's `Product Decisions` and `Rationale` sections in the same change.
+- Keep active docs current-state focused; promote necessary accepted rationale into the owning decision section and rely on Git history for superseded plans.
+- When current behavior changes for architecture, contracts, or lane-separated truth docs, update the owning current-behavior and Product Decisions or Engineering Decisions sections in the same change.
 - Do not keep parallel documentation trees for the same subject.
 
 ## Important Truthmark-Specific Caveat
@@ -107,7 +107,7 @@ Use the route files under [docs/truthmark/routes/](truthmark/routes/) when desig
 
 ## Maintenance Principle
 
-The canonical tree should stay small, explicit, and current. Historical notes are useful for traceability, but current behavior belongs in the nearest maintained document class, not in old plans or chat summaries.
+The canonical tree should stay small, explicit, and current. Git history provides traceability for superseded context; active docs keep current behavior in the owning current-state section and accepted rationale in the owning decision section.
 
 ## Product Decisions
 

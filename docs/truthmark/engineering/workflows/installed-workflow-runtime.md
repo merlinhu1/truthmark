@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-29
+last_reviewed: 2026-07-30
 ---
 
 # Installed Workflow Runtime
@@ -30,20 +30,9 @@ Generated host skill directories are native skill packages for write-capable and
 - Subagent and lease guidance is kept only when the workflow uses subagents.
 - Hosts that package skill-directory resources do not depend on arbitrary cross-repository file reads.
 
-Generated helper manifests and helper policy support files are not emitted:
+Optional validation commands stay in workflow metadata, and report validation accepts manual fallback evidence.
 
-- Optional validation commands stay in workflow metadata.
-- Report validation accepts manual fallback evidence.
-
-Truthmark no longer emits Truth Preview as a generated host surface:
-
-- No configured host receives a Preview skill package, prompt, or command.
-- Preview-like route/workflow selection remains internal advisory behavior that agents can perform with direct checkout inspection or optional workflow-status/impact helpers.
-
-Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
-
-- Host surfaces are the runtime surfaces agents actually load.
-- Duplicating workflow packages under `.truthmark/agent/` would add repository docs with no active host consumer.
+Host-native packages are the runtime workflow surfaces that agents load.
 
 GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 
@@ -58,7 +47,6 @@ Antigravity rule files remain flat host rule surfaces:
 
 Cursor Agent Skills are generated as project skill packages under `.cursor/skills/truthmark-*`:
 
-- They use Cursor's current Agent Skills model rather than `.cursor/rules` dynamic rule files.
 - `SKILL.md` carries the description that lets Cursor select the workflow automatically when relevant and supports manual `/` invocation.
 - Package-local `support/procedure.md`, `support/report-template.md`, and any lease guidance stay colocated with the Cursor skill.
 
@@ -90,6 +78,7 @@ Truth Sync performs decision context capture from the current task conversation:
 - Agents review user-provided decisions, rationale, constraints, tradeoffs, rejection reasons, and scope boundaries.
 - Agents carry that context into Sync Intent.
 - Supported context is placed in the correct product or engineering truth lane.
+- Accepted product decision context is placed in Product Decisions, and accepted technical decision context is placed in Engineering Decisions.
 - The report records whether context was placed, skipped because none was provided, or handed off for manual review.
 
 Truth Document and Truth Sync procedures tell agents to write professional, readable truth docs without importing a full external writing prompt:
@@ -102,7 +91,7 @@ Truth Document and Truth Sync procedures tell agents to write professional, read
 
 Truth Structure stays topology-first:
 
-- It creates skeletal starter truth docs only when missing ownership would block future workflows.
+- It creates skeletal starter truth docs only when missing ownership would block later workflow execution.
 - Starter docs are ownership anchors, not substantive behavior writeups.
 - Template-section authoring, doc-shape repair, and architecture-doc prose guidance stay out of the Structure procedure.
 
@@ -244,6 +233,7 @@ Committed workflow files are the runtime contract. The CLI installs and validate
   - Agent Skills are the single current native Cursor workflow representation because they provide description-based selection plus package-local resources.
 - Decision (2026-06-26): Truth-doc prose guidance uses a compact professional checklist instead of vendoring a full humanizer prompt into generated workflows.
   - Truthmark keeps the benefit of avoiding AI-style padding while controlling token cost and preserving evidence-backed documentation tone.
+- Decision (2026-07-30): Truth Sync routes accepted product and technical decision context exclusively to the owning Product Decisions or Engineering Decisions section; Non-Goals stays limited to current ownership boundaries.
 
 ## Rationale
 

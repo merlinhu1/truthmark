@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: standard
-last_reviewed: 2026-05-30
+last_reviewed: 2026-07-30
 source_of_truth:
   - default-principles.md
   - documentation-governance.md
@@ -43,14 +43,14 @@ Every default template includes the same governance foundation:
 - a declared source-of-truth list
 - purpose and scope
 - evidence-oriented guidance for default sections
-- explicit current-state content rather than roadmap content
+- explicit current-state content
 - active decisions and rationale
 - non-goals to prevent scope creep
 - maintenance notes for future reviewers and agents
 
 `truthmark init` may refresh these Truthmark-owned default template sections as the baseline improves. Existing template preambles/frontmatter are preserved on rerun so repository-owned metadata, titles, and local introductory guidance do not churn or get replaced just because the default baseline changed. Repository-specific custom `##` sections are not part of the default baseline; init preserves them and keeps their authored order relative to the next default section that followed them.
 
-This foundation follows Truthmark's repository-truth model: current implementation, reusable standards, architecture, and future proposals must not compete as parallel sources of authority.
+This foundation follows Truthmark's repository-truth model: current implementation, reusable standards, architecture, and accepted decision rationale have distinct canonical owners.
 
 ## External Standard Alignment
 
@@ -92,7 +92,7 @@ Truthmark defaults are justified because they optimize for the reviewable artifa
 - Truthmark templates do not replace project-specific engineering standards.
 - Truthmark templates do not certify compliance with ISO, IEEE, OpenAPI, SRE, C4, arc42, SemVer, or Diátaxis.
 - Truthmark templates do not require every repository to keep every document kind.
-- Truthmark templates do not make roadmap proposals canonical current truth.
+- Truthmark templates keep accepted rationale in the owning decision section and keep Non-Goals limited to current ownership boundaries.
 
 ## Maintenance Notes
 

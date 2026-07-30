@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: product-capability
-last_reviewed: 2026-06-14
+last_reviewed: 2026-07-30
 ---
 
 # Lane-Separated Truth
@@ -24,13 +24,14 @@ Maintainers can review product promises and implementation realization without e
 ## Current Product Behavior
 
 - Route metadata supports explicit `lane`, `realized_by`, `realizes`, and `depends_on` fields for route-local traceability.
-- Product-path kind inference returns `product-capability`, and init scaffolds `product-capability.md` without scaffolding a downstream `product-boundary` template.
+- Product-path kind inference returns `product-capability`, and init scaffolds `product-capability.md` as the product truth template.
+- Routing coverage considers Git-visible functional code under any repository root. Tests, ignored paths, documentation, assets, and generated surfaces do not create unmapped-code findings.
 
 ## Acceptance Criteria
 
-- New scaffold defaults do not target `docs/truthmark/truth`.
-- Product truth defaults, path inference, and templates use `product-capability` only.
-- `product-boundary` is rejected as downstream truth kind metadata instead of being listed as supported.
+- New scaffolds use separate product and engineering truth roots under the configured workspace.
+- Product truth defaults, path inference, and templates use `product-capability`.
+- Product capability scope and non-goals carry product boundary guidance.
 - RouteMap and RepoIndex preserve lane and relationship metadata.
 - Check diagnostics report lane shape, lane drift, and route-local traceability.
 - Missing product links for user-visible engineering docs remain review diagnostics.
@@ -42,6 +43,7 @@ Maintainers can review product promises and implementation realization without e
 - Decision (2026-06-14): Downstream product truth supports `product-capability` only; product boundary guidance belongs inside capability scope, acceptance criteria, and non-goals.
 - Decision (2026-06-15): Route `realized_by` and `realizes` relationships are local navigation metadata, not a single global doc graph.
   - Validation requires existing opposite-lane targets without requiring reciprocal declarations.
+- Decision (2026-07-10): Repository-wide coverage follows Git-visible functional code across arbitrary roots while excluding non-functional and ignored surfaces.
 
 ## Engineering Realization Links
 
@@ -58,7 +60,3 @@ Maintainers can review product promises and implementation realization without e
 - ../../../../src/routing/areas.ts
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
-
-## Repository-wide coverage (2026-07-10)
-
-Routing coverage considers current Git-visible functional code under arbitrary repository roots. Tests, ignored paths, documentation, assets, and generated surfaces do not create unmapped-code findings.

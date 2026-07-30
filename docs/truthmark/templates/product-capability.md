@@ -79,8 +79,8 @@ Do not summarize those engineering docs.
 ## Non-Goals
 
 <!--
-Name adjacent behavior, responsibilities, interfaces, or future expansions this doc intentionally does not own.
-Use this section to prevent scope creep and duplicate truth ownership.
+Name adjacent current responsibilities, interfaces, or ownership boundaries this doc intentionally does not own.
+Keep this section to current ownership boundaries; preserve accepted scope decisions in the owning decisions section.
 -->
 
 {{non_goals}}

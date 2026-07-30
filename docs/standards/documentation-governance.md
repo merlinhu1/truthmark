@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: standard
-last_reviewed: 2026-05-09
+last_reviewed: 2026-07-30
 source_of_truth:
   - ../README.md
   - ../ai/repo-rules.md
@@ -23,8 +23,8 @@ Small repositories are in scope. A project does not need a large documentation p
 
 - Each document should have one primary responsibility.
 - Each class of fact should have one canonical source.
-- Current implementation, reusable standards, and future proposals should be stored separately.
-- Historical plans and generated planning artifacts should stay outside the canonical current-state tree until they are intentionally rewritten.
+- Current implementation, reusable standards, and accepted decision rationale have distinct canonical owners.
+- Git history carries superseded plans and implementation choices; active docs keep only current behavior and necessary rationale in the owning decision section.
 - Do not maintain parallel documentation trees for the same subject.
 - The root README may introduce the project or product, but it should not silently compete with canonical engineering or behavior docs.
 - Agent instruction files may install workflow behavior, but they are not product truth unless a project explicitly includes them in authority.
@@ -60,7 +60,7 @@ Use a small number of stable document classes:
 - architecture for current structural decisions
 - truth docs for current behavior and invariants
 
-Projects do not need every class on day one. They do need a clear separation between current truth and future proposals.
+Projects do not need every class on day one. They do need clear ownership for current truth, reusable standards, and accepted decision rationale.
 
 Architecture docs describe system structure, module boundaries, runtime topology, persistence boundaries, cross-cutting contracts, and generated-surface ownership.
 
@@ -70,13 +70,13 @@ Architecture docs should not carry ordinary product behavior, endpoint details, 
 
 Active decisions are part of current truth. They live in the canonical doc for the feature, contract, architecture surface, or standard they govern.
 
-Use `Product Decisions` and `Rationale` sections for decisions that explain non-obvious behavior, boundaries, rejected directions, or migration constraints.
+Use `Product Decisions` and `Engineering Decisions` sections for accepted decisions and the rationale needed to explain non-obvious behavior, boundaries, rejected directions, or migration constraints.
 
 When a decision changes, replace the old active decision in the same canonical doc. Git history is the historical decision log.
 
 Date active decisions inline when added or changed, for example `Decision (2026-05-09): keep routing agent-native`. The date is context on the active decision, not a separate historical log.
 
-Do not create separate timestamped ADR folders, planning tickets, or historical design notes as the current decision source. Historical notes may remain supplementary only after the active decision is promoted into the canonical doc.
+Do not create separate timestamped ADR folders, planning tickets, or historical design notes as repository guidance. Promote necessary accepted rationale into the owning decision section and rely on Git history for superseded context.
 
 ## Update Rules
 
@@ -115,7 +115,7 @@ Do not create separate timestamped ADR folders, planning tickets, or historical 
 - If routing is broad or overloaded, has Truth Structure repaired topology before new truth docs were created?
 - Are duplicated or shadow documentation paths being avoided?
 - Is generated helper output still treated as non-authoritative rather than truth?
-- If historical notes exist, have they stayed clearly separate from the current canonical tree?
+- Are superseded plans absent from active docs, with necessary accepted rationale kept in the owning decision section?
 
 ## Product Decisions
 

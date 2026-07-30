@@ -126,7 +126,7 @@ Parent workflow:
 ${renderBulletBlock(EVIDENCE_AUTHORITY_INSTRUCTIONS)}
 5. Product truth decision:
 ${renderTruthSyncProductDecisionRuleBlock(config)}
-6. Capture decision context from the task conversation: ask whether the user provided a product or technical decision, rationale, constraint, tradeoff, rejection reason, or scope boundary. Preserve concise user-provided decision rationale in Sync Intent before truth edits, route it to Product Decisions, Engineering Decisions, Rationale, Capability Scope, Non-Goals, Maintenance Notes, or the relevant workflow/contract section, and report whether it was placed, skipped because none was provided, or needs manual handoff.
+6. Capture decision context from the task conversation: ask whether the user provided a product or technical decision, rationale, constraint, tradeoff, rejection reason, or scope boundary. Preserve concise user-provided decision context in Sync Intent before truth edits, route accepted product context to Product Decisions and accepted technical context to Engineering Decisions, and report whether it was placed, skipped because none was provided, or needs manual handoff.
 7. Update engineering truth first after code changes. Product truth is opt-in for externally visible promises, product boundaries, APIs, acceptance criteria, or explicit user/product evidence.
 8. Code verification is parent-owned: follow repository instructions and task context, and report what ran or why it did not run.
 9. Dispatch bounded Truth Sync workers only when the host supports subagent dispatch and the acting agent chooses that path; otherwise execute the same sync task inline.

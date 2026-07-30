@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-architecture
-last_reviewed: 2026-06-20
+last_reviewed: 2026-07-30
 ---
 
 # Architecture Overview
@@ -24,6 +24,7 @@ It turns checkout evidence, route metadata, and source renderers into committed 
 
 - Truthmark is a local CLI and generated-surface renderer.
 - It reads checkout files, normalizes configuration, parses route files, emits diagnostics, and writes configured workflow surfaces during init.
+- Generated ownership is derived from renderer outputs. Init, Check, and Uninstall operate on exact renderer paths, while committed repository files remain the complete host-native runtime.
 
 ## Boundaries
 
@@ -68,6 +69,7 @@ Workflow-surface architecture is owned by the installed-workflows route area.
 ## Engineering Decisions
 
 - Decision (2026-06-14): Architecture docs describe current repository realization and do not redefine product promises.
+- Decision (2026-07-10): Generated ownership is renderer-derived and exact-path lifecycle operations preserve committed files as the host-native runtime.
 
 ## Rationale
 
@@ -88,11 +90,3 @@ Update when module boundaries, generated-surface ownership, or command architect
 - ../../../../src/config/load.ts
 - ../../../../src/routing/areas.ts
 - ../../../../src/templates/generated-surfaces.ts
-- `src/cli/handlers.ts`
-- `src/config/load.ts`
-- `src/routing/areas.ts`
-- `src/templates/generated-surfaces.ts`
-
-## Renderer-derived lifecycle (2026-07-10)
-
-Generated ownership is derived from renderer outputs rather than host-directory prefixes or a persistent manifest. Optional Init, Check, and Uninstall helpers operate on exact paths; repository files remain the complete host-native runtime.

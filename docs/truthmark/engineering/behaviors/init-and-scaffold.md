@@ -52,22 +52,11 @@ Generated truth-doc frontmatter includes `truth_kind`.
 
 Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
-`truthmark init` removes auto-removable retired generated-surface artifacts only when their whole-file bytes are recognized and those paths are no longer part of current generated output.
+`truthmark init` reconciles generated surfaces to the selected platform set. It removes a whole file only when its bytes prove renderer ownership, preserves authored content outside valid managed blocks, and reports unsafe or mixed-ownership paths for manual review.
 
-Auto-removable retired artifacts include:
+Configured platforms select exact instruction surfaces. Shared-contract hosts aggregate `AGENTS.md` ownership, Claude Code owns `CLAUDE.md`, and host-neutral configuration emits no generic instruction file. Lifecycle diagnostics expose planned removals, preserved diverged files, and preflight failures to human and JSON callers.
 
-- `truthmark-preview` package files
-- retired non-Gemini Preview adapters
-- legacy `helper-manifest.yml` and `support/helper-policy.md` files
-
-Init leaves retired Gemini surfaces in place for manual cleanup:
-
-- `GEMINI.md`
-- `.gemini/**`
-
-Those files may contain user-owned instructions alongside old Truthmark injections.
-
-Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
+Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files. Non-Goals guidance stays limited to current ownership boundaries, while accepted scope decisions belong in the owning decisions section.
 
 Engineering behavior templates include a `Behavior Scenarios` section after `Core Rules`:
 
@@ -108,7 +97,7 @@ Capability docs own:
 - Scaffolded paths derive from `truthmark.workspace`.
 - Template filenames match `truth_kind` values.
 - Engineering behavior templates provide optional current-state scenario blocks for normal, fallback, or compatibility-critical behavior.
-- Setup and platform selection are owned by `truthmark init`; the removed `truthmark config` command has no compatibility alias.
+- Setup and platform selection are owned by `truthmark init`.
 - Platform selection is zero or more and never assumes an AI host.
 - Global prose style guidance belongs in writer-facing workflow procedures, not every truth-doc template preamble.
 
@@ -135,13 +124,6 @@ Capability docs own:
 - **THEN** only top-level platform ownership changes
 - **AND** other supported values and comments are preserved
 
-#### Scenario: Retired Gemini surfaces are preserved for manual cleanup
-
-- **GIVEN** a repository contains retired Gemini instruction or command surfaces
-- **WHEN** `truthmark init` removes auto-removable retired generated artifacts
-- **THEN** it leaves `GEMINI.md` and `.gemini/**` in place
-- **AND** check diagnostics tell maintainers to review stale Gemini guidance manually
-
 #### Scenario: Engineering behavior templates support compact scenarios
 
 - **GIVEN** Truthmark renders the editable `engineering-behavior.md` template
@@ -157,9 +139,9 @@ Capability docs own:
 - It renders current templates and generated host surfaces from source renderers.
 - Before any scaffold or generated-surface write, it rejects aliased, non-regular, or hard-linked managed instruction destinations and preflights every planned lifecycle mutation.
 - It revalidates every planned mutation before applying the first removal, so a changed or unsafe later target prevents partial cleanup; earlier scaffold writes remain visible for retry if lifecycle application is blocked.
-- It removes retired non-Gemini generated-surface artifacts only when exact recognized whole-file bytes or one valid managed block establish ownership.
+- It removes only renderer-owned generated artifacts that are outside the selected surface set.
 - It preserves user bytes outside a removed managed block, including surrounding whitespace and line-ending convention.
-- It leaves retired Gemini surfaces for manual cleanup.
+- It leaves unsafe or mixed-ownership paths for manual review.
 
 ## Contracts
 
@@ -172,8 +154,8 @@ Capability docs own:
 
 ## Engineering Decisions
 
-- Decision (2026-06-14): New scaffold targets do not create `docs/truthmark/truth` as the canonical target root.
-- Decision (2026-06-14): Editable template filenames match `truth_kind` values directly so generated docs do not point agents at legacy `*-doc.md` names.
+- Decision (2026-06-14): New scaffold targets use separate product and engineering truth roots.
+- Decision (2026-06-14): Editable template filenames match `truth_kind` values directly.
 - Decision (2026-06-14): Init scaffolds routes, templates, product truth, and engineering truth at fixed workspace-derived paths rather than accepting route or template roots from config.
 - Decision (2026-06-17): The default broad `repository` route is provisional bootstrap state.
   - Init creates a compact `bootstrap-routing.md` workflow handoff instead of a catch-all behavior overview so agents run Truth Structure before normal Sync on real touched code.
@@ -183,10 +165,11 @@ Capability docs own:
 - Decision (2026-06-26): Engineering behavior templates may use compact scenario blocks for behavior clarity.
   - Scenario guidance adopts the useful requirement/scenario shape from specification formats while preserving Truthmark's current-state, evidence-backed truth-doc role.
   - The template avoids `SHALL`-style future requirements and does not require a scenario for every rule.
-- Decision (2026-07-30): Truthmark 2.3 folds repository setup and platform selection into `truthmark init` and removes the public `truthmark config` command without an alias.
+- Decision (2026-07-10): Configured platforms select exact instruction ownership, and deterministic lifecycle diagnostics expose reconciliation without transferring ownership of authored files.
+- Decision (2026-07-30): Non-Goals template guidance records current ownership boundaries; accepted scope decisions stay in the owning decisions section.
+- Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` for repository setup and platform selection.
   - Interactive selection is zero-or-more, while repeatable `--platform` values provide deterministic automation and `--json` never prompts.
   - Existing version-2 configs do not require migration; platform updates preserve other values and comments.
-  - Personal installation remains deferred, and repository finish-time Truth Sync behavior is unchanged.
 
 ## Rationale
 
@@ -198,12 +181,7 @@ Keeping templates kind-specific and moving global prose style into workflow guid
 
 ## Non-Goals
 
-- Init does not infer a preferred agent host.
-- Init does not install a Personal or user-global Truthmark contract.
-- Init does not add commit-triggered automation.
 - Init does not create behavior truth for unknown code ownership beyond the provisional bootstrap routing handoff.
-- Init does not maintain a legacy `docs/truthmark/truth` tree.
-- Init does not delete retired Gemini instruction files automatically.
 
 ## Maintenance Notes
 
@@ -222,7 +200,3 @@ Update when init writes new files, changes default paths, changes template filen
 - ../../../../tests/init/truth-doc-templates.test.ts
 - ../../../../tests/cli/platform-selection.test.ts
 - ../../../../tests/init/interactive-platform-selection.test.ts
-
-## Platform Reconciliation (2026-07-10)
-
-Init derives `AGENTS.md` for shared-contract hosts and `CLAUDE.md` for Claude Code, retains renderer-owned host instructions, and writes no generic instruction file when no platform is configured. Its deterministic lifecycle plan and diagnostics expose removals, preserved diverged files, manual-only Gemini paths, and preflight failures to both human and JSON callers.

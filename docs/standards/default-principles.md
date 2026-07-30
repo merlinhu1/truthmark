@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: standard
-last_reviewed: 2026-05-06
+last_reviewed: 2026-07-30
 source_of_truth:
   - ../README.md
   - documentation-governance.md
@@ -35,8 +35,8 @@ These are bootstrap defaults, not immutable law. Repositories should replace or 
 
 - Each document should have one primary responsibility.
 - Each class of fact should have one canonical source.
-- Current implementation, reusable standards, and future proposals should be stored separately.
-- Historical planning artifacts should stay historical until they are rewritten into the current canonical tree.
+- Current implementation, reusable standards, and accepted decision rationale have distinct canonical owners.
+- Git history carries superseded planning context; active docs keep only current behavior and necessary rationale in the owning decision section.
 - Do not maintain parallel documentation trees for the same subject.
 - The root README may remain an onboarding or product-facing entry point, but it should not silently compete with canonical engineering docs.
 

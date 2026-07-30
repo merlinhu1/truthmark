@@ -3,7 +3,11 @@ import fs from "node:fs/promises";
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { renderBehaviorDocTemplateFile } from "../../src/templates/init-files.js";
+import {
+  renderBehaviorDocTemplateFile,
+  renderContractDocTemplateFile,
+  renderProductCapabilityDocTemplateFile,
+} from "../../src/templates/init-files.js";
 
 const behaviorTruthDocs = [
   "docs/truthmark/engineering/behaviors/check-diagnostics.md",
@@ -27,6 +31,20 @@ describe("truth doc templates", () => {
     expect(template).toContain("- **AND** ...");
     expect(template).toContain("current truth, not desired requirements");
     expect(template).not.toContain("SHALL");
+  });
+
+  it("keeps non-goals focused on current ownership boundaries", () => {
+    const templates = [
+      renderBehaviorDocTemplateFile(),
+      renderProductCapabilityDocTemplateFile(),
+      renderContractDocTemplateFile(),
+    ];
+
+    for (const template of templates) {
+      expect(template).toContain("current ownership boundaries");
+      expect(template).toContain("accepted scope decisions");
+      expect(template).not.toContain("future expansions");
+    }
   });
 
   it("keeps existing engineering behavior docs aligned with the scenario section", async () => {
