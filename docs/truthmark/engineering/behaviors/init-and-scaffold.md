@@ -30,7 +30,7 @@ Scaffold paths derive from `truthmark.workspace`:
 - In an interactive TTY, init renders the supported platform catalog as a numbered, comma-separated multi-select.
 - Selection is zero or more; `none` preserves host-neutral CLI-only initialization, and cancellation writes nothing.
 - Existing saved platforms are preselected, and an empty response keeps them.
-- Repeatable `--platform <id>` values replace the selected set for automation.
+- Repeatable `--platform <id>` values replace the selected set for automation; `--clear-platforms` explicitly selects an empty set.
 - `--json` never prompts.
 - A first noninteractive run with neither saved config nor explicit platform values remains host-neutral.
 - A noninteractive rerun with no explicit values keeps the saved platform set.
@@ -124,7 +124,7 @@ Capability docs own:
 #### Scenario: Noninteractive init remains deterministic
 
 - **GIVEN** init runs noninteractively or with `--json`
-- **WHEN** repeatable `--platform <id>` values are present
+- **WHEN** repeatable `--platform <id>` values or `--clear-platforms` are present
 - **THEN** those values replace the complete selected platform set without prompting
 - **AND** a first no-flag run remains host-neutral while a later no-flag rerun keeps saved platforms
 
@@ -153,10 +153,10 @@ Capability docs own:
 
 - `truthmark init` creates or refreshes workspace scaffold files.
 - It resolves platform choice from explicit flags, interactive selection, saved values, or the empty first-run default, in that order.
-- It prepares a version-2 config update but writes it only after lifecycle preflight and application succeed; invalid existing config fails closed.
+- It prepares a version-2 config update, preflighting the config path and lifecycle mutations before writing scaffold and generated-surface files; lifecycle removals are applied last so a failed write does not delete existing generated surfaces, and invalid existing config still fails closed.
 - It renders current templates and generated host surfaces from source renderers.
 - Before any scaffold or generated-surface write, it rejects aliased, non-regular, or hard-linked managed instruction destinations and preflights every planned lifecycle mutation.
-- It revalidates every planned mutation before applying the first one, so a changed or unsafe later target prevents partial cleanup and scaffold writes.
+- It revalidates every planned mutation before applying the first removal, so a changed or unsafe later target prevents partial cleanup; earlier scaffold writes remain visible for retry if lifecycle application is blocked.
 - It removes retired non-Gemini generated-surface artifacts only when exact recognized whole-file bytes or one valid managed block establish ownership.
 - It preserves user bytes outside a removed managed block, including surrounding whitespace and line-ending convention.
 - It leaves retired Gemini surfaces for manual cleanup.
