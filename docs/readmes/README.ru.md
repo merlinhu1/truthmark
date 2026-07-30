@@ -13,29 +13,21 @@
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Включите AI-хост, которым вы действительно пользуетесь. Новые конфигурации нейтральны к хостам, поэтому перед инициализацией добавьте список верхнего уровня `platforms` в `.truthmark/config.yml`:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Затем установите локальные для репозитория truth-документы, маршрутизацию и поверхности рабочих процессов агентов:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+В интерактивном терминале `truthmark init` показывает нумерованный множественный выбор. Выберите ноль или несколько платформ либо введите `none` для нейтральной к хосту настройки только с CLI.
+
+В скриптах и CI повторяйте `--platform`; `--json` никогда не показывает запрос:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+При первом неинтерактивном запуске без `--platform` настройка остаётся нейтральной; последующие запуски сохраняют выбор из `.truthmark/config.yml`.
 
 Теперь попробуйте самый распространенный путь внедрения: задокументируйте одно существующее поведение по коду и тестам. В вашем AI-хосте для разработки попросите установленный рабочий процесс:
 
@@ -45,7 +37,7 @@ git diff
 
 После этого пользователям обычно не следует напрямую вызывать Truth Sync. Продолжайте писать код через ваш AI-хост; установленные инструкции репозитория скажут агенту запускать релевантные тесты и выполнять проверку Truth Sync перед передачей, когда меняется функциональный код. Вы просматриваете получившийся diff кода вместе с diff truth-документов.
 
-Если вам нужна только CLI-валидация, а хост-специфичные AI workflow пока не нужны, оставьте `platforms` неуказанным и выполните `truthmark init && truthmark check`; позже можно добавить платформу и заново выполнить `truthmark init`.
+Если нужна только CLI-валидация, выберите `none` и выполните `truthmark check`; позже можно снова выполнить `truthmark init` и выбрать платформы.
 
 ## 💡 Проблема: разрыв в AI-документации
 
@@ -90,8 +82,7 @@ Truthmark — не просто очередной инструмент доку
 
 Мейнтейнеры и CI используют CLI:
 
-* `truthmark config` - создает начальную конфигурацию.
-* `truthmark init` - устанавливает или обновляет маршруты, scaffold для truth-doc и инструкции для AI-хостов.
+* `truthmark init` - создаёт или обновляет конфигурацию, позволяет выбрать ноль или несколько платформ и устанавливает маршруты, scaffold для truth-doc и инструкции выбранных AI-хостов.
 * `truthmark check` - проверяет truth репозитория из терминала.
 
 ### Агенты следуют контракту во время кодинга
@@ -199,7 +190,7 @@ README — это витрина: быстрый контекст, быстры�
 
 Текущий релиз предоставляет:
 
-- локальные CLI-команды для config, init, check, index, impact и workflow status
+- локальные CLI-команды для init, check, index, impact и workflow status
 - сгенерированные локальные инструкции агента для Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity и Cursor
 - диагностику route, authority, frontmatter, links, freshness, generated-surface, branch-scope и coverage
 - branch-scoped truth docs и производные артефакты repository intelligence

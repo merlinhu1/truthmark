@@ -13,29 +13,21 @@ Exécutez ceci dans le dépôt Git que vous voulez faire gérer par Truthmark :
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Activez l’hôte d’IA que vous utilisez réellement. Les nouvelles configurations sont neutres vis-à-vis des hôtes ; ajoutez donc une liste `platforms` de premier niveau à `.truthmark/config.yml` avant l’initialisation :
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Installez ensuite les documents de vérité locaux au dépôt, le routage et les surfaces de workflow pour agents :
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+Dans un terminal interactif, `truthmark init` affiche une sélection multiple numérotée. Choisissez zéro ou plusieurs plateformes, ou `none` pour une installation neutre vis-à-vis des hôtes et limitée à la CLI.
+
+Pour les scripts et la CI, répétez `--platform` ; `--json` ne déclenche jamais d’invite :
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+Lors d’une première exécution non interactive sans `--platform`, l’installation reste neutre ; les exécutions suivantes conservent la sélection enregistrée dans `.truthmark/config.yml`.
 
 Essayez maintenant le chemin d’adoption le plus courant : documenter, à partir du code et des tests, un comportement existant. Dans votre hôte de codage IA, demandez au workflow installé :
 
@@ -45,7 +37,7 @@ Essayez maintenant le chemin d’adoption le plus courant : documenter, à parti
 
 Après cela, les utilisateurs ne devraient normalement pas invoquer Truth Sync directement. Continuez à coder dans votre hôte d’IA ; les instructions installées dans le dépôt indiquent à l’agent d’exécuter les tests pertinents et d’effectuer la revue Truth Sync avant la remise lorsqu’il y a des changements de code fonctionnel. Vous examinez le diff de code obtenu ainsi que le diff des documents de vérité.
 
-Si vous voulez seulement la validation CLI et ne voulez pas encore de workflows IA propres à un hôte, laissez `platforms` omis et exécutez `truthmark init && truthmark check` ; vous pourrez ajouter une plateforme plus tard et relancer `truthmark init`.
+Si vous voulez seulement la validation CLI, choisissez `none` puis exécutez `truthmark check` ; vous pourrez relancer `truthmark init` plus tard pour sélectionner des plateformes.
 
 ## 💡 Le problème : l’écart de documentation avec l’IA
 
@@ -90,8 +82,7 @@ Truthmark fournit un contrat local au dépôt, avec deux façons de l’utiliser
 
 Les mainteneurs et la CI utilisent la CLI :
 
-* `truthmark config` - crée la configuration initiale.
-* `truthmark init` - installe ou actualise le routage, les échafaudages de documents de vérité et les instructions pour les hôtes IA.
+* `truthmark init` - crée ou actualise la configuration, permet de choisir zéro ou plusieurs plateformes et installe le routage, les échafaudages de documents de vérité et les instructions des hôtes sélectionnés.
 * `truthmark check` - valide la vérité du dépôt depuis le terminal.
 
 ### Les agents suivent le contrat pendant qu’ils codent
@@ -199,7 +190,7 @@ Pour l’utilisation commande par commande, les comparaisons de surfaces, les d�
 
 La version actuelle fournit :
 
-- des commandes CLI locales pour config, init, check, index, impact et l’état des workflows
+- des commandes CLI locales pour init, check, index, impact et l’état des workflows
 - instructions agent locales au dépôt générées pour Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity et Cursor
 - des diagnostics de routage, d’autorité, de frontmatter, de liens, de fraîcheur, de surfaces générées, de portée de branche et de couverture
 - des documents de vérité limités à la branche et des artefacts dérivés d’intelligence du dépôt

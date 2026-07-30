@@ -82,7 +82,7 @@ Canonical docs should include frontmatter and keep these fields current:
 
 ## Important Truthmark-Specific Caveat
 
-New repositories should run `truthmark config` before `truthmark init` so teams can review the committed hierarchy contract before workflow surfaces are installed. The current scaffold writes a root route index plus one child route file under the configured routing root.
+`truthmark init` is the only setup command. In a TTY it offers a numbered zero-or-more platform selection; repeatable `--platform <id>` values provide noninteractive selection, while `--json` never prompts. A first noninteractive run without platform flags remains host-neutral. Init creates or updates the version-2 `.truthmark/config.yml`, then writes a root route index plus one child route file under the configured routing root.
 
 ## Recommended Reading Order
 

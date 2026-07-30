@@ -1,7 +1,7 @@
 ---
 status: active
 doc_type: guide
-last_reviewed: 2026-06-20
+last_reviewed: 2026-07-30
 source_of_truth:
   - ../README.md
   - ../.truthmark/config.yml
@@ -49,11 +49,21 @@ Then review the generated diffs.
 
 ## Supported agent platforms
 
-Fresh configs omit host platforms by default. Add the platforms you use to `.truthmark/config.yml`, then rerun:
+Run the single setup command in an interactive terminal:
 
 ```bash
 truthmark init
 ```
+
+It presents a numbered, comma-separated multi-select. Choose zero or more platforms, enter `none` for host-neutral CLI-only setup, or enter `q` to cancel without writing repository files. On rerun, saved platforms are marked as selected; pressing Enter keeps that selection.
+
+For automation, repeat `--platform <id>`. Explicit values replace the complete saved platform set and are normalized into the supported-platform order:
+
+```bash
+truthmark init --platform codex --platform cursor
+```
+
+`truthmark init --json` never prompts. On a first noninteractive run with no `--platform`, it creates a host-neutral repository with no host-specific surfaces. A later noninteractive no-flag rerun uses the saved selection. Truthmark never detects and silently selects the current host.
 
 | Platform config name | Generated surface | Invocation shape |
 | --- | --- | --- |
@@ -64,9 +74,9 @@ truthmark init
 | `antigravity` | Project rule files for Truthmark workflows | `@truthmark-*` |
 | `cursor` | Agent Skill project packages under `.cursor/skills` | selected by description or invoked with `/` in Cursor Agent chat |
 
-Unknown platform names are config errors.
+Unknown platform names passed through config or `--platform` are errors.
 
-Removing a platform stops rendering that platform's host-specific surfaces on future refreshes. `truthmark init` also removes known retired managed artifacts, but review generated-surface diffs intentionally.
+Rerun interactive init and omit a previously selected platform to stop rendering its host-specific surfaces. Repeatable `--platform` flags also replace the full set for automation. `truthmark init` removes safely recognized disabled or retired managed artifacts, but review generated-surface diffs intentionally.
 
 Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned. Legacy version-2 `instruction_targets` values still parse but are ignored and never authorize writes.
 If `platforms` is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
@@ -167,12 +177,11 @@ Both are useful. They are not the same surface.
 
 ## Command deep dive
 
-Most maintainers start with three commands.
+Most maintainers start with `init` and `check`.
 
 | Command | Purpose |
 | --- | --- |
-| `truthmark config` | Create `.truthmark/config.yml`. Writes only that file unless `--stdout` is used. |
-| `truthmark init` | Install or refresh configured workflow surfaces from the reviewed config. |
+| `truthmark init [--platform <id> ...] [--json]` | Create or refresh `.truthmark/config.yml`, routing, truth-doc scaffolds, and the selected workflow surfaces. Interactive TTY runs offer a zero-or-more numbered platform selector; `--json` and explicit platform flags never prompt. |
 | `truthmark uninstall --dry-run\|--apply` | Preview or apply safe removal of recognized generated host surfaces. Exactly one mode is required. |
 | `truthmark check` | Validate configuration, authority, routing, decision-bearing docs, frontmatter, internal links, branch scope, generated surfaces, freshness, and coverage diagnostics. |
 
@@ -219,7 +228,7 @@ When enabled, Truthmark installs host-native Portal workflow surfaces for the co
 
 ## Configuration
 
-Truthmark is config-first.
+Truthmark keeps a committed repository config, but setup is init-first.
 
 The main config file is:
 
@@ -227,17 +236,19 @@ The main config file is:
 .truthmark/config.yml
 ```
 
-New repositories should run:
-
-```bash
-truthmark config
-```
-
-Then review the generated config before running:
+New repositories run the single setup command:
 
 ```bash
 truthmark init
 ```
+
+Interactive setup selects zero or more platforms. For noninteractive automation, pass each selected platform explicitly:
+
+```bash
+truthmark init --platform claude-code --platform github-copilot
+```
+
+Init creates a version-2 config when none exists. Existing valid version-2 configs remain valid: init changes only top-level platform ownership when the selection changes, while preserving other supported values and YAML comments. Invalid existing config remains fail-closed and is not overwritten.
 
 Important config areas include:
 
@@ -348,20 +359,15 @@ The reviewer should be able to answer:
 
 ```bash
 npm install -g truthmark
-truthmark config
 truthmark init
 truthmark check
 ```
 
+Select the desired platforms in the numbered prompt, or add repeatable `--platform <id>` flags for automation.
+
 ### Remove unused agent platforms
 
-Edit:
-
-```text
-.truthmark/config.yml
-```
-
-Then rerun:
+Rerun interactive init and select the complete set you want to keep, or provide the complete set with repeatable flags. Then check the result:
 
 ```bash
 truthmark init
@@ -425,9 +431,8 @@ Then explicitly ask the agent host to run the installed Portal workflow when you
 
 ## Project status
 
-The current release provides:
+Truthmark 2.3 provides:
 
-- `truthmark config`
 - `truthmark init`
 - `truthmark check`
 - `truthmark index`
@@ -509,8 +514,11 @@ It is not:
 - an autonomous code rewrite engine
 - a model-training or fine-tuning framework
 - a hidden memory layer
+- a Personal installation mode; Truthmark 2.3 installs repository-local contracts only
 
 Those boundaries are part of the product.
+
+Repository finish-time Truth Sync is unchanged in 2.3: after functional code changes, agents still run relevant tests and perform a fresh Sync review before handoff. Personal installation and commit-triggered automation remain deferred.
 
 Truthmark keeps the workflow local, committed, branch-scoped, and reviewable.
 

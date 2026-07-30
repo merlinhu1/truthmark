@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import type { LifecyclePlan } from "../../src/init/lifecycle.js";
 import {
@@ -18,7 +18,7 @@ describe("runInit instruction integration", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         (await repo.readFile(".truthmark/config.yml")).replace(
@@ -68,7 +68,7 @@ describe("runInit instruction integration", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         `version: 2
@@ -108,7 +108,7 @@ ignore: []
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         `version: 2
@@ -153,7 +153,7 @@ ignore: []
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         `version: 2
@@ -219,7 +219,7 @@ ignore: []
       const repo = await createTempRepo();
 
       try {
-        await runConfig(repo.rootDir, {});
+        await writeTruthmarkConfig(repo.rootDir);
         await repo.writeFile(
           ".truthmark/config.yml",
           `version: 2
@@ -273,7 +273,7 @@ ignore: []
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         (await repo.readFile(".truthmark/config.yml")).replace(

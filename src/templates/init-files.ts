@@ -3,10 +3,7 @@ import { stringify } from "yaml";
 
 import type { TruthmarkConfig } from "../config/schema.js";
 import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
-import {
-  createDefaultConfig,
-  createDefaultRawConfig,
-} from "../config/defaults.js";
+import { createDefaultConfig } from "../config/defaults.js";
 import { inferTruthDocumentKindFromPath } from "../routing/areas.js";
 import {
   resolveEngineeringTruthRoot,
@@ -59,10 +56,6 @@ const renderTruthDocumentsMetadata = (
     stringify({ truth_documents: documents }).trimEnd(),
     "```",
   ];
-};
-
-export const renderConfigTemplate = (): string => {
-  return stringify(createDefaultRawConfig());
 };
 
 export const renderAreasTemplate = (

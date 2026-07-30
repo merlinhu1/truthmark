@@ -13,29 +13,21 @@
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-启用你实际使用的 AI 宿主。新配置默认与宿主无关，因此在初始化前，先把顶层 `platforms` 列表添加到 `.truthmark/config.yml`：
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-然后安装仓库本地的事实文档、路由和 AI 宿主指令：
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+在交互式终端中，`truthmark init` 会显示带编号的多选列表。可选择零个或多个平台，也可输入 `none`，仅进行与宿主无关的 CLI 设置。
+
+在脚本和 CI 中可重复使用 `--platform`；`--json` 永远不会提示输入：
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+首次非交互运行且没有 `--platform` 时，初始化保持宿主中立；之后的运行会保留 `.truthmark/config.yml` 中保存的选择。
 
 现在尝试最常见的采用路径：根据代码和测试记录一个已有行为。在你的 AI 编码宿主中，请求已安装的工作流：
 
@@ -45,7 +37,7 @@ git diff
 
 之后，用户通常不应直接调用 Truth Sync。继续通过你的 AI 宿主编写代码；已安装的仓库指令会告诉代理：当功能代码发生变化时，在交接前运行相关测试并执行 Truth Sync 审查。你审查最终的代码 diff 和事实文档 diff。
 
-如果你暂时只想要 CLI 验证，而不需要特定宿主的 AI 工作流，可以省略 `platforms`，并运行 `truthmark init && truthmark check`；之后你可以再添加平台并重新运行 `truthmark init`。
+如果暂时只需要 CLI 验证，请选择 `none`，然后运行 `truthmark check`；之后可重新运行 `truthmark init` 来选择平台。
 
 ## 💡 问题：AI 文档缺口
 
@@ -90,8 +82,7 @@ Truthmark 有一个仓库本地契约，以及两种使用方式。
 
 维护者和 CI 使用 CLI：
 
-* `truthmark config` - 创建初始配置。
-* `truthmark init` - 安装或刷新路由、事实文档脚手架和 AI 宿主指令。
+* `truthmark init` - 创建或刷新配置，选择零个或多个平台，并安装路由、事实文档脚手架及所选 AI 宿主的指令。
 * `truthmark check` - 从终端验证仓库事实。
 
 ### 代理在编码时遵循契约
@@ -199,7 +190,7 @@ README 是门面：快速背景、快速开始和核心心智模型。
 
 当前版本提供：
 
-- 用于 config、init、check、index、impact 和 workflow status 的本地 CLI 命令
+- 用于 init、check、index、impact 和 workflow status 的本地 CLI 命令
 - 为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 生成的仓库本地代理指令
 - 路由、权限、frontmatter、链接、新鲜度、生成界面、分支范围和覆盖率诊断
 - 按分支生效的事实文档和派生的仓库智能产物

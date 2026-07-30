@@ -13,29 +13,21 @@ Jalankan ini di dalam repositori Git yang ingin Anda kelola dengan Truthmark:
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Aktifkan host AI yang benar-benar Anda gunakan. Konfigurasi baru bersifat netral terhadap host, jadi tambahkan daftar `platforms` tingkat atas ke `.truthmark/config.yml` sebelum inisialisasi:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Kemudian pasang dokumen kebenaran lokal repositori, perutean, dan permukaan alur kerja agen:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+Di terminal interaktif, `truthmark init` menampilkan pilihan ganda bernomor. Pilih nol atau lebih platform, atau masukkan `none` untuk penyiapan netral terhadap host yang hanya memakai CLI.
+
+Untuk skrip dan CI, ulangi `--platform`; `--json` tidak pernah menampilkan prompt:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+Pada proses noninteraktif pertama tanpa `--platform`, penyiapan tetap netral terhadap host; proses berikutnya mempertahankan pilihan yang tersimpan di `.truthmark/config.yml`.
 
 Sekarang coba jalur adopsi yang paling umum: dokumentasikan satu perilaku yang sudah ada dari kode dan pengujian. Di host pengodean AI Anda, minta alur kerja yang terpasang:
 
@@ -45,7 +37,7 @@ Sekarang coba jalur adopsi yang paling umum: dokumentasikan satu perilaku yang s
 
 Setelah itu, pengguna biasanya tidak perlu memanggil Truth Sync secara langsung. Teruslah membuat kode melalui host AI Anda; instruksi repositori yang terpasang memberi tahu agen untuk menjalankan pengujian yang relevan dan melakukan tinjauan Truth Sync sebelum serah terima ketika kode fungsional berubah. Anda meninjau diff kode yang dihasilkan beserta diff dokumen truth.
 
-Jika Anda hanya menginginkan validasi CLI dan belum menginginkan alur kerja AI khusus host, biarkan `platforms` tidak dicantumkan dan jalankan `truthmark init && truthmark check`; Anda dapat menambahkan platform nanti dan menjalankan ulang `truthmark init`.
+Jika Anda hanya menginginkan validasi CLI, pilih `none` lalu jalankan `truthmark check`; Anda dapat menjalankan ulang `truthmark init` nanti untuk memilih platform.
 
 ## 💡 Masalah: kesenjangan dokumentasi AI
 
@@ -90,8 +82,7 @@ Truthmark memiliki satu kontrak lokal repositori dengan dua cara pemakaian.
 
 Pemelihara dan CI menggunakan CLI:
 
-* `truthmark config` - membuat konfigurasi awal.
-* `truthmark init` - memasang atau menyegarkan perutean, scaffold dokumen kebenaran, dan instruksi host AI.
+* `truthmark init` - membuat atau menyegarkan konfigurasi, memilih nol atau lebih platform, lalu memasang perutean, scaffold dokumen kebenaran, dan instruksi untuk host AI yang dipilih.
 * `truthmark check` - memvalidasi kebenaran repositori dari terminal.
 
 ### Agen mengikuti kontrak saat membuat kode
@@ -199,7 +190,7 @@ Untuk penggunaan per perintah, perbandingan permukaan, detail platform yang didu
 
 Rilis saat ini menyediakan:
 
-- perintah CLI lokal untuk config, init, check, index, impact, dan status alur kerja
+- perintah CLI lokal untuk init, check, index, impact, dan status alur kerja
 - instruksi agen lokal repositori yang dihasilkan untuk Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor
 - diagnostik perutean, otoritas, frontmatter, tautan, kesegaran, permukaan yang dihasilkan, cakupan branch, dan coverage
 - dokumen kebenaran berlingkup branch dan artefak kecerdasan repositori turunan

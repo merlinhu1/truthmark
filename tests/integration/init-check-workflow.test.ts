@@ -11,22 +11,17 @@ describe("init and check workflow acceptance", () => {
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], {
-        cwd: repo.rootDir,
-      });
-      expect(configResult.exitCode).toBe(0);
-      const configFile = await repo.readFile(".truthmark/config.yml");
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        configFile.replace(
-          "version: 2\n",
-          "version: 2\nplatforms:\n  - codex\n  - claude-code\n",
-        ),
+      const initResult = await runCli(
+        [
+          "init",
+          "--platform",
+          "codex",
+          "--platform",
+          "claude-code",
+          "--json",
+        ],
+        { cwd: repo.rootDir },
       );
-
-      const initResult = await runCli(["init", "--json"], {
-        cwd: repo.rootDir,
-      });
 
       expect(initResult.exitCode).toBe(0);
 
@@ -144,22 +139,17 @@ describe("init and check workflow acceptance", () => {
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], {
-        cwd: repo.rootDir,
-      });
-      expect(configResult.exitCode).toBe(0);
-      const configFile = await repo.readFile(".truthmark/config.yml");
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        configFile.replace(
-          "version: 2\n",
-          "version: 2\nplatforms:\n  - codex\n  - claude-code\n",
-        ),
+      const initResult = await runCli(
+        [
+          "init",
+          "--platform",
+          "codex",
+          "--platform",
+          "claude-code",
+          "--json",
+        ],
+        { cwd: repo.rootDir },
       );
-
-      const initResult = await runCli(["init", "--json"], {
-        cwd: repo.rootDir,
-      });
 
       expect(initResult.exitCode).toBe(0);
 
@@ -216,33 +206,17 @@ Update truth when:
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], {
-        cwd: repo.rootDir,
-      });
-      expect(configResult.exitCode).toBe(0);
-      await runCli(["config", "--force"], { cwd: repo.rootDir });
-      await fs.writeFile(
-        `${repo.rootDir}/.truthmark/config.yml`,
-        `version: 2
-platforms:
-  - codex
-  - claude-code
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-frontmatter:
-  required: []
-  recommended:
-    - status
-ignore: []
-`,
+      const enableBoth = await runCli(
+        [
+          "init",
+          "--platform",
+          "codex",
+          "--platform",
+          "claude-code",
+          "--json",
+        ],
+        { cwd: repo.rootDir },
       );
-
-      const enableBoth = await runCli(["init", "--json"], {
-        cwd: repo.rootDir,
-      });
       expect(enableBoth.exitCode).toBe(0);
       await expect(
         fs.stat(`${repo.rootDir}/AGENTS.md`),
@@ -256,26 +230,10 @@ ignore: []
         "utf8",
       );
 
-      await fs.writeFile(
-        `${repo.rootDir}/.truthmark/config.yml`,
-        `version: 2
-platforms:
-  - codex
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-frontmatter:
-  required: []
-  recommended:
-    - status
-ignore: []
-`,
+      const disableClaude = await runCli(
+        ["init", "--platform", "codex", "--json"],
+        { cwd: repo.rootDir },
       );
-      const disableClaude = await runCli(["init", "--json"], {
-        cwd: repo.rootDir,
-      });
       expect(disableClaude.exitCode).toBe(0);
 
       await expect(
@@ -417,9 +375,8 @@ ignore: []
     const repo = await createTempRepo();
 
     try {
-      await runCli(["config", "--json"], { cwd: repo.rootDir });
-      await fs.writeFile(
-        `${repo.rootDir}/.truthmark/config.yml`,
+      await repo.writeFile(
+        ".truthmark/config.yml",
         `version: 2
 platforms:
   - codex
@@ -488,12 +445,8 @@ ignore: []
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], {
-        cwd: repo.rootDir,
-      });
-      expect(configResult.exitCode).toBe(0);
-      await fs.writeFile(
-        `${repo.rootDir}/.truthmark/config.yml`,
+      await repo.writeFile(
+        ".truthmark/config.yml",
         `version: 2
 platforms:
   - codex

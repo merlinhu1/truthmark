@@ -13,29 +13,21 @@
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Ενεργοποιήστε τον AI host που πραγματικά χρησιμοποιείτε. Οι νέες ρυθμίσεις είναι ουδέτερες ως προς τον host, οπότε προσθέστε μια λίστα `platforms` στο ανώτερο επίπεδο του `.truthmark/config.yml` πριν από την αρχικοποίηση:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Έπειτα εγκαταστήστε τοπικά τα έγγραφα αλήθειας του αποθετηρίου, τη δρομολόγηση και τις επιφάνειες ροής εργασίας πρακτόρων:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+Σε διαδραστικό τερματικό, το `truthmark init` εμφανίζει αριθμημένη πολλαπλή επιλογή. Επιλέξτε μηδέν ή περισσότερες πλατφόρμες ή εισαγάγετε `none` για ρύθμιση ουδέτερη ως προς τον host και μόνο με CLI.
+
+Για scripts και CI, επαναλάβετε το `--platform`· το `--json` δεν εμφανίζει ποτέ προτροπή:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+Στην πρώτη μη διαδραστική εκτέλεση χωρίς `--platform`, η ρύθμιση παραμένει ουδέτερη· οι επόμενες εκτελέσεις διατηρούν την επιλογή που έχει αποθηκευτεί στο `.truthmark/config.yml`.
 
 Τώρα δοκιμάστε την πιο συνηθισμένη διαδρομή υιοθέτησης: τεκμηριώστε μια υπάρχουσα συμπεριφορά από κώδικα και tests. Στον AI coding host σας, ζητήστε από την εγκατεστημένη ροή εργασίας:
 
@@ -45,7 +37,7 @@ git diff
 
 Μετά από αυτό, οι χρήστες συνήθως δεν πρέπει να καλούν απευθείας το Truth Sync. Συνεχίστε να γράφετε κώδικα μέσω του AI host σας· οι εγκατεστημένες οδηγίες του αποθετηρίου λένε στον πράκτορα να εκτελεί τα σχετικά tests και να πραγματοποιεί την ανασκόπηση Truth Sync πριν από την παράδοση όταν αλλάζει λειτουργικός κώδικας. Εσείς ανασκοπείτε το προκύπτον code diff μαζί με το truth-doc diff.
 
-Αν θέλετε μόνο επικύρωση CLI και δεν θέλετε ακόμη host-specific AI workflows, αφήστε το `platforms` εκτός και εκτελέστε `truthmark init && truthmark check`· μπορείτε να προσθέσετε πλατφόρμα αργότερα και να εκτελέσετε ξανά `truthmark init`.
+Αν θέλετε μόνο επικύρωση CLI, επιλέξτε `none` και εκτελέστε `truthmark check`· μπορείτε αργότερα να εκτελέσετε ξανά `truthmark init` για να επιλέξετε πλατφόρμες.
 
 ## 💡 Το πρόβλημα: το κενό τεκμηρίωσης της AI
 
@@ -90,8 +82,7 @@ git diff
 
 Οι συντηρητές και το CI χρησιμοποιούν το CLI:
 
-* `truthmark config` - δημιουργεί την αρχική διαμόρφωση.
-* `truthmark init` - εγκαθιστά ή ανανεώνει routing, truth-doc scaffolds και οδηγίες για AI hosts.
+* `truthmark init` - δημιουργεί ή ανανεώνει τη διαμόρφωση, επιτρέπει επιλογή μηδέν ή περισσότερων πλατφορμών και εγκαθιστά routing, truth-doc scaffolds και οδηγίες για τους επιλεγμένους AI hosts.
 * `truthmark check` - επικυρώνει την αλήθεια του αποθετηρίου από το τερματικό.
 
 ### Οι agents ακολουθούν το συμβόλαιο ενώ γράφουν κώδικα
@@ -199,7 +190,7 @@ keep the result reviewable in Git
 
 Η τρέχουσα έκδοση παρέχει:
 
-- τοπικές CLI commands για config, init, check, index, impact και workflow status
+- τοπικές CLI commands για init, check, index, impact και workflow status
 - παραγόμενες repo-local οδηγίες για agents για Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity και Cursor
 - diagnostics για route, authority, frontmatter, link, freshness, generated-surface, branch-scope και coverage
 - έγγραφα αλήθειας με scope branch και παράγωγα τεχνουργήματα ευφυΐας αποθετηρίου

@@ -13,29 +13,21 @@ Bunu Truthmark tarafından yönetilmesini istediğiniz Git deposunun içinde ça
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Gerçekten kullandığınız AI ana makinesini etkinleştirin. Yeni yapılandırmalar ana makineden bağımsızdır; bu yüzden başlatmadan önce `.truthmark/config.yml` dosyasına üst düzey bir `platforms` listesi ekleyin:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Ardından depoya yerel gerçeklik belgelerini, yönlendirmeyi ve ajan iş akışı yüzeylerini kurun:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+Etkileşimli bir terminalde `truthmark init`, numaralı bir çoklu seçim gösterir. Sıfır veya daha fazla platform seçin ya da ana makineden bağımsız, yalnızca CLI kurulumu için `none` girin.
+
+Betikler ve CI için `--platform` seçeneğini tekrarlayın; `--json` hiçbir zaman istem göstermez:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+`--platform` olmadan ilk etkileşimsiz çalıştırmada kurulum ana makineden bağımsız kalır; sonraki çalıştırmalar `.truthmark/config.yml` içinde kayıtlı seçimi korur.
 
 Şimdi en yaygın benimseme yolunu deneyin: kod ve testlerden mevcut bir davranışı belgeleyin. AI kodlama ana makinenizde, kurulu iş akışına şunu isteyin:
 
@@ -45,7 +37,7 @@ git diff
 
 Bundan sonra kullanıcılar normalde Truth Sync'i doğrudan çağırmamalıdır. AI ana makineniz üzerinden kod yazmaya devam edin; kurulu depo yönergeleri, işlevsel kod değiştiğinde teslimden önce ajana ilgili testleri çalıştırmasını ve Truth Sync incelemesini yapmasını söyler. Siz ortaya çıkan kod farkını ve truth-belge farkını incelersiniz.
 
-Yalnızca CLI doğrulaması istiyor ve henüz ana makineye özgü AI iş akışları istemiyorsanız, `platforms` alanını dışarıda bırakıp `truthmark init && truthmark check` çalıştırın; daha sonra bir platform ekleyip `truthmark init` komutunu yeniden çalıştırabilirsiniz.
+Yalnızca CLI doğrulaması istiyorsanız `none` seçip `truthmark check` çalıştırın; platform seçmek için daha sonra `truthmark init` komutunu yeniden çalıştırabilirsiniz.
 
 ## 💡 Sorun: AI dokümantasyon boşluğu
 
@@ -90,8 +82,7 @@ Truthmark’ın depo yerelinde tek bir sözleşmesi ve onu kullanmanın iki yolu
 
 Bakımcılar ve CI, CLI kullanır:
 
-* `truthmark config` - ilk yapılandırmayı oluşturur.
-* `truthmark init` - yönlendirmeyi, truth-doc iskelelerini ve AI ana makine talimatlarını kurar veya yeniler.
+* `truthmark init` - yapılandırmayı oluşturur veya yeniler, sıfır ya da daha fazla platform seçtirir ve yönlendirmeyi, truth-doc iskelelerini ve seçilen AI ana makine talimatlarını kurar.
 * `truthmark check` - depo gerçeğini terminalden doğrular.
 
 ### Ajanlar kod yazarken sözleşmeyi izler
@@ -199,7 +190,7 @@ Komut komut kullanım, yüzey karşılaştırmaları, desteklenen platform ayrı
 
 Mevcut sürüm şunları sağlar:
 
-- config, init, check, index, impact ve iş akışı durumu için yerel CLI komutları
+- init, check, index, impact ve iş akışı durumu için yerel CLI komutları
 - Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor için oluşturulan depo yerelinde ajan talimatları
 - yönlendirme, yetki, frontmatter, bağlantı, güncellik, üretilmiş yüzey, dal kapsamı ve kapsam tanıları
 - dal kapsamlı gerçeklik belgeleri ve türetilmiş depo zekâsı artefaktları

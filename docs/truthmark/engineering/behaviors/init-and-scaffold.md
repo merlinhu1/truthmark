@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-30
 ---
 
 # Init And Scaffold
@@ -25,10 +25,18 @@ Scaffold paths derive from `truthmark.workspace`:
 - The default scaffolded route area is `repository`.
 - Max route delegation depth is `1`.
 
-Fresh configs do not assume a host platform:
+`truthmark init` is the only setup command:
 
-- `platforms` is omitted by default.
-- Host-specific workflow surfaces are generated only after maintainers explicitly list Codex, OpenCode, Claude Code, GitHub Copilot, Antigravity, or Cursor.
+- In an interactive TTY, init renders the supported platform catalog as a numbered, comma-separated multi-select.
+- Selection is zero or more; `none` preserves host-neutral CLI-only initialization, and cancellation writes nothing.
+- Existing saved platforms are preselected, and an empty response keeps them.
+- Repeatable `--platform <id>` values replace the selected set for automation.
+- `--json` never prompts.
+- A first noninteractive run with neither saved config nor explicit platform values remains host-neutral.
+- A noninteractive rerun with no explicit values keeps the saved platform set.
+- Host detection never selects a platform.
+
+Init creates `.truthmark/config.yml` when absent. Existing valid version-2 configs remain valid; when platform ownership changes, init updates only the top-level `platforms` node while preserving other supported values and YAML comments. An empty selection omits `platforms`.
 
 Editable truth template filenames match `truth_kind` values directly:
 
@@ -100,17 +108,32 @@ Capability docs own:
 - Scaffolded paths derive from `truthmark.workspace`.
 - Template filenames match `truth_kind` values.
 - Engineering behavior templates provide optional current-state scenario blocks for normal, fallback, or compatibility-critical behavior.
-- Fresh configs do not assume any AI host platform.
+- Setup and platform selection are owned by `truthmark init`; the removed `truthmark config` command has no compatibility alias.
+- Platform selection is zero or more and never assumes an AI host.
 - Global prose style guidance belongs in writer-facing workflow procedures, not every truth-doc template preamble.
 
 ## Behavior Scenarios
 
-#### Scenario: Fresh config does not assume a host platform
+#### Scenario: Interactive init selects zero or more platforms
 
-- **GIVEN** a repository uses the default generated Truthmark config
-- **WHEN** `truthmark init` creates or refreshes the scaffold
-- **THEN** `platforms` remains omitted by default
-- **AND** host-specific workflow surfaces require explicit platform configuration
+- **GIVEN** `truthmark init` runs in an interactive TTY without explicit platform flags
+- **WHEN** the maintainer submits numbered choices, `none`, or the preselected defaults
+- **THEN** init persists that complete platform set and generates only the selected host surfaces
+- **AND** selecting none omits `platforms` and generates no host-specific surfaces
+
+#### Scenario: Noninteractive init remains deterministic
+
+- **GIVEN** init runs noninteractively or with `--json`
+- **WHEN** repeatable `--platform <id>` values are present
+- **THEN** those values replace the complete selected platform set without prompting
+- **AND** a first no-flag run remains host-neutral while a later no-flag rerun keeps saved platforms
+
+#### Scenario: Existing version-2 config preserves authored YAML
+
+- **GIVEN** a valid version-2 `.truthmark/config.yml` contains comments and supported non-platform values
+- **WHEN** init changes the selected platforms
+- **THEN** only top-level platform ownership changes
+- **AND** other supported values and comments are preserved
 
 #### Scenario: Retired Gemini surfaces are preserved for manual cleanup
 
@@ -129,6 +152,8 @@ Capability docs own:
 ## Flows And States
 
 - `truthmark init` creates or refreshes workspace scaffold files.
+- It resolves platform choice from explicit flags, interactive selection, saved values, or the empty first-run default, in that order.
+- It prepares a version-2 config update but writes it only after lifecycle preflight and application succeed; invalid existing config fails closed.
 - It renders current templates and generated host surfaces from source renderers.
 - Before any scaffold or generated-surface write, it rejects aliased, non-regular, or hard-linked managed instruction destinations and preflights every planned lifecycle mutation.
 - It revalidates every planned mutation before applying the first one, so a changed or unsafe later target prevents partial cleanup and scaffold writes.
@@ -158,6 +183,10 @@ Capability docs own:
 - Decision (2026-06-26): Engineering behavior templates may use compact scenario blocks for behavior clarity.
   - Scenario guidance adopts the useful requirement/scenario shape from specification formats while preserving Truthmark's current-state, evidence-backed truth-doc role.
   - The template avoids `SHALL`-style future requirements and does not require a scenario for every rule.
+- Decision (2026-07-30): Truthmark 2.3 folds repository setup and platform selection into `truthmark init` and removes the public `truthmark config` command without an alias.
+  - Interactive selection is zero-or-more, while repeatable `--platform` values provide deterministic automation and `--json` never prompts.
+  - Existing version-2 configs do not require migration; platform updates preserve other values and comments.
+  - Personal installation remains deferred, and repository finish-time Truth Sync behavior is unchanged.
 
 ## Rationale
 
@@ -170,6 +199,8 @@ Keeping templates kind-specific and moving global prose style into workflow guid
 ## Non-Goals
 
 - Init does not infer a preferred agent host.
+- Init does not install a Personal or user-global Truthmark contract.
+- Init does not add commit-triggered automation.
 - Init does not create behavior truth for unknown code ownership beyond the provisional bootstrap routing handoff.
 - Init does not maintain a legacy `docs/truthmark/truth` tree.
 - Init does not delete retired Gemini instruction files automatically.
@@ -181,10 +212,16 @@ Update when init writes new files, changes default paths, changes template filen
 ## Source References
 
 - ../../../../src/config/defaults.ts
+- ../../../../src/config/render.ts
+- ../../../../src/cli/platform-selection.ts
+- ../../../../src/cli/program.ts
+- ../../../../src/init/init.ts
 - ../../../../src/init/hierarchy.ts
 - ../../../../src/templates/init-files.ts
 - ../../../../tests/lifecycle/uninstall.test.ts
 - ../../../../tests/init/truth-doc-templates.test.ts
+- ../../../../tests/cli/platform-selection.test.ts
+- ../../../../tests/init/interactive-platform-selection.test.ts
 
 ## Platform Reconciliation (2026-07-10)
 

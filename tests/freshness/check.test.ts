@@ -2,7 +2,7 @@ import { afterEach, describe, it } from "node:test";
 import { expect } from "expect";
 
 import { runCheck } from "../../src/checks/check.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
 
@@ -17,7 +17,7 @@ describe("freshness diagnostics", () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile("scripts/unmapped.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -39,7 +39,7 @@ describe("freshness diagnostics", () => {
     repos.push(repo);
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);

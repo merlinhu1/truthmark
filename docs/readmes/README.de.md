@@ -13,29 +13,21 @@ Führe dies in dem Git-Repository aus, das Truthmark verwalten soll:
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Aktiviere den KI-Host, den du tatsächlich nutzt. Neue Konfigurationen sind host-neutral; füge daher vor der Initialisierung eine `platforms`-Liste auf oberster Ebene zu `.truthmark/config.yml` hinzu:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Installiere anschließend die repo-lokalen Truth-Dokumente, das Routing und die Anweisungen für KI-Hosts:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+In einem interaktiven Terminal zeigt `truthmark init` eine nummerierte Mehrfachauswahl. Wähle null oder mehr Plattformen oder `none` für eine host-neutrale, reine CLI-Einrichtung.
+
+Für Skripte und CI kannst du `--platform` wiederholen; `--json` fragt niemals interaktiv nach:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+Beim ersten nicht interaktiven Lauf ohne `--platform` bleibt die Einrichtung host-neutral; spätere Läufe behalten die in `.truthmark/config.yml` gespeicherte Auswahl bei.
 
 Probiere nun den häufigsten Einstiegspfad: ein bestehendes Verhalten anhand von Code und Tests dokumentieren. Bitte in deinem KI-Coding-Host den installierten Workflow:
 
@@ -45,7 +37,7 @@ Probiere nun den häufigsten Einstiegspfad: ein bestehendes Verhalten anhand von
 
 Danach sollten Nutzer Truth Sync normalerweise nicht direkt aufrufen. Programmiere weiter über deinen KI-Host; die installierten Repository-Anweisungen weisen den Agenten an, relevante Tests auszuführen und vor der Übergabe die Truth Sync-Prüfung durchzuführen, wenn funktionaler Code geändert wurde. Du prüfst den daraus entstehenden Code-Diff plus den Truth-Doc-Diff.
 
-Wenn du nur CLI-Validierung möchtest und noch keine host-spezifischen KI-Workflows willst, lasse `platforms` weg und führe `truthmark init && truthmark check` aus; du kannst später eine Plattform hinzufügen und `truthmark init` erneut ausführen.
+Wenn du nur CLI-Validierung möchtest, wähle `none` und fahre mit `truthmark check` fort; du kannst `truthmark init` später erneut ausführen und Plattformen auswählen.
 
 ## 💡 Das Problem: die KI-Dokumentationslücke
 
@@ -90,8 +82,7 @@ Truthmark hat einen repo-lokalen Vertrag und zwei Arten, ihn zu nutzen.
 
 Maintainer und CI nutzen die CLI:
 
-* `truthmark config` - erstellt die Anfangskonfiguration.
-* `truthmark init` - installiert oder aktualisiert Routing, Truth-Doc-Scaffolds und Anweisungen für KI-Hosts.
+* `truthmark init` - erstellt oder aktualisiert die Konfiguration, lässt null oder mehr Plattformen auswählen und installiert Routing, Truth-Doc-Scaffolds und die ausgewählten KI-Host-Anweisungen.
 * `truthmark check` - validiert die Repository-Truth im Terminal.
 
 ### Agenten folgen dem Vertrag beim Coden
@@ -199,7 +190,7 @@ Für befehlsweise Nutzung, Oberflächenvergleiche, Details zu unterstützten Pla
 
 Die aktuelle Version bietet:
 
-- lokale CLI-Befehle für config, init, check, index, impact und Workflow-Status
+- lokale CLI-Befehle für init, check, index, impact und Workflow-Status
 - generierte repo-lokale Agentenanweisungen für Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity und Cursor
 - Diagnosen für Routing, Autorität, Frontmatter, Links, Aktualität, generierte Oberflächen, Branch-Scope und Abdeckung
 - branch-bezogene Truth-Dokumente und abgeleitete Repository-Intelligence-Artefakte

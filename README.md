@@ -20,29 +20,21 @@ Run this inside the Git repository you want Truthmark to manage:
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Enable the AI host you actually use. Fresh configs are host-neutral, so add a top-level `platforms` list to `.truthmark/config.yml` before initialization:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Then install the repo-local truth docs, routing, and AI-host instructions:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+In an interactive terminal, `truthmark init` shows a numbered multi-select for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor. Select zero or more hosts; choose `none` for a host-neutral, CLI-only repository.
+
+For scripts and CI, repeat `--platform` to replace the selected host set without prompting:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+`--json` never prompts. On a first noninteractive run with no `--platform`, initialization stays host-neutral; later reruns retain the platforms already saved in `.truthmark/config.yml`.
 
 Now try the most common adoption path: document one existing behavior from code and tests. In your AI coding host, ask the installed workflow:
 
@@ -52,7 +44,7 @@ Now try the most common adoption path: document one existing behavior from code 
 
 After that, users should not normally invoke Truth Sync directly. Keep coding through your AI host; the installed repository instructions tell the agent to run relevant tests and perform the Truth Sync review before handoff when functional code changes. You review the resulting code diff plus truth-doc diff.
 
-If you only want CLI validation and do not want host-specific AI workflows yet, leave `platforms` omitted and run `truthmark init && truthmark check`; you can add a platform later and rerun `truthmark init`.
+If you only want CLI validation and do not want host-specific AI workflows yet, select `none` and continue with `truthmark check`; you can rerun `truthmark init` later to select platforms.
 
 ## 💡 The Problem: The AI Documentation Gap
 
@@ -100,8 +92,7 @@ Truthmark has one repo-local contract with two ways to use it.
 
 Maintainers and CI use the CLI:
 
-* `truthmark config` - create the initial configuration.
-* `truthmark init` - install or refresh routing, truth-doc scaffolds, and AI-host instructions, reconciling safely recognized disabled-host surfaces.
+* `truthmark init` - create or refresh configuration, select zero or more platforms, and install routing, truth-doc scaffolds, and selected AI-host instructions.
 * `truthmark check` - validate the repository truth from the terminal.
 * `truthmark uninstall --dry-run|--apply` - preview or remove generated host surfaces while preserving authored truth and configuration.
 
@@ -213,9 +204,9 @@ For command-by-command usage, surface comparisons, supported platform details, c
 
 ## Project status
 
-The current release provides:
+Truthmark 2.3 provides:
 
-- local CLI commands for config, init, uninstall, check, index, impact, workflow status, and validate
+- local CLI commands for init, uninstall, check, index, impact, workflow status, and validate
 - generated repo-local agent instructions for Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, and Cursor
 - route, authority, frontmatter, link, freshness, generated-surface, branch-scope, and coverage diagnostics
 - branch-scoped truth docs and derived repository-intelligence artifacts

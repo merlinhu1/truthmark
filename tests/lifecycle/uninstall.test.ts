@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { loadConfig } from "../../src/config/load.js";
 import { runInit } from "../../src/init/init.js";
 import {
@@ -17,7 +17,7 @@ describe("generated surface lifecycle", () => {
   it("rejects an aliased desired instruction before scaffolding", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
@@ -40,7 +40,7 @@ describe("generated surface lifecycle", () => {
   it("reconciles a disabled platform without touching sibling files", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex, claude-code]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
@@ -73,7 +73,7 @@ describe("generated surface lifecycle", () => {
   it("plans and applies uninstall while preserving authored files and Gemini", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
@@ -105,7 +105,7 @@ describe("generated surface lifecycle", () => {
   it("revalidates every removal before mutating the first one", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
@@ -139,7 +139,7 @@ describe("generated surface lifecycle", () => {
   it("preserves user bytes around a managed block", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
@@ -164,7 +164,7 @@ describe("generated surface lifecycle", () => {
   it("plans retired preview and helper artifacts without deleting siblings", async () => {
     const repo = await createTempRepo();
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       await repo.writeFile(
         ".agents/skills/truthmark-preview/SKILL.md",
         "legacy preview\n",

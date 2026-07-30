@@ -1,8 +1,14 @@
 import fs from "node:fs/promises";
 
 import { loadConfig } from "../config/load.js";
+import { createDefaultConfig } from "../config/defaults.js";
+import { renderConfig, updateConfigPlatforms } from "../config/render.js";
 import { upsertManagedBlock as upsertManagedInstructionBlock } from "../managed-block.js";
-import type { TruthmarkConfig } from "../config/schema.js";
+import {
+  SUPPORTED_PLATFORMS,
+  type TruthmarkConfig,
+  type TruthmarkPlatform,
+} from "../config/schema.js";
 import type {
   CommandResult,
   DiagnosticCategory,
@@ -131,30 +137,94 @@ const writeDiagnostics = (
   }));
 };
 
-export const runInit = async (cwd: string): Promise<CommandResult> => {
+export type PlatformSelector = (
+  defaults: readonly TruthmarkPlatform[],
+) => Promise<readonly TruthmarkPlatform[] | null>;
+
+export type InitOptions = {
+  platforms?: readonly string[];
+  selectPlatforms?: PlatformSelector;
+};
+
+const normalizeRequestedPlatforms = (
+  values: readonly string[],
+): { platforms: TruthmarkPlatform[]; unsupported: string[] } => {
+  const unsupported = values.filter(
+    (value) => !SUPPORTED_PLATFORMS.includes(value as TruthmarkPlatform),
+  );
+  const selected = new Set(values as readonly TruthmarkPlatform[]);
+  return {
+    platforms: SUPPORTED_PLATFORMS.filter((platform) => selected.has(platform)),
+    unsupported: [...new Set(unsupported)],
+  };
+};
+
+export const runInit = async (
+  cwd: string,
+  options: InitOptions = {},
+): Promise<CommandResult> => {
   const repository = await getGitRepository(cwd);
   const rootDir = repository.worktreePath;
   const loadedConfig = await loadConfig(rootDir);
+  const repositoryData = {
+    repositoryRoot: repository.repositoryRoot,
+    worktreePath: repository.worktreePath,
+    branchName: repository.branchName,
+    isDetached: repository.isDetached,
+    isUnborn: repository.isUnborn,
+  };
 
-  if (!loadedConfig.config) {
+  if (loadedConfig.status === "invalid") {
     return {
       command: "init",
-      summary:
-        "Truthmark init requires .truthmark/config.yml. Run truthmark config first, review the workspace paths, then run truthmark init.",
+      summary: "Truthmark init made no changes because config is invalid.",
       diagnostics: loadedConfig.diagnostics,
-      data: {
-        repositoryRoot: repository.repositoryRoot,
-        worktreePath: repository.worktreePath,
-        branchName: repository.branchName,
-        isDetached: repository.isDetached,
-        isUnborn: repository.isUnborn,
-      },
+      data: repositoryData,
     };
   }
 
-  const results: FileWriteResult[] = [];
+  const savedPlatforms = loadedConfig.config?.platforms ?? [];
+  let requestedPlatforms: readonly string[];
+  if (options.platforms !== undefined) requestedPlatforms = options.platforms;
+  else if (options.selectPlatforms) {
+    const selected = await options.selectPlatforms(savedPlatforms);
+    if (selected === null)
+      return {
+        command: "init",
+        summary: "Truthmark init cancelled; no repository files were changed.",
+        diagnostics: [],
+        data: { ...repositoryData, cancelled: true },
+      };
+    requestedPlatforms = selected;
+  } else requestedPlatforms = savedPlatforms;
 
-  const config = loadedConfig.config;
+  const normalized = normalizeRequestedPlatforms(requestedPlatforms);
+  if (normalized.unsupported.length > 0)
+    return {
+      command: "init",
+      summary: "Truthmark init requires supported platform values.",
+      diagnostics: normalized.unsupported.map((platform) => ({
+        category: "config" as const,
+        severity: "error" as const,
+        message: `Unsupported Truthmark platform: ${platform}.`,
+        file: ".truthmark/config.yml",
+      })),
+      data: repositoryData,
+    };
+
+  const config: TruthmarkConfig = {
+    ...(loadedConfig.config ?? createDefaultConfig()),
+    platforms: normalized.platforms,
+  };
+  const existingConfigSource = loadedConfig.config
+    ? await fs.readFile(resolveRepoPath(rootDir, loadedConfig.configPath), "utf8")
+    : null;
+  const configSource = existingConfigSource
+    ? updateConfigPlatforms(existingConfigSource, normalized.platforms)
+    : renderConfig(normalized.platforms);
+  const configDiagnostics =
+    loadedConfig.status === "loaded" ? loadedConfig.diagnostics : [];
+  const results: FileWriteResult[] = [];
   const block = renderAgentsBlock(config);
   const platformFiles = renderGeneratedSurfaces(config, block);
   const lifecyclePlan = await buildLifecyclePlan(
@@ -168,8 +238,8 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
       command: "init",
       summary:
         "Truthmark init made no changes because generated-surface preflight failed.",
-      diagnostics: [...loadedConfig.diagnostics, ...lifecyclePlan.diagnostics],
-      data: { lifecyclePlan },
+      diagnostics: [...configDiagnostics, ...lifecyclePlan.diagnostics],
+      data: { ...repositoryData, lifecyclePlan },
     };
   }
   const appliedLifecyclePlan = await applyLifecyclePlan(rootDir, lifecyclePlan);
@@ -179,13 +249,16 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
       summary:
         "Truthmark init made no changes because generated-surface preflight failed.",
       diagnostics: [
-        ...loadedConfig.diagnostics,
+        ...configDiagnostics,
         ...appliedLifecyclePlan.diagnostics,
       ],
-      data: { lifecyclePlan: appliedLifecyclePlan },
+      data: { ...repositoryData, lifecyclePlan: appliedLifecyclePlan },
     };
   }
 
+  results.push(
+    await writeRepoFile(rootDir, loadedConfig.configPath, configSource),
+  );
   results.push(...(await scaffoldHierarchy(rootDir, config)));
   for (const file of platformFiles) {
     results.push(await writePlatformFile(rootDir, file));
@@ -206,7 +279,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
         ? "Initialized or updated the Truthmark repository scaffold."
         : "Truthmark repository scaffold is already up to date.",
     diagnostics: [
-      ...loadedConfig.diagnostics,
+      ...configDiagnostics,
       ...appliedLifecyclePlan.diagnostics,
       ...appliedLifecyclePlan.entries.map((entry) => ({
         category: "generated-surface" as const,
@@ -221,11 +294,7 @@ export const runInit = async (cwd: string): Promise<CommandResult> => {
       ...writeDiagnostics(results, config),
     ],
     data: {
-      repositoryRoot: repository.repositoryRoot,
-      worktreePath: repository.worktreePath,
-      branchName: repository.branchName,
-      isDetached: repository.isDetached,
-      isUnborn: repository.isUnborn,
+      ...repositoryData,
       lifecyclePlan: appliedLifecyclePlan,
     },
   };

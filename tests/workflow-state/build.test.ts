@@ -5,7 +5,7 @@ import { afterEach, describe, it } from "node:test";
 import { expect } from "expect";
 
 import { TRUTHMARK_WORKFLOW_MANIFEST } from "../../src/agents/workflow-manifest.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { buildWorkflowActionContext } from "../../src/workflow-state/action-context.js";
 import { buildWorkflowState } from "../../src/workflow-state/build.js";
@@ -60,7 +60,7 @@ const setupConfiguredRepo = async (
     "tests/math.test.ts",
     "import { add } from '../src/math.js';\nvoid add;\n",
   );
-  await runConfig(repo.rootDir, { force: false, stdout: false });
+  await writeTruthmarkConfig(repo.rootDir);
   await runInit(repo.rootDir);
   if (options.includeUnrelatedRoute) {
     await repo.writeFile(
@@ -443,7 +443,7 @@ describe("buildWorkflowState", () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile("src/unmapped.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.writeFile(
       "docs/truthmark/routes/areas.md",

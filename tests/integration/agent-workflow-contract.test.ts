@@ -9,31 +9,25 @@ describe("installed workflow contract", () => {
     const repo = await createTempRepo();
 
     try {
-      const configResult = await runCli(["config", "--json"], {
-        cwd: repo.rootDir,
-      });
-      expect(configResult.exitCode).toBe(0);
-      const configFile = await repo.readFile(".truthmark/config.yml");
-      await repo.writeFile(
-        ".truthmark/config.yml",
-        configFile.replace(
-          "version: 2\n",
-          [
-            "version: 2",
-            "platforms:",
-            "  - codex",
-            "  - opencode",
-            "  - claude-code",
-            "  - github-copilot",
-            "  - antigravity",
-            "  - cursor",
-            "",
-          ].join("\n"),
-        ),
+      const initResult = await runCli(
+        [
+          "init",
+          "--platform",
+          "codex",
+          "--platform",
+          "opencode",
+          "--platform",
+          "claude-code",
+          "--platform",
+          "github-copilot",
+          "--platform",
+          "antigravity",
+          "--platform",
+          "cursor",
+          "--json",
+        ],
+        { cwd: repo.rootDir },
       );
-      const initResult = await runCli(["init", "--json"], {
-        cwd: repo.rootDir,
-      });
 
       expect(initResult.exitCode).toBe(0);
 

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-07-26
+last_reviewed: 2026-07-30
 ---
 
 # Config, Route, And Check Contracts
@@ -16,9 +16,20 @@ It covers config normalization, route `truth_documents` metadata, diagnostic cat
 
 ## Current Implementation Behavior
 
-Default config exposes optional `platforms`, `truthmark.workspace`, and `truthmark.generated.portal.enabled`.
+Version-2 config exposes optional `platforms`, `truthmark.workspace`, and `truthmark.generated.portal.enabled`.
 
 Default config does not expose route layout, template layout, or truth lane roots as knobs.
+
+`truthmark init` owns setup and platform persistence. The public `truthmark config` command is removed without an alias.
+
+Platform resolution follows this order:
+
+1. Repeatable explicit `--platform <id>` values replace the full selected set.
+2. An interactive TTY uses a numbered zero-or-more selector preselected from saved values.
+3. A noninteractive rerun with no explicit values keeps saved values.
+4. A first noninteractive run with no explicit values uses the empty host-neutral default.
+
+`--json` never prompts. Unsupported platform IDs are config errors, and platform detection never selects a host.
 
 When `platforms` is omitted, normalized config defaults to an empty platform list:
 
@@ -74,6 +85,7 @@ They do not embed source-file or truth-doc body contents.
 ## Contract Surface
 
 - `.truthmark/config.yml`
+- `truthmark init [--platform <id> ...] [--json]`
 - `docs/truthmark/routes/areas.md`
 - `docs/truthmark/routes/areas/**/*.md`
 - `CommandResult` JSON envelopes
@@ -88,7 +100,9 @@ They do not embed source-file or truth-doc body contents.
 
 ## Outputs
 
-- Normalized config includes an empty `platforms` list when the field is omitted; host-specific surfaces require explicit platform entries.
+- Init creates a version-2 config when absent and preserves existing valid version-2 config compatibility.
+- When a selected set changes, only top-level platform ownership changes; other supported values and YAML comments are preserved.
+- Normalized config includes an empty `platforms` list when the field is omitted; host-specific surfaces require explicit platform selection.
 - Normalized config paths for fixed route, template, product truth, engineering truth, and Portal locations derived from `truthmark.workspace`
 - RouteMap data preserving lane and relationship metadata, plus RepoIndex data preserving derived doc type and lane metadata
 - WorkflowState data preserving workflow write boundaries and compact test guidance without file contents
@@ -98,6 +112,8 @@ They do not embed source-file or truth-doc body contents.
 ## Errors And Diagnostics
 
 - Unsupported config fields are validation diagnostics.
+- Unsupported `--platform` values are error diagnostics and cause no repository writes.
+- Invalid existing config fails closed and is not overwritten by init.
 - Conflicting duplicate route kinds or lanes are area-index errors.
 - Missing or stale truth-doc relationships are traceability diagnostics.
 - Unmapped functional-code changes are freshness or routing diagnostics depending on command context.
@@ -109,6 +125,9 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 ## Versioning And Migration
 
 - Config files use `version: 2`.
+- Truthmark package release `2.3.0` does not change the persisted config version.
+- Existing valid version-2 config remains accepted without migration.
+- Removed public command surfaces, including `truthmark config`, are hard-removed rather than preserved as aliases.
 - Removed public command surfaces, such as standalone ContextPack, are hard-removed rather than preserved as aliases in this branch.
 - Legacy canonical truth roots are migrated into product and engineering lane roots.
 
@@ -127,6 +146,10 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 - Decision (2026-06-18): Omitted `platforms` normalize to an empty platform list; all host-specific generated surfaces, including Codex, are explicit opt-in config.
 - Decision (2026-07-26): Human workflow status reuses the existing advisory card with bounded lists, while JSON retains the full schema-versioned state.
   - Exact duplicate diagnostics are collapsed at WorkflowState composition so optional helper output stays compact without hiding distinct signals.
+- Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` as the sole repository setup command.
+  - Interactive selection accepts zero or more platforms; repeated explicit flags replace the set for automation, and JSON output is non-prompting.
+  - Package release 2.3.0 retains config schema version 2 and preserves existing config values and comments outside platform ownership.
+  - Personal installation and commit-triggered automation are outside this repository-installation contract; finish-time Truth Sync remains unchanged.
 
 ## Rationale
 
@@ -136,6 +159,8 @@ The public contract exposes compact routing and workflow metadata instead of fil
 
 - This contract does not define language-semantic import graphs or symbol indexes.
 - This contract does not preserve legacy ContextPack aliases.
+- This contract does not preserve a `truthmark config` alias.
+- This contract does not define Personal installation or commit-triggered automation.
 - This contract does not make route relationships a required reciprocal global graph.
 
 ## Maintenance Notes
@@ -146,7 +171,11 @@ Update when config fields, route metadata, diagnostics, route/index output schem
 
 - ../../../../src/config/schema.ts
 - ../../../../src/config/defaults.ts
+- ../../../../src/config/render.ts
 - ../../../../src/config/load.ts
+- ../../../../src/cli/platform-selection.ts
+- ../../../../src/cli/program.ts
+- ../../../../src/init/init.ts
 - ../../../../src/routing/areas.ts
 - ../../../../src/output/diagnostic.ts
 - ../../../../src/workflow-state/types.ts

@@ -4,7 +4,6 @@ import type { CommandResult } from "../output/diagnostic.js";
 import { renderHuman, renderJson } from "../output/render.js";
 import {
   runCheck,
-  runConfig,
   runImpact,
   runIndex,
   runInit,
@@ -20,9 +19,8 @@ type OutputOptions = {
   json?: boolean;
 };
 
-type ConfigOptions = OutputOptions & {
-  stdout?: boolean;
-  force?: boolean;
+type InitCliOptions = OutputOptions & {
+  platform?: string[];
 };
 
 type CheckCliOptions = OutputOptions & {
@@ -101,6 +99,11 @@ const addJsonOption = (command: Command): Command => {
   return command.option("--json", "Render command output as JSON");
 };
 
+const collectPlatform = (value: string, previous: string[]): string[] => [
+  ...previous,
+  value,
+];
+
 export const buildProgram = (): Command => {
   const program = new Command();
 
@@ -113,27 +116,22 @@ export const buildProgram = (): Command => {
 
   addJsonOption(
     program
-      .command("config")
-      .description(
-        "Create or render the Truthmark repository config before initialization.",
-      )
-      .option(
-        "--stdout",
-        "Render default config in the JSON data payload without writing",
-      )
-      .option("--force", "Overwrite an existing .truthmark/config.yml"),
-  ).action(async (options: ConfigOptions) => {
-    writeResult(await runConfig(options), options);
-  });
-
-  addJsonOption(
-    program
       .command("init")
       .description(
         "Initialize Truthmark workflow files in the current repository.",
+      )
+      .option(
+        "--platform <id>",
+        "Select a repository agent platform; repeat for multiple platforms",
+        collectPlatform,
+        [],
       ),
-  ).action(async (options: OutputOptions) => {
-    writeResult(await runInit(), options);
+  ).action(async (options: InitCliOptions) => {
+    const platforms = options.platform?.length ? options.platform : undefined;
+    writeResult(
+      await runInit({ json: options.json, platforms }),
+      options,
+    );
   });
 
   addJsonOption(
