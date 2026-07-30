@@ -128,13 +128,7 @@ describe("renderTruthSyncSkillBody", () => {
     expect(skillBody).toContain("User-provided decisions/rationale");
     expect(skillBody).toContain("Decision/rationale captured");
     expect(skillBody).toContain(
-      "Preserve concise user-provided decision context",
-    );
-    expect(skillBody).toContain(
-      "route accepted product context to Product Decisions and accepted technical context to Engineering Decisions",
-    );
-    expect(skillBody).not.toContain(
-      "Rationale, Capability Scope, Non-Goals, Maintenance Notes",
+      "Preserve concise user-provided decision rationale",
     );
     expect(skillBody).toContain("No-update-needed rationale");
     expect(skillBody).toContain(

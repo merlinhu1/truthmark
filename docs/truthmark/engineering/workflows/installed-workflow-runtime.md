@@ -78,7 +78,6 @@ Truth Sync performs decision context capture from the current task conversation:
 - Agents review user-provided decisions, rationale, constraints, tradeoffs, rejection reasons, and scope boundaries.
 - Agents carry that context into Sync Intent.
 - Supported context is placed in the correct product or engineering truth lane.
-- Accepted product decision context is placed in Product Decisions, and accepted technical decision context is placed in Engineering Decisions.
 - The report records whether context was placed, skipped because none was provided, or handed off for manual review.
 
 Truth Document and Truth Sync procedures tell agents to write professional, readable truth docs without importing a full external writing prompt:
@@ -233,7 +232,6 @@ Committed workflow files are the runtime contract. The CLI installs and validate
   - Agent Skills are the single current native Cursor workflow representation because they provide description-based selection plus package-local resources.
 - Decision (2026-06-26): Truth-doc prose guidance uses a compact professional checklist instead of vendoring a full humanizer prompt into generated workflows.
   - Truthmark keeps the benefit of avoiding AI-style padding while controlling token cost and preserving evidence-backed documentation tone.
-- Decision (2026-07-30): Truth Sync routes accepted product and technical decision context exclusively to the owning Product Decisions or Engineering Decisions section; Non-Goals stays limited to current ownership boundaries.
 
 ## Rationale
 

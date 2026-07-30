@@ -56,7 +56,7 @@ Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
 Configured platforms select exact instruction surfaces. Shared-contract hosts aggregate `AGENTS.md` ownership, Claude Code owns `CLAUDE.md`, and host-neutral configuration emits no generic instruction file. Lifecycle diagnostics expose planned removals, preserved diverged files, and preflight failures to human and JSON callers.
 
-Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files. Non-Goals guidance stays limited to current ownership boundaries, while accepted scope decisions belong in the owning decisions section.
+Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
 
 Engineering behavior templates include a `Behavior Scenarios` section after `Core Rules`:
 
@@ -166,7 +166,6 @@ Capability docs own:
   - Scenario guidance adopts the useful requirement/scenario shape from specification formats while preserving Truthmark's current-state, evidence-backed truth-doc role.
   - The template avoids `SHALL`-style future requirements and does not require a scenario for every rule.
 - Decision (2026-07-10): Configured platforms select exact instruction ownership, and deterministic lifecycle diagnostics expose reconciliation without transferring ownership of authored files.
-- Decision (2026-07-30): Non-Goals template guidance records current ownership boundaries; accepted scope decisions stay in the owning decisions section.
 - Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` for repository setup and platform selection.
   - Interactive selection is zero-or-more, while repeatable `--platform` values provide deterministic automation and `--json` never prompts.
   - Existing version-2 configs do not require migration; platform updates preserve other values and comments.

@@ -106,8 +106,8 @@ Tie rationale to evidence-backed behavior; do not use this as a changelog.
 ## Non-Goals
 
 <!--
-Name adjacent current responsibilities or ownership boundaries this doc intentionally does not own.
-Keep this section to current ownership boundaries; preserve accepted scope decisions in the owning decisions section.
+Name adjacent behavior this doc intentionally does not own, especially tempting future expansions or neighboring route owners.
+Use this section to prevent scope creep and duplicate truth ownership.
 -->
 
 {{non_goals}}

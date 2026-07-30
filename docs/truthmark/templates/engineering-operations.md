@@ -101,8 +101,8 @@ Tie rationale to evidence-backed facts and active decisions; do not use this as 
 ## Non-Goals
 
 <!--
-Name adjacent current responsibilities, interfaces, or ownership boundaries this doc intentionally does not own.
-Keep this section to current ownership boundaries; preserve accepted scope decisions in the owning decisions section.
+Name adjacent behavior, responsibilities, interfaces, or future expansions this doc intentionally does not own.
+Use this section to prevent scope creep and duplicate truth ownership.
 -->
 
 {{non_goals}}
