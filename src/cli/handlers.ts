@@ -1,8 +1,5 @@
-import {
-  runConfig as runRepositoryConfig,
-  type ConfigCommandOptions,
-} from "../config/command.js";
 import { runInit as runRepositoryInit } from "../init/init.js";
+import { promptForPlatforms } from "./platform-selection.js";
 import { runUninstall as runRepositoryUninstall } from "../init/uninstall.js";
 import { runCheck as runRepositoryCheck } from "../checks/check.js";
 import type { CommandResult } from "../output/diagnostic.js";
@@ -23,14 +20,26 @@ import {
 } from "../agents/workflow-helper-validation.js";
 import { buildRepoIndex } from "../repo-index/build.js";
 
-export const runConfig = async (
-  options: ConfigCommandOptions,
-): Promise<CommandResult> => {
-  return runRepositoryConfig(process.cwd(), options);
-};
-
-export const runInit = async (): Promise<CommandResult> => {
-  return runRepositoryInit(process.cwd());
+export const runInit = async (options: {
+  json?: boolean;
+  platforms?: string[];
+} = {}): Promise<CommandResult> => {
+  const interactive =
+    options.platforms === undefined &&
+    !options.json &&
+    process.stdin.isTTY &&
+    process.stdout.isTTY;
+  return runRepositoryInit(process.cwd(), {
+    platforms: options.platforms,
+    selectPlatforms: interactive
+      ? (defaults) =>
+          promptForPlatforms({
+            defaults,
+            input: process.stdin,
+            output: process.stdout,
+          })
+      : undefined,
+  });
 };
 
 export const runUninstall = async (

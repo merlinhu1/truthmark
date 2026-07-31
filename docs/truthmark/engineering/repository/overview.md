@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-30
 ---
 
 # Repository Overview
@@ -12,13 +12,13 @@ This doc records the repository-directory guardrail that broad repository docs a
 
 ## Scope
 
-It covers the repository truth-doc directory shape and the handoff away from legacy broad overview ownership.
+It covers the repository truth-doc directory shape and the handoff from broad bootstrap routing to bounded behavior ownership.
 
 It does not own implementation behavior under `src/**`, route-map behavior, or repository-intelligence output details.
 
 ## Current Implementation Behavior
 
-- Truthmark no longer treats this file as the default behavior owner for broad repository code surfaces.
+- This file is a directory guardrail rather than the default behavior owner for broad repository code surfaces.
 - Init uses `engineering/repository/bootstrap-routing.md` as the provisional broad-route handoff when a fresh repository needs initial routeability.
 - Normal behavior truth belongs in bounded route-owned leaf docs after Truth Structure identifies the durable owner.
 - Repository-intelligence behavior lives in `engineering/repository/repository-intelligence.md`.
@@ -70,7 +70,7 @@ It does not own implementation behavior under `src/**`, route-map behavior, or r
 
 Broad overview docs tend to accumulate unrelated behavior and become hard to review in Git.
 
-Keeping this file as a narrow guardrail preserves the old path's intent while directing real behavior to bounded owners.
+Keeping this file as a narrow guardrail directs real behavior to bounded owners while preserving repository-level navigation.
 
 ## Non-Goals
 
@@ -80,7 +80,7 @@ Keeping this file as a narrow guardrail preserves the old path's intent while di
 
 ## Maintenance Notes
 
-Update this doc only when repository-directory ownership, bootstrap handoff behavior, or broad-overview retirement behavior changes.
+Update this doc only when repository-directory ownership, bootstrap handoff behavior, or repository-overview guardrails change.
 
 ## Source References
 

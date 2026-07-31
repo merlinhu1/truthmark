@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-07-26
+last_reviewed: 2026-07-30
 ---
 
 # Config, Route, And Check Contracts
@@ -16,9 +16,20 @@ It covers config normalization, route `truth_documents` metadata, diagnostic cat
 
 ## Current Implementation Behavior
 
-Default config exposes optional `platforms`, `truthmark.workspace`, and `truthmark.generated.portal.enabled`.
+Version-2 config exposes optional `platforms`, `truthmark.workspace`, and `truthmark.generated.portal.enabled`.
 
 Default config does not expose route layout, template layout, or truth lane roots as knobs.
+
+`truthmark init` owns setup and platform persistence.
+
+Platform resolution follows this order:
+
+1. Repeatable explicit `--platform <id>` values replace the full selected set; `--clear-platforms` selects the empty set.
+2. An interactive TTY uses a numbered zero-or-more selector preselected from saved values.
+3. A noninteractive rerun with no explicit values keeps saved values.
+4. A first noninteractive run with no explicit values uses the empty host-neutral default.
+
+`--json` never prompts. Unsupported platform IDs are config errors, and platform detection never selects a host.
 
 When `platforms` is omitted, normalized config defaults to an empty platform list:
 
@@ -45,8 +56,6 @@ Duplicate route entries for the same path, kind, and lane merge relationship met
 
 Conflicting duplicate kinds or lanes are reported as area-index errors.
 
-The public ContextPack command surface is retired.
-
 Agents use `truthmark workflow status --workflow <workflow> [--base <ref>]` for a bounded human-readable advisory card and add `--json` when they need the schema-versioned contract for:
 
 - an advisory workflow card
@@ -67,13 +76,14 @@ WorkflowState composes diagnostics from config, RepoIndex, ImpactSet, and Check 
 
 Agents use `truthmark impact --base <ref> --json` for branch-diff routing.
 
-These replacement JSON outputs emit paths, metadata, diagnostics, and command arrays only.
+These JSON outputs emit paths, metadata, diagnostics, and command arrays only.
 
 They do not embed source-file or truth-doc body contents.
 
 ## Contract Surface
 
 - `.truthmark/config.yml`
+- `truthmark init [--platform <id> ...] [--clear-platforms] [--json]`
 - `docs/truthmark/routes/areas.md`
 - `docs/truthmark/routes/areas/**/*.md`
 - `CommandResult` JSON envelopes
@@ -88,7 +98,9 @@ They do not embed source-file or truth-doc body contents.
 
 ## Outputs
 
-- Normalized config includes an empty `platforms` list when the field is omitted; host-specific surfaces require explicit platform entries.
+- Init creates a version-2 config when absent and preserves existing valid version-2 config compatibility.
+- When a selected set changes, only top-level platform ownership changes; other supported values and YAML comments are preserved.
+- Normalized config includes an empty `platforms` list when the field is omitted; host-specific surfaces require explicit platform selection.
 - Normalized config paths for fixed route, template, product truth, engineering truth, and Portal locations derived from `truthmark.workspace`
 - RouteMap data preserving lane and relationship metadata, plus RepoIndex data preserving derived doc type and lane metadata
 - WorkflowState data preserving workflow write boundaries and compact test guidance without file contents
@@ -98,19 +110,21 @@ They do not embed source-file or truth-doc body contents.
 ## Errors And Diagnostics
 
 - Unsupported config fields are validation diagnostics.
+- Unsupported `--platform` values are error diagnostics and cause no repository writes.
+- Invalid existing config fails closed and is not overwritten by init.
 - Conflicting duplicate route kinds or lanes are area-index errors.
 - Missing or stale truth-doc relationships are traceability diagnostics.
 - Unmapped functional-code changes are freshness or routing diagnostics depending on command context.
 
 ## Compatibility Rules
 
-The target model is lane-first and does not use `docs/truthmark/truth` as the canonical scaffold target.
+Canonical truth is lane-first under the product and engineering roots.
 
 ## Versioning And Migration
 
 - Config files use `version: 2`.
-- Removed public command surfaces, such as standalone ContextPack, are hard-removed rather than preserved as aliases in this branch.
-- Legacy canonical truth roots are migrated into product and engineering lane roots.
+- Truthmark package release `2.3.0` does not change the persisted config version.
+- Existing valid version-2 config remains accepted without migration.
 
 ## Product Truth Links
 
@@ -123,10 +137,14 @@ The target model is lane-first and does not use `docs/truthmark/truth` as the ca
 - Decision (2026-06-14): Route layout, template layout, default area `repository`, and max delegation depth `1` are product invariants derived from `truthmark.workspace`, not user config fields.
 - Decision (2026-06-15): Duplicate route relationship metadata is additive for matching path, kind, and lane entries; kind and lane conflicts remain hard validation errors.
 - Decision (2026-06-15): Route relationships are route-local metadata; checks validate relationship targets for existence and lane compatibility without requiring a reciprocal global graph edge.
-- Decision (2026-06-15): ContextPack is folded into workflow status and impact; the standalone `truthmark context` command is hard-removed from the public CLI.
+- Decision (2026-06-15): Agent-facing repository intelligence is exposed through workflow status and impact.
 - Decision (2026-06-18): Omitted `platforms` normalize to an empty platform list; all host-specific generated surfaces, including Codex, are explicit opt-in config.
+- Decision (2026-07-10): Instruction destinations derive from configured platforms. The version-2 `instruction_targets` field remains parseable but is ignored with a review diagnostic and omitted from new configuration. `uninstall` requires exactly one of `--dry-run` or `--apply` and returns a deterministic `truthmark-lifecycle/v0` plan.
 - Decision (2026-07-26): Human workflow status reuses the existing advisory card with bounded lists, while JSON retains the full schema-versioned state.
   - Exact duplicate diagnostics are collapsed at WorkflowState composition so optional helper output stays compact without hiding distinct signals.
+- Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` as the repository setup command.
+  - Interactive selection accepts zero or more platforms; repeated explicit flags replace the set for automation, and JSON output is non-prompting.
+  - Package release 2.3.0 retains config schema version 2 and preserves existing config values and comments outside platform ownership.
 
 ## Rationale
 
@@ -135,7 +153,6 @@ The public contract exposes compact routing and workflow metadata instead of fil
 ## Non-Goals
 
 - This contract does not define language-semantic import graphs or symbol indexes.
-- This contract does not preserve legacy ContextPack aliases.
 - This contract does not make route relationships a required reciprocal global graph.
 
 ## Maintenance Notes
@@ -146,7 +163,11 @@ Update when config fields, route metadata, diagnostics, route/index output schem
 
 - ../../../../src/config/schema.ts
 - ../../../../src/config/defaults.ts
+- ../../../../src/config/render.ts
 - ../../../../src/config/load.ts
+- ../../../../src/cli/platform-selection.ts
+- ../../../../src/cli/program.ts
+- ../../../../src/init/init.ts
 - ../../../../src/routing/areas.ts
 - ../../../../src/output/diagnostic.ts
 - ../../../../src/workflow-state/types.ts
@@ -156,7 +177,3 @@ Update when config fields, route metadata, diagnostics, route/index output schem
 - `src/routing/areas.ts`
 - `src/repo-index/types.ts`
 - `src/output/diagnostic.ts`
-
-## Routing and lifecycle update (2026-07-10)
-
-Instruction destinations are derived from configured platforms. The version-2 `instruction_targets` field remains parseable but is ignored with a review diagnostic and is omitted from new configuration. `uninstall` requires exactly one of `--dry-run` or `--apply` and returns a deterministic `truthmark-lifecycle/v0` plan.

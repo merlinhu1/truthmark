@@ -2,11 +2,12 @@ import fs from "node:fs/promises";
 
 import { describe, it } from "node:test";
 import { expect } from "expect";
+import { parse } from "yaml";
 
 import { TRUTHMARK_BLOCK_START } from "../../src/templates/agents-block.js";
 import { runCli } from "../helpers/run-cli.js";
 import { buildProgram } from "../../src/cli/program.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
@@ -20,6 +21,77 @@ describe("CLI program", () => {
     expect(indexCommand?.description()).toBe(
       "Inspect derived Truthmark workflow routing metadata for the current checkout.",
     );
+  });
+
+  it("clears saved platform selections through an explicit CLI flag", async () => {
+    const repo = await createTempRepo();
+    try {
+      const setup = await runCli(
+        ["init", "--platform", "codex", "--json"],
+        { cwd: repo.rootDir },
+      );
+      expect(setup.exitCode).toBe(0);
+      await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).resolves.toBeDefined();
+
+      const result = await runCli(["init", "--clear-platforms", "--json"], {
+        cwd: repo.rootDir,
+      });
+      const config = parse(await repo.readFile(".truthmark/config.yml")) as Record<
+        string,
+        unknown
+      >;
+
+      expect(result.exitCode).toBe(0);
+      expect(config).not.toHaveProperty("platforms");
+      await expect(fs.stat(`${repo.rootDir}/AGENTS.md`)).rejects.toThrow();
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("supports repeatable init platform flags without prompting under JSON", async () => {
+    const repo = await createTempRepo();
+    try {
+      const result = await runCli(
+        [
+          "init",
+          "--platform",
+          "cursor",
+          "--platform",
+          "codex",
+          "--json",
+        ],
+        { cwd: repo.rootDir },
+      );
+      const payload = JSON.parse(result.stdout) as { command: string };
+      const config = parse(await repo.readFile(".truthmark/config.yml")) as {
+        platforms: string[];
+      };
+
+      expect(result.exitCode).toBe(0);
+      expect(payload.command).toBe("init");
+      expect(config.platforms).toEqual(["codex", "cursor"]);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("keeps first-run JSON init host-neutral without prompting", async () => {
+    const repo = await createTempRepo();
+    try {
+      const result = await runCli(["init", "--json"], {
+        cwd: repo.rootDir,
+      });
+      const config = parse(await repo.readFile(".truthmark/config.yml")) as Record<
+        string,
+        unknown
+      >;
+
+      expect(result.exitCode).toBe(0);
+      expect(config).not.toHaveProperty("platforms");
+    } finally {
+      await repo.cleanup();
+    }
   });
 
   it("requires exactly one uninstall execution mode", async () => {
@@ -36,7 +108,7 @@ describe("CLI program", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(
@@ -104,7 +176,7 @@ describe("CLI program", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(

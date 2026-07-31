@@ -7,11 +7,11 @@ import { expect } from "expect";
 import { runInit } from "../../src/init/init.js";
 import { runCheck } from "../../src/checks/check.js";
 import type { TruthHealthScorecard } from "../../src/checks/scorecard.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 const initializeRepo = async (rootDir: string): Promise<void> => {
-  await runConfig(rootDir, {});
+  await writeTruthmarkConfig(rootDir);
   const configPath = path.join(rootDir, ".truthmark/config.yml");
   const configFile = await fs.readFile(configPath, "utf8");
   await fs.writeFile(
@@ -89,7 +89,7 @@ describe("runCheck", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         "src/auth/session.ts",
@@ -272,7 +272,7 @@ Local stale edit.
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await initializeRepo(repo.rootDir);
       await repo.writeFile(
         "docs/truthmark/engineering/repository/bootstrap-routing.md",
@@ -298,7 +298,7 @@ Local stale edit.
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await initializeRepo(repo.rootDir);
       await fs.writeFile(
         path.resolve(repo.rootDir, "..", "truthmark-outside-link.md"),
@@ -335,7 +335,7 @@ Local stale edit.
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await initializeRepo(repo.rootDir);
       await fs.writeFile(
         path.resolve(repo.rootDir, "..", "truthmark-symlink-link-target.md"),
@@ -377,7 +377,7 @@ Local stale edit.
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await initializeRepo(repo.rootDir);
       await fs.rm(`${repo.rootDir}/docs/truthmark/routes/areas.md`);
 
@@ -2252,7 +2252,7 @@ Update truth when:
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = path.join(repo.rootDir, ".truthmark/config.yml");
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(

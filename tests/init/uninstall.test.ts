@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { runUninstall } from "../../src/init/uninstall.js";
 import type { LifecyclePlan, LifecyclePlanEntry } from "../../src/init/lifecycle.js";
@@ -40,7 +40,7 @@ describe("uninstall command", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(
@@ -81,7 +81,7 @@ describe("uninstall command", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(
@@ -118,7 +118,7 @@ describe("uninstall command", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(
@@ -153,7 +153,7 @@ describe("uninstall command", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir);
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(

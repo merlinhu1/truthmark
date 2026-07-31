@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import { afterEach, describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { buildRepoIndex } from "../../src/repo-index/build.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
@@ -35,7 +35,7 @@ describe("buildRepoIndex", () => {
       "tests/math.test.ts",
       "import { add } from '../src/math.js';\n",
     );
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await repo.writeFile(
       ".truthmark/config.yml",
       (await repo.readFile(".truthmark/config.yml")).replace(
@@ -223,7 +223,7 @@ depends_on:
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
     await repo.writeFile(".gitignore", ".lean-ctx/\n");
     await repo.writeFile(".lean-ctx/graph.meta.json", "{}\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
 
     const result = await buildRepoIndex(repo.rootDir);

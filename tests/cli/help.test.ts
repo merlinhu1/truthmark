@@ -13,11 +13,11 @@ const forbiddenCommands = [
 ];
 
 describe("truthmark CLI", () => {
-  it("lists config, init, and check in top-level help", async () => {
+  it("lists init and omits the retired config command in top-level help", async () => {
     const result = await runCli(["--help"]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("config");
+    expect(result.stdout).not.toContain("\n  config ");
     expect(result.stdout).toContain("init");
     expect(result.stdout).toContain("uninstall");
     expect(result.stdout).toContain("check");
@@ -36,16 +36,15 @@ describe("truthmark CLI", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: truthmark init");
     expect(result.stdout).toContain("--json");
+    expect(result.stdout).toContain("--platform <id>");
+    expect(result.stdout).toContain("--clear-platforms");
   });
 
-  it("shows config help", async () => {
-    const result = await runCli(["config", "--help"]);
+  it("rejects the removed config command", async () => {
+    const result = await runCli(["config"]);
 
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("Usage: truthmark config");
-    expect(result.stdout).toContain("--json");
-    expect(result.stdout).toContain("--stdout");
-    expect(result.stdout).toContain("--force");
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toContain("unknown command 'config'");
   });
 
   it("shows check help", async () => {

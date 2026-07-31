@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { runCli } from "../helpers/run-cli.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -11,7 +11,7 @@ describe("repository intelligence CLI commands", () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
 
       const result = await runCli(["index", "--json"], { cwd: repo.rootDir });
@@ -37,7 +37,7 @@ describe("repository intelligence CLI commands", () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "initial"]);
@@ -85,7 +85,7 @@ describe("repository intelligence CLI commands", () => {
         "tests/math.test.ts",
         "import { add } from '../src/math.js';\nvoid add;\n",
       );
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "initial"]);
@@ -217,7 +217,7 @@ describe("repository intelligence CLI commands", () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "initial"]);
@@ -303,7 +303,7 @@ describe("repository intelligence CLI commands", () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
 
       const result = await runCli(

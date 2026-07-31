@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-06-29
+last_reviewed: 2026-07-30
 ---
 
 # Installed Workflow Runtime
@@ -30,20 +30,9 @@ Generated host skill directories are native skill packages for write-capable and
 - Subagent and lease guidance is kept only when the workflow uses subagents.
 - Hosts that package skill-directory resources do not depend on arbitrary cross-repository file reads.
 
-Generated helper manifests and helper policy support files are not emitted:
+Optional validation commands stay in workflow metadata, and report validation accepts manual fallback evidence.
 
-- Optional validation commands stay in workflow metadata.
-- Report validation accepts manual fallback evidence.
-
-Truthmark no longer emits Truth Preview as a generated host surface:
-
-- No configured host receives a Preview skill package, prompt, or command.
-- Preview-like route/workflow selection remains internal advisory behavior that agents can perform with direct checkout inspection or optional workflow-status/impact helpers.
-
-Truthmark does not emit a separate `.truthmark/agent/` workflow copy:
-
-- Host surfaces are the runtime surfaces agents actually load.
-- Duplicating workflow packages under `.truthmark/agent/` would add repository docs with no active host consumer.
+Host-native packages are the runtime workflow surfaces that agents load.
 
 GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 
@@ -58,7 +47,6 @@ Antigravity rule files remain flat host rule surfaces:
 
 Cursor Agent Skills are generated as project skill packages under `.cursor/skills/truthmark-*`:
 
-- They use Cursor's current Agent Skills model rather than `.cursor/rules` dynamic rule files.
 - `SKILL.md` carries the description that lets Cursor select the workflow automatically when relevant and supports manual `/` invocation.
 - Package-local `support/procedure.md`, `support/report-template.md`, and any lease guidance stay colocated with the Cursor skill.
 
@@ -102,7 +90,7 @@ Truth Document and Truth Sync procedures tell agents to write professional, read
 
 Truth Structure stays topology-first:
 
-- It creates skeletal starter truth docs only when missing ownership would block future workflows.
+- It creates skeletal starter truth docs only when missing ownership would block later workflow execution.
 - Starter docs are ownership anchors, not substantive behavior writeups.
 - Template-section authoring, doc-shape repair, and architecture-doc prose guidance stay out of the Structure procedure.
 

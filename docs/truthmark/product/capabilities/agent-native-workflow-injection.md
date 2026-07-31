@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: product-capability
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-30
 ---
 
 # Agent-Native Workflow Injection
@@ -10,7 +10,6 @@ last_reviewed: 2026-06-26
 
 - Truthmark gives configured AI hosts explicit, committed workflow surfaces for Structure, Document, Sync, Realize, and Check.
 - Portal surfaces are generated only when Portal is enabled.
-- Truth Preview generated host surfaces are retired; preview-like route/workflow selection remains internal advisory behavior rather than an installed workflow surface.
 
 ## Users And Value
 
@@ -35,6 +34,7 @@ This capability covers:
 
 - Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, Antigravity, and Cursor workflow files generated from the source templates and manifest when those platforms are configured.
 - Fresh configs do not assume a host platform; host-specific surfaces are opt-in through `.truthmark/config.yml` `platforms`.
+- Configured platforms select exact host instruction surfaces. Shared-contract hosts aggregate ownership of `AGENTS.md`, Claude Code owns `CLAUDE.md`, and disabling a host makes only its recognized renderer-owned outputs eligible for reconciliation.
 - Host skill directories are generated as native skill packages for Structure, Document, Sync, Realize, Check, and Portal when enabled.
   - They include `SKILL.md` plus colocated procedure/report support files.
   - They include subagent or lease guidance where the workflow uses them.
@@ -42,14 +42,11 @@ This capability covers:
   - They inline the procedure and report template.
   - They omit duplicate quick-procedure summaries.
   - They do not reference package-local support files that Antigravity does not consume.
-- Cursor uses Agent Skill project packages under `.cursor/skills/truthmark-*`.
-- Cursor Rules remain a platform surface, but Truthmark uses Agent Skills as its single current native Cursor workflow representation because they provide description-based selection and package-local support resources.
-- Generated helper manifests and helper policy files are intentionally not emitted; validation helpers remain optional commands and report validators allow manual fallback evidence.
+- Cursor uses Agent Skill project packages under `.cursor/skills/truthmark-*` for description-based selection and package-local support resources.
+- Validation helpers remain available through explicit commands, and report validators allow manual fallback evidence.
 - Compact prompt, command, and top-level instruction surfaces may point into host-native packages.
 - Configured skill directories are not adapter-only pointer folders.
 - Some hosts package and progressively disclose resources from the skill directory itself.
-- Truth Preview is not generated as a skill package, prompt file, or command file for any host.
-- Truthmark does not add a separate `.truthmark/agent/` workflow copy unless a host surface actually consumes it.
 - The checked-in host-native packages are the runtime workflow surfaces.
 - Agents may use optional compact helpers for workflow guidance:
   - `truthmark workflow status --workflow <workflow> [--base <ref>] --json`
@@ -65,11 +62,10 @@ This capability covers:
 
 - Each configured platform receives host-native workflow entrypoints.
 - Fresh config defaults do not generate host-specific surfaces unless platforms are explicitly configured.
-- Each configured host skill directory receives the workflow support files needed for native skill resource packaging, without generated helper manifests or helper policy files.
+- Each configured host skill directory receives the workflow support files needed for native skill resource packaging.
 - Flat Antigravity rule surfaces inline procedure/report content without duplicate quick-procedure summaries, nonexistent support-file references, or cross-host invocation matrices.
-- Cursor Agent Skill packages under `.cursor/skills/truthmark-*` include package-local support resources and are the only generated Cursor workflow surface.
+- Cursor Agent Skill packages under `.cursor/skills/truthmark-*` include package-local support resources and are the generated Cursor workflow surface.
 - Generated surfaces preserve workflow boundaries, direct-checkout fallback, and bounded Sync-owned topology repair.
-- Truth Preview generated host surfaces are retired; preview-like routing selection remains internal, read-only advisory behavior rather than an installed workflow package, prompt, or command.
 - Routine code-first Truth Sync defaults internal implementation changes to engineering truth unless a user-visible promise, capability boundary, API contract, acceptance criterion, or explicit user/product evidence changed.
 - Truth Sync carries user-provided decision rationale, constraints, tradeoffs, rejection reasons, and scope boundaries from the current task conversation into Sync Intent.
 - Truth Sync routes supported context to the correct truth lane.
@@ -107,6 +103,7 @@ This capability covers:
   - The workflow must avoid token-heavy prompt imports and must not push truth docs toward personal, rhetorical, or marketing tone.
 - Decision (2026-06-26): Ongoing truth-doc curation is a primary product value.
   - Marketing should emphasize bounded ownership, evidence-backed updates, Git-reviewable docs, and Structure handoff for overgrown docs rather than claiming generic documentation generation.
+- Decision (2026-07-10): Platform configuration is the ownership authority for exact host instruction surfaces; shared files aggregate host claims, and reconciliation applies only to recognized renderer-owned output.
 
 ## Engineering Realization Links
 
@@ -122,7 +119,3 @@ This capability covers:
 - ../../../../src/agents/workflow-manifest.ts
 - ../../../../src/templates/workflow-surfaces.ts
 - ../../../../src/templates/generated-surfaces.ts
-
-## Host instruction ownership (2026-07-10)
-
-Configured platforms, not arbitrary configuration paths, select instruction files. Shared-contract hosts aggregate ownership of `AGENTS.md`; Claude Code owns `CLAUDE.md`; other renderer-specific canonical instruction surfaces remain host-owned. Disabling a host makes only its exact recognized outputs eligible for reconciliation.

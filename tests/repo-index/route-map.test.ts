@@ -1,7 +1,7 @@
 import { afterEach, describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { buildRouteMap } from "../../src/repo-index/route-map.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
@@ -17,7 +17,7 @@ describe("buildRouteMap", () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
 
     const routeMap = await buildRouteMap(repo.rootDir);
@@ -36,7 +36,7 @@ describe("buildRouteMap", () => {
   it("emits merged relationship metadata for duplicate route entries", async () => {
     const repo = await createTempRepo();
     repos.push(repo);
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.writeFile(
       "docs/truthmark/product/payments/checkout.md",

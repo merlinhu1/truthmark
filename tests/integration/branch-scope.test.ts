@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import { expect } from "expect";
 
 import { runCheck } from "../../src/checks/check.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { createWorktreeRepo } from "../helpers/worktree-repo.js";
 
@@ -11,7 +11,7 @@ describe("branch-scoped truth integration", () => {
     const repo = await createWorktreeRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "test: baseline"]);
@@ -35,7 +35,7 @@ describe("branch-scoped truth integration", () => {
     const repo = await createWorktreeRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "test: baseline"]);
@@ -61,7 +61,7 @@ describe("branch-scoped truth integration", () => {
     const repo = await createWorktreeRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "test: baseline"]);
@@ -87,7 +87,7 @@ describe("branch-scoped truth integration", () => {
     const repo = await createWorktreeRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "test: baseline"]);

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-06-26
+last_reviewed: 2026-07-30
 ---
 
 # Check Diagnostics
@@ -17,6 +17,7 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 ## Current Implementation Behavior
 
 - `truthmark check` combines config, area routing, frontmatter, link, lane-shape, lane-drift, traceability, generated-surface, source-traceability, and freshness diagnostics.
+- It reports unmapped functional code under any Git-visible root in routing-coverage and ownership-clarity scorecards, and previews exact inactive generated surfaces without claiming unrelated files in host directories.
 - Missing product links for engineering behavior, workflow, and contract docs are review diagnostics only when the same routed area includes product truth evidence.
 - Cross-lane route metadata is route-local.
   - Product `realized_by` links and engineering `realizes` links must target existing opposite-lane truth docs.
@@ -97,6 +98,7 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
   - Divergent relationship arrays merge instead of erroring so area-local route entries do not have to repeat the full relationship closure.
 - Decision (2026-06-15): `realized_by` and `realizes` route metadata is route-local navigation metadata, not a canonical global graph.
   - Check validates target existence and lane compatibility without requiring reciprocal edges.
+- Decision (2026-07-10): Routing coverage includes functional code under any Git-visible root, while inactive generated-surface previews remain exact-path and renderer-owned.
 
 ## Rationale
 
@@ -122,8 +124,3 @@ Update when check categories, severity rules, lane audit behavior, or product ki
 - src/output/diagnostic.ts
 - tests/checks/check.test.ts
 - tests/checks/frontmatter.test.ts
-- tests/checks/check.test.ts
-
-## Inactive surfaces and unknown roots (2026-07-10)
-
-Check reports unmapped functional code under any Git-visible root and feeds those findings into routing-coverage and ownership-clarity scorecard dimensions. It also previews exact inactive generated surfaces without treating unrelated files in host directories as owned.

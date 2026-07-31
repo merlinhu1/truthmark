@@ -13,29 +13,21 @@ Truthmark に管理させたい Git リポジトリ内でこれを実行しま�
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-実際に使っている AI ホストを有効にします。新しい設定はホスト非依存なので、初期化前にトップレベルの `platforms` リストを `.truthmark/config.yml` に追加してください：
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-次に、リポジトリローカルの truth ドキュメント、ルーティング、エージェントワークフローサーフェスをインストールします：
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+対話型ターミナルでは、`truthmark init` が番号付きの複数選択を表示します。0 個以上のプラットフォームを選ぶか、`none` を入力してホスト非依存の CLI 専用セットアップにします。
+
+スクリプトや CI では `--platform` を繰り返します。`--json` は決してプロンプトを表示しません：
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+初回の非対話実行で `--platform` がなければホスト非依存のままです。以後の実行では `.truthmark/config.yml` に保存済みの選択を維持します。
 
 次に、最も一般的な導入パスを試します。コードとテストから既存の振る舞いを 1 つドキュメント化します。AI コーディングホストで、インストール済みワークフローに依頼してください：
 
@@ -45,7 +37,7 @@ git diff
 
 その後、通常ユーザーが Truth Sync を直接呼び出す必要はありません。AI ホストを通じてコーディングを続けてください。インストールされたリポジトリ指示が、機能コードの変更時に関連テストを実行し、引き渡し前に Truth Sync レビューを行うようエージェントに伝えます。あなたは結果のコード diff と truth-doc diff をレビューします。
 
-CLI 検証だけが必要で、ホスト固有の AI ワークフローをまだ使わない場合は、`platforms` を省略したまま `truthmark init && truthmark check` を実行してください。後からプラットフォームを追加し、`truthmark init` を再実行できます。
+CLI 検証だけが必要なら `none` を選び、`truthmark check` を実行してください。後から `truthmark init` を再実行してプラットフォームを選択できます。
 
 ## 💡 問題：AI ドキュメントギャップ
 
@@ -90,8 +82,7 @@ Truthmark には、リポジトリローカルな契約が 1 つあり、それ�
 
 メンテナーと CI は CLI を使います:
 
-* `truthmark config` - 初期設定を作成します。
-* `truthmark init` - ルーティング、truth-doc の足場、AI ホスト向け指示をインストールまたは更新します。
+* `truthmark init` - 設定を作成または更新し、0 個以上のプラットフォームを選択して、ルーティング、truth-doc の足場、選択した AI ホスト向け指示をインストールします。
 * `truthmark check` - ターミナルからリポジトリ truth を検証します。
 
 ### エージェントはコーディング中に契約に従う
@@ -199,7 +190,7 @@ README は店頭のようなものです。素早い文脈、クイックスタ�
 
 現在のリリースは次を提供します：
 
-- config、init、check、index、impact、workflow status のためのローカル CLI コマンド
+- init、check、index、impact、workflow status のためのローカル CLI コマンド
 - Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor 向けに生成されるリポジトリローカルなエージェント指示
 - ルーティング、権限、frontmatter、リンク、鮮度、生成サーフェス、ブランチスコープ、カバレッジの診断
 - ブランチ単位の truth ドキュメントと、派生したリポジトリインテリジェンス成果物

@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import { expect } from "expect";
 
 import { runCheck } from "../../src/checks/check.js";
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
@@ -11,7 +11,7 @@ describe("runCheck truth kinds", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.writeFile("src/index.ts", "export const value = 1;\n");
       await repo.writeFile(

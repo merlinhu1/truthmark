@@ -5,8 +5,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 import { expect } from "expect";
+import { parse } from "yaml";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
@@ -47,6 +48,41 @@ describe("built truthmark CLI", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Usage: truthmark");
+  });
+
+  it("initializes a fresh external repository and rejects config", async () => {
+    const buildResult = await execa("npm", ["run", "build"], {
+      cwd: workspaceRoot,
+      reject: false,
+    });
+    expect(buildResult.exitCode).toBe(0);
+
+    const repo = await createTempRepo();
+    try {
+      const initResult = await runBuiltCli(repo.rootDir, [
+        "init",
+        "--platform",
+        "codex",
+        "--json",
+      ]);
+      const config = parse(await repo.readFile(".truthmark/config.yml")) as {
+        version: number;
+        platforms: string[];
+      };
+      const removedResult = await runBuiltCli(repo.rootDir, ["config"]);
+
+      expect(initResult.exitCode).toBe(0);
+      if (typeof initResult.stdout !== "string") {
+        throw new Error("Built CLI init JSON output should be a string.");
+      }
+      expect(JSON.parse(initResult.stdout)).toMatchObject({ command: "init" });
+      expect(config).toMatchObject({ version: 2, platforms: ["codex"] });
+      expect(await repo.readFile("AGENTS.md")).toContain("Truthmark Workflow");
+      expect(removedResult.exitCode).not.toBe(0);
+      expect(removedResult.stderr).toContain("unknown command 'config'");
+    } finally {
+      await repo.cleanup();
+    }
   });
 
   it("renders top-level help when invoked through a linked path", async () => {
@@ -111,7 +147,7 @@ describe("built truthmark CLI", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       const result = await execa(
         process.execPath,
@@ -142,7 +178,7 @@ describe("built truthmark CLI", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       const result = await execa(
         process.execPath,
@@ -185,7 +221,7 @@ describe("built truthmark CLI", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, { force: false, stdout: false });
+      await writeTruthmarkConfig(repo.rootDir);
       const configPath = `${repo.rootDir}/.truthmark/config.yml`;
       const configFile = await fs.readFile(configPath, "utf8");
       await fs.writeFile(

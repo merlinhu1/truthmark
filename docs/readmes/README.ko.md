@@ -13,29 +13,21 @@ Truthmark가 관리하길 원하는 Git 저장소 안에서 실행하세요:
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-실제로 사용하는 AI 호스트를 활성화하세요. 새 설정은 기본적으로 호스트 중립적이므로, 초기화 전에 `.truthmark/config.yml`에 최상위 `platforms` 목록을 추가하세요:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-그런 다음 저장소 로컬 truth 문서, 라우팅, 에이전트 워크플로 표면을 설치하세요:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+대화형 터미널에서 `truthmark init`은 번호가 붙은 다중 선택을 표시합니다. 플랫폼을 0개 이상 선택하거나 `none`을 입력해 호스트 중립적인 CLI 전용 설정을 사용하세요.
+
+스크립트와 CI에서는 `--platform`을 반복해서 사용합니다. `--json`은 절대 입력을 요청하지 않습니다:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+처음 비대화형으로 실행할 때 `--platform`이 없으면 호스트 중립 상태를 유지하고, 이후 실행에서는 `.truthmark/config.yml`에 저장된 선택을 유지합니다.
 
 이제 가장 흔한 도입 경로를 시도해 보세요. 코드와 테스트에서 기존 동작 하나를 문서화합니다. AI 코딩 호스트에서 설치된 워크플로에 요청하세요:
 
@@ -45,7 +37,7 @@ git diff
 
 그 이후에는 사용자가 일반적으로 Truth Sync를 직접 호출할 필요가 없습니다. AI 호스트를 통해 계속 코딩하세요. 설치된 저장소 지침이 기능 코드가 변경될 때 에이전트에게 관련 테스트를 실행하고 인계 전에 Truth Sync 검토를 수행하라고 알려줍니다. 사용자는 결과 코드 diff와 truth-doc diff를 함께 검토합니다.
 
-아직 호스트별 AI 워크플로는 원하지 않고 CLI 검증만 원한다면 `platforms`를 생략한 채 `truthmark init && truthmark check`를 실행하세요. 나중에 플랫폼을 추가하고 `truthmark init`을 다시 실행할 수 있습니다.
+CLI 검증만 원한다면 `none`을 선택하고 `truthmark check`를 실행하세요. 나중에 `truthmark init`을 다시 실행해 플랫폼을 선택할 수 있습니다.
 
 ## 💡 문제: AI 문서화 격차
 
@@ -90,8 +82,7 @@ Truthmark에는 저장소 로컬 계약 하나와 그것을 사용하는 두 가
 
 유지관리자와 CI는 CLI를 사용합니다:
 
-* `truthmark config` - 초기 설정을 만듭니다.
-* `truthmark init` - 라우팅, truth-doc 스캐폴드, AI 호스트 지침을 설치하거나 새로 고칩니다.
+* `truthmark init` - 설정을 만들거나 새로 고치고, 플랫폼을 0개 이상 선택하며, 라우팅, truth-doc 스캐폴드와 선택한 AI 호스트 지침을 설치합니다.
 * `truthmark check` - 터미널에서 저장소 truth를 검증합니다.
 
 ### 에이전트는 코딩하는 동안 계약을 따릅니다
@@ -199,7 +190,7 @@ README는 쇼윈도입니다. 빠른 맥락, 빠른 시작, 핵심 사고 모델
 
 현재 릴리스는 다음을 제공합니다:
 
-- config, init, check, index, impact, workflow status를 위한 로컬 CLI 명령
+- init, check, index, impact, workflow status를 위한 로컬 CLI 명령
 - Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor용으로 생성된 저장소 로컬 에이전트 지침
 - 라우팅, 권한, frontmatter, 링크, 신선도, 생성 표면, 브랜치 범위, 커버리지 진단
 - 브랜치 범위 truth 문서와 파생된 저장소 인텔리전스 산출물

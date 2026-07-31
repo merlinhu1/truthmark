@@ -13,29 +13,21 @@ Chạy lệnh này bên trong kho Git mà bạn muốn Truthmark quản lý:
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
-truthmark config
-```
-
-Bật máy chủ AI mà bạn thực sự sử dụng. Cấu hình mới không gắn với máy chủ nào, vì vậy hãy thêm danh sách `platforms` ở cấp cao nhất vào `.truthmark/config.yml` trước khi khởi tạo:
-
-```yaml
-version: 2
-platforms:
-  - codex        # or: claude-code, github-copilot, opencode, antigravity, cursor
-truthmark:
-  workspace: docs/truthmark
-  generated:
-    portal:
-      enabled: false
-```
-
-Sau đó cài đặt tài liệu sự thật cục bộ của kho, định tuyến và các bề mặt quy trình làm việc cho tác tử:
-
-```bash
 truthmark init
 truthmark check
 git diff
 ```
+
+Trong terminal tương tác, `truthmark init` hiển thị danh sách đa lựa chọn được đánh số. Chọn không, một hoặc nhiều nền tảng, hoặc nhập `none` để thiết lập chỉ dùng CLI và không gắn với host.
+
+Với script và CI, hãy lặp lại `--platform`; `--json` không bao giờ hiển thị lời nhắc:
+
+```bash
+truthmark init --platform codex --platform cursor
+truthmark init --json
+```
+
+Ở lần chạy không tương tác đầu tiên mà không có `--platform`, thiết lập vẫn trung lập với host; các lần chạy sau giữ lựa chọn đã lưu trong `.truthmark/config.yml`.
 
 Bây giờ hãy thử lộ trình áp dụng phổ biến nhất: ghi tài liệu cho một hành vi hiện có từ mã và kiểm thử. Trong máy chủ lập trình AI của bạn, hãy yêu cầu quy trình đã cài đặt:
 
@@ -45,7 +37,7 @@ Bây giờ hãy thử lộ trình áp dụng phổ biến nhất: ghi tài liệ
 
 Sau đó, người dùng thường không nên gọi Truth Sync trực tiếp. Hãy tiếp tục lập trình qua máy chủ AI của bạn; các chỉ dẫn kho đã cài đặt yêu cầu tác tử chạy các kiểm thử liên quan và thực hiện đánh giá Truth Sync trước khi bàn giao khi mã chức năng thay đổi. Bạn xem xét phần diff mã kết quả cùng với diff tài liệu truth.
 
-Nếu bạn chỉ muốn xác thực bằng CLI và chưa muốn các quy trình AI theo máy chủ, hãy để trống `platforms` và chạy `truthmark init && truthmark check`; bạn có thể thêm nền tảng sau và chạy lại `truthmark init`.
+Nếu bạn chỉ muốn xác thực bằng CLI, hãy chọn `none` rồi chạy `truthmark check`; bạn có thể chạy lại `truthmark init` sau để chọn nền tảng.
 
 ## 💡 Vấn đề: khoảng trống tài liệu AI
 
@@ -90,8 +82,7 @@ Truthmark có một hợp đồng cục bộ trong kho và hai cách sử dụng
 
 Người bảo trì và CI dùng CLI:
 
-* `truthmark config` - tạo cấu hình ban đầu.
-* `truthmark init` - cài đặt hoặc làm mới định tuyến, scaffold truth-doc và hướng dẫn cho AI host.
+* `truthmark init` - tạo hoặc làm mới cấu hình, cho phép chọn không, một hoặc nhiều nền tảng, rồi cài đặt định tuyến, scaffold truth-doc và hướng dẫn cho các AI host đã chọn.
 * `truthmark check` - xác thực sự thật của kho từ terminal.
 
 ### Tác tử tuân theo hợp đồng khi viết mã
@@ -199,7 +190,7 @@ README là mặt tiền: ngữ cảnh nhanh, bắt đầu nhanh và mô hình t�
 
 Bản phát hành hiện tại cung cấp:
 
-- các lệnh CLI cục bộ cho config, init, check, index, impact và trạng thái quy trình
+- các lệnh CLI cục bộ cho init, check, index, impact và trạng thái quy trình
 - hướng dẫn tác tử cục bộ trong kho được tạo cho Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity và Cursor
 - chẩn đoán về định tuyến, thẩm quyền, frontmatter, liên kết, độ mới, bề mặt sinh ra, phạm vi nhánh và độ phủ
 - tài liệu sự thật theo phạm vi nhánh và các hiện vật trí tuệ kho được suy dẫn

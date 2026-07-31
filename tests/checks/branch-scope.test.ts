@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { getBranchScopeData } from "../../src/checks/branch-scope.js";
 import { runCheck } from "../../src/checks/check.js";
 import { runInit } from "../../src/init/init.js";
@@ -12,7 +12,7 @@ describe("getBranchScopeData", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
 
       const branchScope = await getBranchScopeData(repo.rootDir);
@@ -43,7 +43,7 @@ describe("getBranchScopeData", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
       await repo.runGit(["add", "."]);
       await repo.runGit(["commit", "-m", "test: commit truthmark scaffold"]);
@@ -66,7 +66,7 @@ describe("runCheck branch scope", () => {
     const repo = await createTempRepo();
 
     try {
-      await runConfig(repo.rootDir, {});
+      await writeTruthmarkConfig(repo.rootDir);
       await runInit(repo.rootDir);
 
       const result = await runCheck(repo.rootDir);

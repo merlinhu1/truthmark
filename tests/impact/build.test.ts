@@ -1,7 +1,7 @@
 import { afterEach, describe, it } from "node:test";
 import { expect } from "expect";
 
-import { runConfig } from "../../src/config/command.js";
+import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
 import { buildImpactSet } from "../../src/impact/build.js";
 import { runInit } from "../../src/init/init.js";
 import { createTempRepo, type TempRepo } from "../helpers/temp-repo.js";
@@ -24,7 +24,7 @@ describe("buildImpactSet", () => {
       "tests/math.test.ts",
       "import { add } from '../src/math.js';\n",
     );
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -49,7 +49,7 @@ describe("buildImpactSet", () => {
     const repo = await createTempRepo();
     repos.push(repo);
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -79,7 +79,7 @@ describe("buildImpactSet", () => {
     repos.push(repo);
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
 
     const impact = await buildImpactSet(repo.rootDir, { base: "missing-ref" });
 
@@ -99,7 +99,7 @@ describe("buildImpactSet", () => {
     repos.push(repo);
 
     await repo.writeFile("src/index.ts", "export const value = 1;\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -129,7 +129,7 @@ describe("buildImpactSet", () => {
       "tests/index.test.ts",
       "import { value } from '../src/index.js';\n",
     );
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -160,7 +160,7 @@ describe("buildImpactSet", () => {
       "tests/repo-index/build.test.ts",
       "import { describe, it } from 'node:test';\ndescribe('repo index package', () => { it('builds', () => undefined); });\n",
     );
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.runGit(["add", "."]);
     await repo.runGit(["commit", "-m", "initial"]);
@@ -180,7 +180,7 @@ describe("buildImpactSet", () => {
     repos.push(repo);
     await repo.writeFile("src/old/api.ts", "export const oldApi = 1;\n");
     await repo.writeFile("src/new/.gitkeep", "\n");
-    await runConfig(repo.rootDir, { force: false, stdout: false });
+    await writeTruthmarkConfig(repo.rootDir);
     await runInit(repo.rootDir);
     await repo.writeFile(
       "docs/truthmark/routes/areas.md",

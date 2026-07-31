@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-06-21
+last_reviewed: 2026-07-30
 ---
 
 # Generated Host Surfaces
@@ -16,29 +16,19 @@ It covers configured platform output paths, generated workflow files, managed in
 
 ## Current Implementation Behavior
 
-Truthmark renders workflow surfaces only for configured platforms. Legacy package artifacts and retired Preview adapters are explicitly retired.
+Truthmark renders workflow surfaces only for configured platforms.
 
-- `truthmark init` removes obsolete generated files that are no longer in `renderGeneratedSurfaces(...)` only when exact recognized bytes establish whole-file ownership.
-  - Removed obsolete files include `truthmark-preview` package contents.
-  - Removed obsolete files include retired non-Gemini Preview adapters.
-  - Removed obsolete files include legacy `helper-manifest.yml` and `support/helper-policy.md` files under host skill roots.
-- `truthmark check` reports missing, stale, or obsolete generated surfaces when render outputs and committed files differ.
-  - Stale Gemini surfaces are reported for manual cleanup rather than deleted by init.
-- Check, Init reconciliation, and Uninstall consume the same renderer-derived current catalog and retired-surface inventory.
+- `truthmark init` reconciles generated files against `renderGeneratedSurfaces(...)` and removes a whole file only when exact recognized bytes establish renderer ownership.
+- `truthmark check` reports missing or stale generated surfaces when render outputs and committed files differ.
+- Check, Init reconciliation, and Uninstall consume the same renderer-derived catalog and lifecycle inventory.
 - Destructive lifecycle application snapshots and revalidates containment, parent and final link status, regular-file and hard-link status, managed-block structure, and recognized whole-file bytes for every mutation before applying the first mutation.
+- Lifecycle inventory catalogs exact renderer paths plus bounded ownership patterns. Check previews inactive claims; Init and Uninstall reconcile only recognized whole files or valid managed blocks, preserve diverged or unsafe paths and unrelated siblings, and never recursively delete generated directories.
 - Managed-block removal preserves all bytes outside the single valid marker range; a block-only file is removed.
-
 - When `platforms` is omitted, fresh config does not assume a host platform.
-- `platforms` is the complete platform-ownership declaration. An explicit platform refreshes or retains renderer-owned instruction surfaces. Omitting `platforms` means no active platform, so `truthmark init` reconciles recognized generated surfaces/blocks away to an empty rendered host set.
+- `platforms` is the complete platform-ownership declaration. An explicit platform refreshes or retains renderer-owned instruction surfaces; an empty platform set reconciles generated surfaces to a host-neutral repository.
 - Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents.
-- Generated helper manifest and helper policy files are intentionally not emitted.
-- GitHub Copilot prompt files are lightweight workflow adapters for supported generated workflows.
-  - They point to the current host entrypoint.
-  - They tell the agent not to invoke another Truthmark command from inside that entrypoint.
+- GitHub Copilot prompt files are lightweight workflow adapters that point to the current host entrypoint.
 - Cursor Agent Skills are generated as native project skill packages under `.cursor/skills/truthmark-*` with package-local support files.
-- Cursor Rules remain supported by Cursor as a platform concept.
-- Truthmark does not use `.cursor/rules` for its workflow surface because the Agent Skills directory is the better current native workflow representation.
-- Truth Preview is not generated as a skill package, prompt file, or command file for any host.
 
 ## Contract Surface
 
@@ -51,7 +41,6 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
   - Implementation reference: Antigravity documentation entrypoint at <https://antigravity.google/docs>.
 - Cursor support renders Agent Skill project packages under `.cursor/skills/truthmark-*` with package-local `SKILL.md` and `support/` resources.
   - Implementation reference: Cursor Agent Skills documentation at <https://cursor.com/docs/skills>.
-- Gemini CLI support is retired. `GEMINI.md` and `.gemini/**` are obsolete generated surfaces for check diagnostics and manual cleanup, not active host implementations.
 
 ## Inputs
 
@@ -62,14 +51,13 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
 ## Outputs
 
 - Host-native workflow skill packages, compact prompt adapters, and flat Antigravity rule surfaces
-- No generated Truth Preview skill package, prompt, or command
 - Procedure, report-template, and subagent/lease support files only when a workflow needs them
 - Managed instruction blocks with non-versioned refresh guidance
 
 ## Errors And Diagnostics
 
-- `truthmark check` reports missing, stale, or obsolete generated surfaces.
-- `truthmark init` removes retired non-Gemini managed artifacts when they are no longer rendered; retired Gemini files are left for manual cleanup.
+- `truthmark check` reports missing or stale generated surfaces.
+- `truthmark init` reconciles renderer-owned artifacts to the selected platform set and leaves unsafe or mixed-ownership paths for manual review.
 - Generated-surface freshness uses rendered-content comparison rather than package-version markers.
 
 ## Compatibility Rules
@@ -80,8 +68,6 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
 
 ## Versioning And Migration
 
-- Retired non-Gemini generated files are removed during init instead of remaining as stale runtime guidance.
-- Retired Gemini files are diagnosed but not deleted automatically because repositories may have user-owned Gemini instructions beside old Truthmark injections.
 - Generated surfaces use non-versioned refresh wording; package versions are not runtime authority.
 
 ## Product Truth Links
@@ -110,6 +96,7 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
   - Sync hands off only unsafe or ambiguous topology work.
 - Decision (2026-06-21): Init does not delete retired Gemini surfaces automatically.
   - Check diagnostics identify obsolete `GEMINI.md` and `.gemini/**` files so users can remove stale injected Gemini guidance themselves.
+- Decision (2026-07-10): Exact-path lifecycle ownership and fail-closed revalidation are shared by Check, Init, and Uninstall so reconciliation never requires recursive directory deletion.
 
 ## Rationale
 
@@ -120,8 +107,6 @@ Truthmark renders workflow surfaces only for configured platforms. Legacy packag
 ## Non-Goals
 
 - Generated surfaces are not a live daemon or orchestration layer.
-- Preview is not a generated host surface.
-- Optional validators do not require generated helper manifest files.
 
 ## Maintenance Notes
 
@@ -132,10 +117,3 @@ Update when platform paths, supported hosts, optional validation commands, or ma
 - ../../../../src/templates/generated-surfaces.ts
 - ../../../../src/templates/workflow-surfaces.ts
 - ../../../../src/templates/agents-block.ts
-- `src/templates/generated-surfaces.ts`
-- `src/templates/workflow-surfaces.ts`
-- `src/templates/agents-block.ts`
-
-## Exact-path lifecycle ownership (2026-07-10)
-
-Renderers catalogue exact generated paths with aggregated platform and Portal claims plus retired exact paths and bounded retired package/helper patterns. Check previews inactive claims; Init and Uninstall reconcile only recognized whole files or valid managed blocks. Diverged files, malformed blocks, unsafe aliases or hard links, Gemini surfaces, and unrelated sibling files are preserved for review without recursive directory deletion.
