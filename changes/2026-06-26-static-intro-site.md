@@ -4,10 +4,10 @@ Version action: none
 
 ## PR Summary
 
-- Add a static introduction website under `site/` for GitHub Pages with an original CSS-only visual design.
+- Add a static introduction website under `site/` for GitHub Pages with original CSS-only visual design rather than copied README poster artwork.
 - Add a richer tabbed truth-doc storyboard that shows a new invariant, product-promise pressure, ownership splitting, and the final reviewer packet.
 - Add product-positioning sections for checkout-native operation, claim-level review, explicit route ownership, topology repair, repository-file authority, host-shaped agent guidance, and Git-reviewable handoff.
-- Ship standalone visual assets with the public page.
+- Remove copied poster assets from the site branch; the public page no longer depends on README banner images.
 - Add a Pages deployment workflow that publishes `site/**` after relevant pushes to `main` or manual dispatch.
 - Link the site from the root README and document that the site is presentation, not canonical repository truth.
 
