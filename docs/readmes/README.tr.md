@@ -1,220 +1,202 @@
 # Truthmark
 
-**Ajanlarınız kod yazar. Truthmark, insanlara yönelik ve Git üzerinden incelenebilir belgeleri korur.**
+**Ajanlarınız kod yazar. Truthmark, insanlara yönelik ve Git üzerinden incelenebilir belgeleri güncel tutar.**
+
+Truthmark, AI kodlama ajanlarının mevcut kod ve testlerden yeni ürün ve mühendislik belgeleri oluşturmasını, her kod değişikliğinden sonra bunları güncel tutmasını ve incelemeniz için sıradan Markdown farkları sunmasını sağlayan Git'e özgü iş akışlarını kurar.
+
+[![npm sürümü](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![Lisans: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](../../package.json)
+
+[Başlayın](#hızlı-başlangıç-ilk-truth-belgenizi-oluşturun) · [Web sitesi](https://merlinhu1.github.io/truthmark/) · [Kullanıcı kılavuzu](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md) · [GitHub](https://github.com/merlinhu1/truthmark)
+
+<details>
+<summary>Bu README'yi 16 dilden birinde okuyun</summary>
 
 [🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark afişi](../assets/truthmark-banner.png)
+</details>
 
-## 🚀 Hızlı Başlangıç: beş dakikada yerelde çalıştırma
+## İlk belgeleri oluşturun. Doğru kalmalarını sağlayın.
 
-Bunu Truthmark tarafından yönetilmesini istediğiniz Git deposunun içinde çalıştırın:
+Çoğu dokümantasyon aracı üretimden sonra durur. Truthmark, ajanlara doğrudan deponuzun içinde eksiksiz bir dokümantasyon yaşam döngüsü sunar:
+
+- **Çalışan yazılımdan yeni belgeler oluşturun.** Truth Document kodu ve testleri okur, ardından sınırları belirli ürün veya mühendislik belgeleri oluşturur.
+- **Belgeleri otomatik olarak uyumlu tutun.** Truth Sync, işlevsel kod değişikliklerinden sonra ajan tesliminde çalışır ve iş tamamlanmadan önce depo gerçeğini günceller.
+- **Belgeleri yeniden koda dönüştürün.** Truth Realize, temiz bir doc-first iş akışını korurken onaylanmış truth belgelerini uygular.
+- **Kod tabanı büyürken sahipliği onarın.** Truth Structure, yeni veya aşırı yüklenmiş alanlar için sınırları belirli rotalar ve başlangıç belgeleri oluşturur.
+- **Her şeyi Git'te inceleyin.** Kod, kararlar, sözleşmeler, mimari, operasyonlar ve davranış aynı dalla birlikte ilerler.
+
+Barındırılan bilgi tabanı yok. Özel ajan belleği yok. Sohbet geçmişine hapsolmuş dokümantasyon yok.
+
+## Hızlı başlangıç: ilk truth belgenizi oluşturun
+
+**Gereksinimler:** Node.js 24 veya daha yenisi, bir Git deposu ve ajan iş akışları için desteklenen bir AI kodlama ana bilgisayarı.
+
+Aşağıdaki komutları Truthmark'ın yönetmesini istediğiniz deponun içinde çalıştırın:
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark init
+```
+
+`truthmark init`; Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor veya ana bilgisayardan bağımsız bir komut satırı arayüzü kurulumu seçmenizi sağlar.
+
+Şimdi yapılandırılmış ajanınızdan gerçek bir davranışı belgelemesini isteyin:
+
+```text
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```
+
+Truth Document, henüz yoksa sınırları belirli yeni bir truth belgesi oluşturur; varsa mevcut sahibini günceller ve gerektiğinde yönlendirmeyi yeniler. İşlevsel kodu değiştirmez.
+
+Sonucu inceleyin:
+
+```bash
 truthmark check
+git status --short --untracked-files=all
 git diff
 ```
 
-Etkileşimli bir terminalde `truthmark init`, numaralı bir çoklu seçim gösterir. Sıfır veya daha fazla platform seçin ya da ana makineden bağımsız, yalnızca CLI kurulumu için `none` girin.
+Artık şunlara sahip olmalısınız:
 
-Betikler ve CI için `--platform` seçeneğini tekrarlayın; `--json` hiçbir zaman istem göstermez:
+```text
+docs/truthmark/engineering/behaviors/session-timeout.md
+docs/truthmark/routes/areas/authentication.md
+```
+
+Kesin yollar, deponuzun sahiplik yapısını izler. Yeni dosyalar `git status` içinde, izlenen dosyalardaki değişiklikler ise `git diff` içinde görünür.
+
+Çağırma biçimi ana bilgisayara göre değişir. OpenCode `/skill truthmark-document`, Antigravity `@truthmark-document` kullanır; desteklenen diğer ana bilgisayarlar ise kendi yerel beceri veya eğik çizgi komutu yüzeylerini kullanır. Kesin komutlar için [platform tablosuna](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md#supported-agent-platforms) bakın.
+
+Betikler ve sürekli entegrasyon için seçilen platformları açıkça iletin:
 
 ```bash
 truthmark init --platform codex --platform cursor
 truthmark init --json
 ```
 
-`--platform` olmadan ilk etkileşimsiz çalıştırmada kurulum ana makineden bağımsız kalır; sonraki çalıştırmalar `.truthmark/config.yml` içinde kayıtlı seçimi korur.
+Ana bilgisayardan bağımsız bir depo için etkileşimli olarak `none` seçin veya `truthmark init --clear-platforms` çalıştırın. Daha sonra `truthmark init` komutunu yeniden çalıştırarak ajan platformları ekleyebilirsiniz.
 
-Şimdi en yaygın benimseme yolunu deneyin: kod ve testlerden mevcut bir davranışı belgeleyin. AI kodlama ana makinenizde, kurulu iş akışına şunu isteyin:
+Dala göre güncellik tanılaması için bir Git tabanı iletin:
 
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```bash
+truthmark check --base <base-ref>
 ```
 
-Bundan sonra kullanıcılar normalde Truth Sync'i doğrudan çağırmamalıdır. AI ana makineniz üzerinden kod yazmaya devam edin; kurulu depo yönergeleri, işlevsel kod değiştiğinde teslimden önce ajana ilgili testleri çalıştırmasını ve Truth Sync incelemesini yapmasını söyler. Siz ortaya çıkan kod farkını ve truth-belge farkını incelersiniz.
+## Truthmark nasıl çalışır
 
-Yalnızca CLI doğrulaması istiyorsanız `none` seçip `truthmark check` çalıştırın; platform seçmek için daha sonra `truthmark init` komutunu yeniden çalıştırabilirsiniz.
+```mermaid
+flowchart LR
+  A["Mevcut kod + testler"] --> B["Truth Document"]
+  B --> C["Yeni ürün ve mühendislik belgeleri"]
+  D["Ajan kodu değiştirir"] --> E["Testler + Truth Sync"]
+  E --> F["Belgeler güncel kalır"]
+  C --> G["Git incelemesi"]
+  F --> G
+  H["Truth belgeleri"] --> I["Truth Realize"]
+  I --> D
+```
 
-## 💡 Sorun: AI dokümantasyon boşluğu
+Truthmark komut satırı arayüzü depo sözleşmesini kurar ve doğrular. Kodlama ajanınız, kurulu ve ana bilgisayara özgü iş akışları üzerinden kanıt incelemesini ve dokümantasyon çalışmasını gerçekleştirir.
 
-AI kodlama ajanları hızlı kod yazma konusunda olağanüstüdür. Ancak bu hız tehlikeli yeni bir hata biçimi yaratır: **deponun anlattığı hikâye gerçeklikten uzaklaşır.**
+Normal bir kod değişikliği tek ve basit bir döngü izler:
 
-* Davranış, geçici sohbet geçmişlerinde kaybolur.
-* Mimari belgeleri hızla geride kalır.
-* Ürün kararları teslimden sonra kaybolur.
-* Kod inceleyenler, "neden"i anlamadan ham kod farklarını incelemek zorunda kalır.
-* Her yeni AI oturumu, deponuzun gerçeğini sıfırdan yeniden keşfetmeye zorlanır.
+1. Ajan işlevsel kodu değiştirir.
+2. İlgili testler çalıştırılır.
+3. Truth Sync, eşlenen belgeleri kontrol eder.
+4. Depo gerçeği değiştiğinde ajan belgeleri ve yönlendirmeyi oluşturur veya günceller.
+5. Kod farkını ve truth farkını birlikte incelersiniz.
 
-## 🎯 Çözüm: Truthmark
+## İş akışları
 
-**Truthmark**, deponuza Git'e özgü bir iş akışı katmanı kurar. AI geliştirmesinde genellikle bozulan kısmı düzeltir: belgelerin kodla uyumlu kalmasına yardımcı olmak.
+| İş akışı             | Ne zaman kullanılır                                                           | Sonuç                                                                     |
+| -------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Truth Document**   | Mevcut kodun belgelenmesi gerekir                                             | Kanıta dayalı ürün ve mühendislik belgeleri oluşturur veya günceller      |
+| **Truth Sync**       | İşlevsel kod değişmiştir                                                      | Teslimden önce eşlenen belgeleri ve yönlendirmeyi uyumlu tutar            |
+| **Truth Structure**  | Yeni bir alanın sahipliğe ihtiyacı vardır veya mevcut belgeler fazla geniştir | Sınırları belirli rotalar ve iskelet başlangıç belgeleri oluşturur        |
+| **Truth Realize**    | Onaylanmış bir truth belgesi çalışan yazılıma dönüşmelidir                    | İşlevsel kodu dokümantasyondan günceller                                  |
+| **Truth Check**      | Depo gerçeğinin denetlenmesi gerekir                                          | Yönlendirme, sahiplik, kanıt ve dokümantasyon sorunlarını bildirir        |
+| **Truthmark Portal** | Ekip, göz atılabilir bir dokümantasyon sitesi ister                           | Markdown truth belgelerinden commit edilmiş statik bir HTML sunumu üretir |
 
-İnsanların ve AI ajanlarının belgeleri güncellemeyi hatırlamasını ummak yerine, Truthmark dokümantasyonu doğrudan deponuzun içinde sistematik ve incelenebilir bir alışkanlığa dönüştürür.
-
-### ✨ Truthmark neden benzersizdir
-
-Truthmark sıradan bir dokümantasyon aracı değildir. AI iş akışına derinlemesine entegredir:
-
-* **🚫 Tedarikçi kilidi yok:** Barındırılan hizmet yok, gizli veritabanı yok, işletilecek ek sunucu yok.
-* **🌳 %100 Git'e özgü:** Her şey deponuzda yaşar. Gerçek, dalınızla birlikte hareket eder.
-* **🤝 İnsanların sahip olduğu, ajanların izlediği sözleşme:** Bakımcılar depo sözleşmesine sahiptir; ajanlar kod yazarken kurulu talimatları izler.
-* **✅ Doğrulama yoluyla güven:** Davranışı değiştiren işlerde insan tarafından incelenebilir bir gerçeklik belgesi kararı veya farkı bulunduğu için AI çalışmasına güvenmek kolaylaşır.
-
-## 🔄 Nasıl çalışır
-
-Bir AI ajanı kodunuzu değiştirdiğinde iş bitmiş sayılmaz. Truthmark, ajanların teslimden önce izlediği bir bitiş zamanı iş akışı koruması kurar:
-
-1. 💻 **Kod:** Ajan işlevsel kodu değiştirir.
-2. 🧪 **Test:** İlgili testler çalıştırılır.
-3. 🔍 **Kontrol:** Truthmark, kurulu bitiş incelemesinin parçası olarak eşlenen dokümantasyonu kontrol eder.
-4. 📝 **Belgeleme:** Depo gerçeği değiştiğinde belgeler ajan tarafından güncellenir.
-5. 👀 **İnceleme:** Bir insan *kod farkını* + *gerçeklik farkını* inceler.
-
-## 🛠 Truthmark ile nasıl etkileşirsiniz
-
-Truthmark’ın depo yerelinde tek bir sözleşmesi ve onu kullanmanın iki yolu vardır.
-
-### İnsanlar sözleşmeyi kurar ve doğrular
-
-Bakımcılar ve CI, CLI kullanır:
-
-* `truthmark init` - yapılandırmayı oluşturur veya yeniler, sıfır ya da daha fazla platform seçtirir ve yönlendirmeyi, truth-doc iskelelerini ve seçilen AI ana makine talimatlarını kurar.
-* `truthmark check` - depo gerçeğini terminalden doğrular.
-
-### Ajanlar kod yazarken sözleşmeyi izler
-
-Truthmark, Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor gibi desteklenen AI kodlama ana makineleri için depo yerelinde talimatlar kurar.
-
-Normal döngü basittir:
-
-1. Ajanınızdan kod değişikliği isteyin veya mevcut bir davranışı belgelemesini isteyin.
-2. Kurulu talimatlar ajana ne zaman test edeceğini, ne zaman truth dokümanlarını güncelleyeceğini ve ne zaman insan incelemesi için duracağını söyler.
-3. Siz sıradan Git diff’lerini incelersiniz: kod ve varsa truth-doc değişiklikleri.
-
-Kullanıcı tarafından başlatılan ajan istekleri bilinçli olarak azdır:
-
-* `/truthmark-document` - kod ve testlerden mevcut uygulanmış davranışı belgeler.
-* `/truthmark-realize` - mevcut truth dokümanlarından kod uygular.
-* `/truthmark-check` - depo gerçeğini denetler.
-
-Truth Sync işe başlamanın olağan yolu değildir; işlevsel kod değişikliklerinden sonraki bitiş incelemesidir.
-Truth Structure günlük bir komut değildir; yalnızca çalışmayı engellediğinde yönlendirmeyi veya sahipliği onarır.
+Truthmark bu iş akışlarını Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor için yerel depo yüzeyleri olarak kurar.
 
 ## Neler elde edersiniz
 
-| Yetenek | Ne yapar |
-| --- | --- |
-| Git'e özgü gerçeklik | Depo gerçeğini commit edilmiş Markdown ve yapılandırmada tutar. |
-| Dal kapsamlı dokümantasyon | Gerçek, özel bir oturumda yaşamak yerine dalla birlikte hareket eder. |
-| İnsan CLI'si | Bakımcılara kurulum, yenileme, doğrulama ve inceleme komutları sağlar. |
-| Kurulu ajan rehberliği | Kodlama ajanlarına ne zaman belge yazacağını, test edeceğini, gerçeği senkronize edeceğini, denetleyeceğini veya inceleme için duracağını söyler. |
-| Açık yönlendirme | Kod alanlarını kanonik gerçeklik belgelerine eşler. |
-| İncelenebilir teslimler | Hem kod hem de gerçeklik belgeleri için sıradan Git farkları üretir. |
-| Yerel-öncelikli çalışma | Barındırılan hizmet, daemon, veritabanı veya MCP sunucusu gerektirmez. |
-| Daha güvenli yazma sınırları | Kod-öncelikli, belge-öncelikli, salt-okunur ve yalnızca-belge iş akışlarını ayırır. |
-| Doğrulama | Yönlendirme, yetki, frontmatter, bağlantı, üretilmiş yüzey, dal kapsamı, güncellik ve kapsam sorunlarını raporlar. |
-| İsteğe bağlı Portal | Açıkça etkinleştirilip istendiğinde Markdown gerçeklik belgelerinden commit edilmiş statik bir HTML sunum sitesi üretir. |
+### Gerçeklikten başlayan dokümantasyon
 
-## Görsel genel bakış
+Truthmark; ürün yetenekleri, uygulama davranışı, uygulama programlama arayüzleri, mimari, iş akışları, operasyonlar ve testler için belgeler oluşturabilir. Kod ve testler kanıtı sağlar; sınırları belirli Markdown belgeleri sonucu kalıcılaştırır.
 
-![Truthmark özellikleri](../assets/truthmark-features.png)
+### Bir sonraki değişiklikten sağ çıkan dokümantasyon
 
-**Özellikler:** Truthmark'ın ne kurduğu ve iş akışı yüzeyinin nasıl bölündüğü.
+Rotalar, kod alanlarını kanonik belgelere bağlar. Ajanlar davranışı değiştirdiğinde Truth Sync, ilgili gerçeğin nereye ait olduğunu bilir ve teslimi incelenebilir tutar.
 
-![Truthmark konumu](../assets/truthmark-position.png)
+### Ayrı kulvarlarda ürün ve mühendislik gerçeği
 
-**Konum:** Truthmark'ın istemlere, belleğe ve spesifikasyon iş akışlarına göre nerede yer aldığı.
+Ürün gerçeği; kullanıcıya dönük vaatleri, sınırları, kararları ve kabul kriterlerini kapsar. Mühendislik gerçeği; mevcut davranışı, sözleşmeleri, mimariyi, iş akışlarını, operasyonları ve test davranışını kapsar.
 
-![Truthmark senkronizasyon akışı](../assets/truthmark-syncflow.png)
+### Git'e özgü iş birliği
 
-**Senkronizasyon akışı:** Truth Sync'in normal kod değişikliklerini teslimden önce nasıl kapattığı.
+Önemli olan her şey commit edilmiş depo dosyalarında yaşar. Gerçek dalla birlikte ilerler, sıradan pull request'lerle çalışır ve her bakımcı ile kodlama ajanına görünür kalır.
 
-## Ekipler neden benimser
+### Yerel öncelikli çalışma
 
-Truthmark, AI ajanlarının kod üretebildiğini zaten bilen ekipler içindir.
-
-Sıradaki sorun yönetişimdir.
-
-Tören anlamında yönetişim değil. Basit bir soru olarak yönetişim:
-
-> Bu AI destekli değişiklikten sonra depo hâlâ gerçeği söylüyor mu?
-
-Truthmark, commit edilmiş dosyalar, açık yönlendirme ve incelenebilir farklarla ekiplerin buna yanıt vermesine yardımcı olur.
-
-Şunlara ihtiyaç duyduğunuzda yararlıdır:
-
-- daha az dokümantasyon kayması
-- daha iyi teslimler
-- dala özgü ürün gerçeği
-- kalıcı mimari ve API dokümantasyonu
-- belgeler ile kod arasında açık sahiplik
-- daha güvenli ajan yazma sınırları
-- gizli bellek yerine incelenebilir dokümantasyon
-- commit edilmiş depo dosyalarından çalışmaya devam eden AI iş akışları
+Truthmark barındırılan hizmet, daemon, veritabanı, vektör deposu veya Model Context Protocol sunucusu gerektirmez. Depo kendi dokümantasyon iş akışını taşır.
 
 ## Truthmark nerede yer alır
 
-Truthmark istemlerin, belleğin, spesifikasyonların, testlerin veya kod incelemesinin yerini almaz.
+| İhtiyaç                                              | En iyi seçenek                 |
+| ---------------------------------------------------- | ------------------------------ |
+| Tek bir ajan oturumundan daha iyi çıktı              | Daha iyi prompt                |
+| Kişisel veya oturum düzeyinde süreklilik             | Bellek aracı                   |
+| Plan öncelikli özellik çalışması                     | Spesifikasyon iş akışı         |
+| Kodla birlikte ilerleyen, dal kapsamlı dokümantasyon | **Truthmark**                  |
+| Davranış doğruluğu                                   | Testler ve kod incelemesi      |
+| İncelenebilir, AI destekli dokümantasyon             | **Truthmark + Git incelemesi** |
 
-Bu iş akışlarına Git içinde kalıcı bir iniş alanı sağlar.
+Truthmark, AI kodlama ajanlarını zaten kullanan ve depo gerçeğinin kod kadar hızlı güncellenmesini isteyen bakımcılar ile mühendislik ekipleri için tasarlanmıştır.
 
-| İhtiyaç | Daha uygun seçenek |
-| --- | --- |
-| Tek bir ajan oturumundan daha iyi çıktı | Daha iyi istem |
-| Kişisel veya oturum düzeyinde süreklilik | Bellek aracı |
-| Plan-öncelikli özellik çalışması | Spesifikasyon iş akışı |
-| Kodla birlikte taşınan dal kapsamlı gerçek | Truthmark |
-| Davranış doğruluğunu doğrulama | Testler ve inceleme |
-| AI destekli dokümantasyon değişikliklerini inceleme | Truthmark artı Git incelemesi |
+## Desteklenen ana bilgisayarlar ve komut satırı
 
-Truthmark'ın alanı tasarım gereği dardır:
+Desteklenen ajan ana bilgisayarları:
 
-```text
-make repository truth explicit
-route it to code
-etrafına ajan rehberliği kurmak
-keep the result reviewable in Git
-```
+- Codex
+- Claude Code
+- GitHub Copilot
+- OpenCode
+- Antigravity
+- Cursor
 
-## Daha derine inin
+<details>
+<summary>Komut satırı başvurusu</summary>
 
-README vitrin görevi görür: hızlı bağlam, hızlı başlangıç ve temel zihinsel model.
+| Komut                                                             | Amaç                                                                                                     |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `truthmark init`                                                  | Yapılandırmayı, yönlendirmeyi, şablonları ve seçilen ana bilgisayar iş akışlarını oluşturur veya yeniler |
+| `truthmark check [--base <ref>]`                                  | Depo gerçeğini doğrular ve isteğe bağlı olarak dal güncelliği tanılamasını çalıştırır                    |
+| `truthmark index --json`                                          | Türetilmiş depo ve yönlendirme meta verilerini inceler                                                   |
+| `truthmark impact --base <ref> --json`                            | Değişen dosyaları belgelere, sahiplerine ve yakındaki testlere eşler                                     |
+| `truthmark workflow status --workflow <id> [--base <ref>] --json` | İş akışının uygulanabilirliğini ve hedeflerini inceler                                                   |
+| `truthmark validate ...`                                          | İş akışı raporlarını ve yazma kiralarını doğrular                                                        |
+| `truthmark uninstall --dry-run\|--apply`                          | Yazılmış truth belgelerini koruyarak oluşturulan ana bilgisayar yüzeylerini önizler veya kaldırır        |
 
-Komut komut kullanım, yüzey karşılaştırmaları, desteklenen platform ayrıntıları, yapılandırma, yönlendirme, Portal ve örnekler için [Truthmark Kullanıcı Kılavuzu](../user-guide.md) sayfasını okuyun.
+Betikler ve sürekli entegrasyon için komut satırı arayüzünün tamamında yapılandırılmış JSON çıktısı bulunur.
 
-## Proje durumu
+</details>
 
-Mevcut sürüm şunları sağlar:
+## Daha fazlasını öğrenin
 
-- init, check, index, impact ve iş akışı durumu için yerel CLI komutları
-- Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity ve Cursor için oluşturulan depo yerelinde ajan talimatları
-- yönlendirme, yetki, frontmatter, bağlantı, güncellik, üretilmiş yüzey, dal kapsamı ve kapsam tanıları
-- dal kapsamlı gerçeklik belgeleri ve türetilmiş depo zekâsı artefaktları
+- [Truthmark kullanıcı kılavuzu](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md)
+- [Dokümantasyon dizini](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
+- [Mimariye genel bakış](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
+- [Yapılandırma, yönlendirme ve komut sözleşmeleri](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Depo gerçeğini koruma](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Katkıda bulunma](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
-## Dokümantasyon
-
-- [Kullanıcı kılavuzu](../user-guide.md)
-- [Dokümanlar dizini](../README.md)
-- [Mimari genel bakışı](../truthmark/engineering/architecture/overview.md)
-- [API ve CLI sözleşmeleri](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Depo gerçeği bakım kılavuzu](../standards/maintaining-repository-truth.md)
-
-Yerel geliştirme ve katkı komutları için [CONTRIBUTING.md](../../CONTRIBUTING.md) dosyasına bakın.
-
-## Tasarım sınırları
-
-Truthmark bilinçli olarak küçüktür: yerel, commit edilmiş, dal kapsamlı ve incelenebilir.
-
-Barındırılan bir hizmet, MCP sunucusu, vektör veritabanı, gizli bellek katmanı, CI yaptırım ürünü veya otonom kod yeniden yazma motoru değildir. Depo gerçeğinin görünür kalmasına yardımcı olur; testlerin, kod incelemesinin veya insan yargısının yerini almaz.
+**Truthmark'ı kurun, kodlama ana bilgisayarınızı seçin ve gerçek bir davranışı bugün belgeye dönüştürün.**
 
 ## Lisans
 
 MIT. Bkz. [LICENSE](../../LICENSE).
-
-## Güvenli kaldırma
-
-`truthmark uninstall --dry-run` komutunu kullanarak tam olarak oluşturulan ana bilgisayar yüzeylerini inceleyin, ardından kaldırmak için `truthmark uninstall --apply` komutunu çalıştırın. Oluşturulan truth, yapılandırma, şablonlar, Portal çıktısı, Gemini dosyaları ve alakasız kullanıcı dosyaları korunur; global npm kurulumunu paket yöneticinizle ayrı olarak kaldırın.

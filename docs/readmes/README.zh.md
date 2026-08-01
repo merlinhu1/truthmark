@@ -1,220 +1,202 @@
 # Truthmark
 
-**你的代理会写代码。Truthmark 维护面向人类、可在 Git 中审查的文档。**
+**您的代理负责写代码。Truthmark 负责维护面向人、可在 Git 中审查的文档。**
+
+Truthmark 安装 Git 原生工作流，让 AI 编码代理能够根据现有代码和测试创建新的产品与工程文档，在每次代码变更后持续保持文档最新，并将普通的 Markdown diff 交给您审查。
+
+[![npm version](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](../../package.json)
+
+[立即开始](#快速开始创建您的第一份事实文档) · [网站](https://merlinhu1.github.io/truthmark/) · [用户指南](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md) · [GitHub](https://github.com/merlinhu1/truthmark)
+
+<details>
+<summary>阅读其他 15 种语言版本</summary>
 
 [🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark 横幅](../assets/truthmark-banner.png)
+</details>
 
-## 🚀 快速开始：五分钟本地运行
+## 创建首批文档，并让它们始终真实
 
-在你希望由 Truthmark 管理的 Git 仓库中运行：
+大多数文档工具生成文档后便止步于此。Truthmark 在您的仓库中为代理提供完整的文档生命周期：
+
+- **从可运行的软件创建新文档。** Truth Document 读取代码和测试，然后创建边界清晰的产品或工程文档。
+- **自动保持文档一致。** 功能代码变更后，Truth Sync 会在代理交接时运行，并在工作完成前更新仓库事实。
+- **将文档变回代码。** Truth Realize 实现已获批准的事实文档，同时保持清晰的文档优先工作流。
+- **随着代码库增长修复所有权。** Truth Structure 为新区域或负载过重的区域创建边界清晰的路由和起始文档。
+- **在 Git 中审查一切。** 代码、决策、契约、架构、运维和行为与分支始终同行。
+
+无需托管知识库。无需私有代理记忆。文档不会被困在聊天记录中。
+
+## 快速开始：创建您的第一份事实文档
+
+**要求：** Node.js 24 或更高版本、一个 Git 仓库，以及支持代理工作流的 AI 编码宿主。
+
+在您希望由 Truthmark 管理的仓库中运行：
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark init
+```
+
+`truthmark init` 可让您选择 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor，或与宿主无关的命令行界面设置。
+
+现在，让已配置的代理记录一个真实行为：
+
+```text
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```
+
+如果尚不存在对应文档，Truth Document 会创建一份边界清晰的新事实文档；如果已有所有者文档，则更新该文档；需要时还会更新路由。它不会更改功能代码。
+
+审查结果：
+
+```bash
 truthmark check
+git status --short --untracked-files=all
 git diff
 ```
 
-在交互式终端中，`truthmark init` 会显示带编号的多选列表。可选择零个或多个平台，也可输入 `none`，仅进行与宿主无关的 CLI 设置。
+此时您应该会看到：
 
-在脚本和 CI 中可重复使用 `--platform`；`--json` 永远不会提示输入：
+```text
+docs/truthmark/engineering/behaviors/session-timeout.md
+docs/truthmark/routes/areas/authentication.md
+```
+
+确切路径取决于仓库的所有权结构。新文件会出现在 `git status` 中；对已跟踪文件的更改会出现在 `git diff` 中。
+
+不同宿主的调用方式有所不同。OpenCode 使用 `/skill truthmark-document`，Antigravity 使用 `@truthmark-document`，其他受支持宿主则使用各自原生的技能或斜杠命令界面。有关准确命令，请参阅[平台表](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md#supported-agent-platforms)。
+
+对于脚本和持续集成，请显式传入所选平台：
 
 ```bash
 truthmark init --platform codex --platform cursor
 truthmark init --json
 ```
 
-首次非交互运行且没有 `--platform` 时，初始化保持宿主中立；之后的运行会保留 `.truthmark/config.yml` 中保存的选择。
+在交互模式中选择 `none`，或运行 `truthmark init --clear-platforms`，即可获得与宿主无关的仓库。之后可重新运行 `truthmark init` 添加代理平台。
 
-现在尝试最常见的采用路径：根据代码和测试记录一个已有行为。在你的 AI 编码宿主中，请求已安装的工作流：
+如需相对于分支的时效性诊断，请传入 Git 基准：
 
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```bash
+truthmark check --base <base-ref>
 ```
 
-之后，用户通常不应直接调用 Truth Sync。继续通过你的 AI 宿主编写代码；已安装的仓库指令会告诉代理：当功能代码发生变化时，在交接前运行相关测试并执行 Truth Sync 审查。你审查最终的代码 diff 和事实文档 diff。
+## Truthmark 的工作原理
 
-如果暂时只需要 CLI 验证，请选择 `none`，然后运行 `truthmark check`；之后可重新运行 `truthmark init` 来选择平台。
-
-## 💡 问题：AI 文档缺口
-
-AI 编码代理非常擅长快速编写代码。但这种速度会产生一种危险的新失效模式：**仓库所讲述的故事与现实发生偏移。**
-
-* 行为遗失在短暂的聊天历史中。
-* 架构文档很快落后。
-* 产品决策在交接后消失。
-* 代码审查者只能查看原始代码 diff，却不了解“为什么”。
-* 每个新的 AI 会话都被迫从头重新发现仓库事实。
-
-## 🎯 解决方案：Truthmark
-
-**Truthmark** 会在你的仓库中安装一个 Git 原生的工作流层。它修复 AI 开发中通常会坏掉的部分：帮助文档与代码保持一致。
-
-Truthmark 不是指望人类和 AI 代理都记得更新文档，而是在你的仓库中把文档变成一种系统化、可审查的习惯。
-
-### ✨ Truthmark 的独特之处
-
-Truthmark 不只是另一个文档工具。它深度集成到 AI 工作流中：
-
-* **🚫 零供应商锁定：** 没有托管服务、隐藏数据库，也没有需要额外运维的服务器。
-* **🌳 100% Git 原生：** 一切都存在于你的仓库中。事实随分支一起移动。
-* **🤝 人类拥有、代理遵循的契约：**维护者拥有仓库契约；代理在编码时遵循已安装的指令。
-* **✅ 通过验证建立信任：** 因为改变行为的工作会包含可由人类审查的事实文档决策或 diff，AI 工作更容易被信任。
-
-## 🔄 工作原理
-
-当 AI 代理修改你的代码时，工作并未完成。Truthmark 会安装一个交接前的收尾工作流保护，代理在交接前遵循它：
-
-1. 💻 **代码：** 代理修改功能代码。
-2. 🧪 **测试：** 执行相关测试。
-3. 🔍 **检查：**Truthmark 会把映射到的文档作为已安装收尾审查的一部分进行检查。
-4. 📝 **记录：** 当仓库事实发生变化时，代理更新文档。
-5. 👀 **审查：** 人类审查*代码 diff* + *事实 diff*。
-
-## 🛠 你如何使用 Truthmark
-
-Truthmark 有一个仓库本地契约，以及两种使用方式。
-
-### 人类安装并验证契约
-
-维护者和 CI 使用 CLI：
-
-* `truthmark init` - 创建或刷新配置，选择零个或多个平台，并安装路由、事实文档脚手架及所选 AI 宿主的指令。
-* `truthmark check` - 从终端验证仓库事实。
-
-### 代理在编码时遵循契约
-
-Truthmark 会为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 等受支持的 AI 编码宿主安装仓库本地指令。
-
-正常循环很简单：
-
-1. 让代理修改代码，或让它记录已有行为。
-2. 已安装的指令会告诉代理何时测试、何时更新事实文档、何时停下来交给人类审查。
-3. 你审查普通的 Git diff：代码，以及任何事实文档变更。
-
-用户主动发起的代理请求刻意保持很少：
-
-* `/truthmark-document` - 根据代码和测试记录已有实现行为。
-* `/truthmark-realize` - 根据已有事实文档实现代码。
-* `/truthmark-check` - 审计仓库事实。
-
-Truth Sync 不是通常的开工方式；它是功能代码变更后的收尾审查。
-Truth Structure 不是日常命令；只有当路由或所有权阻塞工作时，它才进行修复。
-
-## 你会得到什么
-
-| 能力 | 作用 |
-| --- | --- |
-| Git 原生事实 | 将仓库事实保存在已提交的 Markdown 和配置中。 |
-| 按分支生效的文档 | 事实随分支移动，而不是存在于私有会话中。 |
-| 人类 CLI | 为维护者提供设置、刷新、验证和检查命令。 |
-| 已安装的代理指引 | 告诉编码代理何时记录文档、测试、同步事实、审计或停下来等待审查。 |
-| 显式路由 | 将代码区域映射到规范事实文档。 |
-| 可审查交接 | 为代码和事实文档都产生普通 Git diff。 |
-| 本地优先运行 | 不需要托管服务、守护进程、数据库或 MCP 服务器。 |
-| 更安全的写入边界 | 区分代码优先、文档优先、只读和仅文档工作流。 |
-| 验证 | 报告路由、权限、frontmatter、链接、生成界面、分支范围、新鲜度和覆盖率问题。 |
-| 可选 Portal | 在明确启用并请求时，从 Markdown 事实文档生成已提交的静态 HTML 展示站点。 |
-
-## 视觉概览
-
-![Truthmark 功能](../assets/truthmark-features.png)
-
-**功能：** Truthmark 会安装什么，以及代理如何使用仓库本地指令。
-
-![Truthmark 定位](../assets/truthmark-position.png)
-
-**定位：** Truthmark 相对于提示、记忆和规格工作流的位置。
-
-![Truthmark 同步流程](../assets/truthmark-syncflow.png)
-
-**同步流程：** Truth Sync 如何在交接前收尾普通代码变更。
-
-## 团队为什么采用它
-
-Truthmark 面向已经知道 AI 代理能够生成代码的团队。
-
-下一个问题是治理。
-
-不是作为仪式的治理。治理只是一个简单问题：
-
-> 在这次 AI 辅助变更之后，仓库仍然讲述事实吗？
-
-Truthmark 通过已提交文件、显式路由和可审查 diff 帮助团队回答这个问题。
-
-当你需要以下内容时，它很有用：
-
-- 减少文档漂移
-- 更好的交接
-- 按分支生效的产品事实
-- 持久的架构和 API 文档
-- 文档和代码之间的明确所有权
-- 更安全的代理写入边界
-- 可审查的文档，而不是隐藏记忆
-- 仍然能从已提交仓库文件运行的 AI 工作流
-
-## Truthmark 的位置
-
-Truthmark 不替代提示、记忆、规格、测试或代码审查。
-
-它为这些工作流提供一个可以持久落在 Git 中的位置。
-
-| 需求 | 更合适的选择 |
-| --- | --- |
-| 从单次代理会话获得更好输出 | 更好的提示 |
-| 个人或会话级连续性 | 记忆工具 |
-| 先计划后实现的功能工作 | 规格工作流 |
-| 随代码一起移动的按分支事实 | Truthmark |
-| 验证行为正确性 | 测试和审查 |
-| 审查 AI 辅助的文档变更 | Truthmark 加 Git 审查 |
-
-Truthmark 的边界有意很窄：
-
-```text
-make repository truth explicit
-route it to code
-围绕它安装代理指引
-keep the result reviewable in Git
+```mermaid
+flowchart LR
+  A["现有代码 + 测试"] --> B["Truth Document"]
+  B --> C["新的产品与工程文档"]
+  D["代理更改代码"] --> E["测试 + Truth Sync"]
+  E --> F["文档保持最新"]
+  C --> G["Git 审查"]
+  F --> G
+  H["事实文档"] --> I["Truth Realize"]
+  I --> D
 ```
 
-## 深入了解
+Truthmark 命令行界面负责安装并验证仓库契约。您的编码代理通过已安装的宿主原生工作流完成证据审查和文档工作。
 
-README 是门面：快速背景、快速开始和核心心智模型。
+一次常规代码变更遵循一个简单循环：
 
-如需逐条命令的用法、界面对比、受支持平台详情、配置、路由、Portal 和示例，请阅读 [Truthmark 用户指南](../user-guide.md)。
+1. 代理更改功能代码。
+2. 运行相关测试。
+3. Truth Sync 检查已映射的文档。
+4. 当仓库事实发生变化时，代理创建或更新文档和路由。
+5. 您同时审查代码 diff 和事实 diff。
 
-## 项目状态
+## 工作流
 
-当前版本提供：
+| 工作流               | 使用时机                                 | 结果                                                     |
+| -------------------- | ---------------------------------------- | -------------------------------------------------------- |
+| **Truth Document**   | 现有代码需要文档                         | 创建或更新以证据为基础的产品与工程文档                   |
+| **Truth Sync**       | 功能代码发生变化                         | 在交接前保持已映射的文档和路由一致                       |
+| **Truth Structure**  | 新区域需要明确所有权，或现有文档范围过大 | 创建边界清晰的路由和骨架式起始文档                       |
+| **Truth Realize**    | 已获批准的事实文档应转化为可运行软件     | 根据文档更新功能代码                                     |
+| **Truth Check**      | 需要审计仓库事实                         | 报告路由、所有权、证据和文档问题                         |
+| **Truthmark Portal** | 团队需要可浏览的文档站点                 | 根据 Markdown 事实文档生成提交到仓库的静态 HTML 展示站点 |
 
-- 用于 init、check、index、impact 和 workflow status 的本地 CLI 命令
-- 为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 生成的仓库本地代理指令
-- 路由、权限、frontmatter、链接、新鲜度、生成界面、分支范围和覆盖率诊断
-- 按分支生效的事实文档和派生的仓库智能产物
+Truthmark 将这些工作流安装为 Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity 和 Cursor 的原生仓库界面。
 
-## 文档
+## 您将获得什么
 
-- [用户指南](../user-guide.md)
-- [文档索引](../README.md)
-- [架构概览](../truthmark/engineering/architecture/overview.md)
-- [API 和 CLI 契约](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [仓库事实维护指南](../standards/maintaining-repository-truth.md)
+### 从现实出发的文档
 
-有关本地开发和贡献命令，请参阅 [CONTRIBUTING.md](../../CONTRIBUTING.md)。
+Truthmark 可以为产品能力、实现行为、应用程序编程接口、架构、工作流、运维和测试创建文档。代码和测试提供证据；边界清晰的 Markdown 文档保存成果。
 
-## 设计边界
+### 经得起下一次变更的文档
 
-Truthmark 有意保持小而明确：本地、已提交、按分支生效、可审查。
+路由将代码区域连接到规范文档。当代理改变行为时，Truth Sync 知道对应事实应归属何处，并让交接始终可审查。
 
-它不是托管服务、MCP 服务器、向量数据库、隐藏记忆层、CI 强制执行产品，也不是自主代码重写引擎。它帮助仓库事实保持可见；它不替代测试、代码审查或人类判断。
+### 分道管理的产品事实与工程事实
+
+产品事实记录面向用户的承诺、边界、决策和验收标准。工程事实记录当前行为、契约、架构、工作流、运维和测试行为。
+
+### Git 原生协作
+
+一切重要内容都存在于提交到仓库的文件中。事实跟随分支，适用于普通的拉取请求，并对每位维护者和编码代理保持可见。
+
+### 本地优先运行
+
+Truthmark 不需要托管服务、守护进程、数据库、向量存储或 Model Context Protocol 服务器。仓库自身就携带完整的文档工作流。
+
+## Truthmark 的定位
+
+| 需求                   | 最佳选择                 |
+| ---------------------- | ------------------------ |
+| 提升单次代理会话的输出 | 更好的提示词             |
+| 个人或会话级连续性     | 记忆工具                 |
+| 计划优先的功能开发     | 规格工作流               |
+| 随代码同行的分支级文档 | **Truthmark**            |
+| 行为正确性             | 测试和代码审查           |
+| 可审查的 AI 辅助文档   | **Truthmark + Git 审查** |
+
+Truthmark 专为已经使用 AI 编码代理，并希望仓库事实与代码同速更新的维护者和工程团队打造。
+
+## 支持的宿主和命令行
+
+支持的代理宿主：
+
+- Codex
+- Claude Code
+- GitHub Copilot
+- OpenCode
+- Antigravity
+- Cursor
+
+<details>
+<summary>命令行参考</summary>
+
+| 命令                                                              | 用途                                               |
+| ----------------------------------------------------------------- | -------------------------------------------------- |
+| `truthmark init`                                                  | 创建或刷新配置、路由、模板和所选宿主的工作流       |
+| `truthmark check [--base <ref>]`                                  | 验证仓库事实，并可选择运行分支时效性诊断           |
+| `truthmark index --json`                                          | 检查派生的仓库和路由元数据                         |
+| `truthmark impact --base <ref> --json`                            | 将变更文件映射到文档、所有者和附近的测试           |
+| `truthmark workflow status --workflow <id> [--base <ref>] --json` | 检查工作流适用性和目标                             |
+| `truthmark validate ...`                                          | 验证工作流报告和写入租约                           |
+| `truthmark uninstall --dry-run` / `truthmark uninstall --apply`   | 预览或移除生成的宿主界面，同时保留已编写的事实内容 |
+
+整个命令行界面都提供结构化 JSON 输出，便于脚本和持续集成使用。
+
+</details>
+
+## 了解更多
+
+- [Truthmark 用户指南](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md)
+- [文档索引](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
+- [架构概览](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
+- [配置、路由和命令契约](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [维护仓库事实](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [参与贡献](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
+
+**立即安装 Truthmark，选择您的编码宿主，今天就把一个真实行为转化为文档。**
 
 ## 许可证
 
-MIT。见 [LICENSE](../../LICENSE)。
-
-## 安全移除
-
-使用 `truthmark uninstall --dry-run` 查看精确生成的主机表面（host surfaces），然后使用 `truthmark uninstall --apply` 将其移除。已创建的 truth、配置、模板、Portal 输出、Gemini 文件以及不相关的用户文件将被保留；请使用包管理器单独移除全局 npm 安装。
+MIT。请参阅 [LICENSE](../../LICENSE)。

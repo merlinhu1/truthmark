@@ -1,220 +1,202 @@
 # Truthmark
 
-**Agen Anda menulis kode. Truthmark memelihara dokumentasi yang ditujukan untuk manusia dan dapat ditinjau melalui Git.**
+**Agen Anda menulis kode. Truthmark menjaga dokumentasi yang ditujukan untuk manusia dan siap ditinjau di Git.**
+
+Truthmark memasang alur kerja native Git yang memungkinkan agen pengodean AI membuat dokumentasi produk dan rekayasa baru dari kode serta pengujian yang sudah ada, menjaganya tetap mutakhir setelah setiap perubahan kode, dan memberikan diff Markdown biasa untuk Anda tinjau.
+
+[![versi npm](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![Lisensi: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](../../package.json)
+
+[Mulai](#mulai-cepat-buat-dokumen-truth-pertama-anda) · [Situs web](https://merlinhu1.github.io/truthmark/) · [Panduan pengguna](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md) · [GitHub](https://github.com/merlinhu1/truthmark)
+
+<details>
+<summary>Baca README ini dalam salah satu dari 16 bahasa</summary>
 
 [🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Banner Truthmark](../assets/truthmark-banner.png)
+</details>
 
-## 🚀 Mulai cepat: berjalan lokal dalam lima menit
+## Buat dokumentasi pertama. Jaga agar tetap benar.
 
-Jalankan ini di dalam repositori Git yang ingin Anda kelola dengan Truthmark:
+Sebagian besar alat dokumentasi berhenti setelah pembuatan. Truthmark memberi agen siklus hidup dokumentasi lengkap di dalam repositori Anda:
+
+- **Buat dokumentasi baru dari perangkat lunak yang berfungsi.** Truth Document membaca kode dan pengujian, lalu membuat dokumentasi produk atau rekayasa dengan cakupan yang jelas.
+- **Jaga dokumentasi tetap selaras secara otomatis.** Truth Sync berjalan saat serah terima agen setelah perubahan kode fungsional dan memperbarui kebenaran repositori sebelum pekerjaan dinyatakan selesai.
+- **Ubah dokumentasi kembali menjadi kode.** Truth Realize mengimplementasikan dokumen truth yang disetujui sambil mempertahankan alur kerja doc-first yang rapi.
+- **Perbaiki kepemilikan seiring pertumbuhan basis kode.** Truth Structure membuat rute dengan cakupan jelas dan dokumen awal untuk area baru atau yang terlalu luas.
+- **Tinjau semuanya di Git.** Kode, keputusan, kontrak, arsitektur, operasi, dan perilaku bergerak bersama branch.
+
+Tanpa basis pengetahuan ter-host. Tanpa memori agen privat. Tanpa dokumentasi yang terjebak dalam riwayat chat.
+
+## Mulai cepat: buat dokumen truth pertama Anda
+
+**Persyaratan:** Node.js 24 atau yang lebih baru, repositori Git, dan host pengodean AI yang didukung untuk alur kerja agen.
+
+Jalankan perintah berikut di dalam repositori yang ingin Anda kelola dengan Truthmark:
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark init
+```
+
+`truthmark init` memungkinkan Anda memilih Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor, atau penyiapan antarmuka baris perintah yang netral terhadap host.
+
+Sekarang minta agen yang telah dikonfigurasi untuk mendokumentasikan satu perilaku nyata:
+
+```text
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```
+
+Truth Document membuat dokumen truth baru dengan cakupan jelas jika belum ada, memperbarui pemilik yang sudah ada jika tersedia, dan memperbarui perutean bila diperlukan. Alur ini tidak mengubah kode fungsional.
+
+Tinjau hasilnya:
+
+```bash
 truthmark check
+git status --short --untracked-files=all
 git diff
 ```
 
-Di terminal interaktif, `truthmark init` menampilkan pilihan ganda bernomor. Pilih nol atau lebih platform, atau masukkan `none` untuk penyiapan netral terhadap host yang hanya memakai CLI.
+Sekarang Anda akan memiliki:
 
-Untuk skrip dan CI, ulangi `--platform`; `--json` tidak pernah menampilkan prompt:
+```text
+docs/truthmark/engineering/behaviors/session-timeout.md
+docs/truthmark/routes/areas/authentication.md
+```
+
+Path yang tepat mengikuti struktur kepemilikan repositori Anda. File baru muncul di `git status`; perubahan pada file yang dilacak muncul di `git diff`.
+
+Cara pemanggilan berbeda menurut host. OpenCode menggunakan `/skill truthmark-document`, Antigravity menggunakan `@truthmark-document`, dan host lain yang didukung menggunakan permukaan skill atau perintah garis miring native masing-masing. Lihat [tabel platform](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md#supported-agent-platforms) untuk perintah yang tepat.
+
+Untuk skrip dan integrasi berkelanjutan, berikan platform yang dipilih secara eksplisit:
 
 ```bash
 truthmark init --platform codex --platform cursor
 truthmark init --json
 ```
 
-Pada proses noninteraktif pertama tanpa `--platform`, penyiapan tetap netral terhadap host; proses berikutnya mempertahankan pilihan yang tersimpan di `.truthmark/config.yml`.
+Pilih `none` secara interaktif atau jalankan `truthmark init --clear-platforms` untuk repositori yang netral terhadap host. Anda dapat menambahkan platform agen nanti dengan menjalankan ulang `truthmark init`.
 
-Sekarang coba jalur adopsi yang paling umum: dokumentasikan satu perilaku yang sudah ada dari kode dan pengujian. Di host pengodean AI Anda, minta alur kerja yang terpasang:
+Untuk diagnostik kesegaran relatif terhadap branch, berikan basis Git:
 
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```bash
+truthmark check --base <base-ref>
 ```
 
-Setelah itu, pengguna biasanya tidak perlu memanggil Truth Sync secara langsung. Teruslah membuat kode melalui host AI Anda; instruksi repositori yang terpasang memberi tahu agen untuk menjalankan pengujian yang relevan dan melakukan tinjauan Truth Sync sebelum serah terima ketika kode fungsional berubah. Anda meninjau diff kode yang dihasilkan beserta diff dokumen truth.
+## Cara kerja Truthmark
 
-Jika Anda hanya menginginkan validasi CLI, pilih `none` lalu jalankan `truthmark check`; Anda dapat menjalankan ulang `truthmark init` nanti untuk memilih platform.
+```mermaid
+flowchart LR
+  A["Kode yang ada + pengujian"] --> B["Truth Document"]
+  B --> C["Dokumentasi produk dan rekayasa baru"]
+  D["Agen mengubah kode"] --> E["Pengujian + Truth Sync"]
+  E --> F["Dokumentasi tetap mutakhir"]
+  C --> G["Tinjauan Git"]
+  F --> G
+  H["Dokumen truth"] --> I["Truth Realize"]
+  I --> D
+```
 
-## 💡 Masalah: kesenjangan dokumentasi AI
+Antarmuka baris perintah Truthmark memasang dan memvalidasi kontrak repositori. Agen pengodean Anda melakukan peninjauan bukti dan pekerjaan dokumentasi melalui alur kerja native host yang telah terpasang.
 
-Agen pengodean AI luar biasa dalam menulis kode dengan cepat. Namun kecepatan ini menciptakan mode kegagalan baru yang berbahaya: **cerita repositori menyimpang dari kenyataan.**
+Perubahan kode normal mengikuti satu putaran sederhana:
 
-* Perilaku hilang dalam riwayat chat yang sementara.
-* Dokumen arsitektur cepat tertinggal.
-* Keputusan produk lenyap setelah serah terima.
-* Peninjau kode dibiarkan memeriksa diff kode mentah tanpa memahami "mengapa".
-* Setiap sesi AI baru dipaksa menemukan ulang kebenaran repositori Anda dari awal.
+1. Agen mengubah kode fungsional.
+2. Pengujian yang relevan dijalankan.
+3. Truth Sync memeriksa dokumentasi yang dipetakan.
+4. Agen membuat atau memperbarui dokumentasi dan perutean saat kebenaran repositori berubah.
+5. Anda meninjau diff kode dan diff truth secara bersamaan.
 
-## 🎯 Solusi: Truthmark
+## Alur kerja
 
-**Truthmark** memasang lapisan alur kerja native Git ke dalam repositori Anda. Ini memperbaiki bagian pengembangan AI yang biasanya rusak: membantu dokumentasi tetap selaras dengan kode.
+| Alur kerja           | Gunakan saat                                                              | Hasil                                                                              |
+| -------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Truth Document**   | Kode yang sudah ada memerlukan dokumentasi                                | Membuat atau memperbarui dokumentasi produk dan rekayasa berbasis bukti            |
+| **Truth Sync**       | Kode fungsional berubah                                                   | Menjaga dokumentasi yang dipetakan dan perutean tetap selaras sebelum serah terima |
+| **Truth Structure**  | Area baru memerlukan kepemilikan atau dokumentasi yang ada terlalu luas   | Membuat rute dengan cakupan jelas dan kerangka dokumen awal                        |
+| **Truth Realize**    | Dokumen truth yang disetujui harus menjadi perangkat lunak yang berfungsi | Memperbarui kode fungsional dari dokumentasi                                       |
+| **Truth Check**      | Kebenaran repositori perlu diaudit                                        | Melaporkan masalah perutean, kepemilikan, bukti, dan dokumentasi                   |
+| **Truthmark Portal** | Tim menginginkan situs dokumentasi yang mudah dijelajahi                  | Menghasilkan presentasi HTML statis yang di-commit dari dokumen truth Markdown     |
 
-Alih-alih berharap manusia dan agen AI ingat memperbarui dokumen, Truthmark menjadikan dokumentasi sebagai kebiasaan sistematis dan dapat ditinjau langsung di dalam repositori Anda.
-
-### ✨ Mengapa Truthmark unik
-
-Truthmark bukan sekadar alat dokumentasi lain. Ia terintegrasi mendalam ke dalam alur kerja AI:
-
-* **🚫 Tanpa ketergantungan vendor:** Tidak ada layanan ter-host, tidak ada basis data tersembunyi, tidak ada server tambahan untuk dioperasikan.
-* **🌳 100% native Git:** Semuanya hidup di repositori Anda. Kebenaran bergerak bersama branch Anda.
-* **🤝 Kontrak yang dimiliki manusia dan diikuti agen:** Pemelihara memiliki kontrak repositori; agen mengikuti instruksi yang terpasang saat membuat kode.
-* **✅ Kepercayaan melalui verifikasi:** Pekerjaan AI menjadi lebih mudah dipercaya karena pekerjaan yang mengubah perilaku menyertakan keputusan atau diff dokumen kebenaran yang dapat ditinjau manusia.
-
-## 🔄 Cara kerjanya
-
-Ketika agen AI memodifikasi kode Anda, pekerjaannya belum selesai. Truthmark memasang penjaga alur kerja saat penyelesaian yang diikuti agen sebelum serah terima:
-
-1. 💻 **Kode:** Agen memodifikasi kode fungsional.
-2. 🧪 **Uji:** Pengujian yang relevan dijalankan.
-3. 🔍 **Periksa:** Truthmark memeriksa dokumentasi yang dipetakan sebagai bagian dari tinjauan akhir yang terpasang.
-4. 📝 **Dokumentasikan:** Dokumen diperbarui oleh agen ketika kebenaran repositori berubah.
-5. 👀 **Tinjau:** Manusia meninjau *diff kode* + *diff kebenaran*.
-
-## 🛠 Cara Anda berinteraksi dengan Truthmark
-
-Truthmark memiliki satu kontrak lokal repositori dengan dua cara pemakaian.
-
-### Manusia memasang dan memvalidasi kontrak
-
-Pemelihara dan CI menggunakan CLI:
-
-* `truthmark init` - membuat atau menyegarkan konfigurasi, memilih nol atau lebih platform, lalu memasang perutean, scaffold dokumen kebenaran, dan instruksi untuk host AI yang dipilih.
-* `truthmark check` - memvalidasi kebenaran repositori dari terminal.
-
-### Agen mengikuti kontrak saat membuat kode
-
-Truthmark memasang instruksi lokal repositori untuk host pengodean AI yang didukung seperti Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor.
-
-Alur normalnya sederhana:
-
-1. Minta agen Anda melakukan perubahan kode, atau minta ia mendokumentasikan perilaku yang sudah ada.
-2. Instruksi yang terpasang memberi tahu agen kapan harus menguji, kapan memperbarui dokumen kebenaran, dan kapan berhenti untuk tinjauan manusia.
-3. Anda meninjau diff Git biasa: kode plus perubahan dokumen kebenaran apa pun.
-
-Permintaan agen yang dimulai pengguna sengaja dibuat sedikit:
-
-* `/truthmark-document` - mendokumentasikan perilaku terimplementasi yang sudah ada dari kode dan pengujian.
-* `/truthmark-realize` - mengimplementasikan kode dari dokumen kebenaran yang sudah ada.
-* `/truthmark-check` - mengaudit kebenaran repositori.
-
-Truth Sync bukan cara biasa untuk memulai pekerjaan; itu adalah tinjauan akhir setelah perubahan kode fungsional.
-Truth Structure bukan perintah harian; ia memperbaiki perutean atau kepemilikan hanya ketika hal itu memblokir pekerjaan.
+Truthmark memasang alur kerja ini sebagai permukaan repositori native untuk Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor.
 
 ## Yang Anda dapatkan
 
-| Kapabilitas | Apa yang dilakukan |
-| --- | --- |
-| Kebenaran native Git | Menyimpan kebenaran repositori dalam Markdown dan konfigurasi yang di-commit. |
-| Dokumentasi berlingkup branch | Kebenaran bergerak bersama branch alih-alih hidup dalam sesi privat. |
-| CLI manusia | Memberi pemelihara perintah penyiapan, penyegaran, validasi, dan inspeksi. |
-| Kontrak agen terpasang | Memberi agen panduan native host untuk dokumentasi, realisasi, audit, sinkronisasi akhir, dan perbaikan perutean terbatas. |
-| Perutean eksplisit | Memetakan area kode ke dokumen kebenaran kanonis. |
-| Serah terima yang dapat ditinjau | Menghasilkan diff Git biasa untuk kode maupun dokumen kebenaran. |
-| Operasi lokal terlebih dahulu | Tidak membutuhkan layanan ter-host, daemon, basis data, atau server MCP. |
-| Batas tulis yang lebih aman | Memisahkan alur kerja code-first, doc-first, read-only, dan doc-only. |
-| Validasi | Melaporkan masalah perutean, otoritas, frontmatter, tautan, permukaan yang dihasilkan, cakupan branch, kesegaran, dan coverage. |
-| Portal opsional | Menghasilkan situs presentasi HTML statis yang di-commit dari dokumen kebenaran Markdown ketika diaktifkan dan diminta secara eksplisit. |
+### Dokumentasi yang berawal dari kenyataan
 
-## Gambaran visual
+Truthmark dapat membuat dokumentasi untuk kapabilitas produk, perilaku implementasi, antarmuka pemrograman aplikasi, arsitektur, alur kerja, operasi, dan pengujian. Kode dan pengujian menyediakan bukti; dokumen Markdown dengan cakupan jelas mempertahankan hasilnya.
 
-![Fitur Truthmark](../assets/truthmark-features.png)
+### Dokumentasi yang bertahan melewati perubahan berikutnya
 
-**Fitur:** apa yang dipasang Truthmark dan bagaimana permukaan alur kerja dibagi.
+Rute menghubungkan area kode ke dokumen kanonis. Saat agen mengubah perilaku, Truth Sync mengetahui tempat kebenaran terkait harus berada dan menjaga serah terima tetap dapat ditinjau.
 
-![Posisi Truthmark](../assets/truthmark-position.png)
+### Kebenaran produk dan rekayasa di jalur terpisah
 
-**Posisi:** di mana Truthmark berada relatif terhadap prompt, memori, dan alur kerja spesifikasi.
+Kebenaran produk merekam janji kepada pengguna, batasan, keputusan, dan kriteria penerimaan. Kebenaran rekayasa merekam perilaku saat ini, kontrak, arsitektur, alur kerja, operasi, dan perilaku pengujian.
 
-![Alur sinkronisasi Truthmark](../assets/truthmark-syncflow.png)
+### Kolaborasi native Git
 
-**Alur sinkronisasi:** bagaimana Truth Sync menutup perubahan kode normal sebelum serah terima.
+Semua yang penting berada dalam file repositori yang di-commit. Kebenaran mengikuti branch, bekerja dengan pull request biasa, dan tetap terlihat oleh setiap pemelihara serta agen pengodean.
 
-## Mengapa tim mengadopsinya
+### Operasi yang mengutamakan lokal
 
-Truthmark ditujukan untuk tim yang sudah tahu bahwa agen AI dapat menghasilkan kode.
+Truthmark tidak memerlukan layanan ter-host, daemon, basis data, penyimpanan vektor, atau server Model Context Protocol. Repositori membawa alur kerja dokumentasinya sendiri.
 
-Masalah berikutnya adalah tata kelola.
+## Posisi Truthmark
 
-Bukan tata kelola sebagai seremoni. Tata kelola sebagai pertanyaan sederhana:
+| Kebutuhan                                         | Pilihan terbaik              |
+| ------------------------------------------------- | ---------------------------- |
+| Output yang lebih baik dari satu sesi agen        | Prompt yang lebih baik       |
+| Kontinuitas pribadi atau tingkat sesi             | Alat memori                  |
+| Pekerjaan fitur yang dimulai dengan perencanaan   | Alur kerja spesifikasi       |
+| Dokumentasi berlingkup branch yang mengikuti kode | **Truthmark**                |
+| Kebenaran perilaku                                | Pengujian dan tinjauan kode  |
+| Dokumentasi berbantuan AI yang dapat ditinjau     | **Truthmark + tinjauan Git** |
 
-> Setelah perubahan berbantuan AI ini, apakah repositori masih mengatakan kebenaran?
+Truthmark dibuat untuk pemelihara dan tim rekayasa yang sudah menggunakan agen pengodean AI dan ingin repositori terus menyampaikan kebenaran secepat kode berubah.
 
-Truthmark membantu tim menjawabnya dengan file yang di-commit, perutean eksplisit, dan diff yang dapat ditinjau.
+## Host yang didukung dan baris perintah
 
-Ini berguna saat Anda membutuhkan:
+Host agen yang didukung:
 
-- penyimpangan dokumentasi yang lebih kecil
-- serah terima yang lebih baik
-- kebenaran produk khusus branch
-- dokumentasi arsitektur dan API yang tahan lama
-- kepemilikan eksplisit antara dokumen dan kode
-- batas tulis agen yang lebih aman
-- dokumentasi yang dapat ditinjau alih-alih memori tersembunyi
-- alur kerja AI yang tetap bekerja dari file repositori yang di-commit
+- Codex
+- Claude Code
+- GitHub Copilot
+- OpenCode
+- Antigravity
+- Cursor
 
-## Di mana Truthmark cocok
+<details>
+<summary>Referensi baris perintah</summary>
 
-Truthmark tidak menggantikan prompt, memori, spesifikasi, pengujian, atau tinjauan kode.
+| Perintah                                                          | Tujuan                                                                                                   |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `truthmark init`                                                  | Membuat atau menyegarkan konfigurasi, perutean, template, dan alur kerja host yang dipilih               |
+| `truthmark check [--base <ref>]`                                  | Memvalidasi kebenaran repositori dan secara opsional menjalankan diagnostik kesegaran branch             |
+| `truthmark index --json`                                          | Memeriksa metadata turunan repositori dan perutean                                                       |
+| `truthmark impact --base <ref> --json`                            | Memetakan file yang berubah ke dokumentasi, pemilik, dan pengujian terdekat                              |
+| `truthmark workflow status --workflow <id> [--base <ref>] --json` | Memeriksa penerapan dan target alur kerja                                                                |
+| `truthmark validate ...`                                          | Memvalidasi laporan alur kerja dan sewa penulisan                                                        |
+| `truthmark uninstall --dry-run\|--apply`                          | Meninjau atau menghapus permukaan host yang dihasilkan sambil mempertahankan truth yang ditulis pengguna |
 
-Ia memberi alur kerja tersebut tempat yang tahan lama untuk mendarat di Git.
+Output JSON terstruktur tersedia di seluruh antarmuka baris perintah untuk skrip dan integrasi berkelanjutan.
 
-| Kebutuhan | Lebih cocok |
-| --- | --- |
-| Output lebih baik dari satu sesi agen | Prompt yang lebih baik |
-| Kontinuitas pribadi atau tingkat sesi | Alat memori |
-| Pekerjaan fitur yang dimulai dengan rencana | Alur kerja spesifikasi |
-| Truth berlingkup branch yang ikut bersama kode | Truthmark |
-| Memvalidasi kebenaran perilaku | Pengujian dan tinjauan |
-| Meninjau perubahan dokumentasi berbantuan AI | Truthmark plus tinjauan Git |
+</details>
 
-Jalur Truthmark sengaja dirancang sempit:
+## Pelajari lebih lanjut
 
-```text
-make repository truth explicit
-route it to code
-memasang panduan agen di sekelilingnya
-keep the result reviewable in Git
-```
+- [Panduan pengguna Truthmark](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md)
+- [Indeks dokumentasi](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
+- [Ikhtisar arsitektur](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
+- [Kontrak konfigurasi, perutean, dan perintah](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Memelihara kebenaran repositori](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Berkontribusi](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
-## Pelajari lebih dalam
-
-README adalah etalase: konteks cepat, mulai cepat, dan model mental inti.
-
-Untuk penggunaan per perintah, perbandingan permukaan, detail platform yang didukung, konfigurasi, perutean, Portal, dan contoh, baca [Panduan Pengguna Truthmark](../user-guide.md).
-
-## Status proyek
-
-Rilis saat ini menyediakan:
-
-- perintah CLI lokal untuk init, check, index, impact, dan status alur kerja
-- instruksi agen lokal repositori yang dihasilkan untuk Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, dan Cursor
-- diagnostik perutean, otoritas, frontmatter, tautan, kesegaran, permukaan yang dihasilkan, cakupan branch, dan coverage
-- dokumen kebenaran berlingkup branch dan artefak kecerdasan repositori turunan
-
-## Dokumentasi
-
-- [Panduan pengguna](../user-guide.md)
-- [Indeks dokumen](../README.md)
-- [Ikhtisar arsitektur](../truthmark/engineering/architecture/overview.md)
-- [Kontrak API dan CLI](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Panduan pemeliharaan kebenaran repositori](../standards/maintaining-repository-truth.md)
-
-Untuk perintah pengembangan lokal dan kontribusi, lihat [CONTRIBUTING.md](../../CONTRIBUTING.md).
-
-## Batas desain
-
-Truthmark sengaja kecil: lokal, di-commit, berlingkup branch, dan dapat ditinjau.
-
-Ini bukan layanan ter-host, server MCP, basis data vektor, lapisan memori tersembunyi, produk penegakan CI, atau mesin penulisan ulang kode otonom. Ini membantu kebenaran repositori tetap terlihat; tidak menggantikan pengujian, tinjauan kode, atau penilaian manusia.
+**Pasang Truthmark, pilih host pengodean Anda, dan ubah satu perilaku nyata menjadi dokumentasi hari ini.**
 
 ## Lisensi
 
 MIT. Lihat [LICENSE](../../LICENSE).
-
-## Penghapusan aman
-
-Gunakan `truthmark uninstall --dry-run` untuk meninjau permukaan host yang tepat dihasilkan, lalu `truthmark uninstall --apply` untuk menghapusnya. Truth hasil penulisan, konfigurasi, template, keluaran Portal, berkas Gemini, dan berkas pengguna yang tidak terkait akan tetap dipertahankan; hapus instalasi npm global secara terpisah melalui pengelola paket Anda.
