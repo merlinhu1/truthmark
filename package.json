@@ -26,6 +26,8 @@
   "files": [
     "dist",
     "README.md",
+    "docs/assets/truthmark-workflow-mobile.svg",
+    "docs/assets/truthmark-workflow.svg",
     "docs/readmes/README.ar.md",
     "docs/readmes/README.de.md",
     "docs/readmes/README.el.md",

@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Cách Truthmark hoạt động
 
-```mermaid
-flowchart LR
-  A["Mã hiện có + bài kiểm thử"] --> B["Truth Document"]
-  B --> C["Tài liệu sản phẩm và kỹ thuật mới"]
-  D["Tác nhân thay đổi mã"] --> E["Bài kiểm thử + Truth Sync"]
-  E --> F["Tài liệu luôn cập nhật"]
-  C --> G["Xem xét trong Git"]
-  F --> G
-  H["Tài liệu truth"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Cách Truthmark hoạt động" width="1440">
+</picture>
 
 Giao diện dòng lệnh Truthmark cài đặt và xác thực hợp đồng của kho. Tác nhân lập trình của bạn thực hiện việc xem xét bằng chứng và viết tài liệu thông qua các quy trình gốc của host đã được cài đặt.
 

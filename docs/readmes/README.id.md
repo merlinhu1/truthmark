@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Cara kerja Truthmark
 
-```mermaid
-flowchart LR
-  A["Kode yang ada + pengujian"] --> B["Truth Document"]
-  B --> C["Dokumentasi produk dan rekayasa baru"]
-  D["Agen mengubah kode"] --> E["Pengujian + Truth Sync"]
-  E --> F["Dokumentasi tetap mutakhir"]
-  C --> G["Tinjauan Git"]
-  F --> G
-  H["Dokumen truth"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Cara kerja Truthmark" width="1440">
+</picture>
 
 Antarmuka baris perintah Truthmark memasang dan memvalidasi kontrak repositori. Agen pengodean Anda melakukan peninjauan bukti dan pekerjaan dokumentasi melalui alur kerja native host yang telah terpasang.
 

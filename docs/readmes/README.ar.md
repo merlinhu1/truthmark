@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## كيف يعمل Truthmark
 
-```mermaid
-flowchart LR
-  A["الكود والاختبارات الموجودة"] --> B["Truth Document"]
-  B --> C["توثيق جديد للمنتج والهندسة"]
-  D["الوكيل يغيّر الكود"] --> E["الاختبارات وTruth Sync"]
-  E --> F["الوثائق تبقى محدّثة"]
-  C --> G["المراجعة في Git"]
-  F --> G
-  H["وثائق الحقيقة"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="كيف يعمل Truthmark" width="1440">
+</picture>
 
 تثبّت واجهة سطر أوامر Truthmark عقد المستودع وتتحقق منه. وينفّذ وكيل البرمجة مراجعة الأدلة وأعمال التوثيق من خلال مسارات العمل الأصلية للمضيف التي جرى تثبيتها.
 

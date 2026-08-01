@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Cómo funciona Truthmark
 
-```mermaid
-flowchart LR
-  A["Código y pruebas existentes"] --> B["Truth Document"]
-  B --> C["Nueva documentación de producto e ingeniería"]
-  D["El agente cambia el código"] --> E["Pruebas y Truth Sync"]
-  E --> F["La documentación se mantiene actualizada"]
-  C --> G["Revisión en Git"]
-  F --> G
-  H["Documentos de verdad"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Cómo funciona Truthmark" width="1440">
+</picture>
 
 La interfaz de línea de comandos de Truthmark instala y valida el contrato del repositorio. Tu agente de programación realiza la revisión de evidencias y el trabajo de documentación mediante los flujos de trabajo nativos del host instalados.
 

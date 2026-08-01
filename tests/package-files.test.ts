@@ -31,6 +31,8 @@ const localizedReadmeFiles = [
 
 const expectedPackageFiles = [
   "LICENSE",
+  "docs/assets/truthmark-workflow-mobile.svg",
+  "docs/assets/truthmark-workflow.svg",
   ...localizedReadmeFiles,
   "README.md",
   "dist/main.js",

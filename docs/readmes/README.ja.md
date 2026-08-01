@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Truthmark の仕組み
 
-```mermaid
-flowchart LR
-  A["既存のコード + テスト"] --> B["Truth Document"]
-  B --> C["新しいプロダクトおよびエンジニアリングドキュメント"]
-  D["エージェントがコードを変更"] --> E["テスト + Truth Sync"]
-  E --> F["ドキュメントを最新に維持"]
-  C --> G["Git レビュー"]
-  F --> G
-  H["Truth ドキュメント"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Truthmark の仕組み" width="1440">
+</picture>
 
 Truthmark のコマンドラインインターフェースがリポジトリ契約をインストールして検証します。コーディングエージェントは、インストール済みのホストネイティブなワークフローを通じて、証拠の確認とドキュメント作業を実行します。
 
