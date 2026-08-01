@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Truthmark nasıl çalışır
 
-```mermaid
-flowchart LR
-  A["Mevcut kod + testler"] --> B["Truth Document"]
-  B --> C["Yeni ürün ve mühendislik belgeleri"]
-  D["Ajan kodu değiştirir"] --> E["Testler + Truth Sync"]
-  E --> F["Belgeler güncel kalır"]
-  C --> G["Git incelemesi"]
-  F --> G
-  H["Truth belgeleri"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Truthmark nasıl çalışır" width="1440">
+</picture>
 
 Truthmark komut satırı arayüzü depo sözleşmesini kurar ve doğrular. Kodlama ajanınız, kurulu ve ana bilgisayara özgü iş akışları üzerinden kanıt incelemesini ve dokümantasyon çalışmasını gerçekleştirir.
 

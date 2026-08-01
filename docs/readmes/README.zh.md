@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Truthmark 的工作原理
 
-```mermaid
-flowchart LR
-  A["现有代码 + 测试"] --> B["Truth Document"]
-  B --> C["新的产品与工程文档"]
-  D["代理更改代码"] --> E["测试 + Truth Sync"]
-  E --> F["文档保持最新"]
-  C --> G["Git 审查"]
-  F --> G
-  H["事实文档"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Truthmark 的工作原理" width="1440">
+</picture>
 
 Truthmark 命令行界面负责安装并验证仓库契约。您的编码代理通过已安装的宿主原生工作流完成证据审查和文档工作。
 

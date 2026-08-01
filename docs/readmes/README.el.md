@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Πώς λειτουργεί το Truthmark
 
-```mermaid
-flowchart LR
-  A["Υπάρχων κώδικας + tests"] --> B["Truth Document"]
-  B --> C["Νέα τεκμηρίωση προϊόντος και μηχανικής"]
-  D["Ο πράκτορας αλλάζει τον κώδικα"] --> E["Tests + Truth Sync"]
-  E --> F["Η τεκμηρίωση παραμένει ενημερωμένη"]
-  C --> G["Έλεγχος στο Git"]
-  F --> G
-  H["Έγγραφα truth"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Πώς λειτουργεί το Truthmark" width="1440">
+</picture>
 
 Η διεπαφή γραμμής εντολών του Truthmark εγκαθιστά και επικυρώνει το συμβόλαιο του αποθετηρίου. Ο πράκτορας προγραμματισμού σας εκτελεί την εξέταση αποδεικτικών στοιχείων και την εργασία τεκμηρίωσης μέσω των εγκατεστημένων, εγγενών ροών εργασίας του host.
 

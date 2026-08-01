@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Fonctionnement de Truthmark
 
-```mermaid
-flowchart LR
-  A["Code existant + tests"] --> B["Truth Document"]
-  B --> C["Nouveaux documents produit et d’ingénierie"]
-  D["L’agent modifie le code"] --> E["Tests + Truth Sync"]
-  E --> F["Les documents restent à jour"]
-  C --> G["Revue Git"]
-  F --> G
-  H["Documents de vérité"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Fonctionnement de Truthmark" width="1440">
+</picture>
 
 L’interface en ligne de commande Truthmark installe et valide le contrat du dépôt. Votre agent de codage effectue l’examen des preuves et le travail documentaire via les workflows natifs de l’hôte qui ont été installés.
 

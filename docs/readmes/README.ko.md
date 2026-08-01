@@ -88,17 +88,10 @@ truthmark check --base <base-ref>
 
 ## Truthmark 작동 방식
 
-```mermaid
-flowchart LR
-  A["기존 코드 + 테스트"] --> B["Truth Document"]
-  B --> C["새 제품 및 엔지니어링 문서"]
-  D["에이전트가 코드 변경"] --> E["테스트 + Truth Sync"]
-  E --> F["문서를 최신 상태로 유지"]
-  C --> G["Git 검토"]
-  F --> G
-  H["Truth 문서"] --> I["Truth Realize"]
-  I --> D
-```
+<picture>
+  <source media="(max-width: 700px)" srcset="../assets/truthmark-workflow-mobile.svg">
+  <img src="../assets/truthmark-workflow.svg" alt="Truthmark 작동 방식" width="1440">
+</picture>
 
 Truthmark 명령줄 인터페이스는 저장소 계약을 설치하고 검증합니다. 코딩 에이전트는 설치된 호스트 네이티브 워크플로를 통해 근거를 검토하고 문서화 작업을 수행합니다.
 
