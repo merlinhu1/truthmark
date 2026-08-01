@@ -1,220 +1,202 @@
 # Truthmark
 
-**あなたのエージェントはコードを書きます。Truthmark は、人間向けで Git 上でレビュー可能なドキュメントを維持します。**
+**あなたのエージェントはコードを書きます。Truthmark は、人が読み、Git でレビューできるドキュメントを維持します。**
+
+Truthmark は Git ネイティブなワークフローをインストールし、AI コーディングエージェントが既存のコードとテストから新しいプロダクトおよびエンジニアリングドキュメントを作成し、コードが変更されるたびに最新の状態を保ち、通常の Markdown diff としてレビューできるようにします。
+
+[![npm version](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](../../package.json)
+
+[今すぐ始める](#クイックスタート最初の-truth-ドキュメントを作成する) · [ウェブサイト](https://merlinhu1.github.io/truthmark/) · [ユーザーガイド](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md) · [GitHub](https://github.com/merlinhu1/truthmark)
+
+<details>
+<summary>この README を 16 言語で読む</summary>
 
 [🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark バナー](../assets/truthmark-banner.png)
+</details>
 
-## 🚀 クイックスタート：5 分でローカル実行
+## 最初のドキュメントを作り、常に真実に保つ
 
-Truthmark に管理させたい Git リポジトリ内でこれを実行します：
+多くのドキュメントツールは生成した時点で役目を終えます。Truthmark は、リポジトリ内でエージェントに完全なドキュメントライフサイクルを提供します。
+
+- **動作するソフトウェアから新しいドキュメントを作成。** Truth Document がコードとテストを読み、範囲の明確なプロダクトまたはエンジニアリングドキュメントを作成します。
+- **ドキュメントを自動的に整合。** 機能コードの変更後、Truth Sync がエージェントの引き渡し時に実行され、作業完了前にリポジトリの事実を更新します。
+- **ドキュメントをコードに戻す。** Truth Realize が承認済みの truth ドキュメントを実装し、明快なドキュメントファーストのワークフローを維持します。
+- **コードベースの成長に合わせて所有範囲を修復。** Truth Structure が、新しい領域や肥大化した領域に、範囲の明確なルートと初期ドキュメントを作成します。
+- **すべてを Git でレビュー。** コード、意思決定、契約、アーキテクチャ、運用、振る舞いがブランチと一緒に移動します。
+
+ホスト型ナレッジベースは不要。非公開のエージェントメモリも不要。チャット履歴に閉じ込められるドキュメントもありません。
+
+## クイックスタート：最初の Truth ドキュメントを作成する
+
+**要件：** Node.js 24 以降、Git リポジトリ、エージェントワークフローに対応する AI コーディングホスト。
+
+Truthmark に管理させたいリポジトリ内で実行します。
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark init
+```
+
+`truthmark init` では、Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor、またはホストに依存しないコマンドラインインターフェース設定を選択できます。
+
+次に、設定済みのエージェントへ、実際の振る舞いを 1 つドキュメント化するよう依頼します。
+
+```text
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```
+
+対応するドキュメントがなければ、Truth Document は範囲の明確な truth ドキュメントを新規作成します。既存の所有ドキュメントがあれば更新し、必要に応じてルーティングも更新します。機能コードは変更しません。
+
+結果をレビューします。
+
+```bash
 truthmark check
+git status --short --untracked-files=all
 git diff
 ```
 
-対話型ターミナルでは、`truthmark init` が番号付きの複数選択を表示します。0 個以上のプラットフォームを選ぶか、`none` を入力してホスト非依存の CLI 専用セットアップにします。
+これで、次のファイルが作成されているはずです。
 
-スクリプトや CI では `--platform` を繰り返します。`--json` は決してプロンプトを表示しません：
+```text
+docs/truthmark/engineering/behaviors/session-timeout.md
+docs/truthmark/routes/areas/authentication.md
+```
+
+正確なパスは、リポジトリの所有構造に従います。新規ファイルは `git status` に表示され、追跡済みファイルへの変更は `git diff` に表示されます。
+
+呼び出し方法はホストによって異なります。OpenCode は `/skill truthmark-document`、Antigravity は `@truthmark-document`、その他の対応ホストは各ホスト固有のスキルまたはスラッシュコマンドを使用します。正確なコマンドは[プラットフォーム表](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md#supported-agent-platforms)を参照してください。
+
+スクリプトと継続的インテグレーションでは、選択するプラットフォームを明示的に渡します。
 
 ```bash
 truthmark init --platform codex --platform cursor
 truthmark init --json
 ```
 
-初回の非対話実行で `--platform` がなければホスト非依存のままです。以後の実行では `.truthmark/config.yml` に保存済みの選択を維持します。
+対話形式で `none` を選択するか、`truthmark init --clear-platforms` を実行すると、ホストに依存しないリポジトリになります。後から `truthmark init` を再実行して、エージェントプラットフォームを追加できます。
 
-次に、最も一般的な導入パスを試します。コードとテストから既存の振る舞いを 1 つドキュメント化します。AI コーディングホストで、インストール済みワークフローに依頼してください：
+ブランチを基準とした鮮度診断には、Git のベースを渡します。
 
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```bash
+truthmark check --base <base-ref>
 ```
 
-その後、通常ユーザーが Truth Sync を直接呼び出す必要はありません。AI ホストを通じてコーディングを続けてください。インストールされたリポジトリ指示が、機能コードの変更時に関連テストを実行し、引き渡し前に Truth Sync レビューを行うようエージェントに伝えます。あなたは結果のコード diff と truth-doc diff をレビューします。
+## Truthmark の仕組み
 
-CLI 検証だけが必要なら `none` を選び、`truthmark check` を実行してください。後から `truthmark init` を再実行してプラットフォームを選択できます。
+```mermaid
+flowchart LR
+  A["既存のコード + テスト"] --> B["Truth Document"]
+  B --> C["新しいプロダクトおよびエンジニアリングドキュメント"]
+  D["エージェントがコードを変更"] --> E["テスト + Truth Sync"]
+  E --> F["ドキュメントを最新に維持"]
+  C --> G["Git レビュー"]
+  F --> G
+  H["Truth ドキュメント"] --> I["Truth Realize"]
+  I --> D
+```
 
-## 💡 問題：AI ドキュメントギャップ
+Truthmark のコマンドラインインターフェースがリポジトリ契約をインストールして検証します。コーディングエージェントは、インストール済みのホストネイティブなワークフローを通じて、証拠の確認とドキュメント作業を実行します。
 
-AI コーディングエージェントは、コードを高速に書くことに非常に優れています。しかしその速度は、危険な新しい失敗モードを生みます：**リポジトリの物語が現実からずれていく**ことです。
+通常のコード変更は、次のシンプルなループに従います。
 
-* 振る舞いが一時的なチャット履歴の中に失われます。
-* アーキテクチャ文書はすぐに遅れます。
-* プロダクト上の決定は引き渡し後に消えます。
-* コードレビュー担当者は「なぜ」を理解できないまま生のコード diff を見ることになります。
-* 新しい AI セッションのたびに、リポジトリの truth を一から再発見しなければなりません。
+1. エージェントが機能コードを変更します。
+2. 関連するテストを実行します。
+3. Truth Sync が対応付けられたドキュメントを確認します。
+4. リポジトリの事実が変わった場合、エージェントがドキュメントとルーティングを作成または更新します。
+5. コード diff と truth diff を一緒にレビューします。
 
-## 🎯 解決策：Truthmark
+## ワークフロー
 
-**Truthmark** は、Git ネイティブなワークフロー層をリポジトリにインストールします。AI 開発で通常壊れやすい部分、つまりドキュメントをコードと整合させ続けることを修復します。
+| ワークフロー         | 使用する場面                                                       | 結果                                                                                 |
+| -------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| **Truth Document**   | 既存のコードにドキュメントが必要                                   | 証拠に基づくプロダクトおよびエンジニアリングドキュメントを作成または更新             |
+| **Truth Sync**       | 機能コードが変更された                                             | 引き渡し前に、対応付けられたドキュメントとルーティングを整合                         |
+| **Truth Structure**  | 新しい領域に所有範囲が必要、または既存ドキュメントの範囲が広すぎる | 範囲の明確なルートと骨組みとなる初期ドキュメントを作成                               |
+| **Truth Realize**    | 承認済みの truth ドキュメントを動作するソフトウェアにする          | ドキュメントに基づいて機能コードを更新                                               |
+| **Truth Check**      | リポジトリの事実を監査する必要がある                               | ルーティング、所有範囲、証拠、ドキュメントの問題を報告                               |
+| **Truthmark Portal** | チームが閲覧可能なドキュメントサイトを必要としている               | Markdown の truth ドキュメントから、コミットされる静的 HTML プレゼンテーションを生成 |
 
-人間や AI エージェントがドキュメント更新を忘れないことに期待するのではなく、Truthmark はドキュメントを体系的でレビュー可能な習慣としてリポジトリ内に組み込みます。
-
-### ✨ Truthmark が独自である理由
-
-Truthmark は単なる別のドキュメントツールではありません。AI ワークフローに深く統合されています：
-
-* **🚫 ベンダーロックインなし：** ホステッドサービスも、隠れたデータベースも、運用すべき追加サーバーもありません。
-* **🌳 100% Git ネイティブ：** すべてがリポジトリ内にあります。truth はブランチと一緒に移動します。
-* **🤝 人間が所有し、エージェントが従う契約:** メンテナーがリポジトリ契約を所有し、エージェントはコーディング中にインストール済み指示に従います。
-* **✅ 検証による信頼：** 振る舞いを変える作業には、人間がレビューできる truth-doc の判断または diff が含まれるため、AI の作業を信頼しやすくなります。
-
-## 🔄 仕組み
-
-AI エージェントがコードを変更しても、仕事はまだ終わりではありません。Truthmark は、引き渡し前にエージェントが従う完了時ワークフローガードをインストールします：
-
-1. 💻 **コード：** エージェントが機能コードを変更します。
-2. 🧪 **テスト：** 関連テストを実行します。
-3. 🔍 **チェック:** Truthmark は、インストール済みの終了時レビューの一部として、対応するドキュメントを確認します。
-4. 📝 **ドキュメント化：** リポジトリの truth が変わった場合、エージェントがドキュメントを更新します。
-5. 👀 **レビュー：** 人間が*コード diff* + *truth diff*をレビューします。
-
-## 🛠 Truthmark との関わり方
-
-Truthmark には、リポジトリローカルな契約が 1 つあり、それを使う方法が 2 つあります。
-
-### 人間が契約をインストールして検証する
-
-メンテナーと CI は CLI を使います:
-
-* `truthmark init` - 設定を作成または更新し、0 個以上のプラットフォームを選択して、ルーティング、truth-doc の足場、選択した AI ホスト向け指示をインストールします。
-* `truthmark check` - ターミナルからリポジトリ truth を検証します。
-
-### エージェントはコーディング中に契約に従う
-
-Truthmark は、Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor などの対応 AI コーディングホスト向けに、リポジトリローカルな指示をインストールします。
-
-通常の流れは単純です:
-
-1. エージェントにコード変更を依頼するか、既存の振る舞いの文書化を依頼します。
-2. インストール済みの指示が、いつテストし、いつ truth docs を更新し、いつ人間レビューのために止まるかをエージェントに伝えます。
-3. あなたは通常の Git diff をレビューします。コードと、必要なら truth-doc の変更です。
-
-ユーザーが開始するエージェント依頼は意図的に少なくしています:
-
-* `/truthmark-document` - コードとテストから既存の実装済み振る舞いを文書化します。
-* `/truthmark-realize` - 既存の truth docs からコードを実装します。
-* `/truthmark-check` - リポジトリ truth を監査します。
-
-Truth Sync は作業を始める通常の方法ではありません。機能コード変更後の終了時レビューです。
-Truth Structure は日常コマンドではありません。作業をブロックしている場合にだけ、ルーティングや所有者情報を修復します。
+Truthmark は、Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor 向けのネイティブなリポジトリサーフェスとして、これらのワークフローをインストールします。
 
 ## 得られるもの
 
-| 機能 | 内容 |
-| --- | --- |
-| Git ネイティブな truth | リポジトリの truth をコミット済み Markdown と設定に保持します。 |
-| ブランチ単位のドキュメント | truth はプライベートセッションではなく、ブランチと一緒に移動します。 |
-| 人間向け CLI | メンテナーにセットアップ、更新、検証、確認のコマンドを提供します。 |
-| インストール済みエージェント契約 | ドキュメント化、実現、監査、終了時 sync、限定的なルーティング修復のためのホストネイティブなガイダンスをエージェントに提供します。 |
-| 明示的なルーティング | コード領域を正規の truth ドキュメントに対応付けます。 |
-| レビュー可能な引き渡し | コードと truth ドキュメントの両方について通常の Git diff を生成します。 |
-| ローカルファースト運用 | ホステッドサービス、デーモン、データベース、MCP サーバーを必要としません。 |
-| より安全な書き込み境界 | コードファースト、ドキュメントファースト、読み取り専用、ドキュメント専用のワークフローを分離します。 |
-| 検証 | ルーティング、権限、frontmatter、リンク、生成サーフェス、ブランチスコープ、鮮度、カバレッジの問題を報告します。 |
-| 任意の Portal | 明示的に有効化され要求された場合、Markdown truth ドキュメントからコミット済みの静的 HTML プレゼンテーションサイトを生成します。 |
+### 現実から始まるドキュメント
 
-## ビジュアル概要
+Truthmark は、プロダクト機能、実装の振る舞い、アプリケーションプログラミングインターフェース、アーキテクチャ、ワークフロー、運用、テストのドキュメントを作成できます。コードとテストが証拠を提供し、範囲の明確な Markdown ドキュメントが結果を保持します。
 
-![Truthmark の機能](../assets/truthmark-features.png)
+### 次の変更にも耐えるドキュメント
 
-**機能：** Truthmark が何をインストールし、ワークフローサーフェスがどのように分割されるか。
+ルートがコード領域と正規ドキュメントを結び付けます。エージェントが振る舞いを変更すると、Truth Sync は対応する事実の格納先を把握し、引き渡しをレビュー可能な状態に保ちます。
 
-![Truthmark の位置づけ](../assets/truthmark-position.png)
+### プロダクトの事実とエンジニアリングの事実を別レーンで管理
 
-**位置づけ：** Truthmark がプロンプト、メモリ、仕様ワークフローに対してどこに位置するか。
+プロダクトの事実は、ユーザー向けの約束、境界、意思決定、受け入れ基準を記録します。エンジニアリングの事実は、現在の振る舞い、契約、アーキテクチャ、ワークフロー、運用、テストの振る舞いを記録します。
 
-![Truthmark の同期フロー](../assets/truthmark-syncflow.png)
+### Git ネイティブなコラボレーション
 
-**同期フロー：** Truth Sync が通常のコード変更を引き渡し前にどのように締めくくるか。
+重要なものはすべて、コミットされたリポジトリファイルに存在します。事実はブランチに従い、通常のプルリクエストで機能し、すべてのメンテナーとコーディングエージェントから確認できます。
 
-## チームが採用する理由
+### ローカルファーストの運用
 
-Truthmark は、AI エージェントがコードを生成できることをすでに理解しているチームのためのものです。
+Truthmark に、ホスト型サービス、デーモン、データベース、ベクトルストア、Model Context Protocol サーバーは不要です。リポジトリ自体がドキュメントワークフローを保持します。
 
-次の問題はガバナンスです。
+## Truthmark が適する領域
 
-儀式としてのガバナンスではありません。ガバナンスとは、単純な問いです：
+| ニーズ                                             | 最適な選択肢                 |
+| -------------------------------------------------- | ---------------------------- |
+| 1 回のエージェントセッションからより良い出力を得る | より良いプロンプト           |
+| 個人またはセッション単位の継続性                   | メモリツール                 |
+| 計画優先の機能開発                                 | 仕様ワークフロー             |
+| コードと一緒に移動するブランチ単位のドキュメント   | **Truthmark**                |
+| 振る舞いの正しさ                                   | テストとコードレビュー       |
+| レビュー可能な AI 支援ドキュメント                 | **Truthmark + Git レビュー** |
 
-> この AI 支援の変更後も、リポジトリはまだ真実を伝えているか？
+Truthmark は、すでに AI コーディングエージェントを利用し、コードの変化と同じ速さでリポジトリが真実を伝え続けることを求めるメンテナーとエンジニアリングチームのために作られています。
 
-Truthmark は、コミット済みファイル、明示的なルーティング、レビュー可能な diff によって、チームがこの問いに答えるのを助けます。
+## 対応ホストとコマンドライン
 
-次のようなものが必要なときに有用です：
+対応するエージェントホスト：
 
-- ドキュメントのずれを減らす
-- より良い引き渡し
-- ブランチ固有のプロダクト truth
-- 長持ちするアーキテクチャおよび API ドキュメント
-- ドキュメントとコードの間の明示的な所有関係
-- より安全なエージェントの書き込み境界
-- 隠れたメモリではなく、レビュー可能なドキュメント
-- コミット済みリポジトリファイルから引き続き動作する AI ワークフロー
+- Codex
+- Claude Code
+- GitHub Copilot
+- OpenCode
+- Antigravity
+- Cursor
 
-## Truthmark の適用範囲
+<details>
+<summary>コマンドラインリファレンス</summary>
 
-Truthmark は、プロンプト、メモリ、仕様、テスト、コードレビューを置き換えません。
+| コマンド                                                          | 目的                                                                           |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `truthmark init`                                                  | 設定、ルーティング、テンプレート、選択したホストのワークフローを作成または更新 |
+| `truthmark check [--base <ref>]`                                  | リポジトリの事実を検証し、必要に応じてブランチの鮮度診断を実行                 |
+| `truthmark index --json`                                          | 導出されたリポジトリおよびルーティングのメタデータを確認                       |
+| `truthmark impact --base <ref> --json`                            | 変更されたファイルをドキュメント、所有者、近隣のテストに対応付け               |
+| `truthmark workflow status --workflow <id> [--base <ref>] --json` | ワークフローの適用可否と対象を確認                                             |
+| `truthmark validate ...`                                          | ワークフローレポートと書き込みリースを検証                                     |
+| `truthmark uninstall --dry-run` / `truthmark uninstall --apply`   | 作成済みの事実を保持したまま、生成されたホストサーフェスをプレビューまたは削除 |
 
-それらのワークフローが Git に永続的に着地する場所を提供します。
+スクリプトと継続的インテグレーション向けに、コマンドラインインターフェース全体で構造化 JSON 出力を利用できます。
 
-| ニーズ | より適したもの |
-| --- | --- |
-| 1 回のエージェントセッションからより良い出力を得る | より良いプロンプト |
-| 個人またはセッション単位の継続性 | メモリツール |
-| 計画ファーストの機能開発 | 仕様ワークフロー |
-| コードと一緒に移動するブランチ単位の truth | Truthmark |
-| 振る舞いの正しさを検証する | テストとレビュー |
-| AI 支援によるドキュメント変更をレビューする | Truthmark と Git レビュー |
+</details>
 
-Truthmark のレーンは意図的に狭く設計されています：
+## 詳細情報
 
-```text
-make repository truth explicit
-route it to code
-その周囲にエージェント指示をインストールする
-keep the result reviewable in Git
-```
+- [Truthmark ユーザーガイド](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md)
+- [ドキュメント索引](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
+- [アーキテクチャ概要](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
+- [設定、ルーティング、コマンドの契約](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [リポジトリの事実を維持する](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [コントリビューション](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
-## さらに詳しく
-
-README は店頭のようなものです。素早い文脈、クイックスタート、核となるメンタルモデルを提供します。
-
-コマンドごとの使い方、サーフェス比較、対応プラットフォームの詳細、設定、ルーティング、Portal、例については、[Truthmark ユーザーガイド](../user-guide.md)を読んでください。
-
-## プロジェクトの状態
-
-現在のリリースは次を提供します：
-
-- init、check、index、impact、workflow status のためのローカル CLI コマンド
-- Codex、Claude Code、GitHub Copilot、OpenCode、Antigravity、Cursor 向けに生成されるリポジトリローカルなエージェント指示
-- ルーティング、権限、frontmatter、リンク、鮮度、生成サーフェス、ブランチスコープ、カバレッジの診断
-- ブランチ単位の truth ドキュメントと、派生したリポジトリインテリジェンス成果物
-
-## ドキュメント
-
-- [ユーザーガイド](../user-guide.md)
-- [ドキュメント索引](../README.md)
-- [アーキテクチャ概要](../truthmark/engineering/architecture/overview.md)
-- [API と CLI の契約](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [リポジトリ truth メンテナンスガイド](../standards/maintaining-repository-truth.md)
-
-ローカル開発とコントリビューション用コマンドについては、[CONTRIBUTING.md](../../CONTRIBUTING.md)を参照してください。
-
-## 設計上の境界
-
-Truthmark は意図的に小さく保たれています：ローカル、コミット済み、ブランチ単位、レビュー可能。
-
-これはホステッドサービス、MCP サーバー、ベクトルデータベース、隠れたメモリ層、CI 強制製品、自律的なコード書き換えエンジンではありません。リポジトリの truth を見える状態に保つのを助けますが、テスト、コードレビュー、人間の判断を置き換えるものではありません。
+**Truthmark をインストールし、コーディングホストを選び、今日から実際の振る舞いをドキュメントに変えましょう。**
 
 ## ライセンス
 
 MIT。[LICENSE](../../LICENSE) を参照してください。
-
-## 安全な削除
-
-`truthmark uninstall --dry-run` を使用して正確に生成されたホストサーフェスを確認し、次に `truthmark uninstall --apply` でそれらを削除します。作成した truth、設定、テンプレート、Portal の出力、Gemini ファイル、関連のないユーザーファイルは保持されます。npm のグローバルインストールはパッケージマネージャーで別途削除してください。

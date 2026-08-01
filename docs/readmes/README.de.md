@@ -1,220 +1,202 @@
 # Truthmark
 
-**Deine Agenten schreiben Code. Truthmark pflegt menschenorientierte, in Git überprüfbare Dokumentation.**
+**Deine Agenten schreiben Code. Truthmark pflegt die menschenlesbare Dokumentation, die du direkt in Git prüfen kannst.**
+
+Truthmark installiert Git-native Workflows, mit denen KI-Coding-Agenten aus bestehendem Code und Tests neue Produkt- und Engineering-Dokumentation erstellen, sie nach jeder Codeänderung aktuell halten und dir gewöhnliche Markdown-Diffs zur Prüfung vorlegen.
+
+[![npm version](https://img.shields.io/npm/v/truthmark?color=cb3837&label=npm)](https://www.npmjs.com/package/truthmark)
+[![CI](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/merlinhu1/truthmark/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../../LICENSE)
+[![Node.js >=24](https://img.shields.io/badge/node-%3E%3D24-339933?logo=node.js&logoColor=white)](../../package.json)
+
+[Jetzt starten](#schnellstart-dein-erstes-truth-dokument-erstellen) · [Website](https://merlinhu1.github.io/truthmark/) · [Benutzerhandbuch](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md) · [GitHub](https://github.com/merlinhu1/truthmark)
+
+<details>
+<summary>Dieses README in 16 Sprachen lesen</summary>
 
 [🇺🇸 English](../../README.md) | [🇨🇳 简体中文](README.zh.md) | [🇯🇵 日本語](README.ja.md) | [🇰🇷 한국어](README.ko.md) | [🇩🇪 Deutsch](README.de.md) | [🇫🇷 Français](README.fr.md) | [🇪🇸 Español](README.es.md) | [🇧🇷 Português](README.pt.md) | [🇷🇺 Русский](README.ru.md) | [🇸🇦 العربية](README.ar.md) | [🇮🇹 Italiano](README.it.md) | [🇵🇱 Polski](README.pl.md) | [🇹🇷 Türkçe](README.tr.md) | [🇻🇳 Tiếng Việt](README.vi.md) | [🇮🇩 Bahasa Indonesia](README.id.md) | [🇬🇷 Ελληνικά](README.el.md)
 
-![Truthmark-Banner](../assets/truthmark-banner.png)
+</details>
 
-## 🚀 Schnellstart: lokal in fünf Minuten ausführen
+## Erstelle die ersten Dokumente und halte sie wahr
 
-Führe dies in dem Git-Repository aus, das Truthmark verwalten soll:
+Die meisten Dokumentationswerkzeuge enden bei der Generierung. Truthmark gibt Agenten einen vollständigen Dokumentationslebenszyklus direkt in deinem Repository:
+
+- **Neue Dokumentation aus funktionierender Software erstellen.** Truth Document liest Code und Tests und erstellt daraus klar abgegrenzte Produkt- oder Engineering-Dokumentation.
+- **Dokumentation automatisch auf Kurs halten.** Truth Sync läuft nach Änderungen an funktionalem Code bei der Agentenübergabe und aktualisiert die Repository-Wahrheit, bevor die Arbeit abgeschlossen ist.
+- **Dokumentation wieder in Code verwandeln.** Truth Realize setzt freigegebene Truth-Dokumente um und wahrt dabei einen sauberen Doc-first-Workflow.
+- **Ownership mit dem Codebestand weiterentwickeln.** Truth Structure erstellt klar abgegrenzte Routen und Startdokumente für neue oder überlastete Bereiche.
+- **Alles in Git prüfen.** Code, Entscheidungen, Verträge, Architektur, Betrieb und Verhalten reisen gemeinsam mit dem Branch.
+
+Keine gehostete Wissensdatenbank. Kein privates Agentengedächtnis. Keine Dokumentation, die in Chatverläufen gefangen bleibt.
+
+## Schnellstart: dein erstes Truth-Dokument erstellen
+
+**Voraussetzungen:** Node.js 24 oder neuer, ein Git-Repository und ein unterstützter KI-Coding-Host für Agenten-Workflows.
+
+Führe Folgendes in dem Repository aus, das Truthmark verwalten soll:
 
 ```bash
 cd /path/to/your-repo
 npm install -g truthmark
 truthmark init
+```
+
+Mit `truthmark init` kannst du Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity, Cursor oder eine host-neutrale Einrichtung der Befehlszeilenschnittstelle auswählen.
+
+Bitte nun deinen konfigurierten Agenten, ein echtes Verhalten zu dokumentieren:
+
+```text
+/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```
+
+Truth Document erstellt ein neues, klar abgegrenztes Truth-Dokument, wenn noch keines vorhanden ist, aktualisiert andernfalls das bestehende zuständige Dokument und passt bei Bedarf das Routing an. Funktionalen Code ändert es nicht.
+
+Prüfe das Ergebnis:
+
+```bash
 truthmark check
+git status --short --untracked-files=all
 git diff
 ```
 
-In einem interaktiven Terminal zeigt `truthmark init` eine nummerierte Mehrfachauswahl. Wähle null oder mehr Plattformen oder `none` für eine host-neutrale, reine CLI-Einrichtung.
+Nun solltest du Folgendes haben:
 
-Für Skripte und CI kannst du `--platform` wiederholen; `--json` fragt niemals interaktiv nach:
+```text
+docs/truthmark/engineering/behaviors/session-timeout.md
+docs/truthmark/routes/areas/authentication.md
+```
+
+Die genauen Pfade folgen der Ownership-Struktur deines Repositories. Neue Dateien erscheinen in `git status`; Änderungen an verfolgten Dateien erscheinen in `git diff`.
+
+Der Aufruf unterscheidet sich je nach Host. OpenCode verwendet `/skill truthmark-document`, Antigravity verwendet `@truthmark-document`, und andere unterstützte Hosts nutzen ihre native Skill- oder Slash-Command-Oberfläche. Die genauen Befehle findest du in der [Plattformtabelle](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md#supported-agent-platforms).
+
+Übergib die ausgewählten Plattformen für Skripte und Continuous Integration ausdrücklich:
 
 ```bash
 truthmark init --platform codex --platform cursor
 truthmark init --json
 ```
 
-Beim ersten nicht interaktiven Lauf ohne `--platform` bleibt die Einrichtung host-neutral; spätere Läufe behalten die in `.truthmark/config.yml` gespeicherte Auswahl bei.
+Wähle interaktiv `none` oder führe `truthmark init --clear-platforms` für ein host-neutrales Repository aus. Agentenplattformen kannst du später hinzufügen, indem du `truthmark init` erneut ausführst.
 
-Probiere nun den häufigsten Einstiegspfad: ein bestehendes Verhalten anhand von Code und Tests dokumentieren. Bitte in deinem KI-Coding-Host den installierten Workflow:
+Übergib für Branch-relative Aktualitätsdiagnosen eine Git-Basis:
 
-```text
-/truthmark-document document the implemented session timeout behavior across src/auth/session.ts and tests/auth/session.test.ts
+```bash
+truthmark check --base <base-ref>
 ```
 
-Danach sollten Nutzer Truth Sync normalerweise nicht direkt aufrufen. Programmiere weiter über deinen KI-Host; die installierten Repository-Anweisungen weisen den Agenten an, relevante Tests auszuführen und vor der Übergabe die Truth Sync-Prüfung durchzuführen, wenn funktionaler Code geändert wurde. Du prüfst den daraus entstehenden Code-Diff plus den Truth-Doc-Diff.
+## So funktioniert Truthmark
 
-Wenn du nur CLI-Validierung möchtest, wähle `none` und fahre mit `truthmark check` fort; du kannst `truthmark init` später erneut ausführen und Plattformen auswählen.
-
-## 💡 Das Problem: die KI-Dokumentationslücke
-
-KI-Coding-Agenten sind unglaublich gut darin, schnell Code zu schreiben. Doch diese Geschwindigkeit erzeugt einen gefährlichen neuen Fehlermodus: **die Geschichte des Repositories driftet von der Realität ab.**
-
-* Verhalten geht in flüchtigen Chatverläufen verloren.
-* Architekturdokumente geraten schnell in Rückstand.
-* Produktentscheidungen verschwinden nach der Übergabe.
-* Code-Reviewer prüfen rohe Code-Diffs, ohne das „Warum“ zu verstehen.
-* Jede neue KI-Sitzung muss die Wahrheit deines Repositories von Grund auf neu entdecken.
-
-## 🎯 Die Lösung: Truthmark
-
-**Truthmark** installiert eine Git-native Workflow-Schicht in deinem Repository. Es behebt den Teil der KI-Entwicklung, der normalerweise kaputtgeht: die Dokumentation dabei zu unterstützen, mit dem Code synchron zu bleiben.
-
-Statt darauf zu hoffen, dass Menschen und KI-Agenten daran denken, Dokumentation zu aktualisieren, macht Truthmark Dokumentation direkt in deinem Repo zu einer systematischen, überprüfbaren Gewohnheit.
-
-### ✨ Warum Truthmark einzigartig ist
-
-Truthmark ist nicht einfach nur ein weiteres Dokumentationstool. Es ist tief in den KI-Workflow integriert:
-
-* **🚫 Kein Vendor-Lock-in:** keine gehosteten Dienste, keine versteckten Datenbanken, keine zusätzlichen Server im Betrieb.
-* **🌳 100 % Git-nativ:** alles lebt in deinem Repository. Die Wahrheit bewegt sich mit deinem Branch.
-* **🤝 Von Menschen besessener, von Agenten befolgter Vertrag:** Maintainer besitzen den Repository-Vertrag; Agenten folgen beim Coden den installierten Anweisungen.
-* **✅ Vertrauen durch Verifikation:** KI-Arbeit wird leichter vertrauenswürdig, weil verhaltensändernde Arbeit eine für Menschen überprüfbare Truth-Doc-Entscheidung oder einen Diff enthält.
-
-## 🔄 Wie es funktioniert
-
-Wenn ein KI-Agent deinen Code verändert, ist die Arbeit nicht erledigt. Truthmark installiert eine Workflow-Schutzschiene zum Abschluss, der Agenten vor der Übergabe folgen:
-
-1. 💻 **Code:** Der Agent ändert funktionalen Code.
-2. 🧪 **Test:** Relevante Tests werden ausgeführt.
-3. 🔍 **Prüfen:** Truthmark prüft zugeordnete Dokumentation als Teil der installierten Abschlussprüfung.
-4. 📝 **Dokumentation:** Docs werden vom Agenten aktualisiert, wenn sich die Repository-Wahrheit geändert hat.
-5. 👀 **Review:** Ein Mensch prüft den *Code-Diff* + den *Truth-Diff*.
-
-## 🛠 Wie du mit Truthmark interagierst
-
-Truthmark hat einen repo-lokalen Vertrag und zwei Arten, ihn zu nutzen.
-
-### Menschen installieren und validieren den Vertrag
-
-Maintainer und CI nutzen die CLI:
-
-* `truthmark init` - erstellt oder aktualisiert die Konfiguration, lässt null oder mehr Plattformen auswählen und installiert Routing, Truth-Doc-Scaffolds und die ausgewählten KI-Host-Anweisungen.
-* `truthmark check` - validiert die Repository-Truth im Terminal.
-
-### Agenten folgen dem Vertrag beim Coden
-
-Truthmark installiert repo-lokale Anweisungen für unterstützte KI-Coding-Hosts wie Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity und Cursor.
-
-Der normale Ablauf ist einfach:
-
-1. Bitte deinen Agenten um eine Codeänderung oder darum, vorhandenes Verhalten zu dokumentieren.
-2. Die installierten Anweisungen sagen dem Agenten, wann er testen, wann er Truth-Dokumente aktualisieren und wann er für menschliche Prüfung stoppen soll.
-3. Du prüfst normale Git-Diffs: Code plus alle Truth-Doc-Änderungen.
-
-Die vom Nutzer gestarteten Agentenanfragen bleiben bewusst wenige:
-
-* `/truthmark-document` - dokumentiert vorhandenes implementiertes Verhalten aus Code und Tests.
-* `/truthmark-realize` - implementiert Code aus vorhandenen Truth-Dokumenten.
-* `/truthmark-check` - auditiert die Repository-Truth.
-
-Truth Sync ist nicht der übliche Weg, Arbeit zu starten; es ist die Abschlussprüfung nach funktionalen Codeänderungen.
-Truth Structure ist kein Alltagsbefehl; es repariert Routing oder Ownership nur, wenn das die Arbeit blockiert.
-
-## Was du bekommst
-
-| Fähigkeit | Was sie tut |
-| --- | --- |
-| Git-native Wahrheit | Hält Repository-Wahrheit in committetem Markdown und Konfiguration. |
-| Branch-bezogene Dokumentation | Die Wahrheit bewegt sich mit dem Branch, statt in einer privaten Sitzung zu leben. |
-| Menschliche CLI | Gibt Maintainern Befehle für Einrichtung, Aktualisierung, Validierung und Inspektion. |
-| Installierte Agentenanleitung | Sagt Coding-Agenten, wann sie dokumentieren, testen, Truth synchronisieren, auditieren oder für Review stoppen sollen. |
-| Explizites Routing | Ordnet Codebereiche kanonischen Truth-Dokumenten zu. |
-| Überprüfbare Übergaben | Erzeugt normale Git-Diffs sowohl für Code als auch für Truth-Dokumente. |
-| Local-first-Betrieb | Benötigt keinen gehosteten Dienst, Daemon, keine Datenbank und keinen MCP-Server. |
-| Sicherere Schreibgrenzen | Trennt code-first-, doc-first-, read-only- und doc-only-Workflows. |
-| Validierung | Meldet Probleme bei Routing, Autorität, Frontmatter, Links, generierten Oberflächen, Branch-Scope, Aktualität und Abdeckung. |
-| Optionales Portal | Erzeugt bei ausdrücklicher Aktivierung und Anforderung eine committete statische HTML-Präsentationssite aus Markdown-Truth-Dokumenten. |
-
-## Visueller Überblick
-
-![Truthmark-Funktionen](../assets/truthmark-features.png)
-
-**Funktionen:** was Truthmark installiert und wie Agenten repo-lokale Anweisungen nutzen.
-
-![Truthmark-Position](../assets/truthmark-position.png)
-
-**Position:** wo Truthmark im Verhältnis zu Prompts, Memory und Spec-Workflows steht.
-
-![Truthmark-Sync-Ablauf](../assets/truthmark-syncflow.png)
-
-**Sync-Ablauf:** wie Truth Sync normale Codeänderungen vor der Übergabe abschließt.
-
-## Warum Teams es einsetzen
-
-Truthmark ist für Teams, die bereits wissen, dass KI-Agenten Code erzeugen können.
-
-Das nächste Problem ist Governance.
-
-Nicht Governance als Zeremonie. Governance als einfache Frage:
-
-> Sagt das Repository nach dieser KI-gestützten Änderung noch die Wahrheit?
-
-Truthmark hilft Teams, diese Frage mit committeten Dateien, explizitem Routing und überprüfbaren Diffs zu beantworten.
-
-Es ist nützlich, wenn du Folgendes brauchst:
-
-- weniger Dokumentationsdrift
-- bessere Übergaben
-- branch-spezifische Produktwahrheit
-- dauerhafte Architektur- und API-Dokumentation
-- explizite Ownership zwischen Docs und Code
-- sicherere Schreibgrenzen für Agenten
-- überprüfbare Dokumentation statt versteckter Memory
-- Agentenanleitung, die weiterhin aus committeten Repo-Dateien funktioniert
-
-## Wo Truthmark hineinpasst
-
-Truthmark ersetzt keine Prompts, Memory, Specs, Tests oder Code-Reviews.
-
-Es gibt diesen Workflows einen dauerhaften Ort in Git.
-
-| Bedarf | Besser geeignet |
-| --- | --- |
-| Bessere Ausgabe aus einer Agentensitzung | Besserer Prompt |
-| Persönliche oder sitzungsbezogene Kontinuität | Memory-Tool |
-| Plan-first-Feature-Arbeit | Spec-Workflow |
-| Branch-bezogene Wahrheit, die mit Code reist | Truthmark |
-| Verhaltenskorrektheit validieren | Tests und Review |
-| KI-gestützte Dokumentationsänderungen prüfen | Truthmark plus Git-Review |
-
-Truthmarks Spur ist bewusst schmal:
-
-```text
-make repository truth explicit
-route it to code
-Agentenanleitung darum installieren
-keep the result reviewable in Git
+```mermaid
+flowchart LR
+  A["Bestehender Code + Tests"] --> B["Truth Document"]
+  B --> C["Neue Produkt- und Engineering-Dokumentation"]
+  D["Agent ändert Code"] --> E["Tests + Truth Sync"]
+  E --> F["Dokumentation bleibt aktuell"]
+  C --> G["Git-Review"]
+  F --> G
+  H["Truth-Dokumente"] --> I["Truth Realize"]
+  I --> D
 ```
 
-## Tiefer einsteigen
+Die Truthmark-Befehlszeilenschnittstelle installiert und validiert den Repository-Vertrag. Dein Coding-Agent prüft die Evidenz und erledigt die Dokumentationsarbeit über die installierten host-nativen Workflows.
 
-Das README ist das Schaufenster: schneller Kontext, Schnellstart und das zentrale Denkmodell.
+Eine normale Codeänderung folgt einer einfachen Schleife:
 
-Für befehlsweise Nutzung, Oberflächenvergleiche, Details zu unterstützten Plattformen, Konfiguration, Routing, Portal und Beispiele lies den [Truthmark-Benutzerleitfaden](../user-guide.md).
+1. Der Agent ändert funktionalen Code.
+2. Relevante Tests werden ausgeführt.
+3. Truth Sync prüft die zugeordnete Dokumentation.
+4. Wenn sich die Repository-Wahrheit geändert hat, erstellt oder aktualisiert der Agent Dokumentation und Routing.
+5. Du prüfst Code-Diff und Truth-Diff gemeinsam.
 
-## Projektstatus
+## Workflows
 
-Die aktuelle Version bietet:
+| Workflow             | Einsatzzeitpunkt                                                                | Ergebnis                                                                           |
+| -------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Truth Document**   | Bestehender Code benötigt Dokumentation                                         | Erstellt oder aktualisiert evidenzgestützte Produkt- und Engineering-Dokumentation |
+| **Truth Sync**       | Funktionaler Code wurde geändert                                                | Hält zugeordnete Dokumentation und Routing vor der Übergabe synchron               |
+| **Truth Structure**  | Ein neuer Bereich benötigt Ownership oder vorhandene Dokumentation ist zu breit | Erstellt klar abgegrenzte Routen und skelettartige Startdokumente                  |
+| **Truth Realize**    | Ein freigegebenes Truth-Dokument soll funktionierende Software werden           | Aktualisiert funktionalen Code anhand der Dokumentation                            |
+| **Truth Check**      | Die Repository-Wahrheit muss auditiert werden                                   | Meldet Probleme mit Routing, Ownership, Evidenz und Dokumentation                  |
+| **Truthmark Portal** | Das Team wünscht eine durchsuchbare Dokumentationswebsite                       | Erzeugt aus Markdown-Truth-Dokumenten eine committete statische HTML-Präsentation  |
 
-- lokale CLI-Befehle für init, check, index, impact und Workflow-Status
-- generierte repo-lokale Agentenanweisungen für Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity und Cursor
-- Diagnosen für Routing, Autorität, Frontmatter, Links, Aktualität, generierte Oberflächen, Branch-Scope und Abdeckung
-- branch-bezogene Truth-Dokumente und abgeleitete Repository-Intelligence-Artefakte
+Truthmark installiert diese Workflows als native Repository-Oberflächen für Codex, Claude Code, GitHub Copilot, OpenCode, Antigravity und Cursor.
 
-## Dokumentation
+## Das erhältst du
 
-- [Benutzerleitfaden](../user-guide.md)
-- [Docs-Index](../README.md)
-- [Architekturüberblick](../truthmark/engineering/architecture/overview.md)
-- [API- und CLI-Verträge](../truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Leitfaden zur Pflege der Repository-Wahrheit](../standards/maintaining-repository-truth.md)
+### Dokumentation, die von der Realität ausgeht
 
-Für lokale Entwicklungs- und Beitragsbefehle siehe [CONTRIBUTING.md](../../CONTRIBUTING.md).
+Truthmark kann Produktfunktionen, Implementierungsverhalten, Programmierschnittstellen, Architektur, Workflows, Betrieb und Tests dokumentieren. Code und Tests liefern die Evidenz; klar abgegrenzte Markdown-Dokumente bewahren das Ergebnis.
 
-## Designgrenzen
+### Dokumentation, die die nächste Änderung übersteht
 
-Truthmark ist bewusst klein: lokal, committet, branch-bezogen und überprüfbar.
+Routen verbinden Codebereiche mit kanonischer Dokumentation. Wenn Agenten Verhalten ändern, weiß Truth Sync, wohin die zugehörige Wahrheit gehört, und hält die Übergabe überprüfbar.
 
-Es ist kein gehosteter Dienst, MCP-Server, keine Vektordatenbank, versteckte Memory-Schicht, kein CI-Enforcement-Produkt und keine autonome Code-Rewrite-Engine. Es hilft, Repository-Wahrheit sichtbar zu halten; es ersetzt keine Tests, Code-Reviews oder menschliches Urteil.
+### Produkt- und Engineering-Wahrheit in getrennten Bahnen
+
+Produktwahrheit erfasst nutzerorientierte Versprechen, Grenzen, Entscheidungen und Akzeptanzkriterien. Engineering-Wahrheit erfasst aktuelles Verhalten, Verträge, Architektur, Workflows, Betrieb und Testverhalten.
+
+### Git-native Zusammenarbeit
+
+Alles Wichtige lebt in committeten Repository-Dateien. Die Wahrheit folgt dem Branch, funktioniert mit gewöhnlichen Pull Requests und bleibt für alle Maintainer und Coding-Agenten sichtbar.
+
+### Local-first-Betrieb
+
+Truthmark benötigt keinen gehosteten Dienst, Daemon, keine Datenbank, keinen Vektorspeicher und keinen Model Context Protocol Server. Das Repository bringt seinen eigenen Dokumentations-Workflow mit.
+
+## Wo Truthmark passt
+
+| Bedarf                                                | Beste Lösung               |
+| ----------------------------------------------------- | -------------------------- |
+| Bessere Ergebnisse aus einer einzelnen Agentensitzung | Besserer Prompt            |
+| Persönliche oder sitzungsbezogene Kontinuität         | Memory-Tool                |
+| Plan-first-Feature-Arbeit                             | Spezifikations-Workflow    |
+| Branch-bezogene Dokumentation, die mit dem Code reist | **Truthmark**              |
+| Korrektes Verhalten                                   | Tests und Code-Review      |
+| Überprüfbare KI-gestützte Dokumentation               | **Truthmark + Git-Review** |
+
+Truthmark ist für Maintainer und Engineering-Teams konzipiert, die bereits KI-Coding-Agenten einsetzen und möchten, dass ihr Repository so schnell die Wahrheit weiterschreibt, wie sich der Code ändert.
+
+## Unterstützte Hosts und Befehlszeile
+
+Unterstützte Agenten-Hosts:
+
+- Codex
+- Claude Code
+- GitHub Copilot
+- OpenCode
+- Antigravity
+- Cursor
+
+<details>
+<summary>Befehlszeilenreferenz</summary>
+
+| Befehl                                                            | Zweck                                                                                        |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `truthmark init`                                                  | Konfiguration, Routing, Vorlagen und ausgewählte Host-Workflows erstellen oder aktualisieren |
+| `truthmark check [--base <ref>]`                                  | Repository-Wahrheit validieren und optional Branch-Aktualitätsdiagnosen ausführen            |
+| `truthmark index --json`                                          | Abgeleitete Repository- und Routing-Metadaten prüfen                                         |
+| `truthmark impact --base <ref> --json`                            | Geänderte Dateien Dokumentation, Verantwortlichen und nahen Tests zuordnen                   |
+| `truthmark workflow status --workflow <id> [--base <ref>] --json` | Anwendbarkeit und Ziele eines Workflows prüfen                                               |
+| `truthmark validate ...`                                          | Workflow-Berichte und Schreib-Leases validieren                                              |
+| `truthmark uninstall --dry-run` / `truthmark uninstall --apply`   | Generierte Host-Oberflächen anzeigen oder entfernen und verfasste Wahrheit bewahren          |
+
+Strukturierte JSON-Ausgabe ist in der gesamten Befehlszeilenschnittstelle für Skripte und Continuous Integration verfügbar.
+
+</details>
+
+## Mehr erfahren
+
+- [Truthmark-Benutzerhandbuch](https://github.com/merlinhu1/truthmark/blob/main/docs/user-guide.md)
+- [Dokumentationsindex](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
+- [Architekturüberblick](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
+- [Konfigurations-, Routing- und Befehlsverträge](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
+- [Repository-Wahrheit pflegen](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Mitwirken](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
+
+**Installiere Truthmark, wähle deinen Coding-Host und verwandle noch heute ein echtes Verhalten in Dokumentation.**
 
 ## Lizenz
 
 MIT. Siehe [LICENSE](../../LICENSE).
-
-## Sichere Entfernung
-
-Verwenden Sie `truthmark uninstall --dry-run`, um die exakt erzeugten Host-Surfaces zu prüfen, und anschließend `truthmark uninstall --apply`, um sie zu entfernen. Erstellte truth, Konfiguration, Templates, Portal-Ausgabe, Gemini-Dateien und nicht zusammenhängende Benutzerdateien bleiben erhalten; entfernen Sie eine globale npm-Installation separat mit Ihrem Paketmanager.
