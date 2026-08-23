@@ -185,7 +185,6 @@ truthmark check --base <base-ref>
 - [فهرس التوثيق](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [نظرة عامة على المعمارية](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [عقود الإعداد والتوجيه والأوامر](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [صيانة حقيقة المستودع](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [المساهمة](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **ثبّت Truthmark، واختر مضيف البرمجة، وحوّل سلوكاً حقيقياً إلى توثيق اليوم.**

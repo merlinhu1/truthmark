@@ -185,7 +185,6 @@ Output JSON terstruktur tersedia di seluruh antarmuka baris perintah untuk skrip
 - [Indeks dokumentasi](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Ikhtisar arsitektur](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Kontrak konfigurasi, perutean, dan perintah](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Memelihara kebenaran repositori](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Berkontribusi](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Pasang Truthmark, pilih host pengodean Anda, dan ubah satu perilaku nyata menjadi dokumentasi hari ini.**

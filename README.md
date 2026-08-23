@@ -185,7 +185,6 @@ Structured JSON output is available throughout the command-line interface for sc
 - [Documentation index](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Architecture overview](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Configuration, routing, and command contracts](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Maintaining repository truth](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Contributing](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Install Truthmark, select your coding host, and turn one real behavior into documentation today.**
