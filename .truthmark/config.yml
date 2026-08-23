@@ -20,3 +20,6 @@ ignore:
   - vendor/**
   - dist/**
   - build/**
+  # Repo-local tooling for repo-local policy; no product truth owner by design.
+  - scripts/repo-rules-block.ts
+  - scripts/render-repo-rules.ts

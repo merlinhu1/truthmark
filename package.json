@@ -55,6 +55,7 @@
     "format:check": "prettier --check eslint.config.js package.json package-lock.json tests/package-files.test.ts tsconfig.json",
     "lint": "eslint .",
     "package:check": "node --import tsx --test --test-concurrency=1 tests/package-files.test.ts",
+    "render:repo-rules": "tsx scripts/render-repo-rules.ts",
     "release:check": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build && npm run package:check && npm audit --omit=dev",
     "test": "node --import tsx --test --test-concurrency=1 \"tests/**/*.test.ts\"",
     "test:watch": "node --watch --import tsx --test --test-concurrency=1 \"tests/**/*.test.ts\"",
