@@ -500,7 +500,6 @@ Detailed current behavior lives under `docs/`:
 - [Init and scaffold behavior](truthmark/engineering/behaviors/init-and-scaffold.md)
 - [Check diagnostics](truthmark/engineering/behaviors/check-diagnostics.md)
 - [Installed workflows](truthmark/engineering/workflows/installed-workflow-runtime.md)
-- [Repository truth maintenance guide](repo/standards/maintaining-repository-truth.md)
 
 ## Design boundaries
 

@@ -185,7 +185,6 @@ La salida JSON estructurada está disponible en toda la interfaz de línea de co
 - [Índice de documentación](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Descripción general de la arquitectura](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Contratos de configuración, enrutamiento y comandos](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Mantenimiento de la verdad del repositorio](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Contribuir](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Instala Truthmark, selecciona tu host de programación y convierte hoy un comportamiento real en documentación.**

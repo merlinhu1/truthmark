@@ -185,7 +185,6 @@ Truthmark는 이미 AI 코딩 에이전트를 사용하며, 코드가 변하는 
 - [문서 색인](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [아키텍처 개요](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [구성, 라우팅, 명령 계약](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [저장소의 진실 유지관리](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [기여하기](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Truthmark를 설치하고 코딩 호스트를 선택해 오늘 바로 실제 동작 하나를 문서로 바꾸세요.**

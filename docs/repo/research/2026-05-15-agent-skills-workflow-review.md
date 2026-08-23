@@ -10,20 +10,20 @@ Status: research reference
 Date: 2026-05-15
 Audience: Truthmark maintainers
 
-This is a non-canonical research reference. It summarizes external skill-authoring guidance reviewed on 2026-05-15 and applies it to Truthmark's installed project workflows. It must not be treated as current Truthmark behavior unless the behavior-bearing parts are promoted into [workflow overview](../docs/truth/workflows/overview.md), the bounded workflow truth docs under `docs/truth/workflows/`, the workflow manifest, renderers, and tests.
+This is a non-canonical research reference. It summarizes external skill-authoring guidance reviewed on 2026-05-15 and applies it to Truthmark's installed project workflows. It must not be treated as current Truthmark behavior unless the behavior-bearing parts are promoted into [installed workflow runtime](../../truthmark/engineering/workflows/installed-workflow-runtime.md), the workflow manifest, renderers, and tests.
 
 Checkout references:
 
-- [docs/ai/repo-rules.md](../docs/ai/repo-rules.md)
-- [docs/truth/workflows/overview.md](../docs/truth/workflows/overview.md)
-- [docs/truth/workflows/shared-gates.md](../docs/truth/workflows/shared-gates.md)
-- [src/agents/workflow-manifest.ts](../src/agents/workflow-manifest.ts)
-- [src/templates/workflow-surfaces.ts](../src/templates/workflow-surfaces.ts)
-- [.codex/skills/truthmark-sync/SKILL.md](../.codex/skills/truthmark-sync/SKILL.md)
-- [.codex/skills/truthmark-structure/SKILL.md](../.codex/skills/truthmark-structure/SKILL.md)
-- [.codex/skills/truthmark-document/SKILL.md](../.codex/skills/truthmark-document/SKILL.md)
-- [.codex/skills/truthmark-realize/SKILL.md](../.codex/skills/truthmark-realize/SKILL.md)
-- [.codex/skills/truthmark-check/SKILL.md](../.codex/skills/truthmark-check/SKILL.md)
+- [docs/repo/ai/repo-rules.md](../ai/repo-rules.md)
+- [docs/truthmark/engineering/workflows/installed-workflow-runtime.md](../../truthmark/engineering/workflows/installed-workflow-runtime.md)
+- [src/agents/workflow-manifest.ts](../../../src/agents/workflow-manifest.ts)
+- [src/agents/shared.ts](../../../src/agents/shared.ts)
+- [src/templates/workflow-surfaces.ts](../../../src/templates/workflow-surfaces.ts)
+- [.agents/skills/truthmark-sync/SKILL.md](../../../.agents/skills/truthmark-sync/SKILL.md)
+- [.agents/skills/truthmark-structure/SKILL.md](../../../.agents/skills/truthmark-structure/SKILL.md)
+- [.agents/skills/truthmark-document/SKILL.md](../../../.agents/skills/truthmark-document/SKILL.md)
+- [.agents/skills/truthmark-realize/SKILL.md](../../../.agents/skills/truthmark-realize/SKILL.md)
+- [.agents/skills/truthmark-check/SKILL.md](../../../.agents/skills/truthmark-check/SKILL.md)
 
 External sources reviewed:
 
@@ -85,7 +85,7 @@ Truthmark currently installs five workflows across host-specific surfaces:
 | `truthmark-realize` | Realize truth docs into functional code | `allow_implicit_invocation: false` |
 | `truthmark-check` | Audit repository truth health | `allow_implicit_invocation: false` |
 
-Generated runtime surfaces include `.codex/skills/`, `.codex/agents/`, `.claude/skills/`, `.opencode/skills/`, `.opencode/agents/`, `.github/prompts/`, `.github/agents/`, `.gemini/commands/truthmark/`, and compact managed instruction blocks in files such as `AGENTS.md`.
+Generated runtime surfaces include `.agents/skills/`, `.codex/agents/`, `.claude/skills/`, `.claude/agents/`, `.opencode/skills/`, `.opencode/agents/`, `.cursor/skills/`, `.antigravity/rules/`, and compact managed instruction blocks in files such as `AGENTS.md`.
 
 Current strengths:
 

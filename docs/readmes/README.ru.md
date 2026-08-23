@@ -185,7 +185,6 @@ Truthmark создан для сопровождающих и инженерны
 - [Индекс документации](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Обзор архитектуры](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Контракты конфигурации, маршрутизации и команд](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Поддержание достоверности репозитория](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Участие в разработке](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Установите Truthmark, выберите хост разработки и уже сегодня превратите реальное поведение в документацию.**

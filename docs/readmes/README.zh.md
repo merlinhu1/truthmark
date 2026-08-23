@@ -185,7 +185,6 @@ Truthmark 专为已经使用 AI 编码代理，并希望仓库事实与代码同
 - [文档索引](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [架构概览](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [配置、路由和命令契约](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [维护仓库事实](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [参与贡献](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **立即安装 Truthmark，选择您的编码宿主，今天就把一个真实行为转化为文档。**
