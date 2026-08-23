@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # TruthMark Competitive Research Report
 
 Status judgments are as of **2026-05-15**. This report treats TruthMark as a Git-native truth/workflow product, not as a generic documentation generator.

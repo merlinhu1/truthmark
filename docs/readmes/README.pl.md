@@ -185,7 +185,7 @@ Strukturyzowane dane wyjściowe JSON są dostępne w całym interfejsie wiersza 
 - [Indeks dokumentacji](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Przegląd architektury](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Kontrakty konfiguracji, routingu i poleceń](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Utrzymywanie prawdy repozytorium](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Utrzymywanie prawdy repozytorium](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Współtworzenie](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Zainstaluj Truthmark, wybierz host programistyczny i już dziś zamień jedno rzeczywiste zachowanie w dokumentację.**

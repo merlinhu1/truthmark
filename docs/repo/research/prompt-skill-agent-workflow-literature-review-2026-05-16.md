@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # Prompt, Skill, Agent, and Workflow Literature Review
 
 ## Status

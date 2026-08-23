@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: guide
 last_reviewed: 2026-05-09
 source_of_truth:
@@ -16,14 +17,14 @@ This guide is for humans maintaining Truthmark's own docs tree.
 
 ## When To Update Which Docs
 
-- Change to scaffolded files or AGENTS management: update [docs/truthmark/engineering/behaviors/init-and-scaffold.md](../truthmark/engineering/behaviors/init-and-scaffold.md)
-- Change to diagnostics, routing, containment, or branch scope: update [docs/truthmark/engineering/behaviors/check-diagnostics.md](../truthmark/engineering/behaviors/check-diagnostics.md)
-- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truthmark/product/capabilities/agent-native-workflow-injection.md](../truthmark/product/capabilities/agent-native-workflow-injection.md), [docs/truthmark/engineering/workflows/installed-workflow-runtime.md](../truthmark/engineering/workflows/installed-workflow-runtime.md), and the relevant bounded engineering workflow or generated-surface doc
-- Change to repository-wide rules or completion policy: update [docs/ai/repo-rules.md](../ai/repo-rules.md) or the relevant standard
+- Change to scaffolded files or AGENTS management: update [docs/truthmark/engineering/behaviors/init-and-scaffold.md](../../truthmark/engineering/behaviors/init-and-scaffold.md)
+- Change to diagnostics, routing, containment, or branch scope: update [docs/truthmark/engineering/behaviors/check-diagnostics.md](../../truthmark/engineering/behaviors/check-diagnostics.md)
+- Change to installed workflow text, skip reasons, report shape, or ownership gates: update [docs/truthmark/product/capabilities/agent-native-workflow-injection.md](../../truthmark/product/capabilities/agent-native-workflow-injection.md), [docs/truthmark/engineering/workflows/installed-workflow-runtime.md](../../truthmark/engineering/workflows/installed-workflow-runtime.md), and the relevant bounded engineering workflow or generated-surface doc
+- Change to repository-wide rules or completion policy: update [docs/repo/ai/repo-rules.md](../ai/repo-rules.md) or the relevant standard
 
 ## Maintaining AGENTS.md
 
-Treat [AGENTS.md](../../AGENTS.md) as two surfaces:
+Treat [AGENTS.md](../../../AGENTS.md) as two surfaces:
 
 - manual repository-specific guidance outside the managed block
 - the generated Truthmark block between `<!-- truthmark:start -->` and `<!-- truthmark:end -->`
@@ -40,7 +41,7 @@ When code boundaries or canonical docs change:
 2. narrow overly broad truth-doc lists instead of adding more shadow docs
 3. make sure every relevant `src/**` file still matches at least one area mapping
 
-With hierarchical routing, treat [docs/truthmark/routes/areas.md](../truthmark/routes/areas.md) as the root route index and `docs/truthmark/routes/areas/**/*.md` as the delegated child route files. Keep delegation to one level.
+With hierarchical routing, treat [docs/truthmark/routes/areas.md](../../truthmark/routes/areas.md) as the root route index and `docs/truthmark/routes/areas/**/*.md` as the delegated child route files. Keep delegation to one level.
 
 ## Changing Hierarchy
 
@@ -69,4 +70,4 @@ If a historical note becomes current truth, rewrite it into the correct canonica
 
 ## Verification
 
-Run [docs/standards/testing-and-verification.md](../standards/testing-and-verification.md) commands appropriate to the change. For docs-only routing work, `npm run dev -- check` is the default validation step.
+Run [docs/repo/standards/testing-and-verification.md](../standards/testing-and-verification.md) commands appropriate to the change. For docs-only routing work, `npm run dev -- check` is the default validation step.

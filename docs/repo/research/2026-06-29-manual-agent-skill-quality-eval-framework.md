@@ -1,5 +1,6 @@
 ---
 status: draft
+scope: repo-local
 doc_type: research-index
 last_reviewed: 2026-06-29
 source_of_truth:
@@ -15,10 +16,10 @@ The implemented manual evaluation framework lives under `workflow-eval-framwork/
 
 Use these artifacts:
 
-- Framework README: [`../../workflow-eval-framwork/README.md`](../../workflow-eval-framwork/README.md)
-- Catalog: [`../../workflow-eval-framwork/catalog.yaml`](../../workflow-eval-framwork/catalog.yaml)
-- Manual runner: [`../../scripts/workflow-eval-framwork/run-agent-scenario.mjs`](../../scripts/workflow-eval-framwork/run-agent-scenario.mjs)
-- Schema and fake-runner tests: [`../../tests/evals/workflow-eval-framwork.test.ts`](../../tests/evals/workflow-eval-framwork.test.ts)
+- Framework README: [`../../workflow-eval-framwork/README.md`](../../../workflow-eval-framwork/README.md)
+- Catalog: [`../../workflow-eval-framwork/catalog.yaml`](../../../workflow-eval-framwork/catalog.yaml)
+- Manual runner: [`../../scripts/workflow-eval-framwork/run-agent-scenario.mjs`](../../../scripts/workflow-eval-framwork/run-agent-scenario.mjs)
+- Schema and fake-runner tests: [`../../tests/evals/workflow-eval-framwork.test.ts`](../../../tests/evals/workflow-eval-framwork.test.ts)
 
 The requested framework folder name is intentionally spelled `workflow-eval-framwork`.
 

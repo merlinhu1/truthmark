@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # Truthmark × OpenSpec Deep Behavioral Research
 
 Date: 2026-06-01  

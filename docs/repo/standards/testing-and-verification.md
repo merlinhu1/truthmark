@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: standard
 last_reviewed: 2026-05-13
 source_of_truth:
@@ -16,7 +17,7 @@ This standard defines the canonical verification commands for Truthmark.
 
 ## Command Sources
 
-Repository-level verification commands live in [package.json](../../package.json).
+Repository-level verification commands live in [package.json](../../../package.json).
 
 Current commands:
 

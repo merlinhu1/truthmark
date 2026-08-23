@@ -185,7 +185,7 @@ truthmark check --base <base-ref>
 - [Ευρετήριο τεκμηρίωσης](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Επισκόπηση αρχιτεκτονικής](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Συμβόλαια διαμόρφωσης, δρομολόγησης και εντολών](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Συντήρηση της αλήθειας του αποθετηρίου](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Συντήρηση της αλήθειας του αποθετηρίου](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Συνεισφορά](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Εγκαταστήστε το Truthmark, επιλέξτε τον host προγραμματισμού σας και μετατρέψτε σήμερα μία πραγματική συμπεριφορά σε τεκμηρίωση.**

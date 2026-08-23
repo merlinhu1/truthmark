@@ -185,7 +185,7 @@ Strukturierte JSON-Ausgabe ist in der gesamten Befehlszeilenschnittstelle für S
 - [Dokumentationsindex](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Architekturüberblick](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Konfigurations-, Routing- und Befehlsverträge](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Repository-Wahrheit pflegen](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Repository-Wahrheit pflegen](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Mitwirken](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Installiere Truthmark, wähle deinen Coding-Host und verwandle noch heute ein echtes Verhalten in Dokumentation.**

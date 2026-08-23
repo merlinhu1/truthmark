@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: standard
 last_reviewed: 2026-07-30
 source_of_truth:
@@ -40,7 +41,7 @@ These are bootstrap defaults, not immutable law. Repositories should replace or 
 - Do not maintain parallel documentation trees for the same subject.
 - The root README may remain an onboarding or product-facing entry point, but it should not silently compete with canonical engineering docs.
 
-See [docs/standards/documentation-governance.md](documentation-governance.md) for the governance baseline.
+See [docs/repo/standards/documentation-governance.md](documentation-governance.md) for the governance baseline.
 
 ### Verification Discipline
 

@@ -1,5 +1,7 @@
 Follow repository instruction files that are present in this checkout; do not assume optional policy docs exist.
 
+Documentation scope: `docs/repo/**` is repo-local policy for developing Truthmark itself and ships to nobody; `docs/truthmark/**` and `src/**` are the installed product. Never cite a repo-local doc as evidence about product behavior, schema, or installed surfaces.
+
 Use explicitly configured repository policy docs only when they exist in this checkout.
 
 Agent-specific:

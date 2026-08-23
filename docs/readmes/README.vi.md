@@ -185,7 +185,7 @@ Các host tác nhân được hỗ trợ:
 - [Chỉ mục tài liệu](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Tổng quan kiến trúc](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Hợp đồng cấu hình, định tuyến và lệnh](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Duy trì sự thật của kho](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Duy trì sự thật của kho](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Đóng góp](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Cài đặt Truthmark, chọn host lập trình và biến một hành vi thực tế thành tài liệu ngay hôm nay.**

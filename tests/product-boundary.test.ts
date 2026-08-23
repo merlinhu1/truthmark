@@ -7,7 +7,7 @@ import { expect } from "expect";
 describe("Truthmark product boundary", () => {
   it("keeps spec/proposal lifecycle and workflow-engine drift out of scope", () => {
     const productBoundary = readFileSync(
-      join(process.cwd(), "docs/architecture/product-boundary.md"),
+      join(process.cwd(), "docs/repo/architecture/product-boundary.md"),
       "utf8",
     );
 
