@@ -185,7 +185,7 @@ Truthmark は、すでに AI コーディングエージェントを利用し、
 - [ドキュメント索引](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [アーキテクチャ概要](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [設定、ルーティング、コマンドの契約](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [リポジトリの事実を維持する](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [リポジトリの事実を維持する](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [コントリビューション](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Truthmark をインストールし、コーディングホストを選び、今日から実際の振る舞いをドキュメントに変えましょう。**

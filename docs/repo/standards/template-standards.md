@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: standard
 last_reviewed: 2026-05-30
 source_of_truth:
@@ -98,4 +99,4 @@ Truthmark defaults are justified because they optimize for the reviewable artifa
 
 Update this standard when Truthmark adds, removes, renames, or materially changes default truth-document templates, or when the references behind the default template rationale change.
 
-When changing default template content, keep `docs/truthmark/templates/*.md`, `src/templates/init-files.ts`, `docs/standards/default-principles.md`, and this standard aligned.
+When changing default template content, keep `docs/truthmark/templates/*.md`, `src/templates/init-files.ts`, `docs/repo/standards/default-principles.md`, and this standard aligned.

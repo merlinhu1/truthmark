@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # RepoAgent, ai-doc-gen, and TruthMark
 
 Focused product and implementation comparison for improving TruthMark.

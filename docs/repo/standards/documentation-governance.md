@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: standard
 last_reviewed: 2026-07-30
 source_of_truth:
@@ -15,7 +16,7 @@ This standard defines the documentation-governance rules Truthmark itself follow
 
 Projects may adapt the exact directory layout, but the rules below are the reusable core that makes branch-local truth routing work.
 
-For the broader reusable baseline beyond documentation governance, see `docs/standards/default-principles.md`.
+For the broader reusable baseline beyond documentation governance, see `docs/repo/standards/default-principles.md`.
 
 Small repositories are in scope. A project does not need a large documentation program to benefit from Truthmark. It needs only a small canonical truth surface, clear ownership, and a willingness to improve routing quality over time.
 
@@ -43,10 +44,10 @@ Small repositories are in scope. A project does not need a large documentation p
 
 Truthmark's minimal canonical surface is:
 
-- `docs/ai/repo-rules.md` as the repository-wide agent policy source
+- `docs/repo/ai/repo-rules.md` as the repository-wide agent policy source
 - `.truthmark/config.yml` as the committed hierarchy contract
 - `docs/truthmark/routes/areas.md` as the primary routing surface
-- the project's canonical docs under directories such as `docs/standards/`, `docs/architecture/`, `docs/truthmark/product/`, and `docs/truthmark/engineering/`
+- the project's canonical docs under directories such as `docs/repo/standards/`, `docs/repo/architecture/`, `docs/truthmark/product/`, and `docs/truthmark/engineering/`
 
 By default, instruction files such as `AGENTS.md` install workflow behavior. They do not outrank the canonical truth surface unless a project opts into that explicitly.
 

@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # Truthmark Prompt, Skill, Agent, and Workflow Quality Uplift Review
 
 Intended commit path: `docs/research/prompt-skill-agent-workflow-quality-uplift-review.md`

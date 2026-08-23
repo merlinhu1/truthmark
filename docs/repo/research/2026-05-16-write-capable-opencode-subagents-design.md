@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # Write-Capable OpenCode Subagents Design
 
 Status: proposed review draft

@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: architecture
 last_reviewed: 2026-07-30
 source_of_truth:

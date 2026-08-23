@@ -1,3 +1,9 @@
+---
+status: non-canonical
+scope: repo-local
+doc_type: research
+---
+
 # Agent Skills Workflow Review
 
 Status: research reference

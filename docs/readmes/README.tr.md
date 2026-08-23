@@ -185,7 +185,7 @@ Betikler ve sürekli entegrasyon için komut satırı arayüzünün tamamında y
 - [Dokümantasyon dizini](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Mimariye genel bakış](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Yapılandırma, yönlendirme ve komut sözleşmeleri](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Depo gerçeğini koruma](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Depo gerçeğini koruma](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Katkıda bulunma](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Truthmark'ı kurun, kodlama ana bilgisayarınızı seçin ve gerçek bir davranışı bugün belgeye dönüştürün.**

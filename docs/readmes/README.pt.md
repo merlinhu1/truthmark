@@ -185,7 +185,7 @@ A saída JSON estruturada está disponível em toda a interface de linha de coma
 - [Índice da documentação](https://github.com/merlinhu1/truthmark/blob/main/docs/README.md)
 - [Visão geral da arquitetura](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/architecture/overview.md)
 - [Contratos de configuração, roteamento e comandos](https://github.com/merlinhu1/truthmark/blob/main/docs/truthmark/engineering/contracts/config-route-and-check-contracts.md)
-- [Manutenção da verdade do repositório](https://github.com/merlinhu1/truthmark/blob/main/docs/standards/maintaining-repository-truth.md)
+- [Manutenção da verdade do repositório](https://github.com/merlinhu1/truthmark/blob/main/docs/repo/standards/maintaining-repository-truth.md)
 - [Como contribuir](https://github.com/merlinhu1/truthmark/blob/main/CONTRIBUTING.md)
 
 **Instale o Truthmark, selecione seu host de programação e transforme hoje um comportamento real em documentação.**

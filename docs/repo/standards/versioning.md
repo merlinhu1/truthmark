@@ -1,5 +1,6 @@
 ---
 status: active
+scope: repo-local
 doc_type: standard
 last_reviewed: 2026-05-16
 source_of_truth:
