@@ -3,7 +3,6 @@ platforms:
   - codex
   - opencode
   - claude-code
-  - github-copilot
   - antigravity
   - cursor
 truthmark:
