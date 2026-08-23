@@ -4,7 +4,7 @@ scope: repo-local
 doc_type: guide
 last_reviewed: 2026-05-09
 source_of_truth:
-  - ../README.md
+  - ../../../README.md
   - documentation-governance.md
   - testing-and-verification.md
 ---

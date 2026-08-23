@@ -4,7 +4,7 @@ scope: repo-local
 doc_type: standard
 last_reviewed: 2026-07-30
 source_of_truth:
-  - ../README.md
+  - ../../../README.md
   - documentation-governance.md
 ---
 

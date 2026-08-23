@@ -4,11 +4,11 @@ scope: repo-local
 doc_type: architecture
 last_reviewed: 2026-07-30
 source_of_truth:
-  - ../../README.md
-  - ../truthmark/product/capabilities/agent-native-workflow-injection.md
-  - ../truthmark/product/capabilities/lane-separated-truth.md
-  - ../truthmark/engineering/architecture/overview.md
-  - ../truthmark/engineering/workflows/installed-workflow-runtime.md
+  - ../../../README.md
+  - ../../truthmark/product/capabilities/agent-native-workflow-injection.md
+  - ../../truthmark/product/capabilities/lane-separated-truth.md
+  - ../../truthmark/engineering/architecture/overview.md
+  - ../../truthmark/engineering/workflows/installed-workflow-runtime.md
 ---
 
 # Truthmark Product Boundary

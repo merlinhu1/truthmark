@@ -1,1 +1,2 @@
 *.ts text diff
+*.md text eol=lf
