@@ -39,18 +39,18 @@ const portalPaths = [
   ".cursor/skills/truthmark-portal/SKILL.md",
 ];
 
+// Checked-in path lists follow the platforms this repository installs. Copilot
+// render coverage lives in the allPlatforms render assertions below.
 const readOnlyProcedurePaths = [
   ".agents/skills/truthmark-check/support/procedure.md",
   ".opencode/skills/truthmark-check/support/procedure.md",
   ".claude/skills/truthmark-check/support/procedure.md",
-  ".github/skills/truthmark-check/support/procedure.md",
 ];
 
 const syncProcedurePaths = [
   ".agents/skills/truthmark-sync/support/procedure.md",
   ".opencode/skills/truthmark-sync/support/procedure.md",
   ".claude/skills/truthmark-sync/support/procedure.md",
-  ".github/skills/truthmark-sync/support/procedure.md",
 ];
 
 const staleWriteAuthorizingLaneText =
@@ -291,7 +291,6 @@ describe("Truthmark Portal generated surfaces", () => {
       ".agents/skills/truthmark-sync/support/report-template.md",
       ".opencode/skills/truthmark-sync/support/report-template.md",
       ".claude/skills/truthmark-sync/support/report-template.md",
-      ".github/skills/truthmark-sync/support/report-template.md",
       ".antigravity/rules/truthmark-sync.md",
       ".cursor/skills/truthmark-sync/support/report-template.md",
     ];
