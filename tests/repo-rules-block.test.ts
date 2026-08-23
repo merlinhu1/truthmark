@@ -20,12 +20,16 @@ const readInstructionFile = (relativePath: string): string => {
   return readFileSync(join(process.cwd(), relativePath), "utf8");
 };
 
+const normalizeLineEndings = (content: string): string =>
+  content.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
 describe("repo-local rules block", () => {
   it("keeps every instruction file in sync with the source doc", () => {
     const expected = renderRepoRulesBlock(process.cwd());
     const stale = INSTRUCTION_FILES.filter(
       (instructionFile) =>
-        extractRepoRulesBlock(readInstructionFile(instructionFile)) !== expected,
+        normalizeLineEndings(extractRepoRulesBlock(readInstructionFile(instructionFile)) ?? "") !==
+        expected,
     );
 
     expect(stale).toEqual([]);
@@ -36,7 +40,7 @@ describe("repo-local rules block", () => {
       readInstructionFile(instructionFile),
     );
 
-    expect(new Set(contents).size).toBe(1);
+    expect(new Set(contents.map(normalizeLineEndings)).size).toBe(1);
   });
 
   it("places the repo-local region before the Truthmark managed block", () => {
@@ -87,5 +91,16 @@ describe("repo-local rules block", () => {
 
       expect(upsertRepoRulesBlock(content, block)).toBe(content);
     }
+  });
+
+  it("keeps CRLF instruction files homogeneous and semantically synchronized", () => {
+    const block = renderRepoRulesBlock(process.cwd());
+    const content = readInstructionFile(INSTRUCTION_FILES[0]);
+    const crlfContent = content.replace(/\n/g, "\r\n");
+    const updated = upsertRepoRulesBlock(crlfContent, block);
+
+    expect(updated).toBe(crlfContent);
+    expect(normalizeLineEndings(extractRepoRulesBlock(updated) ?? "")).toBe(block);
+    expect(updated.replace(/\r\n/g, "")).not.toContain("\n");
   });
 });
