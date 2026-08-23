@@ -7,7 +7,7 @@ Agent-specific:
 - Use repository onboarding or docs-map files only when present and needed for unclear or cross-area routing.
 
 <!-- repo-rules:start -->
-<!-- Generated from docs/repo/ai/repo-rules.md by `npm run render:repo-rules`. Edit the source doc, not this block. -->
+<!-- Generated from docs/repo/ai/repo-rules.md by `node --import tsx scripts/render-repo-rules.ts`. Edit the source doc, not this block. -->
 
 ## Authority
 
@@ -63,7 +63,7 @@ Agents inspect the active checkout directly. There is no daemon, database, remot
 `AGENTS.md` and `CLAUDE.md` carry two generated regions, and neither is hand-edited:
 
 - the `truthmark:start` / `truthmark:end` comment markers wrap the Truthmark workflow surface, refreshed by `truthmark init`
-- the `repo-rules:start` / `repo-rules:end` comment markers wrap this file's always-on section, rendered by `npm run render:repo-rules`
+- the `repo-rules:start` / `repo-rules:end` comment markers wrap this file's always-on section, rendered locally with `node --import tsx scripts/render-repo-rules.ts`
 
 Marker names appear here without their comment syntax on purpose: a literal marker inside the rendered region would duplicate it in the instruction files and make the managed block unparseable.
 

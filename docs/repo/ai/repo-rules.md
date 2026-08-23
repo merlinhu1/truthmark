@@ -4,8 +4,8 @@ scope: repo-local
 doc_type: agent-rules
 last_reviewed: 2026-08-23
 source_of_truth:
-  - ../../AGENTS.md
-  - ../README.md
+  - ../../../AGENTS.md
+  - ../../../README.md
   - ../architecture/product-boundary.md
 ---
 
@@ -69,7 +69,7 @@ Agents inspect the active checkout directly. There is no daemon, database, remot
 `AGENTS.md` and `CLAUDE.md` carry two generated regions, and neither is hand-edited:
 
 - the `truthmark:start` / `truthmark:end` comment markers wrap the Truthmark workflow surface, refreshed by `truthmark init`
-- the `repo-rules:start` / `repo-rules:end` comment markers wrap this file's always-on section, rendered by `npm run render:repo-rules`
+- the `repo-rules:start` / `repo-rules:end` comment markers wrap this file's always-on section, rendered locally with `node --import tsx scripts/render-repo-rules.ts`
 
 Marker names appear here without their comment syntax on purpose: a literal marker inside the rendered region would duplicate it in the instruction files and make the managed block unparseable.
 

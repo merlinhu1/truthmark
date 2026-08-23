@@ -6,7 +6,7 @@ Version action: none
 
 - Removed `github-copilot` from `.truthmark/config.yml`, let the init lifecycle prune the 29 generated surfaces it owned, and deleted the leftover `.github/copilot-instructions.md`. Copilot remains a supported platform of the product; only this repository's installation changed.
 - Narrowed the checked-in path lists in `tests/templates/generated-surfaces.test.ts` to the platforms this repository installs. The `allPlatforms` render assertions keep full Copilot coverage.
-- Added a generated `repo-rules:start` / `repo-rules:end` region to `AGENTS.md` and `CLAUDE.md`, rendered from the always-on section of `docs/repo/ai/repo-rules.md` by `npm run render:repo-rules`, so repository authority, documentation scope, product boundary, the numbered rules, and the completion gate survive context compaction.
+- Added a generated `repo-rules:start` / `repo-rules:end` region to `AGENTS.md` and `CLAUDE.md`, rendered from the always-on section of `docs/repo/ai/repo-rules.md` by the local `node --import tsx scripts/render-repo-rules.ts` command, so repository authority, documentation scope, product boundary, the numbered rules, and the completion gate survive context compaction.
 - Added `scripts/repo-rules-block.ts` and `scripts/render-repo-rules.ts`, plus `tests/repo-rules-block.test.ts` covering source sync, cross-file equality, marker ordering, link rewriting, malformed-marker rejection, managed-block round-trip, and idempotence.
 - Rewrote the Instruction Surface Boundary rule to describe the two-region model, since the previous wording forbade the preamble duplication this change introduces.
 - Included `scripts/**/*.ts` in `tsconfig.json` so the new repo-local tooling is typechecked.

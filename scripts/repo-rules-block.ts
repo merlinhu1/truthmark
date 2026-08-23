@@ -16,9 +16,18 @@ export const INSTRUCTION_FILES = ["AGENTS.md", "CLAUDE.md"];
 
 const ALWAYS_ON_START = "<!-- always-on:start -->";
 const ALWAYS_ON_END = "<!-- always-on:end -->";
-const GENERATED_NOTICE = `<!-- Generated from ${REPO_RULES_SOURCE} by \`npm run render:repo-rules\`. Edit the source doc, not this block. -->`;
+const GENERATED_NOTICE = `<!-- Generated from ${REPO_RULES_SOURCE} by \`node --import tsx scripts/render-repo-rules.ts\`. Edit the source doc, not this block. -->`;
 
 const sourceDir = path.posix.dirname(REPO_RULES_SOURCE);
+
+const normalizeLineEndings = (content: string): string =>
+  content.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+const lineEndingFor = (content: string): "\n" | "\r\n" =>
+  content.includes("\r\n") ? "\r\n" : "\n";
+
+const withLineEnding = (content: string, lineEnding: "\n" | "\r\n"): string =>
+  normalizeLineEndings(content).replace(/\n/g, lineEnding);
 
 /**
  * Rewrites links that were relative to the source doc so they resolve from the
@@ -101,17 +110,29 @@ export const upsertRepoRulesBlock = (
   const current = extractRepoRulesBlock(existingContent);
 
   if (current !== null) {
-    return existingContent.replace(current, block);
+    if (normalizeLineEndings(current) === normalizeLineEndings(block)) {
+      return existingContent;
+    }
+
+    return existingContent.replace(
+      current,
+      withLineEnding(block, lineEndingFor(existingContent)),
+    );
   }
+
+  const lineEnding = lineEndingFor(existingContent);
+  const renderedBlock = withLineEnding(block, lineEnding);
 
   const truthmarkStart = existingContent.indexOf("<!-- truthmark:start -->");
 
   if (truthmarkStart === -1) {
-    return `${existingContent.replace(/\n+$/u, "")}\n\n${block}\n`;
+    return `${existingContent.replace(/(?:\r\n|\r|\n)+$/u, "")}${lineEnding}${lineEnding}${renderedBlock}${lineEnding}`;
   }
 
-  const before = existingContent.slice(0, truthmarkStart).replace(/\n+$/u, "");
+  const before = existingContent
+    .slice(0, truthmarkStart)
+    .replace(/(?:\r\n|\r|\n)+$/u, "");
   const after = existingContent.slice(truthmarkStart);
 
-  return `${before}\n\n${block}\n\n${after}`;
+  return `${before}${lineEnding}${lineEnding}${renderedBlock}${lineEnding}${lineEnding}${after}`;
 };

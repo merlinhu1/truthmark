@@ -5,7 +5,7 @@ doc_type: agent-guide
 last_reviewed: 2026-05-16
 source_of_truth:
   - repo-rules.md
-  - ../README.md
+  - ../../../README.md
 ---
 
 # Agent Onboarding

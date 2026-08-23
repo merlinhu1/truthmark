@@ -4,8 +4,8 @@ scope: repo-local
 doc_type: standard
 last_reviewed: 2026-05-16
 source_of_truth:
-  - ../../package.json
-  - ../../package-lock.json
+  - ../../../package.json
+  - ../../../package-lock.json
   - change-notes.md
   - https://semver.org/
 ---
