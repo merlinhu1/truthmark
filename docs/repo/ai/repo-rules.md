@@ -13,11 +13,13 @@ source_of_truth:
 
 Repository-wide agent authority, routing, and completion rules. Read the smallest sufficient set; detailed behavior lives in [docs/](../../README.md).
 
+<!-- always-on:start -->
+
 ## Authority
 
 Conflict order:
 
-1. this file
+1. this file (`docs/repo/ai/repo-rules.md`)
 2. [.truthmark/config.yml](../../../.truthmark/config.yml)
 3. [docs/truthmark/routes/areas.md](../../truthmark/routes/areas.md) and `docs/truthmark/routes/areas/**/*.md`
 4. `docs/repo/standards/**/*.md`
@@ -64,11 +66,20 @@ Agents inspect the active checkout directly. There is no daemon, database, remot
 
 ## Instruction Surface Boundary
 
-In `AGENTS.md` and `CLAUDE.md`, only text between `<!-- truthmark:start -->` and `<!-- truthmark:end -->` is the generated Truthmark workflow surface. Repo-local preamble outside those markers should delegate to this file and conditional routing docs, not duplicate completion policy. Do not put this repository's internal policy, completion gates, or maintainer-only standards inside marker-delimited blocks, package templates, installed workflow skills, prompts, or downstream scaffold output.
+`AGENTS.md` and `CLAUDE.md` carry two generated regions, and neither is hand-edited:
+
+- the `truthmark:start` / `truthmark:end` comment markers wrap the Truthmark workflow surface, refreshed by `truthmark init`
+- the `repo-rules:start` / `repo-rules:end` comment markers wrap this file's always-on section, rendered by `npm run render:repo-rules`
+
+Marker names appear here without their comment syntax on purpose: a literal marker inside the rendered region would duplicate it in the instruction files and make the managed block unparseable.
+
+This file stays the authority; the rendered region is generated output under rule 8. Change policy here and re-render. Hand-written preamble outside both regions stays short and delegates rather than restating policy. Do not put this repository's internal policy, completion gates, or maintainer-only standards inside the Truthmark managed block, package templates, installed workflow skills, prompts, or downstream scaffold output.
 
 ## Completion Gate
 
 Before declaring changed repository work complete, apply [docs/repo/standards/pre-completion-checklist.md](../standards/pre-completion-checklist.md) and [docs/repo/standards/testing-and-verification.md](../standards/testing-and-verification.md). Skip this gate only for read-only or no-file-change sessions, and state the skip reason when completion or verification would otherwise be expected.
+
+<!-- always-on:end -->
 
 ## Routing
 
