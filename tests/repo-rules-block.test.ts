@@ -93,6 +93,19 @@ describe("repo-local rules block", () => {
     }
   });
 
+  it("writes replacement text literally when rules contain $ substitution patterns", () => {
+    const content = readInstructionFile(INSTRUCTION_FILES[0]);
+    const literalBlock = [
+      REPO_RULES_BLOCK_START,
+      "Escaping check: $& $1 $` $' $$",
+      REPO_RULES_BLOCK_END,
+    ].join("\n");
+
+    expect(extractRepoRulesBlock(upsertRepoRulesBlock(content, literalBlock))).toBe(
+      literalBlock,
+    );
+  });
+
   it("keeps CRLF instruction files homogeneous and semantically synchronized", () => {
     const block = renderRepoRulesBlock(process.cwd());
     const content = readInstructionFile(INSTRUCTION_FILES[0]);
