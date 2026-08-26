@@ -23,7 +23,7 @@ The two new scripts are excluded in `.truthmark/config.yml` rather than routed. 
 
 - `npm run lint`
 - `npm run typecheck`
-- `npm test` (423 pass, 0 fail)
+- `npm test` (426 pass, 0 fail)
 - `npm run build`
 - `npm run dev -- init` followed by `npm run dev -- check` (no diagnostics; the managed-block refresh leaves the repo-local region intact and preserves config comments)
 - Relative-link audit across all tracked Markdown: 12 broken links, unchanged from before this work and all pre-existing in `docs/repo/research/`.

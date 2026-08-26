@@ -18,6 +18,6 @@ A full relative-link audit across every tracked Markdown file now reports zero b
 
 - `npm run lint`
 - `npm run typecheck`
-- `npm test` (423 pass, 0 fail)
+- `npm test` (426 pass, 0 fail)
 - `npm run dev -- check` (no diagnostics)
 - Relative-link audit across all tracked Markdown: 0 broken (was 12).

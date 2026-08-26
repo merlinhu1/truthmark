@@ -114,8 +114,9 @@ export const upsertRepoRulesBlock = (
       return existingContent;
     }
 
-    return existingContent.replace(
-      current,
+    // Function replacer: a string replacement would interpret $&, $1, and
+    // friends, silently corrupting rules text that contains them.
+    return existingContent.replace(current, () =>
       withLineEnding(block, lineEndingFor(existingContent)),
     );
   }
