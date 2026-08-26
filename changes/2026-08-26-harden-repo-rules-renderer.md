@@ -18,7 +18,7 @@ Both defects were introduced by the CRLF handling added for the line-ending revi
 
 - `npm run lint`
 - `npm run typecheck`
-- `npm test` (426 pass, 0 fail)
+- `npm test` (428 pass, 0 fail)
 - `npm run build`
 - `npm run format:check`
 - `npm run package:check`
