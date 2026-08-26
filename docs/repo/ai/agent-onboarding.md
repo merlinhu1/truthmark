@@ -88,7 +88,7 @@ Do:
 
 Do not:
 
-- treat [README.md](../../README.md) as the final source of behavioral truth
+- treat [README.md](../../../README.md) as the final source of behavioral truth
 - invent unimplemented commands such as a current `truthmark realize` CLI command
 - leave routing broad when you can point to a smaller maintained truth surface
 - rewrite functional code during documentation-only tasks

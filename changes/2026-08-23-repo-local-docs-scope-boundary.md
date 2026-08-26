@@ -21,7 +21,7 @@ The enforcing check is a repo-local test rather than a `src/checks/` diagnostic 
 
 - `npm run lint`
 - `npm run typecheck`
-- `npm test` (426 pass, 0 fail)
+- `npm test` (428 pass, 0 fail)
 - `npm run build`
 - `npm run dev -- check` (no diagnostics)
 - Relative-link audit across all tracked Markdown: 12 broken links before and after the move, all pre-existing in `docs/repo/research/` and unrelated to this change.
