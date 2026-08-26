@@ -126,12 +126,12 @@ export const upsertRepoRulesBlock = (
   const truthmarkStart = existingContent.indexOf("<!-- truthmark:start -->");
 
   if (truthmarkStart === -1) {
-    return `${existingContent.replace(/(?:\r\n|\r|\n)+$/u, "")}${lineEnding}${lineEnding}${renderedBlock}${lineEnding}`;
+    return `${existingContent.replace(/[\r\n]+$/u, "")}${lineEnding}${lineEnding}${renderedBlock}${lineEnding}`;
   }
 
   const before = existingContent
     .slice(0, truthmarkStart)
-    .replace(/(?:\r\n|\r|\n)+$/u, "");
+    .replace(/[\r\n]+$/u, "");
   const after = existingContent.slice(truthmarkStart);
 
   return `${before}${lineEnding}${lineEnding}${renderedBlock}${lineEnding}${lineEnding}${after}`;
