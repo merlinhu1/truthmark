@@ -137,7 +137,7 @@ Capability docs own:
 - It resolves platform choice from explicit flags, interactive selection, saved values, or the empty first-run default, in that order.
 - It prepares a version-2 config update, preflighting the config path and lifecycle mutations before writing scaffold and generated-surface files; lifecycle removals are applied last so a failed write does not delete existing generated surfaces, and invalid existing config still fails closed.
 - It renders current templates and generated host surfaces from source renderers.
-- Before any scaffold or generated-surface write, it resolves managed instruction destinations. A final symlink may target an ordinary regular, single-link file inside the worktree; external, Git-administrative, broken, circular, directory, parent-symlink, and hard-linked targets fail preflight.
+- Before any scaffold or generated-surface write, it resolves managed-block instruction destinations. A final symlink may resolve through repository-owned in-worktree topology to an ordinary regular, single-link file; external, Git-administrative, broken, circular, directory, and hard-linked targets fail preflight.
 - It revalidates every planned mutation before applying the first removal, so a changed or unsafe later target prevents partial cleanup; earlier scaffold writes remain visible for retry if lifecycle application is blocked.
 - It removes only renderer-owned generated artifacts that are outside the selected surface set.
 - It preserves user bytes outside a removed managed block, including surrounding whitespace and line-ending convention.
@@ -169,9 +169,9 @@ Capability docs own:
 - Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` for repository setup and platform selection.
   - Interactive selection is zero-or-more, while repeatable `--platform` values provide deterministic automation and `--json` never prompts.
   - Existing version-2 configs do not require migration; platform updates preserve other values and comments.
-- Decision (2026-09-02): Managed instruction symlinks are repository-owned topology.
+- Decision (2026-09-02): Managed-block instruction symlinks are repository-owned topology.
   - Truthmark follows a mechanically safe final in-worktree symlink without restricting the target extension or interpreting cross-host visibility.
-  - Cleanup coalesces aliases by physical target so an inactive logical surface cannot remove an active target.
+  - Cleanup coalesces aliases by canonical resolved path so an inactive logical surface cannot remove an active target.
 
 ## Rationale
 

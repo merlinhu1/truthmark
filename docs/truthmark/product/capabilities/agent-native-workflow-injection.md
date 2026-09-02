@@ -35,7 +35,7 @@ This capability covers:
 - Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, Antigravity, and Cursor workflow files generated from the source templates and manifest when those platforms are configured.
 - Fresh configs do not assume a host platform; host-specific surfaces are opt-in through `.truthmark/config.yml` `platforms`.
 - Configured platforms select the logical host instruction surfaces Truthmark writes. Shared-contract hosts aggregate `AGENTS.md`; Claude Code uses `.claude/rules/truthmark.md`; user-owned aliases may expose the same in-worktree file to other hosts without changing platform configuration.
-- Managed instruction paths may be final symlinks to ordinary files inside the worktree. Truthmark rejects mechanical hazards but does not police the target's filename, content type, or cross-host meaning.
+- Managed-block instruction paths may be final symlinks to ordinary files inside the worktree. Truthmark-owned whole-file surfaces, including Claude Code's dedicated rule, remain direct files. Truthmark rejects mechanical hazards but does not police a managed alias target's filename, content type, or cross-host meaning.
 - Host skill directories are generated as native skill packages for Structure, Document, Sync, Realize, Check, and Portal when enabled.
   - They include `SKILL.md` plus colocated procedure/report support files.
   - They include subagent or lease guidance where the workflow uses them.

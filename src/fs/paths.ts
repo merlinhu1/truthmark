@@ -155,8 +155,25 @@ export const resolveSafeExactFileTarget = async (
 ): Promise<SafeExactFileTarget | null> => {
   if (
     await isSafeExactFile(rootDir, relativePath, allowMissing, excludedRoots)
-  )
-    return { path: relativePath, aliased: false };
+  ) {
+    const absolutePath = resolveRepoPath(rootDir, relativePath);
+    try {
+      const [resolvedRootDir, resolvedPath] = await Promise.all([
+        fs.realpath(rootDir),
+        fs.realpath(absolutePath),
+      ]);
+      return {
+        path: toRepoRelativePath(resolvedRootDir, resolvedPath),
+        aliased: false,
+      };
+    } catch (error: unknown) {
+      if (!allowMissing || !isNodeErrorWithCode(error, "ENOENT")) return null;
+      return {
+        path: toRepoRelativePath(rootDir, absolutePath),
+        aliased: false,
+      };
+    }
+  }
 
   if (!allowFinalSymlink) return null;
 
@@ -171,7 +188,7 @@ export const resolveSafeExactFileTarget = async (
     if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1) return null;
 
     return {
-      path: toRepoRelativePath(rootDir, resolvedPath),
+      path: toRepoRelativePath(await fs.realpath(rootDir), resolvedPath),
       aliased: true,
     };
   } catch {
