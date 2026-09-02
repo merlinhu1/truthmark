@@ -26,8 +26,8 @@ Truthmark renders logical workflow surfaces only for configured platforms.
 - Managed-block removal preserves all bytes outside the single valid marker range. A direct block-only file is removed; an aliased target is left as an empty file so the user-owned symlink remains valid.
 - When `platforms` is omitted, fresh config does not assume a host platform.
 - `platforms` declares the logical surfaces Truthmark writes. User-owned aliases may expose a managed block to another host; Truthmark does not infer platform ownership or visibility from that repository topology.
-- A managed instruction path may be a final symlink to any regular, single-link file inside the worktree and outside Git administrative paths. External, broken, circular, directory, parent-symlink, hard-linked, and Git-administrative targets fail preflight.
-- Lifecycle cleanup coalesces inactive managed aliases by resolved target and never removes a block through an inactive alias when an active generated surface resolves to that target.
+- A managed-block instruction path may be a final symlink that resolves through repository-owned in-worktree topology to any regular, single-link file outside Git administrative paths. External, broken, circular, directory, hard-linked, and Git-administrative targets fail preflight. Truthmark-owned whole-file surfaces remain direct files.
+- Lifecycle cleanup coalesces inactive managed aliases by canonical resolved path and never removes a block through an inactive alias when an active generated surface resolves to that path.
 - Host skill packages carry canonical workflow entrypoints plus support files for full procedures, report templates, and subagent/lease guidance when the workflow uses subagents.
 - GitHub Copilot prompt files are lightweight workflow adapters that point to the current host entrypoint.
 - Cursor Agent Skills are generated as native project skill packages under `.cursor/skills/truthmark-*` with package-local support files.
@@ -100,9 +100,9 @@ Truthmark renders logical workflow surfaces only for configured platforms.
   - Sync hands off only unsafe or ambiguous topology work.
 - Decision (2026-06-21): Init does not delete retired Gemini surfaces automatically.
   - Check diagnostics identify obsolete `GEMINI.md` and `.gemini/**` files so users can remove stale injected Gemini guidance themselves.
-- Decision (2026-07-10, refined 2026-09-02): Logical-path lifecycle inventory and fail-closed revalidation are shared by Check, Init, and Uninstall so reconciliation never requires recursive directory deletion; managed aliases are coalesced by resolved target for cleanup.
+- Decision (2026-07-10, refined 2026-09-02): Logical-path lifecycle inventory and fail-closed revalidation are shared by Check, Init, and Uninstall so reconciliation never requires recursive directory deletion; managed aliases are coalesced by canonical resolved path for cleanup.
 - Decision (2026-09-02): Claude Code receives the compact workflow block through an unscoped `.claude/rules/truthmark.md` rule instead of injection into `CLAUDE.md`.
-- Decision (2026-09-02): Managed instruction files may use final in-worktree symlinks.
+- Decision (2026-09-02): Managed-block instruction files may use final in-worktree symlinks; Truthmark-owned whole-file surfaces may not.
   - Truthmark rejects mechanical hazards but does not judge the target's extension, content type, or cross-host visibility.
   - `platforms` governs logical generated surfaces; user-owned aliases remain repository policy.
 

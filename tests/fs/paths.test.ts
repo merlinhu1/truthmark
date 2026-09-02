@@ -7,6 +7,7 @@ import { expect } from "expect";
 import {
   ensureRepoFile,
   isSafeExactFile,
+  resolveSafeExactFileTarget,
   writeRepoFile,
 } from "../../src/fs/paths.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -121,6 +122,24 @@ describe("repo path writes", () => {
       await expect(
         isSafeExactFile(repo.rootDir, "src/missing.ts", false),
       ).resolves.toBe(false);
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  it("uses the same canonical path for direct and aliased existing targets", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await repo.writeFile("shared.md", "shared\n");
+      await fs.symlink("shared.md", path.join(repo.rootDir, "AGENTS.md"));
+
+      await expect(
+        resolveSafeExactFileTarget(repo.rootDir, "./shared.md", false, true),
+      ).resolves.toEqual({ path: "shared.md", aliased: false });
+      await expect(
+        resolveSafeExactFileTarget(repo.rootDir, "AGENTS.md", false, true),
+      ).resolves.toEqual({ path: "shared.md", aliased: true });
     } finally {
       await repo.cleanup();
     }
