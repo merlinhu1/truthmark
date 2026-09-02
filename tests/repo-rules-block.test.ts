@@ -35,22 +35,16 @@ describe("repo-local rules block", () => {
     expect(stale).toEqual([]);
   });
 
-  it("keeps the instruction files identical to each other", () => {
-    const contents = INSTRUCTION_FILES.map((instructionFile) =>
-      readInstructionFile(instructionFile),
-    );
-
-    expect(new Set(contents.map(normalizeLineEndings)).size).toBe(1);
-  });
-
-  it("places the repo-local region before the Truthmark managed block", () => {
+  it("places the repo-local region before a Truthmark managed block when present", () => {
     for (const instructionFile of INSTRUCTION_FILES) {
       const content = readInstructionFile(instructionFile);
+      const truthmarkStart = content.indexOf("<!-- truthmark:start -->");
 
       expect(content.indexOf(REPO_RULES_BLOCK_START)).toBeGreaterThan(-1);
-      expect(content.indexOf(REPO_RULES_BLOCK_END)).toBeLessThan(
-        content.indexOf("<!-- truthmark:start -->"),
-      );
+      if (truthmarkStart !== -1)
+        expect(content.indexOf(REPO_RULES_BLOCK_END)).toBeLessThan(
+          truthmarkStart,
+        );
     }
   });
 

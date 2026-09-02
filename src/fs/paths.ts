@@ -9,6 +9,11 @@ export type FileWriteResult = {
   status: FileWriteStatus;
 };
 
+export type SafeExactFileTarget = {
+  path: string;
+  aliased: boolean;
+};
+
 const isPathInsideRoot = (rootDir: string, targetPath: string): boolean => {
   return targetPath === rootDir || targetPath.startsWith(`${rootDir}${path.sep}`);
 };
@@ -16,6 +21,11 @@ const isPathInsideRoot = (rootDir: string, targetPath: string): boolean => {
 const isNodeErrorWithCode = (error: unknown, code: string): boolean => {
   return error instanceof Error && "code" in error && error.code === code;
 };
+
+const isExcludedPath = (
+  targetPath: string,
+  excludedRoots: readonly string[],
+): boolean => excludedRoots.some((root) => isPathInsideRoot(root, targetPath));
 
 const pathSegments = (absolutePath: string): string[] => {
   return absolutePath.split(path.sep);
@@ -82,10 +92,18 @@ export const isSafeExactFile = async (
   rootDir: string,
   relativePath: string,
   allowMissing: boolean,
+  excludedRoots: readonly string[] = [],
 ): Promise<boolean> => {
   try {
     const absolutePath = resolveRepoPath(rootDir, relativePath);
     await assertRepoContainment(rootDir, absolutePath);
+    if (
+      isExcludedPath(
+        await resolveThroughExistingAncestor(absolutePath),
+        excludedRoots,
+      )
+    )
+      return false;
     const relative = path.relative(rootDir, absolutePath);
     const segments = pathSegments(relative);
 
@@ -125,6 +143,39 @@ export const isSafeExactFile = async (
     return false;
   } catch {
     return false;
+  }
+};
+
+export const resolveSafeExactFileTarget = async (
+  rootDir: string,
+  relativePath: string,
+  allowMissing: boolean,
+  allowFinalSymlink: boolean,
+  excludedRoots: readonly string[] = [],
+): Promise<SafeExactFileTarget | null> => {
+  if (
+    await isSafeExactFile(rootDir, relativePath, allowMissing, excludedRoots)
+  )
+    return { path: relativePath, aliased: false };
+
+  if (!allowFinalSymlink) return null;
+
+  try {
+    const absolutePath = resolveRepoPath(rootDir, relativePath);
+    if (!(await fs.lstat(absolutePath)).isSymbolicLink()) return null;
+
+    const resolvedPath = await fs.realpath(absolutePath);
+    await assertRepoContainment(rootDir, resolvedPath);
+    if (isExcludedPath(resolvedPath, excludedRoots)) return null;
+    const stat = await fs.lstat(resolvedPath);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1) return null;
+
+    return {
+      path: toRepoRelativePath(rootDir, resolvedPath),
+      aliased: true,
+    };
+  } catch {
+    return null;
   }
 };
 

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: product-capability
-last_reviewed: 2026-07-30
+last_reviewed: 2026-09-02
 ---
 
 # Agent-Native Workflow Injection
@@ -34,7 +34,8 @@ This capability covers:
 
 - Supported surfaces include Codex, OpenCode, Claude Code, GitHub Copilot, Antigravity, and Cursor workflow files generated from the source templates and manifest when those platforms are configured.
 - Fresh configs do not assume a host platform; host-specific surfaces are opt-in through `.truthmark/config.yml` `platforms`.
-- Configured platforms select exact host instruction surfaces. Shared-contract hosts aggregate ownership of `AGENTS.md`, Claude Code owns `CLAUDE.md`, and disabling a host makes only its recognized renderer-owned outputs eligible for reconciliation.
+- Configured platforms select the logical host instruction surfaces Truthmark writes. Shared-contract hosts aggregate `AGENTS.md`; Claude Code uses `.claude/rules/truthmark.md`; user-owned aliases may expose the same in-worktree file to other hosts without changing platform configuration.
+- Managed instruction paths may be final symlinks to ordinary files inside the worktree. Truthmark rejects mechanical hazards but does not police the target's filename, content type, or cross-host meaning.
 - Host skill directories are generated as native skill packages for Structure, Document, Sync, Realize, Check, and Portal when enabled.
   - They include `SKILL.md` plus colocated procedure/report support files.
   - They include subagent or lease guidance where the workflow uses them.
@@ -103,7 +104,9 @@ This capability covers:
   - The workflow must avoid token-heavy prompt imports and must not push truth docs toward personal, rhetorical, or marketing tone.
 - Decision (2026-06-26): Ongoing truth-doc curation is a primary product value.
   - Marketing should emphasize bounded ownership, evidence-backed updates, Git-reviewable docs, and Structure handoff for overgrown docs rather than claiming generic documentation generation.
-- Decision (2026-07-10): Platform configuration is the ownership authority for exact host instruction surfaces; shared files aggregate host claims, and reconciliation applies only to recognized renderer-owned output.
+- Decision (2026-07-10, refined 2026-09-02): Platform configuration selects Truthmark's logical host instruction surfaces; shared logical paths aggregate host claims, while repository-owned aliases may expose their resolved content elsewhere.
+- Decision (2026-09-02): Claude Code uses an unscoped project rule so Truthmark does not need to inject into a repository-owned `CLAUDE.md`.
+- Decision (2026-09-02): Platform configuration governs Truthmark's logical write surfaces, not transitive visibility created by repository-owned symlinks.
 
 ## Engineering Realization Links
 

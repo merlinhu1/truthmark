@@ -31,6 +31,7 @@ export const runUninstall = async (
     loaded.config,
     mode,
     [],
+    [repository.gitEntryPath, repository.gitDir, repository.gitCommonDir],
   );
   const plan = await applyLifecyclePlan(repository.worktreePath, planned);
   return {

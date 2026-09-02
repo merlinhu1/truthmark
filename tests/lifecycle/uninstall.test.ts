@@ -14,7 +14,7 @@ import { runUninstall } from "../../src/init/uninstall.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("generated surface lifecycle", () => {
-  it("rejects an aliased desired instruction before scaffolding", async () => {
+  it("follows an in-worktree managed instruction alias and preserves it on uninstall", async () => {
     const repo = await createTempRepo();
     try {
       await writeTruthmarkConfig(repo.rootDir);
@@ -22,16 +22,24 @@ describe("generated surface lifecycle", () => {
         ".truthmark/config.yml",
         "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
       );
-      await repo.writeFile("alias.md", "authored\n");
-      await fs.symlink("alias.md", `${repo.rootDir}/AGENTS.md`);
+      await repo.writeFile("shared.txt", "authored\n");
+      await fs.symlink("shared.txt", `${repo.rootDir}/AGENTS.md`);
+      await fs.symlink("shared.txt", `${repo.rootDir}/CLAUDE.md`);
 
       const result = await runInit(repo.rootDir);
 
-      expect(result.summary).toContain("preflight failed");
-      expect(await repo.readFile("alias.md")).toBe("authored\n");
-      await expect(
-        fs.access(`${repo.rootDir}/docs/truthmark`),
-      ).rejects.toThrow();
+      expect(result.summary).toContain("Initialized");
+      expect(await repo.readFile("shared.txt")).toContain("Truthmark Workflow");
+
+      await runUninstall(repo.rootDir, "apply");
+
+      expect(await repo.readFile("shared.txt")).toBe("authored\n\n\n");
+      expect((await fs.lstat(`${repo.rootDir}/AGENTS.md`)).isSymbolicLink()).toBe(
+        true,
+      );
+      expect((await fs.lstat(`${repo.rootDir}/CLAUDE.md`)).isSymbolicLink()).toBe(
+        true,
+      );
     } finally {
       await repo.cleanup();
     }
@@ -54,14 +62,16 @@ describe("generated surface lifecycle", () => {
 
       const result = await runInit(repo.rootDir);
 
-      await expect(fs.access(`${repo.rootDir}/CLAUDE.md`)).rejects.toThrow();
+      await expect(
+        fs.access(`${repo.rootDir}/.claude/rules/truthmark.md`),
+      ).rejects.toThrow();
       expect(await repo.readFile(".claude/user.txt")).toBe("mine\n");
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             severity: "action",
-            file: "CLAUDE.md",
-            message: expect.stringContaining("remove-managed-block"),
+            file: ".claude/rules/truthmark.md",
+            message: expect.stringContaining("remove-file"),
           }),
         ]),
       );
@@ -69,6 +79,66 @@ describe("generated surface lifecycle", () => {
       await repo.cleanup();
     }
   });
+
+  it("keeps an active target when an inactive managed alias points to it", async () => {
+    const repo = await createTempRepo();
+    try {
+      await writeTruthmarkConfig(repo.rootDir);
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        "version: 2\nplatforms: [codex, claude-code]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
+      );
+      await repo.writeFile(".claude/rules/truthmark.md", "");
+      await fs.symlink(
+        ".claude/rules/truthmark.md",
+        `${repo.rootDir}/AGENTS.md`,
+      );
+      await runInit(repo.rootDir);
+
+      await repo.writeFile(
+        ".truthmark/config.yml",
+        "version: 2\nplatforms: [claude-code]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
+      );
+      const result = await runInit(repo.rootDir);
+
+      expect(result.summary).not.toContain("preflight failed");
+      expect(await repo.readFile(".claude/rules/truthmark.md")).toContain(
+        "Truthmark Workflow",
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
+  for (const target of ["external file", "Git metadata"] as const) {
+    it(`rejects a managed alias to ${target}`, async () => {
+      const repo = await createTempRepo();
+      const outsidePath = `${repo.rootDir}-outside.md`;
+      try {
+        await writeTruthmarkConfig(repo.rootDir);
+        await repo.writeFile(
+          ".truthmark/config.yml",
+          "version: 2\nplatforms: [codex]\ntruthmark:\n  workspace: docs/truthmark\n  generated:\n    portal:\n      enabled: false\n",
+        );
+        const targetPath =
+          target === "external file"
+            ? outsidePath
+            : `${repo.rootDir}/.git/HEAD`;
+        if (target === "external file")
+          await fs.writeFile(targetPath, "outside\n", "utf8");
+        const before = await fs.readFile(targetPath, "utf8");
+        await fs.symlink(targetPath, `${repo.rootDir}/AGENTS.md`);
+
+        const result = await runInit(repo.rootDir);
+
+        expect(result.summary).toContain("preflight failed");
+        expect(await fs.readFile(targetPath, "utf8")).toBe(before);
+      } finally {
+        await fs.rm(outsidePath, { force: true });
+        await repo.cleanup();
+      }
+    });
+  }
 
   it("plans and applies uninstall while preserving authored files and Gemini", async () => {
     const repo = await createTempRepo();

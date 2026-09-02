@@ -1,7 +1,10 @@
 import fs from "node:fs/promises";
 
 import type { TruthmarkConfig } from "../config/schema.js";
-import { resolveRepoPath } from "../fs/paths.js";
+import {
+  resolveRepoPath,
+  resolveSafeExactFileTarget,
+} from "../fs/paths.js";
 import type { Diagnostic } from "../output/diagnostic.js";
 import { renderGeneratedSurfaces } from "../templates/generated-surfaces.js";
 import { buildLifecyclePlan } from "../init/lifecycle.js";
@@ -46,12 +49,21 @@ const obsoleteGeneratedSurfaceMessage = (surfacePath: string): string => {
 export const checkGeneratedSurfaces = async (
   rootDir: string,
   config: TruthmarkConfig,
+  excludedRoots: readonly string[] = [],
 ): Promise<Diagnostic[]> => {
   const diagnostics: Diagnostic[] = [];
   const renderedSurfaces = renderGeneratedSurfaces(config);
 
   for (const surface of renderedSurfaces) {
-    const content = await readOptionalFile(rootDir, surface.path);
+    const target = await resolveSafeExactFileTarget(
+      rootDir,
+      surface.path,
+      true,
+      surface.managedBlock === true,
+      excludedRoots,
+    );
+    if (!target) continue;
+    const content = await readOptionalFile(rootDir, target.path);
 
     if (content === null) {
       diagnostics.push({
@@ -83,13 +95,16 @@ export const checkGeneratedSurfaces = async (
     config,
     "dry-run",
     renderedSurfaces,
+    excludedRoots,
   );
   for (const entry of lifecyclePlan.entries) {
     diagnostics.push({
       category: "generated-surface",
       severity: entry.action === "manual-review" ? "error" : "review",
       message:
-        entry.action === "preserve" &&
+        entry.action === "manual-review"
+          ? `Generated surface ${entry.path} requires manual review: ${entry.reason}`
+          : entry.action === "preserve" &&
         (entry.path.includes("truthmark-preview") ||
           entry.path.endsWith("helper-manifest.yml") ||
           entry.path.endsWith("support/helper-policy.md") ||
