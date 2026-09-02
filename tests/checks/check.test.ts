@@ -881,6 +881,31 @@ Update truth when:
     }
   });
 
+  it("reports an unsafe managed alias without reading through it", async () => {
+    const repo = await createTempRepo();
+
+    try {
+      await initializeRepo(repo.rootDir);
+      await fs.rm(path.join(repo.rootDir, "AGENTS.md"));
+      await fs.mkdir(path.join(repo.rootDir, "shared-instructions"));
+      await fs.symlink("shared-instructions", path.join(repo.rootDir, "AGENTS.md"));
+
+      const result = await runCheck(repo.rootDir);
+
+      expect(result.diagnostics).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: "generated-surface",
+            severity: "error",
+            file: "AGENTS.md",
+          }),
+        ]),
+      );
+    } finally {
+      await repo.cleanup();
+    }
+  });
+
   it("reports stale Claude Code generated skill surfaces", async () => {
     const repo = await createTempRepo();
 

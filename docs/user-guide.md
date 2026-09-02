@@ -80,7 +80,7 @@ Unknown platform names passed through config or `--platform` are errors.
 
 Rerun interactive init and omit a previously selected platform, or use `--clear-platforms`, to stop rendering host-specific surfaces. `truthmark init` reconciles the selected surface set and removes only recognized managed artifacts; review generated-surface diffs intentionally.
 
-Instruction files are derived from platforms: Claude Code uses `CLAUDE.md`; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned.
+Instruction files are derived from platforms: Claude Code uses the unscoped `.claude/rules/truthmark.md` rule; shared-contract hosts use the deduplicated `AGENTS.md`; host-specific canonical instructions remain renderer-owned. Managed instruction files may be final symlinks to ordinary files inside the worktree.
 If the config's `platforms` field is omitted, no platform is active. `truthmark init` reconciles recognized renderer-owned generated files and managed instruction blocks away; authored content outside valid managed markers is preserved, and only a block-only file can become absent.
 
 Before leaving Truthmark, run `truthmark uninstall --dry-run`, review the exact-path `truthmark-lifecycle/v0` plan, then run `truthmark uninstall --apply`. Uninstall preserves `.truthmark/config.yml`, routes, truth documents, editable templates, Portal presentation output, unrelated host-directory files, and content outside managed markers. Remove preserved files manually only after review. A globally installed npm package is separate; remove it with your package manager if desired.

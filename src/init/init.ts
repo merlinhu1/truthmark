@@ -17,6 +17,7 @@ import { getGitRepository } from "../git/repository.js";
 import {
   isSafeExactFile,
   resolveRepoPath,
+  resolveSafeExactFileTarget,
   type FileWriteResult,
   writeRepoFile,
 } from "../fs/paths.js";
@@ -30,13 +31,27 @@ import { applyLifecyclePlan, buildLifecyclePlan } from "./lifecycle.js";
 
 const writeManagedAgentsFile = async (
   rootDir: string,
-  path = "AGENTS.md",
+  path: string,
   block: string,
+  excludedRoots: readonly string[],
 ): Promise<FileWriteResult> => {
+  const target = await resolveSafeExactFileTarget(
+    rootDir,
+    path,
+    true,
+    true,
+    excludedRoots,
+  );
+  if (!target)
+    throw new Error(`Refusing unsafe managed instruction write: ${path}`);
+
   let existingContent: string | null = null;
 
   try {
-    existingContent = await fs.readFile(resolveRepoPath(rootDir, path), "utf8");
+    existingContent = await fs.readFile(
+      resolveRepoPath(rootDir, target.path),
+      "utf8",
+    );
   } catch (error: unknown) {
     if (
       !(error instanceof Error) ||
@@ -47,11 +62,12 @@ const writeManagedAgentsFile = async (
     }
   }
 
-  return writeRepoFile(
+  const result = await writeRepoFile(
     rootDir,
-    path,
+    target.path,
     upsertManagedInstructionBlock(existingContent, block),
   );
+  return { ...result, path };
 };
 
 const diagnosticCategoryForPath = (
@@ -77,6 +93,7 @@ const diagnosticCategoryForPath = (
 
   if (
     filePath === "CLAUDE.md" ||
+    filePath === ".claude/rules/truthmark.md" ||
     filePath === ".github/copilot-instructions.md" ||
     filePath.startsWith(".github/prompts/truthmark-") ||
     filePath.startsWith(".github/agents/truth-") ||
@@ -107,9 +124,15 @@ const diagnosticCategoryForPath = (
 const writePlatformFile = async (
   rootDir: string,
   file: GeneratedSurface,
+  excludedRoots: readonly string[],
 ): Promise<FileWriteResult> => {
   if (file.managedBlock) {
-    return writeManagedAgentsFile(rootDir, file.path, file.content);
+    return writeManagedAgentsFile(
+      rootDir,
+      file.path,
+      file.content,
+      excludedRoots,
+    );
   }
 
   return writeRepoFile(rootDir, file.path, file.content);
@@ -166,6 +189,11 @@ export const runInit = async (
 ): Promise<CommandResult> => {
   const repository = await getGitRepository(cwd);
   const rootDir = repository.worktreePath;
+  const excludedGeneratedRoots = [
+    repository.gitEntryPath,
+    repository.gitDir,
+    repository.gitCommonDir,
+  ];
   const loadedConfig = await loadConfig(rootDir);
   const repositoryData = {
     repositoryRoot: repository.repositoryRoot,
@@ -250,6 +278,7 @@ export const runInit = async (
     config,
     "apply",
     platformFiles,
+    excludedGeneratedRoots,
   );
   if (!lifecyclePlan.applicable) {
     return {
@@ -263,7 +292,9 @@ export const runInit = async (
 
   results.push(...(await scaffoldHierarchy(rootDir, config)));
   for (const file of platformFiles) {
-    results.push(await writePlatformFile(rootDir, file));
+    results.push(
+      await writePlatformFile(rootDir, file, excludedGeneratedRoots),
+    );
   }
   results.push(
     await writeRepoFile(rootDir, loadedConfig.configPath, configSource),

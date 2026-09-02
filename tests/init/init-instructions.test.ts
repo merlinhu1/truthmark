@@ -136,7 +136,10 @@ ignore: []
         await repo.readFile("src/session.ts"),
       ).toBe("export const session = true;\n");
       expect(await repo.readFile("AGENTS.md")).toContain("Truthmark Workflow");
-      expect(await repo.readFile("CLAUDE.md")).toContain("Truthmark Workflow");
+      expect(await repo.readFile(".claude/rules/truthmark.md")).toContain(
+        "Truthmark Workflow",
+      );
+      await expect(fs.stat(`${repo.rootDir}/CLAUDE.md`)).rejects.toThrow();
       expect(result.diagnostics).toEqual(
         expect.arrayContaining([
           expect.objectContaining({

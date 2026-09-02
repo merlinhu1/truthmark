@@ -19,6 +19,9 @@ describe("getGitRepository", () => {
 
       expect(repository.repositoryRoot).toBe(repo.rootDir);
       expect(repository.worktreePath).toBe(repo.rootDir);
+      expect(repository.gitEntryPath).toBe(path.join(repo.rootDir, ".git"));
+      expect(repository.gitDir).toBe(path.join(repo.rootDir, ".git"));
+      expect(repository.gitCommonDir).toBe(path.join(repo.rootDir, ".git"));
       expect(repository.branchName).toBe("main");
       expect(repository.headSha).toBeNull();
       expect(repository.isDetached).toBe(false);

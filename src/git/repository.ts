@@ -7,6 +7,9 @@ import { execa } from "execa";
 export type GitRepository = {
   repositoryRoot: string;
   worktreePath: string;
+  gitEntryPath: string;
+  gitDir: string;
+  gitCommonDir: string;
   branchName: string | null;
   headSha: string | null;
   isDetached: boolean;
@@ -38,9 +41,18 @@ export const getGitRepository = async (cwd: string): Promise<GitRepository> => {
   const worktreePath = await realpathOrResolved(
     (await runGit(cwd, ["rev-parse", "--show-toplevel"])).stdout.trim(),
   );
-  const commonDirOutput = (await runGit(cwd, ["rev-parse", "--git-common-dir"])).stdout.trim();
-  const commonDir = await realpathOrResolved(path.resolve(worktreePath, commonDirOutput));
-  const repositoryRoot = path.basename(commonDir) === ".git" ? path.dirname(commonDir) : worktreePath;
+  const [gitDirOutput, gitCommonDirOutput] = await Promise.all([
+    runGit(cwd, ["rev-parse", "--git-dir"]),
+    runGit(cwd, ["rev-parse", "--git-common-dir"]),
+  ]);
+  const [gitDir, gitCommonDir] = await Promise.all([
+    realpathOrResolved(path.resolve(cwd, gitDirOutput.stdout.trim())),
+    realpathOrResolved(path.resolve(cwd, gitCommonDirOutput.stdout.trim())),
+  ]);
+  const repositoryRoot =
+    path.basename(gitCommonDir) === ".git"
+      ? path.dirname(gitCommonDir)
+      : worktreePath;
 
   const branchResult = await runGit(cwd, ["symbolic-ref", "--quiet", "--short", "HEAD"], false);
   const headResult = await runGit(cwd, ["rev-parse", "--verify", "HEAD"], false);
@@ -53,6 +65,9 @@ export const getGitRepository = async (cwd: string): Promise<GitRepository> => {
   return {
     repositoryRoot,
     worktreePath,
+    gitEntryPath: path.join(worktreePath, ".git"),
+    gitDir,
+    gitCommonDir,
     branchName,
     headSha,
     isDetached,

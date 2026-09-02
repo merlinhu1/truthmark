@@ -72,7 +72,11 @@ export const runCheck = async (cwd: string, options: CheckOptions = {}): Promise
     markdownPaths,
     areas.truthDocumentEntries,
   );
-  const generatedSurfaces = await checkGeneratedSurfaces(rootDir, loadResult.config);
+  const generatedSurfaces = await checkGeneratedSurfaces(
+    rootDir,
+    loadResult.config,
+    [repository.gitEntryPath, repository.gitDir, repository.gitCommonDir],
+  );
   const sourceTraceability = await validateEvidenceReferences(rootDir, areas.truthDocumentPaths);
   const freshness = options.base
     ? await checkFreshness(rootDir, loadResult.config, areas.truthDocumentPaths, options.base)

@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-07-30
+last_reviewed: 2026-09-02
 ---
 
 # Init And Scaffold
@@ -52,9 +52,9 @@ Generated truth-doc frontmatter includes `truth_kind`.
 
 Generated truth-doc frontmatter does not include `doc_type` or `truth_lane`.
 
-`truthmark init` reconciles generated surfaces to the selected platform set. It removes a whole file only when its bytes prove renderer ownership, preserves authored content outside valid managed blocks, and reports unsafe or mixed-ownership paths for manual review.
+`truthmark init` reconciles generated surfaces to the selected platform set. It removes a whole file only when its bytes prove renderer ownership, preserves authored content outside valid managed blocks, and reports unsafe or diverged paths for manual review.
 
-Configured platforms select exact instruction surfaces. Shared-contract hosts aggregate `AGENTS.md` ownership, Claude Code owns `CLAUDE.md`, and host-neutral configuration emits no generic instruction file. Lifecycle diagnostics expose planned removals, preserved diverged files, and preflight failures to human and JSON callers.
+Configured platforms select logical instruction surfaces. Shared-contract hosts aggregate `AGENTS.md` ownership, Claude Code owns `.claude/rules/truthmark.md`, and host-neutral configuration emits no generic instruction file. Lifecycle diagnostics expose planned removals, preserved diverged files, and preflight failures to human and JSON callers.
 
 Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
 
@@ -137,11 +137,11 @@ Capability docs own:
 - It resolves platform choice from explicit flags, interactive selection, saved values, or the empty first-run default, in that order.
 - It prepares a version-2 config update, preflighting the config path and lifecycle mutations before writing scaffold and generated-surface files; lifecycle removals are applied last so a failed write does not delete existing generated surfaces, and invalid existing config still fails closed.
 - It renders current templates and generated host surfaces from source renderers.
-- Before any scaffold or generated-surface write, it rejects aliased, non-regular, or hard-linked managed instruction destinations and preflights every planned lifecycle mutation.
+- Before any scaffold or generated-surface write, it resolves managed instruction destinations. A final symlink may target an ordinary regular, single-link file inside the worktree; external, Git-administrative, broken, circular, directory, parent-symlink, and hard-linked targets fail preflight.
 - It revalidates every planned mutation before applying the first removal, so a changed or unsafe later target prevents partial cleanup; earlier scaffold writes remain visible for retry if lifecycle application is blocked.
 - It removes only renderer-owned generated artifacts that are outside the selected surface set.
 - It preserves user bytes outside a removed managed block, including surrounding whitespace and line-ending convention.
-- It leaves unsafe or mixed-ownership paths for manual review.
+- It leaves unsafe or diverged paths for manual review.
 
 ## Contracts
 
@@ -165,10 +165,13 @@ Capability docs own:
 - Decision (2026-06-26): Engineering behavior templates may use compact scenario blocks for behavior clarity.
   - Scenario guidance adopts the useful requirement/scenario shape from specification formats while preserving Truthmark's current-state, evidence-backed truth-doc role.
   - The template avoids `SHALL`-style future requirements and does not require a scenario for every rule.
-- Decision (2026-07-10): Configured platforms select exact instruction ownership, and deterministic lifecycle diagnostics expose reconciliation without transferring ownership of authored files.
+- Decision (2026-07-10, refined 2026-09-02): Configured platforms select logical instruction surfaces, and deterministic lifecycle diagnostics expose reconciliation without transferring ownership of authored files or user aliases.
 - Decision (2026-07-30): Truthmark 2.3 uses `truthmark init` for repository setup and platform selection.
   - Interactive selection is zero-or-more, while repeatable `--platform` values provide deterministic automation and `--json` never prompts.
   - Existing version-2 configs do not require migration; platform updates preserve other values and comments.
+- Decision (2026-09-02): Managed instruction symlinks are repository-owned topology.
+  - Truthmark follows a mechanically safe final in-worktree symlink without restricting the target extension or interpreting cross-host visibility.
+  - Cleanup coalesces aliases by physical target so an inactive logical surface cannot remove an active target.
 
 ## Rationale
 

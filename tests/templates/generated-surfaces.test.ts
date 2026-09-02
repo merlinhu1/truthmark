@@ -412,20 +412,25 @@ describe("Truthmark Portal generated surfaces", () => {
     expect(agentsBlock).toContain("Markdown remains canonical");
   });
 
-  it("maps platform-derived instruction files to AGENTS.md and CLAUDE.md with exact-path dedupe", () => {
+  it("maps platform-derived instruction files to AGENTS.md and a Claude rule with exact-path dedupe", () => {
     const config = createDefaultConfig();
     config.platforms = ["codex", "opencode", "claude-code"];
     const allSurfaces = renderGeneratedSurfaces(config);
     const allPaths = allSurfaces.map((surface) => surface.path);
     const catalog = renderGeneratedSurfaceCatalog(config);
     const agentsEntry = catalog.find((entry) => entry.path === "AGENTS.md");
-    const claudeEntry = catalog.find((entry) => entry.path === "CLAUDE.md");
+    const claudeEntry = catalog.find(
+      (entry) => entry.path === ".claude/rules/truthmark.md",
+    );
 
     expect(allPaths).toContain("AGENTS.md");
-    expect(allPaths).toContain("CLAUDE.md");
+    expect(allPaths).toContain(".claude/rules/truthmark.md");
+    expect(allPaths).not.toContain("CLAUDE.md");
     expect(new Set(allPaths).size).toBe(allPaths.length);
     expect(allPaths.filter((path) => path === "AGENTS.md")).toHaveLength(1);
-    expect(allPaths.filter((path) => path === "CLAUDE.md")).toHaveLength(1);
+    expect(
+      allPaths.filter((path) => path === ".claude/rules/truthmark.md"),
+    ).toHaveLength(1);
     expect(agentsEntry).toBeDefined();
     const agentsPlatforms =
       agentsEntry === undefined ? [] : platformOwners(agentsEntry.owners).map((owner) => owner.platform);
@@ -498,7 +503,7 @@ describe("Truthmark Portal generated surfaces", () => {
 
     const surfaces = renderGeneratedSurfaces(config);
     const managedBlockPaths = new Set(
-      ["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md"].filter(
+      ["AGENTS.md", ".github/copilot-instructions.md"].filter(
         (surfacePath) =>
           surfaces.some((surface) => surface.path === surfacePath),
       ),
@@ -514,7 +519,9 @@ describe("Truthmark Portal generated surfaces", () => {
 
     const catalog = renderGeneratedSurfaceCatalog(config);
     const agentsEntry = catalog.find((entry) => entry.path === "AGENTS.md");
-    const claudeEntry = catalog.find((entry) => entry.path === "CLAUDE.md");
+    const claudeEntry = catalog.find(
+      (entry) => entry.path === ".claude/rules/truthmark.md",
+    );
     const copilotEntry = catalog.find(
       (entry) => entry.path === ".github/copilot-instructions.md",
     );
@@ -529,6 +536,7 @@ describe("Truthmark Portal generated surfaces", () => {
         ? []
         : platformOwners(claudeEntry.owners).map((owner) => owner.platform).sort(),
     ).toEqual(["claude-code"]);
+    expect(claudeEntry).not.toHaveProperty("managedBlock");
     expect(
       copilotEntry === undefined
         ? []

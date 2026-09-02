@@ -222,7 +222,7 @@ Update truth when:
         fs.stat(`${repo.rootDir}/AGENTS.md`),
       ).resolves.toBeTruthy();
       await expect(
-        fs.stat(`${repo.rootDir}/CLAUDE.md`),
+        fs.stat(`${repo.rootDir}/.claude/rules/truthmark.md`),
       ).resolves.toBeTruthy();
       await fs.writeFile(
         `${repo.rootDir}/.claude/surviving.txt`,
@@ -237,7 +237,7 @@ Update truth when:
       expect(disableClaude.exitCode).toBe(0);
 
       await expect(
-        fs.stat(`${repo.rootDir}/CLAUDE.md`),
+        fs.stat(`${repo.rootDir}/.claude/rules/truthmark.md`),
       ).rejects.toThrow();
       await expect(
         fs.readFile(`${repo.rootDir}/.claude/surviving.txt`, "utf8"),
@@ -251,7 +251,8 @@ Update truth when:
       };
       expect(
         payload.diagnostics.some(
-          (diagnostic) => diagnostic.file === "CLAUDE.md",
+          (diagnostic) =>
+            diagnostic.file === ".claude/rules/truthmark.md",
         ),
       ).toBe(false);
     } finally {

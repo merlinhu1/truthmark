@@ -111,6 +111,7 @@ export type GeneratedSurfaceCatalogEntry = GeneratedSurface & {
 
 export const RETIRED_GENERATED_SURFACES = {
   exactPaths: [
+    "CLAUDE.md",
     "GEMINI.md",
     ".github/prompts/truthmark-preview.prompt.md",
     ".cursor/rules/truthmark-structure.mdc",
@@ -297,7 +298,10 @@ const claudeFiles = (
   block: string,
 ): GeneratedSurface[] => {
   const files: GeneratedSurface[] = [
-    ...instructionBlockFiles(["CLAUDE.md"], block),
+    {
+      path: ".claude/rules/truthmark.md",
+      content: block,
+    },
     ...renderTruthmarkSkillPackage({
       skillPath: ".claude/skills/truthmark-structure/SKILL.md",
       workflowId: "truthmark-structure",
@@ -593,17 +597,19 @@ export const renderGeneratedSurfaceCatalog = (
         generated: { portal: { enabled: false } },
       },
     };
-    const basePaths = new Set(
-      renderGeneratedSurfaces(baseConfig).map(({ path }) => path),
-    );
+    const baseSurfaces = renderGeneratedSurfaces(baseConfig);
+    const basePaths = new Set(baseSurfaces.map(({ path }) => path));
 
-    for (const surface of renderGeneratedSurfaces({
-      ...baseConfig,
-      truthmark: {
-        ...baseConfig.truthmark,
-        generated: { portal: { enabled: true } },
-      },
-    })) {
+    for (const surface of [
+      ...baseSurfaces,
+      ...renderGeneratedSurfaces({
+        ...baseConfig,
+        truthmark: {
+          ...baseConfig.truthmark,
+          generated: { portal: { enabled: true } },
+        },
+      }),
+    ]) {
       const owner: GeneratedSurfaceOwner = {
         kind: basePaths.has(surface.path) ? "platform" : "portal",
         platform,
@@ -613,7 +619,15 @@ export const renderGeneratedSurfaceCatalog = (
         ? surface.content
         : `${surface.content}\n`;
       if (existing) {
-        existing.owners.push(owner);
+        if (
+          !existing.owners.some(
+            (existingOwner) =>
+              existingOwner.kind === owner.kind &&
+              "platform" in existingOwner &&
+              existingOwner.platform === owner.platform,
+          )
+        )
+          existing.owners.push(owner);
         if (!existing.recognizedContents.includes(recognizedContent)) {
           existing.recognizedContents.push(recognizedContent);
         }
@@ -632,6 +646,7 @@ export const renderGeneratedSurfaceCatalog = (
       catalog.set(retiredPath, {
         path: retiredPath,
         content: "",
+        ...(retiredPath === "CLAUDE.md" ? { managedBlock: true } : {}),
         owners: [
           {
             kind: "retired",
