@@ -1,10 +1,7 @@
 import path from "node:path";
-import { stringify } from "yaml";
 
 import type { TruthmarkConfig } from "../config/schema.js";
-import type { DiscoveredMarkdownDocument } from "../markdown/discovery.js";
 import { createDefaultConfig } from "../config/defaults.js";
-import { inferTruthDocumentKindFromPath } from "../routing/areas.js";
 import {
   resolveEngineeringTruthRoot,
   resolveProductTruthRoot,
@@ -48,53 +45,6 @@ const renderLaneRootLeafDocGuidance = (
   return "README.md files are indexes, not Truth Sync targets. Keep engineering truth in bounded behavior, contract, architecture, workflow, operations, and test docs.";
 };
 
-const renderTruthDocumentsMetadata = (
-  documents: Array<{ path: string; kind: string }>,
-): string[] => {
-  return [
-    "```yaml",
-    stringify({ truth_documents: documents }).trimEnd(),
-    "```",
-  ];
-};
-
-export const renderAreasTemplate = (
-  documents: DiscoveredMarkdownDocument[],
-): string => {
-  const truthDocuments =
-    documents.length > 0
-      ? documents.map((document) => ({
-          path: document.path,
-          kind:
-            inferTruthDocumentKindFromPath(document.path) ??
-            "engineering-behavior",
-        }))
-      : [
-          {
-            path: `${createDefaultConfig().truthmark.paths.engineeringTruthRoot}/**/*.md`,
-            kind: "engineering-behavior",
-            lane: "engineering",
-          },
-        ];
-
-  return [
-    "# Truthmark Areas",
-    "",
-    "## Repository Truth Surface",
-    "",
-    "Truth documents:",
-    ...renderTruthDocumentsMetadata(truthDocuments),
-    "",
-    "Code surface:",
-    "- src/**",
-    "",
-    "Update truth when:",
-    "- behavior changes affect the routed truth documents",
-    "- API contracts or current feature behavior changes",
-    "",
-  ].join("\n");
-};
-
 const titleCase = (value: string): string => {
   return value
     .split(/[-_\s]+/u)
@@ -122,6 +72,11 @@ export const renderHierarchicalAreasIndexTemplate = (
     "---",
     "",
     "# Truthmark Areas",
+    "",
+    "<!--",
+    'Every "## " heading below declares an area except "## Source References".',
+    'Keep prose under a "###" heading or under "## Source References" so it is not parsed as an area.',
+    "-->",
     "",
     `## ${title}`,
     "",
@@ -161,6 +116,11 @@ export const renderChildAreaTemplate = (config: TruthmarkConfig): string => {
     "---",
     "",
     `# ${title} Areas`,
+    "",
+    "<!--",
+    'Every "## " heading below declares an area except "## Source References".',
+    'Keep prose under a "###" heading or under "## Source References" so it is not parsed as an area.',
+    "-->",
     "",
     `## ${title}`,
     "",
@@ -356,21 +316,6 @@ export const renderTruthDomainReadmeTemplate = (
     "",
   ].join("\n");
 };
-
-export const BEHAVIOR_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-behavior.md";
-export const CONTRACT_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-contract.md";
-export const ARCHITECTURE_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-architecture.md";
-export const WORKFLOW_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-workflow.md";
-export const OPERATIONS_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-operations.md";
-export const TEST_BEHAVIOR_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/engineering-test-behavior.md";
-export const PRODUCT_CAPABILITY_DOC_TEMPLATE_PATH =
-  "docs/truthmark/templates/product-capability.md";
 
 type TemplateSectionSpec = {
   heading: string;
@@ -754,6 +699,15 @@ const NON_GOALS_SECTION = sectionSpec("## Non-Goals", [
   "Use this section to prevent scope creep and duplicate truth ownership.",
 ]);
 
+const PRODUCT_TRUTH_LINKS_SECTION = sectionSpec(
+  "## Product Truth Links",
+  [
+    "List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.",
+    "Use 'None.' when this is purely internal engineering truth.",
+  ],
+  "product_truth_links",
+);
+
 const MAINTENANCE_NOTES_SECTION = sectionSpec("## Maintenance Notes", [
   "List related tests, routing cautions, migration notes, compatibility risks, evidence drift risks, and review triggers for future maintainers or agents.",
   "Keep this operational and current-state focused, not historical.",
@@ -784,6 +738,7 @@ const renderTypedTruthDocTemplate = (
     ...renderTemplateSection(PURPOSE_SECTION),
     ...renderTemplateSection(SCOPE_SECTION),
     ...sections.flatMap(renderTemplateSection),
+    ...renderTemplateSection(PRODUCT_TRUTH_LINKS_SECTION),
     ...renderTemplateSection(ENGINEERING_DECISIONS_SECTION),
     ...renderTemplateSection(RATIONALE_SECTION),
     ...renderTemplateSection(NON_GOALS_SECTION),
@@ -1008,50 +963,4 @@ export const renderTestBehaviorDocTemplateFile = (): string => {
   ]);
 };
 
-const renderTemplate = (
-  template: string,
-  values: Record<string, string>,
-): string => {
-  return Object.entries(values).reduce((rendered, [key, value]) => {
-    return rendered.split(`{{${key}}}`).join(value);
-  }, template);
-};
 
-export const renderBehaviorLeafDocTemplate = (
-  config: TruthmarkConfig,
-  template = renderBehaviorDocTemplateFile(),
-): string => {
-  const defaultArea = config.truthmark.routes.defaultArea;
-  const title = titleCase(defaultArea);
-  const templatePath = `${truthRoot(config)}/${defaultArea}/overview.md`;
-  const sourceOfTruth = resolveRelativePath(
-    templatePath,
-    `${config.truthmark.paths.routeAreasRoot}/${defaultArea}.md`,
-  );
-  const today = currentDate();
-
-  return renderTemplate(template, {
-    area: defaultArea,
-    contracts:
-      "- External contracts should link to the nearest canonical contract doc when one exists.",
-    core_rules:
-      "- Truth README files are indexes; behavior truth belongs in bounded leaf docs.",
-    current_implementation_behavior:
-      "- Document current behavior here when implementation changes make repository truth incomplete.",
-    engineering_decisions: `- Decision (${today}): Truth README files are indexes; behavior truth belongs in bounded leaf docs.`,
-    flows_and_states: "- None beyond current behavior.",
-    maintenance_notes:
-      "- Update this doc when routed implementation changes alter current behavior, rules, contracts, or decisions.",
-    non_goals:
-      "- This doc is not a catch-all for unrelated repository behavior.",
-    purpose: `Describe why the default ${title.toLowerCase()} behavior surface exists and what outcome it protects.`,
-    rationale:
-      "Bounded leaf docs keep agent context focused and prevent large products from accumulating unreviewable feature manuals.",
-    product_truth_links: "- None.",
-    scope: `This bounded leaf truth doc owns the default ${title.toLowerCase()} behavior surface created by Truthmark.`,
-    source_references: `- ${sourceOfTruth}`,
-    template_path: BEHAVIOR_DOC_TEMPLATE_PATH,
-    title: `${title} Overview`,
-    truth_kind: "engineering-behavior",
-  });
-};

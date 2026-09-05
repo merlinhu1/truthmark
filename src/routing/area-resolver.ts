@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 
 import fg from "fast-glob";
 import micromatch from "micromatch";
@@ -71,7 +72,7 @@ const ensureChildPath = async (
     await assertRepoContainment(rootDir, absoluteChild);
     await assertRepoContainment(rootDir, absoluteRoot);
 
-    if (!absoluteChild.startsWith(`${absoluteRoot}/`)) {
+    if (!absoluteChild.startsWith(`${absoluteRoot}${path.sep}`)) {
       return {
         category: "area-index",
         severity: "error",

@@ -1,9 +1,5 @@
 import type { TruthmarkConfig } from "../config/schema.js";
 import { defaultAgentConfig, renderHierarchySummary } from "./shared.js";
-import { getTruthmarkWorkflow } from "./workflow-manifest.js";
-
-export const TRUTHMARK_PORTAL_EXPLICIT_INVOCATIONS =
-  "OpenCode /skill truthmark-portal; Codex /truthmark-portal or $truthmark-portal; Claude Code /truthmark-portal; GitHub Copilot /truthmark-portal; Antigravity @truthmark-portal; Cursor /truthmark-portal.";
 
 export const renderTruthmarkPortalProcedureBody = (
   config: TruthmarkConfig = defaultAgentConfig(),
@@ -41,47 +37,4 @@ Workflow:
 6. Generate the multi-page static site with local assets/search metadata and visible source provenance.
 7. Validate entry page, links where practical, provenance/disclaimers, local-only assets, and that metadata remains under ${output}/assets.
 ${renderHierarchySummary(config)}`;
-};
-
-export const renderTruthmarkPortalSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-portal");
-  const output = config.truthmark.paths.portalOutput;
-
-  return `---
-name: truthmark-portal
-description: ${workflow.description}
-argument-hint: Optional portal generation focus
-user-invocable: true
----
-
-${renderTruthmarkPortalProcedureBody(config)}
-Report completion in this shape:
-
-\`\`\`md
-Truthmark Portal: completed
-
-Output path:
-- ${output}
-
-Page count:
-- <count>
-
-Diagrams/assets:
-- <generated diagrams/assets or none>
-
-Source docs reviewed:
-- <source markdown paths>
-
-Skipped/ambiguous docs:
-- <paths and reason, or none>
-
-Validation:
-- <checks performed>
-
-Markdown canonical statement:
-- Markdown remains canonical; generated Portal HTML is non-canonical presentation only.
-\`\`\`
-`;
 };

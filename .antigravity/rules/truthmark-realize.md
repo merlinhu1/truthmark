@@ -10,7 +10,7 @@ Manual invocation: @truthmark-realize
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
-Description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
+Description: Writes functional code from truth docs that already describe the intended behavior. Use when the user explicitly asks to realize Truthmark truth docs into code, including when they invoke @truthmark-realize. Not for syncing docs after code changes, documenting existing code, repairing route ownership, or truth audits.
 
 ## Procedure
 

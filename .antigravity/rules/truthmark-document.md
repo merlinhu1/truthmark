@@ -10,7 +10,7 @@ Manual invocation: @truthmark-document
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
-Description: Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.
+Description: Writes canonical truth docs for behavior that is already implemented. Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or route-ownership repair that needs Structure.
 
 ## Procedure
 

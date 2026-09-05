@@ -79,6 +79,15 @@ Include success criteria and handoff points to other truth docs or systems.
 
 {{outputs}}
 
+## Product Truth Links
+
+<!--
+List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.
+Use 'None.' when this is purely internal engineering truth.
+-->
+
+{{product_truth_links}}
+
 ## Engineering Decisions
 
 <!--

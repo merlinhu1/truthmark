@@ -3,6 +3,8 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { expect } from "expect";
+
+import { isWindows } from "./helpers/platform.js";
 import { execa } from "execa";
 
 const repoRoot = path.resolve(
@@ -102,6 +104,10 @@ describe("package and release integrity", () => {
     expect(packFiles.map((file) => file.path).sort()).toEqual(
       [...expectedPackageFiles].sort(),
     );
+    if (isWindows) {
+      return;
+    }
+
     expect(modesByPath.get("dist/main.js")).toBe(0o755);
 
     for (const filePath of expectedPackageFiles.filter(

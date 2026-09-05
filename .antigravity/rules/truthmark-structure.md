@@ -10,7 +10,7 @@ Manual invocation: @truthmark-structure
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
-Description: Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
+Description: Designs and repairs Truthmark area routing and truth ownership. Use when route or truth ownership is missing, stale, too broad, overloaded, catch-all, matched by no route, split across several owners, or needs a new area. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.
 
 ## Procedure
 

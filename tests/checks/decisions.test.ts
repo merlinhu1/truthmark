@@ -253,7 +253,8 @@ Structured JSON output.
           message: expect.stringContaining("Purpose"),
         }),
       ]);
-      expect(diagnostics[0]?.message).toContain(
+      expect(diagnostics[0]?.message).toContain("Product Truth Links");
+      expect(diagnostics[0]?.message).not.toContain(
         "Current Implementation Behavior",
       );
     } finally {

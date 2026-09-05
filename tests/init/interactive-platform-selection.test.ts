@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 import { parse } from "yaml";
 
@@ -226,7 +227,7 @@ ignore: []
     }
   });
 
-  it("rejects an aliased config before removing generated surfaces", async () => {
+  posixOnlyIt("rejects an aliased config before removing generated surfaces", async () => {
     const repo = await createTempRepo();
     const outside = await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-config-"));
     try {

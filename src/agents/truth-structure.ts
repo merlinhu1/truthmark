@@ -16,11 +16,10 @@ import {
 } from "./shared.js";
 
 
-import { getTruthmarkWorkflow } from "./workflow-manifest.js";
+import {
+  getTruthmarkWorkflow,
+} from "./workflow-manifest.js";
 
-const renderMarkdownExample = (content: string): string => {
-  return ["```md", content, "```"].join("\n");
-};
 
 export const TRUTH_STRUCTURE_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-structure; Codex /truthmark-structure or $truthmark-structure; Claude Code /truthmark-structure; GitHub Copilot /truthmark-structure; Antigravity @truthmark-structure; Cursor /truthmark-structure.";
@@ -172,25 +171,4 @@ Portable fallback:
 - Use a subagent only when the host supports that pattern; otherwise perform the topology repair inline.
 ${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}`;
-};
-
-export const renderTruthStructureSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-  options: {
-    includeClaudeSubagentMode?: boolean;
-    includeCopilotCustomAgentMode?: boolean;
-  } = {},
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-structure");
-
-  return `---
-name: truthmark-structure
-description: ${workflow.description}
-argument-hint: Optional area, directory, or routing concern
-user-invocable: true
----
-
-${renderTruthStructureProcedureBody(config, options)}
-Report completion in this shape:
-${renderMarkdownExample(renderTruthStructureReportExample(config))}`;
 };

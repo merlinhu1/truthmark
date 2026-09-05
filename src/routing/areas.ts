@@ -512,7 +512,7 @@ export const parseAreasMarkdown = (
     ) {
       diagnostics.push(
         createAreaDiagnostic(
-          `Area ${currentAreaName} must define exactly one of Truth documents or Area files, plus Code surface and Update truth when sections.`,
+          `Area ${currentAreaName} must define exactly one of Truth documents or Area files, plus Code surface and Update truth when sections. Every "## " heading in a route file declares an area except "## Source References"; put prose under a "###" heading or under "## Source References".`,
           currentAreaName,
         ),
       );

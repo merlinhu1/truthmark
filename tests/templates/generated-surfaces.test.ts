@@ -5,7 +5,7 @@ import { describe, it } from "node:test";
 import { expect } from "expect";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
-import { renderTruthSyncSkillBody } from "../../src/agents/truth-sync.js";
+import { installedSkillSurface } from "../helpers/skill-surface.js";
 import { renderAgentsBlock } from "../../src/templates/agents-block.js";
 import {
   renderGeneratedSurfaces,
@@ -155,7 +155,7 @@ describe("Truthmark Portal generated surfaces", () => {
       surface.path.endsWith("/SKILL.md"),
     );
     for (const surface of skillEntrypoints) {
-      expect(surface.content).toContain("Progressive disclosure:");
+      expect(surface.content).toContain("Reference files:");
       expect(surface.content).not.toContain("Read support/");
     }
 
@@ -296,8 +296,8 @@ describe("Truthmark Portal generated surfaces", () => {
     ];
     const surfacesToCheck = [
       {
-        path: "renderTruthSyncSkillBody",
-        content: renderTruthSyncSkillBody(config),
+        path: "installed truthmark-sync skill surface",
+        content: installedSkillSurface("truthmark-sync", "codex", config),
       },
       ...generatedSyncReportSurfaces,
       ...checkedInSyncReportPaths.map((path) => ({
@@ -399,7 +399,7 @@ describe("Truthmark Portal generated surfaces", () => {
     );
     expect(cursorSkill).toContain("Use as a Cursor Agent Skill.");
     expect(cursorSkill).toContain(".cursor/skills/");
-    expect(cursorSkill).toContain("Progressive disclosure:");
+    expect(cursorSkill).toContain("Reference files:");
     expect(cursorProcedure).toContain("manual-only");
 
     expect(portalProcedure).toContain("replace the entire output directory");

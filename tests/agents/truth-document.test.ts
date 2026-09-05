@@ -6,20 +6,20 @@ import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS,
   renderTruthDocumentReportExample,
-  renderTruthDocumentSkillBody,
 } from "../../src/agents/truth-document.js";
 import {
-  renderTruthmarkDocumentClaudeSkill,
   renderTruthmarkCopilotDocumentPrompt,
-  renderTruthmarkDocumentLocalSkill,
-  renderTruthmarkDocumentSkill,
   renderTruthmarkDocumentSkillMetadata,
   renderTruthmarkSkillPackage,
 } from "../../src/templates/workflow-surfaces.js";
+import {
+  installedSkillEntrypoint,
+  installedSkillSurface,
+} from "../helpers/skill-surface.js";
 
-describe("renderTruthDocumentSkillBody", () => {
+describe("installed truthmark-document skill surface", () => {
   it("renders parseable skill frontmatter", () => {
-    const parsed = parseFrontmatter(renderTruthDocumentSkillBody());
+    const parsed = parseFrontmatter(installedSkillEntrypoint("truthmark-document"));
 
     expect(parsed.data.name).toBe("truthmark-document");
     expect(parsed.data["user-invocable"]).toBe(true);
@@ -27,7 +27,7 @@ describe("renderTruthDocumentSkillBody", () => {
       "finds implemented behavior missing canonical truth",
     );
     expect(parsed.data.description).toContain(
-      "Not for functional-code changes, doc-first implementation, or topology repair that needs Structure",
+      "Not for functional-code changes, doc-first implementation, or route-ownership repair that needs Structure",
     );
     expect(parsed.data.description).not.toContain("when an update finds");
     expect(parsed.content).toContain(
@@ -36,7 +36,7 @@ describe("renderTruthDocumentSkillBody", () => {
   });
 
   it("renders the manual existing-implementation documentation workflow", () => {
-    const skill = renderTruthDocumentSkillBody();
+    const skill = installedSkillSurface("truthmark-document");
 
     expect(TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS).toContain(
       "Cursor /truthmark-document",
@@ -149,7 +149,7 @@ describe("renderTruthDocumentSkillBody", () => {
     config.truthmark.paths.routesIndex = "docs/routes/index.md";
     config.truthmark.paths.routeAreasRoot = "docs/routes/areas";
 
-    const skill = renderTruthDocumentSkillBody(config);
+    const skill = installedSkillSurface("truthmark-document", "cursor", config);
 
     expect(skill).toContain("docs/truthmark/engineering/contracts/routing.md");
     expect(skill).toContain(
@@ -161,50 +161,50 @@ describe("renderTruthDocumentSkillBody", () => {
 
 describe("Truth Document generated surfaces", () => {
   it("renders Codex metadata and OpenCode skill content", () => {
-    expect(renderTruthmarkDocumentSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain(
       "name: truthmark-document",
     );
-    expect(renderTruthmarkDocumentSkill()).toContain("Codex subagent mode:");
-    expect(renderTruthmarkDocumentSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain("Codex subagent mode:");
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain(
       "use automatically when this workflow runs in Codex",
     );
-    expect(renderTruthmarkDocumentSkill()).toContain("truth_route_auditor");
-    expect(renderTruthmarkDocumentSkill()).toContain("truth_claim_verifier");
-    expect(renderTruthmarkDocumentSkill()).toContain("truth_doc_writer");
-    expect(renderTruthmarkDocumentSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain("truth_route_auditor");
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain("truth_claim_verifier");
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain("truth_doc_writer");
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain(
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
-    expect(renderTruthmarkDocumentSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "codex")).toContain(
       "validate the worker report against the actual worker diff",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "use automatically when this workflow runs in Claude Code",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "truth-route-auditor subagent",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "truth-claim-verifier subagent",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "truth-doc-writer subagent",
     );
-    expect(renderTruthmarkDocumentClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-document", "claude-code")).toContain(
       "Parent agent owns Truth Document acceptance, lease validation, and final report",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-document", "opencode")).not.toContain(
       "Codex subagent mode:",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-document", "opencode")).not.toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-document", "opencode")).not.toContain(
       "OpenCode /skill truthmark-document",
     );
-    expect(renderTruthmarkDocumentLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-document", "opencode")).not.toContain(
       "Cursor /truthmark-document",
     );
     expect(renderTruthmarkDocumentSkillMetadata()).toContain(
@@ -235,7 +235,7 @@ describe("Truth Document generated surfaces", () => {
 
     expect(cursorDocumentSkill).toContain("Use as a Cursor Agent Skill.");
     expect(cursorDocumentSkill).toContain(".cursor/skills/");
-    expect(cursorDocumentSkill).toContain("Progressive disclosure:");
+    expect(cursorDocumentSkill).toContain("Reference files:");
     expect(cursorDocumentSkill).toContain("support/procedure.md");
     expect(cursorDocumentSkill).toContain("support/report-template.md");
     expect(renderTruthmarkCopilotDocumentPrompt()).toContain(

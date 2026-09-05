@@ -28,10 +28,14 @@ const PRODUCT_CAPABILITY_REQUIRED_HEADINGS = [
   "Engineering Realization Links",
   "Non-Goals",
 ];
+// Lane-level headings every engineering truth doc must carry.
+// "Current Implementation Behavior" is engineering-behavior specific and lives in
+// kindSpecificHeadingMessages; requiring it here also demanded it from contract,
+// architecture, workflow, operations, and test-behavior docs whose own kind
+// sections already state current behavior.
 const ENGINEERING_REQUIRED_HEADINGS = [
   "Purpose",
   "Scope",
-  "Current Implementation Behavior",
   "Source References",
   "Product Truth Links",
   "Maintenance Notes",

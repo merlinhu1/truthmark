@@ -22,11 +22,10 @@ import {
   resolveEngineeringTruthRoot,
 } from "./shared.js";
 
-import { getTruthmarkWorkflow } from "./workflow-manifest.js";
+import {
+  getTruthmarkWorkflow,
+} from "./workflow-manifest.js";
 
-const renderMarkdownExample = (content: string): string => {
-  return ["```md", content, "```"].join("\n");
-};
 
 export const TRUTH_DOCUMENT_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-document; Codex /truthmark-document or $truthmark-document; Claude Code /truthmark-document; GitHub Copilot /truthmark-document; Antigravity @truthmark-document; Cursor /truthmark-document.";
@@ -159,27 +158,4 @@ Parent post-document verification:
 - stop on functional code, generated host surfaces, or unrelated diffs caused by document work
 - for each write lease, validate the worker report against the actual worker diff, allowedWrites, forbiddenWrites, identity fields, filesChanged, offLeaseChanges, blockers, and expected report fields before accepting it
 - verify the final report records ownership review, structure requirement, restructure, routing update, or manual handoff reason when applicable`;
-};
-
-export const renderTruthDocumentSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-  options: {
-    includeClaudeSubagentMode?: boolean;
-    includeCodexSubagentMode?: boolean;
-    includeCopilotCustomAgentMode?: boolean;
-    includeOpenCodeSubagentMode?: boolean;
-  } = {},
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-document");
-
-  return `---
-name: truthmark-document
-description: ${workflow.description}
-argument-hint: Optional implemented behavior, API endpoint, route, controller, package, or truth-doc area to document
-user-invocable: true
----
-
-${renderTruthDocumentProcedureBody(config, options)}
-Report completion in this shape:
-${renderMarkdownExample(renderTruthDocumentReportExample(config))}`;
 };

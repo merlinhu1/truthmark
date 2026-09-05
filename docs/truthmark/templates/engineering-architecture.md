@@ -79,6 +79,15 @@ Tie constraints to source evidence, tests, standards, or operational requirement
 
 {{cross_cutting_constraints}}
 
+## Product Truth Links
+
+<!--
+List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.
+Use 'None.' when this is purely internal engineering truth.
+-->
+
+{{product_truth_links}}
+
 ## Engineering Decisions
 
 <!--
