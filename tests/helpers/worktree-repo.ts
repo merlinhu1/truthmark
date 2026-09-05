@@ -12,7 +12,11 @@ export type WorktreeRepo = Checkout & {
 };
 
 export const createWorktreeRepo = async (): Promise<WorktreeRepo> => {
-  const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-worktree-"));
+  // Canonicalize for the same reason as createTempRepo: an 8.3 short tmpdir
+  // path would not match the realpath-resolved paths the code under test returns.
+  const baseDir = await fs.realpath(
+    await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-worktree-")),
+  );
   const rootDir = path.join(baseDir, "repo");
   const worktreeDirs: string[] = [];
 
