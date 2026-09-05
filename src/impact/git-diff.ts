@@ -95,17 +95,3 @@ export const getChangedFiles = async (cwd: string, base: string): Promise<Change
     diagnostics,
   };
 };
-
-export const readBaseFile = async (
-  cwd: string,
-  base: string,
-  filePath: string,
-): Promise<string | null> => {
-  const repository = await getGitRepository(cwd);
-  const result = await execa("git", ["show", `${base}:${filePath}`], {
-    cwd: repository.worktreePath,
-    reject: false,
-  });
-
-  return (result.exitCode ?? 1) === 0 ? result.stdout : null;
-};

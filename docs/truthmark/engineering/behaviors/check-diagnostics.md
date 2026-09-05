@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-07-30
+last_reviewed: 2026-09-05
 ---
 
 # Check Diagnostics
@@ -28,6 +28,19 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 - Frontmatter diagnostics reject relationship metadata fields `realized_by`, `realizes`, and `depends_on` when they appear in truth document frontmatter.
 - Relationship authority stays in fenced route YAML entries.
 
+- Engineering truth doc structure validation applies lane-wide required headings plus kind-specific headings.
+- Every engineering truth doc requires:
+  - purpose
+  - scope
+  - source references
+  - product truth links
+  - maintenance notes
+- Kind-specific headings apply on top of the lane-wide set:
+  - `engineering-behavior` requires current implementation behavior
+  - `engineering-contract` requires contract surface plus one of inputs, outputs, or compatibility rules
+  - `engineering-architecture` requires boundaries or components
+  - `engineering-workflow` requires triggers and execution model
+- An engineering doc whose kind cannot be resolved is validated against the lane-wide set only.
 - Product truth doc structure validation enforces the `product-capability` shape.
 - Product capability docs require capability sections for:
   - capability promise
@@ -43,12 +56,14 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 
 - Product docs must live under the product truth root and use product kinds.
 - Engineering docs must live under the engineering truth root and use engineering kinds.
+- Current implementation behavior is required from `engineering-behavior` docs only; other engineering kinds state current behavior through their own kind sections.
 - Product docs under `docs/truthmark/product/**` infer `product-capability` unless explicit route metadata says otherwise.
 - Product capability docs do not satisfy product structure by using only boundary headings.
 - Relationship metadata belongs in route YAML; truth document frontmatter must not declare `realized_by`, `realizes`, or `depends_on`.
 - Traceability links must exist and point to the opposite lane; reciprocal `realized_by` and `realizes` metadata is allowed but not required.
 - Duplicate route entries for the same path, kind, and lane merge `realized_by`, `realizes`, and `depends_on` by unique sorted set.
 - Check reports structure and evidence only; it does not judge product strategy.
+- Route file containment comparisons use the platform path separator, so delegated area files resolve identically on POSIX and Windows checkouts.
 
 ## Behavior Scenarios
 
@@ -99,6 +114,10 @@ It covers route coverage, lane shape, lane drift, traceability, frontmatter, gen
 - Decision (2026-06-15): `realized_by` and `realizes` route metadata is route-local navigation metadata, not a canonical global graph.
   - Check validates target existence and lane compatibility without requiring reciprocal edges.
 - Decision (2026-07-10): Routing coverage includes functional code under any Git-visible root, while inactive generated-surface previews remain exact-path and renderer-owned.
+- Decision (2026-09-05): Current implementation behavior is a kind-specific requirement for `engineering-behavior`, not a lane-wide one.
+  - Contract, architecture, workflow, operations, and test-behavior docs already state current behavior through their own kind sections, and the lane-wide requirement made every shipped template of those kinds produce structure diagnostics on first use.
+- Decision (2026-09-05): Route file containment compares absolute paths with the platform path separator.
+  - Comparing a `path.resolve` result against a hardcoded `/` prefix rejected every delegated area file on Windows checkouts and emptied the resolved route set.
 
 ## Rationale
 
@@ -112,7 +131,7 @@ Check keeps diagnostics local to repository truth and route metadata so agents c
 
 ## Maintenance Notes
 
-Update when check categories, severity rules, lane audit behavior, or product kind section requirements change.
+Update when check categories, severity rules, lane audit behavior, or lane and kind section requirements change.
 
 ## Source References
 

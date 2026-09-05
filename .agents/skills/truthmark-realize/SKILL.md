@@ -1,6 +1,6 @@
 ---
 name: truthmark-realize
-description: Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.
+description: Writes functional code from truth docs that already describe the intended behavior. Use when the user explicitly asks to realize Truthmark truth docs into code, including when they invoke /truthmark-realize or $truthmark-realize. Not for syncing docs after code changes, documenting existing code, repairing route ownership, or truth audits.
 argument-hint: Optional truth doc path, area, or desired code behavior to realize
 user-invocable: true
 ---
@@ -10,11 +10,10 @@ user-invocable: true
 Use this skill only when the user explicitly asks to realize truth docs into code.
 
 Quick procedure:
-- Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.
 - Read the source truth docs, inspect .truthmark/config.yml and configured route files (docs/truthmark/routes/areas.md; docs/truthmark/routes/areas/) only when they exist, then inspect tests and relevant functional code directly.
 - Truth docs lead; code follows.
-- may write functional code only; must not edit truth docs or truth routing while realizing those docs.
+- May write functional code only; must not edit truth docs or truth routing while realizing those docs.
 
-Progressive disclosure:
-- support/procedure.md — read before edits or detailed auditing; contains core review questions
-- support/report-template.md — read before the final report
+Reference files:
+- **Procedure**: core review questions; read before edits or detailed auditing. See [procedure.md](support/procedure.md).
+- **Report template**: read before writing the final report. See [report-template.md](support/report-template.md).

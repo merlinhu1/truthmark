@@ -3,7 +3,7 @@ import { expect } from "expect";
 
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import { renderTruthRealizePrompt } from "../../src/agents/prompts.js";
-import { renderTruthmarkRealizeSkill } from "../../src/templates/workflow-surfaces.js";
+import { installedSkillSurface } from "../helpers/skill-surface.js";
 
 describe("renderTruthRealizePrompt", () => {
   it("renders manual doc-first realization guidance without a dedicated CLI command", () => {
@@ -70,13 +70,13 @@ describe("renderTruthRealizePrompt", () => {
   });
 
   it("renders adjacent-workflow exclusions in generated skill metadata", () => {
-    const skill = renderTruthmarkRealizeSkill();
+    const skill = installedSkillSurface("truthmark-realize");
 
     expect(skill).toContain(
-      "description: Use when the user explicitly asks to realize Truthmark truth docs into code",
+      "description: Writes functional code from truth docs that already describe the intended behavior. Use when the user explicitly asks to realize Truthmark truth docs into code",
     );
     expect(skill).toContain(
-      "Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.",
+      "Not for syncing docs after code changes, documenting existing code, repairing route ownership, or truth audits.",
     );
   });
 });

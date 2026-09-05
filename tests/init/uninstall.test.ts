@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 
 import { writeTruthmarkConfig } from "../helpers/truthmark-config.js";
@@ -149,7 +150,7 @@ describe("uninstall command", () => {
     }
   });
 
-  it("does not remove unsafe generated files when a managed surface escapes containment", async () => {
+  posixOnlyIt("does not remove unsafe generated files when a managed surface escapes containment", async () => {
     const repo = await createTempRepo();
 
     try {

@@ -107,7 +107,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-sync",
     displayName: "Truthmark Sync",
     description:
-      "Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.",
+      "Syncs canonical truth docs and truth routing to match functional code changes. Use automatically at finish-time after functional code changes, or when the user invokes {{invocation}}. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or hand-designing route ownership.",
     shortDescription:
       "Sync truth docs from functional code changes; skip docs-only/no-code changes",
     defaultPrompt:
@@ -115,7 +115,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     allowImplicitInvocation: true,
     positiveTriggers: [
       "functional code changed since last successful Truth Sync",
-      "explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync",
+      "explicit user invocation of Truth Sync",
     ],
     negativeTriggers: [
       "documentation-only change",
@@ -155,7 +155,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-structure",
     displayName: "Truthmark Structure",
     description:
-      "Use when routing or truth ownership is missing, stale, broad, overloaded, catch-all, unrouteable, mixed-owner, needs split/repair, or needs new area setup. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.",
+      "Designs and repairs Truthmark area routing and truth ownership. Use when route or truth ownership is missing, stale, too broad, overloaded, catch-all, matched by no route, split across several owners, or needs a new area. Not for documenting implemented behavior, syncing a code diff, or realizing docs into code.",
     shortDescription: "Design, repair, or set up Truthmark area routing",
     defaultPrompt:
       "Use $truthmark-structure to design, repair, or set up Truthmark area routing.",
@@ -202,7 +202,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-document",
     displayName: "Truthmark Document",
     description:
-      "Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or topology repair that needs Structure.",
+      "Writes canonical truth docs for behavior that is already implemented. Use when the user asks to document existing implemented behavior, or Sync, Check, or Structure finds implemented behavior missing canonical truth. Not for functional-code changes, doc-first implementation, or route-ownership repair that needs Structure.",
     shortDescription: "Document existing implemented behavior",
     defaultPrompt:
       "Use $truthmark-document to document existing implemented behavior.",
@@ -247,7 +247,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-realize",
     displayName: "Truthmark Realize",
     description:
-      "Use when the user explicitly asks to realize Truthmark truth docs into code, including /truthmark-realize, $truthmark-realize, or /truthmark:realize. Not for syncing docs after code changes, documenting existing code, topology repair, or truth audits.",
+      "Writes functional code from truth docs that already describe the intended behavior. Use when the user explicitly asks to realize Truthmark truth docs into code, including when they invoke {{invocation}}. Not for syncing docs after code changes, documenting existing code, repairing route ownership, or truth audits.",
     shortDescription: "Realize truth docs into code",
     defaultPrompt:
       "Use $truthmark-realize to realize the updated truth docs into code.",
@@ -271,7 +271,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-check",
     displayName: "Truthmark Check",
     description:
-      "Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.",
+      "Audits repository truth health and reports findings without rewriting docs. Use when the user asks to audit repository truth health, routing, ownership, or canonical docs. Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.",
     shortDescription: "Audit repository truth health",
     defaultPrompt: "Use $truthmark-check to audit repository truth health.",
     allowImplicitInvocation: false,
@@ -307,7 +307,7 @@ export const TRUTHMARK_WORKFLOW_MANIFEST = {
     id: "truthmark-portal",
     displayName: "Truthmark Portal",
     description:
-      "Use when the user explicitly asks to generate, refresh, or update the Truthmark Portal static HTML site. Not for code change sync, route repair, truth validation/checking, documenting behavior, realizing docs into code, or machine-readable agent context.",
+      "Generates the committed static HTML Truthmark Portal from canonical Markdown. Use when the user explicitly asks to generate, refresh, or update the Truthmark Portal static HTML site. Not for code change sync, route repair, truth validation/checking, documenting behavior, realizing docs into code, or machine-readable agent context.",
     shortDescription: "Generate a committed static HTML Truthmark Portal",
     defaultPrompt:
       "Use $truthmark-portal only when explicitly asked to generate or refresh the committed static HTML Portal.",
@@ -359,4 +359,36 @@ export const getTruthmarkWorkflow = (
   id: TruthmarkWorkflowId,
 ): TruthmarkWorkflowManifestEntry => {
   return TRUTHMARK_WORKFLOW_MANIFEST[id];
+};
+
+export type TruthmarkWorkflowHost =
+  | "codex"
+  | "opencode"
+  | "claude-code"
+  | "github-copilot"
+  | "cursor"
+  | "antigravity";
+
+const HOST_INVOCATION_SYNTAX: Record<
+  TruthmarkWorkflowHost,
+  (id: TruthmarkWorkflowId) => string
+> = {
+  codex: (id) => `/${id} or $${id}`,
+  opencode: (id) => `/skill ${id}`,
+  "claude-code": (id) => `/${id}`,
+  "github-copilot": (id) => `/${id}`,
+  cursor: (id) => `/${id}`,
+  antigravity: (id) => `@${id}`,
+};
+
+// Skill descriptions carry {{invocation}} instead of a literal trigger so each
+// host advertises only the syntax it actually accepts.
+export const renderWorkflowDescription = (
+  id: TruthmarkWorkflowId,
+  host: TruthmarkWorkflowHost,
+): string => {
+  return TRUTHMARK_WORKFLOW_MANIFEST[id].description.replaceAll(
+    "{{invocation}}",
+    HOST_INVOCATION_SYNTAX[host](id),
+  );
 };

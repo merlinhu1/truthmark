@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 
 import { createTempRepo } from "../helpers/temp-repo.js";
@@ -91,7 +92,7 @@ describe("resolveWorktreePath", () => {
     }
   });
 
-  it("rejects symlinked paths that resolve outside the active checkout", async () => {
+  posixOnlyIt("rejects symlinked paths that resolve outside the active checkout", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -124,7 +125,7 @@ describe("resolveWorktreePath", () => {
     }
   });
 
-  it("rejects missing leaves under parent symlinks that point outside the active checkout", async () => {
+  posixOnlyIt("rejects missing leaves under parent symlinks that point outside the active checkout", async () => {
     const repo = await createTempRepo();
 
     try {

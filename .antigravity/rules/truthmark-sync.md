@@ -10,7 +10,7 @@ Manual invocation: @truthmark-sync
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
-Description: Use automatically at finish-time after functional code changes, or explicit /truthmark-sync, $truthmark-sync, or /truthmark:sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or manual topology design.
+Description: Syncs canonical truth docs and truth routing to match functional code changes. Use automatically at finish-time after functional code changes, or when the user invokes @truthmark-sync. Skip docs-only, formatting-only, behavior-preserving renames, missing config, and no-code changes. Not for doc-first realization or hand-designing route ownership.
 
 ## Procedure
 

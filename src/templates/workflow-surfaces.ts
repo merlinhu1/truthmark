@@ -14,26 +14,17 @@ import {
 import {
   renderTruthCheckProcedureBody,
   renderTruthCheckReportExample,
-  renderTruthCheckSkillBody,
 } from "../agents/truth-check.js";
 import {
   renderTruthDocumentProcedureBody,
   renderTruthDocumentReportExample,
-  renderTruthDocumentSkillBody,
 } from "../agents/truth-document.js";
-import {
-  renderTruthmarkPortalProcedureBody,
-  renderTruthmarkPortalSkillBody,
-} from "../agents/truthmark-portal.js";
+import { renderTruthmarkPortalProcedureBody } from "../agents/truthmark-portal.js";
 import {
   renderTruthStructureProcedureBody,
   renderTruthStructureReportExample,
-  renderTruthStructureSkillBody,
 } from "../agents/truth-structure.js";
-import {
-  renderTruthSyncProcedureBody,
-  renderTruthSyncSkillBody,
-} from "../agents/truth-sync.js";
+import { renderTruthSyncProcedureBody } from "../agents/truth-sync.js";
 import {
   renderTruthSyncBlockedReport,
   renderTruthSyncCompletedReport,
@@ -41,6 +32,7 @@ import {
 import { TRUTHMARK_WRITE_WORKER_REPORT_FIELDS } from "../agents/write-lease.js";
 import {
   getTruthmarkWorkflow,
+  renderWorkflowDescription,
   type TruthmarkWorkflowId,
   type TruthmarkReadOnlySubagentId,
   type TruthmarkWriteSubagentId,
@@ -237,7 +229,7 @@ const renderTomlStringArray = (values: string[]): string => {
   return `[${values.map(renderTomlString).join(", ")}]`;
 };
 
-type TruthmarkSkillPackageHost =
+export type TruthmarkSkillPackageHost =
   | "codex"
   | "opencode"
   | "claude-code"
@@ -269,7 +261,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     argumentHint: "Optional area, directory, or routing concern",
     use: () => "Use this skill to design or repair Truthmark area structure.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect current docs and relevant code directly.`,
       "Define areas by product or behavior ownership, not by mechanical directory mirroring.",
       "Do not edit functional code.",
@@ -284,7 +275,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     use: () =>
       "Use this skill to document existing implemented behavior when no functional-code changes are required for the task.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect existing canonical docs, implementation code, and tests directly.`,
       "Document current implemented behavior; do not invent future behavior.",
       "May write canonical truth docs and truth routing files only; must not write functional code.",
@@ -298,10 +288,9 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     use: () =>
       "Use this skill automatically before finishing when functional code changed since the last successful Truth Sync. Also run it immediately when the user explicitly invokes Truth Sync.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       "Skip docs-only, formatting-only, behavior-preserving renames with no truth impact, missing config, and no-code changes.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect relevant canonical docs directly.`,
-      "direct checkout inspection is the canonical path; do not require the truthmark binary.",
+      "Direct checkout inspection is the canonical path; do not require the truthmark binary.",
       "May write canonical truth docs and truth routing files only; must not rewrite functional code.",
     ],
     parentRule:
@@ -314,10 +303,9 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     use: () =>
       "Use this skill only when the user explicitly asks to realize truth docs into code.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Read the source truth docs, inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist, then inspect tests and relevant functional code directly.`,
       "Truth docs lead; code follows.",
-      "may write functional code only; must not edit truth docs or truth routing while realizing those docs.",
+      "May write functional code only; must not edit truth docs or truth routing while realizing those docs.",
     ],
   },
   "truthmark-check": {
@@ -325,7 +313,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     argumentHint: "Optional area, doc path, or audit focus",
     use: () => "Use this skill to audit repository truth health.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       `Inspect .truthmark/config.yml and configured route files (${routeFilesHint(config)}) only when they exist; then inspect canonical docs and relevant implementation directly.`,
       "Report issues and suggested fixes; do not silently rewrite unrelated files.",
     ],
@@ -337,7 +324,6 @@ const WORKFLOW_PACKAGE_DEFINITIONS: Record<
     use: () =>
       "Use this skill only when the user explicitly asks to generate or refresh the committed static HTML Truthmark Portal.",
     quickRules: (config) => [
-      "Follow repository instruction files that exist in this checkout; do not assume any optional policy path exists.",
       "Truthmark Portal is manual-only; never run it automatically at completion and never treat it as Truth Sync.",
       "Markdown remains canonical; generated HTML is non-canonical presentation only.",
       "Read Markdown directly; the workflow does not require the truthmark CLI or package.",
@@ -507,25 +493,31 @@ const renderWorkflowEntrypoint = (
   supportFiles: string[],
   host: TruthmarkSkillPackageHost,
 ): string => {
-  const workflow = getTruthmarkWorkflow(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const supportFileUsage = (supportFile: string): string => {
     if (supportFile === "support/procedure.md") {
-      return "read before edits or detailed auditing; contains core review questions";
+      return "**Procedure**: core review questions; read before edits or detailed auditing";
     }
 
     if (supportFile === "support/report-template.md") {
-      return "read before the final report";
+      return "**Report template**: read before writing the final report";
     }
 
     if (supportFile === "support/subagents-and-leases.md") {
-      return "read only when using subagents, leases, or accepting worker output";
+      return "**Subagents and leases**: read only when using subagents, leases, or accepting worker output";
     }
 
-    return "available when relevant to the current step";
+    return "**Reference**: read when relevant to the current step";
   };
   const supportFileList = supportFiles
-    .map((supportFile) => `- ${supportFile} — ${supportFileUsage(supportFile)}`)
+    .map((supportFile) => {
+      // Link labels stay bare file names: a path-shaped label is checked
+      // against the repository path it resolves to, not the package-relative
+      // target a skill package needs.
+      const label = supportFile.split("/").at(-1);
+
+      return `- ${supportFileUsage(supportFile)}. See [${label}](${supportFile}).`;
+    })
     .join("\n");
   const hostUsage =
     host === "github-copilot"
@@ -536,7 +528,7 @@ const renderWorkflowEntrypoint = (
 
   return `---
 name: ${workflowId}
-description: ${workflow.description}
+description: ${renderWorkflowDescription(workflowId, host)}
 argument-hint: ${definition.argumentHint}
 user-invocable: true
 ---
@@ -551,7 +543,7 @@ ${definition
   .map((rule) => `- ${rule}`)
   .join("\n")}
 
-Progressive disclosure:
+Reference files:
 ${supportFileList}
 `;
 };
@@ -1128,26 +1120,6 @@ export const renderTruthmarkOpenCodeDocWriterAgent = (
   });
 };
 
-export const renderTruthmarkStructureSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthStructureSkillBody(config);
-};
-
-export const renderTruthmarkStructureLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthStructureSkillBody(config);
-};
-
-export const renderTruthmarkStructureClaudeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthStructureSkillBody(config, {
-    includeClaudeSubagentMode: true,
-  });
-};
-
 export const renderTruthmarkStructureSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-structure");
 
@@ -1164,28 +1136,6 @@ truthmark:
 `;
 };
 
-export const renderTruthmarkDocumentSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthDocumentSkillBody(config, {
-    includeCodexSubagentMode: true,
-  });
-};
-
-export const renderTruthmarkDocumentLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthDocumentSkillBody(config);
-};
-
-export const renderTruthmarkDocumentClaudeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthDocumentSkillBody(config, {
-    includeClaudeSubagentMode: true,
-  });
-};
-
 export const renderTruthmarkDocumentSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-document");
 
@@ -1200,24 +1150,6 @@ policy:
 truthmark:
   refresh_command: "truthmark init"
 `;
-};
-
-export const renderTruthmarkSyncSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthSyncSkillBody(config, { includeCodexSubagentMode: true });
-};
-
-export const renderTruthmarkSyncLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthSyncSkillBody(config);
-};
-
-export const renderTruthmarkSyncClaudeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthSyncSkillBody(config, { includeClaudeSubagentMode: true });
 };
 
 export const renderTruthmarkSyncSkillMetadata = (): string => {
@@ -1271,45 +1203,6 @@ Read and write boundaries:
 - must not edit truth docs or truth routing while realizing those docs`;
 };
 
-const renderTruthmarkRealizeSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  const productTruthRoot = resolveProductTruthRoot(config);
-  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
-  const workflow = getTruthmarkWorkflow("truthmark-realize");
-
-  return `---
-name: truthmark-realize
-description: ${workflow.description}
-argument-hint: Optional truth doc path, area, or desired code behavior to realize
-user-invocable: true
----
-
-${renderTruthmarkRealizeProcedureBody(config)}
-Report completion in this shape:
-
-\`\`\`md
-Truth Realize: completed
-
-Truth docs used:
-- ${productTruthRoot}/capabilities/authentication-session.md
-- ${engineeringTruthRoot}/behaviors/authentication-session.md
-
-Code updated:
-- src/auth/session.ts
-
-Verification:
-- npm test -- auth
-\`\`\`
-`;
-};
-
-export const renderTruthmarkRealizeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthmarkRealizeSkillBody(config);
-};
-
 export const renderTruthmarkRealizeSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-realize");
 
@@ -1326,24 +1219,6 @@ truthmark:
 `;
 };
 
-export const renderTruthmarkCheckSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthCheckSkillBody(config, { includeCodexSubagentMode: true });
-};
-
-export const renderTruthmarkCheckLocalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthCheckSkillBody(config);
-};
-
-export const renderTruthmarkCheckClaudeSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthCheckSkillBody(config, { includeClaudeSubagentMode: true });
-};
-
 export const renderTruthmarkCheckSkillMetadata = (): string => {
   const workflow = getTruthmarkWorkflow("truthmark-check");
 
@@ -1358,12 +1233,6 @@ policy:
 truthmark:
   refresh_command: "truthmark init"
 `;
-};
-
-export const renderTruthmarkPortalSkill = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-): string => {
-  return renderTruthmarkPortalSkillBody(config);
 };
 
 export const renderTruthmarkPortalSkillMetadata = (): string => {
@@ -1393,7 +1262,6 @@ const renderWorkflowRuleFile = ({
   ruleName: string;
   config?: TruthmarkConfig;
 }): string => {
-  const workflow = getTruthmarkWorkflow(workflowId);
   const definition = WORKFLOW_PACKAGE_DEFINITIONS[workflowId];
   const { procedure, reportTemplate } = renderWorkflowSupportParts(
     workflowId,
@@ -1411,7 +1279,7 @@ Manual invocation: @${ruleName}
 
 If skill entrypoints are unavailable, use the host's direct evidence-first manual fallback procedure.
 
-Description: ${workflow.description}
+Description: ${renderWorkflowDescription(workflowId, "antigravity")}
 
 ## Procedure
 
@@ -1429,10 +1297,9 @@ const renderCopilotWorkflowPrompt = (
   workflowId: TruthmarkWorkflowId,
   root: string,
 ): string => {
-  const workflow = getTruthmarkWorkflow(workflowId);
 
   return renderCopilotPromptFile(
-    workflow.description,
+    renderWorkflowDescription(workflowId, "github-copilot"),
     renderWorkflowCommandAdapterInstructions(
       workflowId,
       root,

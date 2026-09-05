@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-contract
-last_reviewed: 2026-09-02
+last_reviewed: 2026-09-05
 ---
 
 # Generated Host Surfaces
@@ -86,7 +86,7 @@ Truthmark renders logical workflow surfaces only for configured platforms.
   - Cursor's current Agent Skills surface supplies description-based selection plus package-local support resources, so it is the single native Cursor workflow representation Truthmark uses.
 - Decision (2026-06-20): Runtime surfaces must not carry redundant host-switch or support-file overhead.
   - Cross-host invocation lists belong in human-facing docs or platform-reference contracts.
-  - Native `SKILL.md` quick procedures do not repeat support-file read instructions already listed under Progressive disclosure.
+  - Native `SKILL.md` quick procedures do not repeat support-file read instructions already listed under Reference files.
   - Flat Antigravity rules do not reference nonexistent `support/` files.
 - Decision (2026-06-18): Fresh configs do not assume Codex, OpenCode, or any other host platform. Host-specific surfaces are opt-in through explicit `platforms` entries.
 - Decision (2026-06-18): Generated helper manifest and helper policy files are removed.
@@ -103,6 +103,10 @@ Truthmark renders logical workflow surfaces only for configured platforms.
 - Decision (2026-07-10, refined 2026-09-02): Logical-path lifecycle inventory and fail-closed revalidation are shared by Check, Init, and Uninstall so reconciliation never requires recursive directory deletion; managed aliases are coalesced by canonical resolved path for cleanup.
 - Decision (2026-09-02): Claude Code receives the compact workflow block through an unscoped `.claude/rules/truthmark.md` rule instead of injection into `CLAUDE.md`.
 - Decision (2026-09-02): Managed-block instruction files may use final in-worktree symlinks; Truthmark-owned whole-file surfaces may not.
+- Decision (2026-09-05): Skill frontmatter descriptions state what the workflow does before when to use it, so host skill selection has both signals.
+- Decision (2026-09-05): `SKILL.md` lists support files under a Reference files heading with named Markdown links rather than naming the progressive-disclosure mechanism.
+- Decision (2026-09-05): Quick procedures carry only workflow-specific direction; the instruction-authority rule stays in `support/procedure.md` instead of repeating in every skill entrypoint.
+- Decision (2026-09-05): Workflow skill packages are the only rendered skill body; per-workflow standalone skill renderers are removed so no second rendering path can drift from installed output.
   - Truthmark rejects mechanical hazards but does not judge the target's extension, content type, or cross-host visibility.
   - `platforms` governs logical generated surfaces; user-owned aliases remain repository policy.
 

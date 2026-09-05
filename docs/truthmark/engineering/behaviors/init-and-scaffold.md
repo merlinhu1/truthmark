@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-behavior
-last_reviewed: 2026-09-02
+last_reviewed: 2026-09-05
 ---
 
 # Init And Scaffold
@@ -58,6 +58,13 @@ Configured platforms select logical instruction surfaces. Shared-contract hosts 
 
 Generated truth-doc templates keep kind-specific and section-specific authoring comments in the template files.
 
+Every engineering truth template renders the lane-wide required headings so a doc created from a shipped template passes structure validation without hand editing:
+
+- `Purpose`, `Scope`, `Product Truth Links`, `Maintenance Notes`, and `Source References` appear in all engineering templates.
+- Kind-specific sections appear between `Scope` and `Product Truth Links`.
+
+Generated route files carry a comment stating that each `## ` heading declares an area, except `## Source References`, and that prose belongs under a `###` heading or under `## Source References`.
+
 Engineering behavior templates include a `Behavior Scenarios` section after `Core Rules`:
 
 - Scenario blocks are optional and clarify normal, fallback, or compatibility-critical behavior.
@@ -96,6 +103,7 @@ Capability docs own:
 
 - Scaffolded paths derive from `truthmark.workspace`.
 - Template filenames match `truth_kind` values.
+- Engineering templates render the lane-wide required headings that engineering structure validation checks.
 - Engineering behavior templates provide optional current-state scenario blocks for normal, fallback, or compatibility-critical behavior.
 - Setup and platform selection are owned by `truthmark init`.
 - Platform selection is zero or more and never assumes an AI host.
@@ -172,6 +180,10 @@ Capability docs own:
 - Decision (2026-09-02): Managed-block instruction symlinks are repository-owned topology.
   - Truthmark follows a mechanically safe final in-worktree symlink without restricting the target extension or interpreting cross-host visibility.
   - Cleanup coalesces aliases by canonical resolved path so an inactive logical surface cannot remove an active target.
+- Decision (2026-09-05): Shipped templates must satisfy the structure validation they are scaffolded for.
+  - Only the `engineering-behavior` template previously carried `Product Truth Links`, so docs written from the other five engineering templates produced structure diagnostics before any authoring happened.
+- Decision (2026-09-05): Generated route files state the area-heading rule inline.
+  - The route parser treats every `## ` heading except `## Source References` as an area declaration, and nothing previously warned authors that a prose section in a route file becomes a malformed area.
 
 ## Rationale
 
@@ -188,6 +200,8 @@ Keeping templates kind-specific and moving global prose style into workflow guid
 ## Maintenance Notes
 
 Update when init writes new files, changes default paths, changes template filenames, or changes template shape.
+
+Template shape is coupled to engineering structure validation in `docs/truthmark/engineering/behaviors/check-diagnostics.md`; changing required headings on either side requires the matching change on the other.
 
 ## Source References
 

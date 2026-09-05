@@ -79,6 +79,15 @@ State 'Not versioned' only when the implementation truly has no versioning or mi
 
 {{versioning_and_migration}}
 
+## Product Truth Links
+
+<!--
+List product truth docs this engineering doc realizes; author canonical realizes links in route YAML, not doc frontmatter.
+Use 'None.' when this is purely internal engineering truth.
+-->
+
+{{product_truth_links}}
+
 ## Engineering Decisions
 
 <!--

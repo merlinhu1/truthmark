@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 
 import { expect } from "expect";
 
@@ -14,7 +15,7 @@ import { runUninstall } from "../../src/init/uninstall.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("generated surface lifecycle", () => {
-  it("follows an in-worktree managed instruction alias and preserves it on uninstall", async () => {
+  posixOnlyIt("follows an in-worktree managed instruction alias and preserves it on uninstall", async () => {
     const repo = await createTempRepo();
     try {
       await writeTruthmarkConfig(repo.rootDir);
@@ -80,7 +81,7 @@ describe("generated surface lifecycle", () => {
     }
   });
 
-  it("keeps an active target when an inactive managed alias points to it", async () => {
+  posixOnlyIt("keeps an active target when an inactive managed alias points to it", async () => {
     const repo = await createTempRepo();
     try {
       await writeTruthmarkConfig(repo.rootDir);
@@ -111,7 +112,7 @@ describe("generated surface lifecycle", () => {
   });
 
   for (const target of ["external file", "Git metadata"] as const) {
-    it(`rejects a managed alias to ${target}`, async () => {
+    posixOnlyIt(`rejects a managed alias to ${target}`, async () => {
       const repo = await createTempRepo();
       const outsidePath = `${repo.rootDir}-outside.md`;
       try {

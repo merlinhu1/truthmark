@@ -1,16 +1,11 @@
 import { describe, it } from "node:test";
 import { expect } from "expect";
 
-import {
-  TRUTH_CHECK_EXPLICIT_INVOCATIONS,
-  renderTruthCheckSkillBody,
-} from "../../src/agents/truth-check.js";
+import { TRUTH_CHECK_EXPLICIT_INVOCATIONS } from "../../src/agents/truth-check.js";
+import { installedSkillSurface } from "../helpers/skill-surface.js";
 import { createDefaultConfig } from "../../src/config/defaults.js";
 import {
   renderTruthmarkClaimVerifierAgent,
-  renderTruthmarkCheckLocalSkill,
-  renderTruthmarkCheckClaudeSkill,
-  renderTruthmarkCheckSkill,
   renderTruthmarkCheckSkillMetadata,
   renderTruthmarkClaudeClaimVerifierAgent,
   renderTruthmarkClaudeDocReviewerAgent,
@@ -29,16 +24,16 @@ import {
   renderTruthmarkRouteAuditorAgent,
 } from "../../src/templates/workflow-surfaces.js";
 
-describe("renderTruthCheckSkillBody", () => {
+describe("installed truthmark-check skill surface", () => {
   it("renders the agent-led truth audit workflow", () => {
-    const skill = renderTruthCheckSkillBody();
+    const skill = installedSkillSurface("truthmark-check");
 
     expect(TRUTH_CHECK_EXPLICIT_INVOCATIONS).toContain(
       "Cursor /truthmark-check",
     );
     expect(skill).toContain("name: truthmark-check");
     expect(skill).toContain(
-      "description: Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
+      "description: Audits repository truth health and reports findings without rewriting docs. Use when the user asks to audit repository truth health, routing, ownership, or canonical docs.",
     );
     expect(skill).toContain(
       "Not for normal lint/test/typecheck/code-review verification, finish-time Sync, or silently rewriting docs.",
@@ -90,36 +85,36 @@ describe("Truth Check generated surfaces", () => {
     "Do not preload AGENTS.md, CLAUDE.md, .github/copilot-instructions.md, .cursor/skills, .antigravity/rules, or repo-wide policy docs unless the parent explicitly assigns them as evidence.";
 
   it("renders Codex metadata and OpenCode skill content", () => {
-    expect(renderTruthmarkCheckSkill()).toContain("name: truthmark-check");
-    expect(renderTruthmarkCheckSkill()).toContain("Codex subagent mode:");
-    expect(renderTruthmarkCheckSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain("name: truthmark-check");
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain("Codex subagent mode:");
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain(
       "use automatically when this workflow runs in Codex",
     );
-    expect(renderTruthmarkCheckSkill()).toContain("truth_route_auditor");
-    expect(renderTruthmarkCheckSkill()).toContain("truth_claim_verifier");
-    expect(renderTruthmarkCheckSkill()).toContain("truth_doc_reviewer");
-    expect(renderTruthmarkCheckSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain("truth_route_auditor");
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain("truth_claim_verifier");
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain("truth_doc_reviewer");
+    expect(installedSkillSurface("truthmark-check", "codex")).toContain(
       "Parent agent owns the final Truth Check report",
     );
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-check", "opencode")).not.toContain(
       "Codex subagent mode:",
     );
-    expect(renderTruthmarkCheckClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "claude-code")).toContain(
       "Claude Code subagent mode:",
     );
-    expect(renderTruthmarkCheckClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "claude-code")).toContain(
       "truth-route-auditor subagent",
     );
-    expect(renderTruthmarkCheckClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "claude-code")).toContain(
       "truth-claim-verifier subagent",
     );
-    expect(renderTruthmarkCheckClaudeSkill()).toContain(
+    expect(installedSkillSurface("truthmark-check", "claude-code")).toContain(
       "truth-doc-reviewer subagent",
     );
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-check", "opencode")).not.toContain(
       "OpenCode /skill truthmark-check",
     );
-    expect(renderTruthmarkCheckLocalSkill()).not.toContain(
+    expect(installedSkillSurface("truthmark-check", "opencode")).not.toContain(
       "Cursor @truthmark-check",
     );
     expect(renderTruthmarkCheckSkillMetadata()).toContain(

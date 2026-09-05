@@ -3,13 +3,14 @@ import os from "node:os";
 import path from "node:path";
 
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 
 import { discoverRepositoryFilePaths } from "../../src/git/files.js";
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("discoverRepositoryFilePaths", () => {
-  it("returns sorted current Git-visible regular files with NUL-safe names", async () => {
+  posixOnlyIt("returns sorted current Git-visible regular files with NUL-safe names", async () => {
     const repo = await createTempRepo();
     try {
       await repo.writeFile("tracked.ts", "x\n");
@@ -81,7 +82,7 @@ describe("discoverRepositoryFilePaths", () => {
     }
   });
 
-  it("normalizes awkward file names including tabs, newlines, and edge spaces", async () => {
+  posixOnlyIt("normalizes awkward file names including tabs, newlines, and edge spaces", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -149,7 +150,7 @@ describe("discoverRepositoryFilePaths", () => {
     }
   });
 
-  it("surfaces filenames with tabs/newlines while preserving discovery stability", async () => {
+  posixOnlyIt("surfaces filenames with tabs/newlines while preserving discovery stability", async () => {
     const repo = await createTempRepo();
 
     try {

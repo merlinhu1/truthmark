@@ -4,6 +4,7 @@ import { execa } from "execa";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 import { parse } from "yaml";
 
@@ -85,7 +86,7 @@ describe("built truthmark CLI", () => {
     }
   });
 
-  it("renders top-level help when invoked through a linked path", async () => {
+  posixOnlyIt("renders top-level help when invoked through a linked path", async () => {
     const buildResult = await execa("npm", ["run", "build"], {
       cwd: workspaceRoot,
       reject: false,

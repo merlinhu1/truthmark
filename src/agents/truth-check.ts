@@ -13,11 +13,10 @@ import {
   renderHierarchySummary,
   renderReadOnlyLaneClassificationRuleBlock,
 } from "./shared.js";
-import { getTruthmarkWorkflow } from "./workflow-manifest.js";
+import {
+  getTruthmarkWorkflow,
+} from "./workflow-manifest.js";
 
-const renderMarkdownExample = (content: string): string => {
-  return ["```md", content, "```"].join("\n");
-};
 
 export const TRUTH_CHECK_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-check; Codex /truthmark-check or $truthmark-check; Claude Code /truthmark-check; GitHub Copilot /truthmark-check; Antigravity @truthmark-check; Cursor /truthmark-check.";
@@ -121,28 +120,4 @@ ${renderAuditEvidenceGateSection()}
 
 ${subagentMode}${renderHierarchySummary(config)}
 ${DECISION_TRUTH_INSTRUCTIONS}`;
-};
-
-export const renderTruthCheckSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-  options: {
-    includeClaudeSubagentMode?: boolean;
-    includeCodexSubagentMode?: boolean;
-    includeCopilotCustomAgentMode?: boolean;
-    includeOpenCodeSubagentMode?: boolean;
-  } = {},
-): string => {
-  const workflow = getTruthmarkWorkflow("truthmark-check");
-
-  return `---
-name: truthmark-check
-description: ${workflow.description}
-argument-hint: Optional area, doc path, or audit focus
-user-invocable: true
----
-
-${renderTruthCheckProcedureBody(config, options)}
-Report completion in this shape:
-
-${renderMarkdownExample(renderTruthCheckReportExample(config))}`;
 };

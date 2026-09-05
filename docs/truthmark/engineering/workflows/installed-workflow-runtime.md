@@ -1,7 +1,7 @@
 ---
 status: active
 truth_kind: engineering-workflow
-last_reviewed: 2026-07-30
+last_reviewed: 2026-09-05
 ---
 
 # Installed Workflow Runtime
@@ -27,12 +27,21 @@ Fresh configs do not assume a host platform:
 Generated host skill directories are native skill packages for write-capable and audit workflows:
 
 - `SKILL.md` files keep package-local `support/procedure.md` and `support/report-template.md`.
+- `SKILL.md` lists those files under a Reference files heading with named Markdown links and a read trigger for each.
 - Subagent and lease guidance is kept only when the workflow uses subagents.
 - Hosts that package skill-directory resources do not depend on arbitrary cross-repository file reads.
 
 Optional validation commands stay in workflow metadata, and report validation accepts manual fallback evidence.
 
 Host-native packages are the runtime workflow surfaces that agents load.
+
+Workflow skill and rule descriptions render the invocation syntax of the host they are generated for:
+
+- Codex surfaces render `/<workflow>` and `$<workflow>`.
+- OpenCode surfaces render `/skill <workflow>`.
+- Claude Code, GitHub Copilot, and Cursor surfaces render `/<workflow>`.
+- Antigravity rule surfaces render `@<workflow>`.
+- Every generated description renderer names a host, so no surface renders a bare workflow id as its invocation claim.
 
 GitHub Copilot prompts and top-level managed instruction blocks stay thin:
 
@@ -232,6 +241,10 @@ Committed workflow files are the runtime contract. The CLI installs and validate
   - Agent Skills are the single current native Cursor workflow representation because they provide description-based selection plus package-local resources.
 - Decision (2026-06-26): Truth-doc prose guidance uses a compact professional checklist instead of vendoring a full humanizer prompt into generated workflows.
   - Truthmark keeps the benefit of avoiding AI-style padding while controlling token cost and preserving evidence-backed documentation tone.
+- Decision (2026-09-05): Workflow descriptions carry an invocation placeholder that each host renderer resolves to its own syntax.
+  - A shared description previously advertised three invocation forms on every host, so a host surface named triggers the host does not accept.
+  - The same rule that keeps cross-host invocation lists out of rule and prompt bodies now applies to the description field.
+- Decision (2026-09-05): The host argument to the description renderer is required, so a generated surface cannot advertise a bare workflow id in place of real invocation syntax.
 
 ## Rationale
 

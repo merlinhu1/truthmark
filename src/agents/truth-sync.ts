@@ -9,20 +9,16 @@ import {
   renderOpenCodeSubagentModeSection,
   renderHierarchySummary,
   renderBulletBlock,
-  resolveEngineeringTruthRoot,
 } from "./shared.js";
 import {
-  renderTruthSyncBlockedReport,
-  renderTruthSyncCompletedReport,
 } from "../sync/report.js";
-import { getTruthmarkWorkflow } from "./workflow-manifest.js";
+import {
+  getTruthmarkWorkflow,
+} from "./workflow-manifest.js";
 
 export const TRUTH_SYNC_EXPLICIT_INVOCATIONS =
   "OpenCode /skill truthmark-sync; Codex /truthmark-sync or $truthmark-sync; Claude Code /truthmark-sync; GitHub Copilot /truthmark-sync; Antigravity @truthmark-sync; Cursor /truthmark-sync.";
 
-const renderMarkdownExample = (content: string): string => {
-  return ["```md", content, "```"].join("\n");
-};
 
 const renderTruthSyncProductDecisionRuleBlock = (
   config: TruthmarkConfig,
@@ -166,76 +162,4 @@ Parent post-sync verification:
 - verify the updated docs correspond to reviewed checkout evidence, changed-code impact, or a recorded stale-truth correction made within the sync write lease
 - verify the final report records ownership review, structure requirement, split, restructure, or manual handoff reason when the ownership review applies
 - manual handoff outcomes must preserve the working tree as-is: no rollback, no post-block cleanup edits, and manual-review reporting of any remaining files`;
-};
-
-export const renderTruthSyncSkillBody = (
-  config: TruthmarkConfig = defaultAgentConfig(),
-  options: {
-    includeClaudeSubagentMode?: boolean;
-    includeCodexSubagentMode?: boolean;
-    includeCopilotCustomAgentMode?: boolean;
-    includeOpenCodeSubagentMode?: boolean;
-  } = {},
-): string => {
-  const engineeringTruthRoot = resolveEngineeringTruthRoot(config);
-  const workflow = getTruthmarkWorkflow("truthmark-sync");
-  return `---
-name: truthmark-sync
-description: ${workflow.description}
-argument-hint: Optional changed-code area, truth-doc area, or sync focus
-user-invocable: true
----
-
-${renderTruthSyncProcedureBody(config, options)}
-Report completion in this shape:
-${renderMarkdownExample(
-  renderTruthSyncCompletedReport({
-    changedCode: ["src/auth/session.ts"],
-    syncIntent: {
-      changedCodeReviewed: ["src/auth/session.ts"],
-      affectedRouteOrTruthOwner: [
-        `${config.truthmark.paths.routeAreasRoot}/authentication.md`,
-      ],
-      targetTruthDocs: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
-      intendedUpdate: ["Update session timeout behavior."],
-      evidenceToVerify: [
-        "src/auth/session.ts:12",
-        `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
-      ],
-      userProvidedDecisionRationale: [
-        "User rationale: session timeout behavior changed for internal implementation consistency",
-      ],
-      noUpdateNeededRationale: ["not applicable; mapped truth is stale"],
-      blockers: ["none"],
-    },
-    ownershipReviewed: [`${config.truthmark.paths.routeAreasRoot}/authentication.md`],
-    truthDocsUpdated: [`${engineeringTruthRoot}/behaviors/session-timeout.md`],
-    evidenceChecked: [
-      {
-        claim:
-          "Session timeout behavior is documented in the bounded authentication behavior truth doc.",
-        evidence: [
-          "src/auth/session.ts:12",
-          `${config.truthmark.paths.routeAreasRoot}/authentication.md:11`,
-        ],
-        result: "supported",
-      },
-    ],
-    decisionRationaleCaptured: [
-      "Placed user rationale in the bounded authentication behavior truth doc under Engineering Decisions/Rationale.",
-    ],
-    notes: ["Updated session timeout behavior."],
-  }),
-)}
-Blocked report example:
-${renderMarkdownExample(
-  renderTruthSyncBlockedReport({
-    reason: "Changed code maps only to the provisional bootstrap route.",
-    manualReviewFiles: [
-      "src/auth/**",
-      `${config.truthmark.paths.routeAreasRoot}/${config.truthmark.routes.defaultArea}.md`,
-    ],
-    nextAction: "Run Truth Structure for src/auth/** before updating behavior truth.",
-  }),
-)}`;
 };

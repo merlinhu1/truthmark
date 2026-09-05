@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 
 import {
@@ -13,7 +14,7 @@ import {
 import { createTempRepo } from "../helpers/temp-repo.js";
 
 describe("repo path writes", () => {
-  it("rejects writeRepoFile when a parent directory is a symlink outside the repo", async () => {
+  posixOnlyIt("rejects writeRepoFile when a parent directory is a symlink outside the repo", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -41,7 +42,7 @@ describe("repo path writes", () => {
     }
   });
 
-  it("rejects ensureRepoFile when a parent directory is a symlink outside the repo", async () => {
+  posixOnlyIt("rejects ensureRepoFile when a parent directory is a symlink outside the repo", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -69,7 +70,7 @@ describe("repo path writes", () => {
     }
   });
 
-  it("rejects ensureRepoFile when the target is a broken symlink outside the repo", async () => {
+  posixOnlyIt("rejects ensureRepoFile when the target is a broken symlink outside the repo", async () => {
     const repo = await createTempRepo();
     const outsidePath = path.resolve(
       repo.rootDir,
@@ -127,7 +128,7 @@ describe("repo path writes", () => {
     }
   });
 
-  it("uses the same canonical path for direct and aliased existing targets", async () => {
+  posixOnlyIt("uses the same canonical path for direct and aliased existing targets", async () => {
     const repo = await createTempRepo();
 
     try {

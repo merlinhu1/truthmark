@@ -98,12 +98,12 @@ describe("installed workflow contract", () => {
       expect(agents).not.toContain("Truth Realize: completed");
       expect(structureSkill).toContain("name: truthmark-structure");
       expect(structureSkill).toContain(
-        "Follow repository instruction files that exist in this checkout",
+        "Define areas by product or behavior ownership",
       );
       expect(structureSkill).toContain("docs/truthmark/routes/areas.md");
       expect(syncSkill).toContain("name: truthmark-sync");
       expect(syncSkill).toContain(
-        "Follow repository instruction files that exist in this checkout",
+        "Direct checkout inspection is the canonical path",
       );
       expect(syncSkill).toContain(
         "Use this skill automatically before finishing",
@@ -112,7 +112,7 @@ describe("installed workflow contract", () => {
         "truthmark check --json --workflow truth-sync",
       );
       expect(syncSkill).toContain(
-        "direct checkout inspection is the canonical path",
+        "Direct checkout inspection is the canonical path",
       );
       expect(syncCodexAdapter).toContain(
         "Use this skill automatically before finishing",

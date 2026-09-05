@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { describe, it } from "node:test";
+import { posixOnlyIt } from "../helpers/platform.js";
 import { expect } from "expect";
 
 import { runInit } from "../../src/init/init.js";
@@ -331,7 +332,7 @@ Local stale edit.
     }
   });
 
-  it("returns links diagnostics for symlink targets that resolve outside the repo", async () => {
+  posixOnlyIt("returns links diagnostics for symlink targets that resolve outside the repo", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -455,7 +456,7 @@ ignore: []
     }
   });
 
-  it("returns config diagnostics for legacy symlinked authority docs", async () => {
+  posixOnlyIt("returns config diagnostics for legacy symlinked authority docs", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -881,7 +882,7 @@ Update truth when:
     }
   });
 
-  it("reports an unsafe managed alias without reading through it", async () => {
+  posixOnlyIt("reports an unsafe managed alias without reading through it", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -1425,7 +1426,7 @@ Update truth when:
     }
   });
 
-  it("returns area-index diagnostics for symlinked truth docs that resolve outside the repo", async () => {
+  posixOnlyIt("returns area-index diagnostics for symlinked truth docs that resolve outside the repo", async () => {
     const repo = await createTempRepo();
 
     try {
@@ -2317,7 +2318,7 @@ Update truth when:
     }
   });
 
-  it("does not treat symlinked source directories outside the repo as live code coverage", async () => {
+  posixOnlyIt("does not treat symlinked source directories outside the repo as live code coverage", async () => {
     const repo = await createTempRepo();
 
     try {
