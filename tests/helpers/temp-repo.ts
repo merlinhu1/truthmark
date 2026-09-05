@@ -9,7 +9,12 @@ export type TempRepo = Checkout & {
 };
 
 export const createTempRepo = async (): Promise<TempRepo> => {
-  const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-"));
+  // Canonicalize: on Windows `os.tmpdir()` can hand back an 8.3 short path
+  // (C:\Users\RUNNER~1\...) while the code under test resolves through
+  // realpath, so an uncanonicalized root makes every path assertion mismatch.
+  const rootDir = await fs.realpath(
+    await fs.mkdtemp(path.join(os.tmpdir(), "truthmark-")),
+  );
 
   await initializeGitRepository(rootDir);
 
